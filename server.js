@@ -2316,16 +2316,6 @@ textarea{
   }
 
 }
-`;
-@media(max-width:520px){
-.hero{padding-top:40px}
-.hero h1{font-size:37px}
-.logo{font-size:18px}
-.language a{padding:6px;font-size:0}
-.language a::first-letter{font-size:15px}
-.pad{padding:18px}
-.doc{padding:22px}
-.actions{padding:15px}
 }
 `;
 
