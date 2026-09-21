@@ -1146,6 +1146,45 @@ ${
 // ======================================================
 
 function aiPage(lang) {
+
+  const voiceText =
+    lang === 'ru'
+      ? {
+          start: '🎙 Говорить',
+          stop: '■ Остановить',
+          listening: 'Слушаю... говорите.',
+          ready: 'Готово. Проверьте текст.',
+          denied: 'Разрешите доступ к микрофону.',
+          unsupported:
+            'Голосовой ввод не поддерживается. Откройте сайт в Chrome или Edge.'
+        }
+      : lang === 'en'
+      ? {
+          start: '🎙 Speak',
+          stop: '■ Stop',
+          listening: 'Listening... speak now.',
+          ready: 'Done. Review the text.',
+          denied: 'Please allow microphone access.',
+          unsupported:
+            'Voice input is not supported. Open the site in Chrome or Edge.'
+        }
+      : {
+          start: '🎙 Ovoz bilan aytish',
+          stop: '■ To‘xtatish',
+          listening: 'Eshityapman... gapiravering.',
+          ready: 'Tayyor. Matnni tekshiring.',
+          denied: 'Mikrofonga ruxsat bering.',
+          unsupported:
+            'Ovozli kiritish ishlamaydi. Saytni Chrome yoki Edge’da oching.'
+        };
+
+  const speechLang =
+    lang === 'ru'
+      ? 'ru-RU'
+      : lang === 'en'
+      ? 'en-US'
+      : 'uz-UZ';
+
   return layout(`
 <div class="app">
 
@@ -1154,43 +1193,468 @@ ${sidebar('ai', lang)}
 <main>
 
 <div class="head">
-<a href="/${q(lang)}" class="btn white" style="margin-bottom:18px">
+
+<a
+  href="/${q(lang)}"
+  class="btn white"
+  style="margin-bottom:18px"
+>
 ${tr(lang, 'backHome')}
 </a>
 
-<small style="display:block">${tr(lang, 'home')} / ${tr(lang, 'ai')}</small>
+<small style="display:block">
+${tr(lang, 'home')} / ${tr(lang, 'ai')}
+</small>
+
 <h1>${tr(lang, 'ai')}</h1>
+
 <p>${tr(lang, 'aiInfo')}</p>
+
 </div>
+
 
 <section class="surface pad">
 
-<div style="text-align:center;padding:30px 10px">
-<div class="avatar" style="margin:auto">AI</div>
-<h2 style="color:var(--navy)">${tr(lang, 'writeSituation')}</h2>
-<p style="color:var(--muted);font-size:11px">${tr(lang, 'aiInfo')}</p>
+<div style="
+  text-align:center;
+  padding:30px 10px 20px;
+">
+
+<div
+  class="avatar"
+  style="margin:auto"
+>
+AI
 </div>
 
-<form action="/ai-result" method="POST">
-<input type="hidden" name="lang" value="${lang}">
+<h2 style="color:var(--navy)">
+${tr(lang, 'writeSituation')}
+</h2>
+
+<p style="
+  color:var(--muted);
+  font-size:11px;
+">
+${tr(lang, 'aiInfo')}
+</p>
+
+</div>
+
+
+<form
+  action="/ai-result"
+  method="POST"
+>
+
+<input
+  type="hidden"
+  name="lang"
+  value="${lang}"
+>
+
 
 <div class="field">
+
 <textarea
-name="question"
-required
-style="min-height:180px"
-placeholder="${esc(tr(lang, 'placeholder'))}"
+  id="aiQuestion"
+  name="question"
+  required
+  style="min-height:180px"
+  placeholder="${esc(tr(lang, 'placeholder'))}"
 ></textarea>
+
 </div>
 
-<button class="btn blue" type="submit">${tr(lang, 'analyze')}</button>
+
+<!-- OVOZLI KIRITISH -->
+
+<div
+  style="
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:15px;
+  "
+>
+
+<button
+  id="voiceBtn"
+  type="button"
+  class="btn white"
+  style="
+    border:1.5px solid #b9c9ef;
+    color:#315eea;
+    min-width:170px;
+  "
+>
+${voiceText.start}
+</button>
+
+
+<span
+  id="voiceStatus"
+  style="
+    color:var(--muted);
+    font-size:11px;
+  "
+></span>
+
+</div>
+
+
+<!-- RECORDING STATUS -->
+
+<div
+  id="recordingBox"
+  style="
+    display:none;
+    background:#fff2f2;
+    border:1px solid #ffd3d3;
+    border-radius:12px;
+    padding:13px 15px;
+    margin-bottom:15px;
+    color:#c63f3f;
+    font-size:11px;
+    font-weight:800;
+  "
+>
+
+<span
+  id="recordDot"
+  style="
+    display:inline-block;
+    width:9px;
+    height:9px;
+    background:#e5484d;
+    border-radius:50%;
+    margin-right:8px;
+  "
+></span>
+
+${voiceText.listening}
+
+</div>
+
+
+<button
+  class="btn blue"
+  type="submit"
+>
+${tr(lang, 'analyze')}
+</button>
+
 </form>
 
 </section>
+
 </main>
+
 </div>
-`, tr(lang, 'ai'), lang, '/ai');
+
+
+<style>
+
+#recordDot {
+  animation: voicePulse 1s infinite;
 }
+
+@keyframes voicePulse {
+
+  0% {
+    opacity:1;
+    transform:scale(1);
+  }
+
+  50% {
+    opacity:.35;
+    transform:scale(1.5);
+  }
+
+  100% {
+    opacity:1;
+    transform:scale(1);
+  }
+
+}
+
+#voiceBtn.recording {
+  background:#e5484d;
+  color:white !important;
+  border-color:#e5484d !important;
+}
+
+</style>
+
+
+<script>
+
+(function(){
+
+  var button =
+    document.getElementById('voiceBtn');
+
+  var status =
+    document.getElementById('voiceStatus');
+
+  var textarea =
+    document.getElementById('aiQuestion');
+
+  var recordingBox =
+    document.getElementById('recordingBox');
+
+
+  var SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+  if (!SpeechRecognition) {
+
+    button.addEventListener(
+      'click',
+      function(){
+
+        status.textContent =
+          ${JSON.stringify(voiceText.unsupported)};
+
+      }
+    );
+
+    return;
+
+  }
+
+
+  var recognition =
+    new SpeechRecognition();
+
+
+  recognition.lang =
+    ${JSON.stringify(speechLang)};
+
+
+  recognition.continuous = true;
+
+  recognition.interimResults = true;
+
+  recognition.maxAlternatives = 1;
+
+
+  var active = false;
+
+  var savedText = '';
+
+
+  function startVoice(){
+
+    savedText =
+      textarea.value.trim();
+
+
+    try {
+
+      recognition.start();
+
+      active = true;
+
+      button.textContent =
+        ${JSON.stringify(voiceText.stop)};
+
+      button.classList.add(
+        'recording'
+      );
+
+      recordingBox.style.display =
+        'block';
+
+      status.textContent =
+        ${JSON.stringify(voiceText.listening)};
+
+    }
+
+    catch(error){
+
+      console.log(error);
+
+    }
+
+  }
+
+
+  function stopVoice(){
+
+    try {
+
+      recognition.stop();
+
+    }
+
+    catch(error){
+
+      console.log(error);
+
+    }
+
+  }
+
+
+  button.addEventListener(
+    'click',
+    function(){
+
+      if(active){
+
+        stopVoice();
+
+      }
+
+      else{
+
+        startVoice();
+
+      }
+
+    }
+  );
+
+
+  recognition.onresult =
+    function(event){
+
+      var finalText = '';
+
+      var interimText = '';
+
+
+      for(
+        var i = event.resultIndex;
+        i < event.results.length;
+        i++
+      ){
+
+        var transcript =
+          event.results[i][0].transcript;
+
+
+        if(
+          event.results[i].isFinal
+        ){
+
+          finalText +=
+            transcript.trim() + ' ';
+
+        }
+
+        else{
+
+          interimText +=
+            transcript;
+
+        }
+
+      }
+
+
+      if(finalText){
+
+        savedText +=
+          (savedText ? ' ' : '') +
+          finalText.trim();
+
+      }
+
+
+      textarea.value =
+        savedText +
+        (
+          interimText
+            ? (savedText ? ' ' : '') +
+              interimText
+            : ''
+        );
+
+    };
+
+
+  recognition.onend =
+    function(){
+
+      active = false;
+
+
+      button.textContent =
+        ${JSON.stringify(voiceText.start)};
+
+
+      button.classList.remove(
+        'recording'
+      );
+
+
+      recordingBox.style.display =
+        'none';
+
+
+      if(
+        textarea.value.trim()
+      ){
+
+        status.textContent =
+          ${JSON.stringify(voiceText.ready)};
+
+      }
+
+    };
+
+
+  recognition.onerror =
+    function(event){
+
+      active = false;
+
+
+      button.textContent =
+        ${JSON.stringify(voiceText.start)};
+
+
+      button.classList.remove(
+        'recording'
+      );
+
+
+      recordingBox.style.display =
+        'none';
+
+
+      if(
+        event.error === 'not-allowed' ||
+        event.error ===
+          'service-not-allowed'
+      ){
+
+        status.textContent =
+          ${JSON.stringify(voiceText.denied)};
+
+      }
+
+      else{
+
+        status.textContent =
+          ${JSON.stringify(voiceText.unsupported)};
+
+      }
+
+    };
+
+})();
+
+</script>
+
+`, tr(lang, 'ai'), lang, '/ai');
+
+}
+  
 
 function aiResultPage(question, answer, lang) {
   return layout(`
