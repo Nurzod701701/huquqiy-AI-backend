@@ -10672,10 +10672,17 @@ const cards =
 
         let currentFilter =
           "all";
-          const STATE_ORGANIZATIONS = [
-  // =========================
+          // ======================================================
+// DAVLAT ORGANLARI MA'LUMOTLARI
+// BU BLOK internalAffairsCards DAN OLDIN TURISHI SHART
+// ======================================================
+
+const STATE_ORGANIZATIONS = [
+
+  // ====================================================
   // OLIY SUD
-  // =========================
+  // ====================================================
+
   {
     id: "supreme-court",
     category: "court",
@@ -10690,9 +10697,11 @@ const cards =
     source: "sud.uz"
   },
 
-  // =========================
+
+  // ====================================================
   // TOSHKENT SHAHAR SUDI
-  // =========================
+  // ====================================================
+
   {
     id: "tashkent-city-court",
     category: "court",
@@ -10742,9 +10751,6 @@ const cards =
     source: "sud.uz"
   },
 
-  // =========================
-  // MA'MURIY SUD
-  // =========================
   {
     id: "tashkent-administrative",
     category: "court",
@@ -10758,9 +10764,6 @@ const cards =
     source: "sud.uz"
   },
 
-  // =========================
-  // IQTISODIY SUD
-  // =========================
   {
     id: "tashkent-economic-interdistrict",
     category: "court",
@@ -10774,9 +10777,6 @@ const cards =
     source: "sud.uz"
   },
 
-  // =========================
-  // MIROBOD TUMAN SUDI
-  // =========================
   {
     id: "mirobod-criminal-court",
     category: "court",
@@ -10790,324 +10790,331 @@ const cards =
     source: "sud.uz"
   },
 
-  // =========================
-  // TOSHKENTDAGI QOLGAN
-  // JINOYAT SUDLARI
-  // =========================
 
-  {
-    id: "bektemir-criminal",
+  // ====================================================
+  // QOLGAN JINOYAT SUDLARI
+  // ====================================================
+
+  ...[
+    "Bektemir",
+    "Chilonzor",
+    "Mirzo Ulug‘bek",
+    "Olmazor",
+    "Sergeli",
+    "Shayxontohur",
+    "Uchtepa",
+    "Yakkasaroy",
+    "Yashnobod",
+    "Yunusobod",
+    "Yangihayot"
+  ].map(district => ({
+    id:
+      district
+        .toLowerCase()
+        .replace(/[‘’']/g, "")
+        .replace(/\s+/g, "-") +
+      "-criminal",
+
     category: "court",
     type: "criminal",
     region: "Toshkent shahri",
-    district: "Bektemir",
-    name: "Jinoyat ishlari bo‘yicha Bektemir tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
+    district,
 
-  {
-    id: "chilonzor-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Chilonzor",
-    name: "Jinoyat ishlari bo‘yicha Chilonzor tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
+    name:
+      `Jinoyat ishlari bo‘yicha ${district} tuman sudi`,
 
-  {
-    id: "mirzo-ulugbek-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Mirzo Ulug‘bek",
-    name: "Jinoyat ishlari bo‘yicha Mirzo Ulug‘bek tuman sudi",
     phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
 
-  {
-    id: "olmazor-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Olmazor",
-    name: "Jinoyat ishlari bo‘yicha Olmazor tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
+    verification:
+      "Telefon raqami rasmiy manbadan yangilanmoqda"
+  })),
 
-  {
-    id: "sergeli-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Sergeli",
-    name: "Jinoyat ishlari bo‘yicha Sergeli tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
 
-  {
-    id: "shayxontohur-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Shayxontohur",
-    name: "Jinoyat ishlari bo‘yicha Shayxontohur tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
-
-  {
-    id: "uchtepa-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Uchtepa",
-    name: "Jinoyat ishlari bo‘yicha Uchtepa tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
-
-  {
-    id: "yakkasaroy-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Yakkasaroy",
-    name: "Jinoyat ishlari bo‘yicha Yakkasaroy tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
-
-  {
-    id: "yashnobod-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Yashnobod",
-    name: "Jinoyat ishlari bo‘yicha Yashnobod tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
-
-  {
-    id: "yunusobod-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Yunusobod",
-    name: "Jinoyat ishlari bo‘yicha Yunusobod tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
-
-  {
-    id: "yangihayot-criminal",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Yangihayot",
-    name: "Jinoyat ishlari bo‘yicha Yangihayot tuman sudi",
-    phone: null,
-    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
-  },
-
-  // =========================
+  // ====================================================
   // SUD DEPARTAMENTI
-  // =========================
+  // ====================================================
+
   {
     id: "court-department-tashkent",
     category: "court_department",
     region: "Toshkent shahri",
     district: "Yakkasaroy",
-    name: "Oliy sud huzuridagi Sudlar faoliyatini ta’minlash departamentining Toshkent shahar hududiy bo‘limi",
+    name:
+      "Oliy sud huzuridagi Sudlar faoliyatini ta’minlash departamentining Toshkent shahar hududiy bo‘limi",
     address: "Shota Rustaveli ko‘chasi, 62-uy",
     phone: "+998 55 501-00-04",
     extension: "03142",
     source: "sud.uz"
-  }
-  ,
-{
-  id: "tashkent-iibb",
-  category: "internal_affairs",
-  type: "regional",
-  region: "Toshkent shahri",
-  name: "Toshkent shahar Ichki ishlar bosh boshqarmasi",
-  address: "S. Azimov ko‘chasi, 87-uy",
-  phone: "+998 71 206-41-65",
-  appealsPhone: "+998 71 206-43-34",
-  emergencyPhone: "102",
-  source: "iibb.uz"
-},
+  },
 
-{
-  id: "police-emergency-102",
-  category: "internal_affairs",
-  type: "emergency",
-  region: "O‘zbekiston",
-  name: "Ichki ishlar organlari tezkor raqami",
-  phone: "102",
-  description: "Huquqbuzarlik, jinoyat yoki tezkor ichki ishlar yordami zarur bo‘lgan holatlar uchun.",
-  source: "iibb.uz"
-}
-,
+
+  // ====================================================
+  // TOSHKENT SHAHAR IIBB
+  // ====================================================
+
+  {
+    id: "tashkent-iibb",
+    category: "internal_affairs",
+    type: "regional",
+    region: "Toshkent shahri",
+    district: "Toshkent shahri",
+    name: "Toshkent shahar Ichki ishlar bosh boshqarmasi",
+    address: "S. Azimov ko‘chasi, 87-uy",
+    phone: "+998 71 206-41-65",
+    appealsPhone: "+998 71 206-43-34",
+    emergencyPhone: "102",
+    hotline: "1102",
+    source: "iibb.uz"
+  },
+
+
+  // ====================================================
+  // ICHKI ISHLAR TEZKOR / ISHONCH RAQAMLARI
+  // ====================================================
+
+  {
+    id: "police-emergency-102",
+    category: "internal_affairs",
+    type: "emergency",
+    region: "O‘zbekiston",
+    district: "O‘zbekiston",
+    name: "Ichki ishlar organlari tezkor va ishonch telefonlari",
+    phone: "102",
+    emergencyPhone: "102",
+    hotline: "1102",
+    description:
+      "Huquqbuzarlik, jinoyat yoki tezkor ichki ishlar yordami zarur bo‘lgan holatlar uchun.",
+    source: "iibb.uz"
+  },
+
+
+  // ====================================================
+  // TOSHKENT SHAHRI — TUMAN IIO FMB
+  // ====================================================
+
+  ...[
+    "Bektemir",
+    "Chilonzor",
+    "Mirobod",
+    "Mirzo Ulug‘bek",
+    "Olmazor",
+    "Sergeli",
+    "Shayxontohur",
+    "Uchtepa",
+    "Yakkasaroy",
+    "Yashnobod",
+    "Yunusobod",
+    "Yangihayot"
+  ].map(district => ({
+
+    id:
+      district
+        .toLowerCase()
+        .replace(/[‘’']/g, "")
+        .replace(/\s+/g, "-") +
+      "-iio-fmb",
+
+    category: "internal_affairs",
+    type: "district",
+
+    region:
+      "Toshkent shahri",
+
+    district,
+
+    name:
+      `${district} tumani IIO FMB`,
+
+    emergencyPhone:
+      "102",
+
+    hotline:
+      "1102",
+
+    source:
+      "iibb.uz"
+
+  }))
+
+];
+
 
 // ======================================================
-// TOSHKENT SHAHRI — BARCHA TUMAN IIO FMB
+// ICHKI ISHLAR KARTALARINI YARATISH
 // ======================================================
 
-{
-  id: "bektemir-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Bektemir",
-  name: "Bektemir tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+const internalAffairsCards =
+  STATE_ORGANIZATIONS
+    .filter(
+      organization =>
+        organization.category ===
+        "internal_affairs"
+    )
+    .map(organization => {
 
-{
-  id: "chilonzor-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Chilonzor",
-  name: "Chilonzor tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const name =
+        organization.name || "";
 
-{
-  id: "mirobod-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Mirobod",
-  name: "Mirobod tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const district =
+        organization.district ||
+        organization.region ||
+        "Toshkent shahri";
 
-{
-  id: "mirzo-ulugbek-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Mirzo Ulug‘bek",
-  name: "Mirzo Ulug‘bek tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const address =
+        organization.address || "";
 
-{
-  id: "olmazor-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Olmazor",
-  name: "Olmazor tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const phone =
+        organization.phone ||
+        organization.localPhone ||
+        "";
 
-{
-  id: "sergeli-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Sergeli",
-  name: "Sergeli tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const appealsPhone =
+        organization.appealsPhone || "";
 
-{
-  id: "shayxontohur-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Shayxontohur",
-  name: "Shayxontohur tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const emergencyPhone =
+        organization.emergencyPhone || "102";
 
-{
-  id: "uchtepa-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Uchtepa",
-  name: "Uchtepa tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const hotline =
+        organization.hotline || "1102";
 
-{
-  id: "yakkasaroy-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Yakkasaroy",
-  name: "Yakkasaroy tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const mapsUrl =
+        googleMapsSearch(
+          name,
+          district
+        );
 
-{
-  id: "yashnobod-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Yashnobod",
-  name: "Yashnobod tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const directionUrl =
+        googleMapsDirections(
+          name,
+          district
+        );
 
-{
-  id: "yunusobod-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Yunusobod",
-  name: "Yunusobod tumani IIO FMB",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-},
+      const searchable =
+        (
+          name +
+          " " +
+          district +
+          " " +
+          address +
+          " ichki ishlar iib iio fmb 102 1102"
+        )
+          .toLowerCase()
+          .replace(/"/g, "&quot;");
 
-{
-  id: "yangihayot-iio-fmb",
-  category: "internal_affairs",
-  type: "district",
-  region: "Toshkent shahri",
-  district: "Yangihayot",
-  name: "Yangihayot tumani IIO FMB",
-  phone: "+998 71 258-03-11",
-  emergencyPhone: "102",
-  hotline: "1102",
-  source: "iibb.uz"
-}
+      return `
 
-]; // STATE_ORGANIZATIONS TUGADI
+        <article
+          class="courtCard"
+          data-type="internal_affairs"
+          data-search="${esc(searchable)}"
+          data-name="${esc(name)}"
+          data-district="${esc(district)}"
+          data-map="${esc(mapsUrl)}"
+        >
+
+          <div class="courtCardTop">
+
+            <span class="courtType">
+              👮 ICHKI ISHLAR
+            </span>
+
+            <span class="courtDistrict">
+              ${esc(district)}
+            </span>
+
+          </div>
 
 
+          <h3>
+            ${esc(name)}
+          </h3>
+
+
+          ${
+            address
+              ? `
+                <p>
+                  📍 <strong>Manzil:</strong>
+                  ${esc(address)}
+                </p>
+              `
+              : ""
+          }
+
+
+          ${
+            phone
+              ? `
+                <p>
+                  ☎ <strong>Telefon:</strong>
+                  <a href="tel:${esc(phone.replace(/\s/g, ""))}">
+                    ${esc(phone)}
+                  </a>
+                </p>
+              `
+              : ""
+          }
+
+
+          ${
+            appealsPhone
+              ? `
+                <p>
+                  ☎ <strong>Murojaatlar:</strong>
+                  <a href="tel:${esc(appealsPhone.replace(/\s/g, ""))}">
+                    ${esc(appealsPhone)}
+                  </a>
+                </p>
+              `
+              : ""
+          }
+
+
+          <p>
+            🚨 <strong>Tezkor raqam:</strong>
+            <a href="tel:${esc(emergencyPhone)}">
+              ${esc(emergencyPhone)}
+            </a>
+          </p>
+
+
+          <p>
+            ☎ <strong>Ishonch telefoni:</strong>
+            <a href="tel:${esc(hotline)}">
+              ${esc(hotline)}
+            </a>
+          </p>
+
+
+          <div class="courtCardActions">
+
+            <button
+              type="button"
+              class="courtMapButton"
+              data-map="${esc(mapsUrl)}"
+              data-name="${esc(name)}"
+              onclick="showCourtMap(this)"
+            >
+              📍 Xaritada ko‘rish
+            </button>
+
+            <a
+              class="courtMapButton primary"
+              href="${directionUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🧭 Yo‘nalish
+            </a>
+
+          </div>
+
+        </article>
+
+      `;
+
+    })
+    .join("");
         function normalize(value) {
   return String(value || "")
     .toLowerCase()
