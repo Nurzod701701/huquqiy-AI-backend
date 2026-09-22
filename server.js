@@ -10008,124 +10008,341 @@ function courtPage(lang) {
   }[lang];
 
 
-  const cards =
-    TASHKENT_COURTS
-      .map(
-        court => {
+ const courtCards =
+  TASHKENT_COURTS
+    .map(court => {
 
-          const name =
-            localized(
-              court.name,
-              lang
-            );
+      const name =
+        localized(
+          court.name,
+          lang
+        );
 
+      const mapsUrl =
+        googleMapsSearch(
+          name,
+          court.district
+        );
 
-          const mapsUrl =
-            googleMapsSearch(
-              name,
-              court.district
-            );
+      const directionUrl =
+        googleMapsDirections(
+          name,
+          court.district
+        );
 
+      const searchable =
+        (
+          name +
+          " " +
+          (court.district || "") +
+          " " +
+          (court.type || "") +
+          " " +
+          (court.keywords || "")
+        )
+          .toLowerCase()
+          .replace(/"/g, "&quot;");
 
-          const directionUrl =
-            googleMapsDirections(
-              name,
-              court.district
-            );
+      return `
 
+        <article
+          class="courtCard"
+          data-type="${esc(court.type || "court")}"
+          data-search="${esc(searchable)}"
+          data-name="${esc(name)}"
+          data-district="${esc(court.district || "")}"
+          data-map="${esc(mapsUrl)}"
+        >
 
-          const searchable =
-            (
-              name +
-              " " +
-              court.district +
-              " " +
-              court.type +
-              " " +
-              court.keywords
-            )
-              .toLowerCase()
-              .replace(/"/g, "&quot;");
+          <div class="courtCardTop">
 
+            <span class="courtType">
+              ⚖ SUD
+            </span>
 
-          return `
+            <span class="courtDistrict">
+              ${esc(court.district || "Toshkent")}
+            </span>
 
-            <article
-              class="courtCard"
-              data-type="${esc(court.type)}"
-              data-search="${esc(searchable)}"
-              data-name="${esc(name)}"
-              data-district="${esc(court.district)}"
+          </div>
+
+          <h3>
+            ${esc(name)}
+          </h3>
+
+          ${
+            court.address
+              ? `
+                <p>
+                  📍 ${esc(court.address)}
+                </p>
+              `
+              : ""
+          }
+
+          ${
+            court.phone
+              ? `
+                <p>
+                  ☎
+                  <a href="tel:${esc(court.phone.replace(/\s/g, ""))}">
+                    ${esc(court.phone)}
+                  </a>
+                </p>
+              `
+              : ""
+          }
+
+          <div class="courtCardActions">
+
+            <button
+              type="button"
+              class="courtMapButton"
               data-map="${esc(mapsUrl)}"
+              data-name="${esc(name)}"
+              onclick="showCourtMap(this)"
             >
+              📍 ${t.maps}
+            </button>
 
-              <div class="courtCardTop">
+            <a
+              class="courtMapButton primary"
+              href="${directionUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🧭 ${t.direction}
+            </a>
 
-                <span class="courtTypeIcon">
-                  ⚖
-                </span>
+          </div>
 
+        </article>
 
-                <div class="courtCardContent">
+      `;
 
-                  <h3>
-                    ${esc(name)}
-                  </h3>
-
-
-                  <div class="courtMeta">
-
-                    <span class="courtTag gold">
-                      ${esc(
-                        courtTypeLabel(
-                          court.type,
-                          lang
-                        )
-                      )}
-                    </span>
-
-                    <span class="courtTag">
-                      ${esc(court.district)}
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </div>
+    })
+    .join("");
 
 
-              <div class="courtActions">
+// ======================================================
+// ICHKI ISHLAR KARTALARI
+// ======================================================
 
-                <button
-                  type="button"
-                  class="courtMapButton"
-                  onclick="showCourtMap(this)"
-                  data-map="${esc(mapsUrl)}"
-                  data-name="${esc(name)}"
-                >
-                  📍 ${t.maps}
-                </button>
+const internalAffairsCards =
+  STATE_ORGANIZATIONS
+    .filter(
+      organization =>
+        organization.category ===
+        "internal_affairs"
+    )
+    .map(organization => {
+
+      const name =
+        organization.name || "";
+
+      const district =
+        organization.district ||
+        organization.region ||
+        "Toshkent shahri";
+
+      const address =
+        organization.address || "";
+
+      const phone =
+        organization.phone ||
+        organization.localPhone ||
+        "";
+
+      const appealsPhone =
+        organization.appealsPhone ||
+        "";
+
+      const emergencyPhone =
+        organization.emergencyPhone ||
+        "102";
+
+      const hotline =
+        organization.hotline ||
+        "1102";
+
+      const touristPhone =
+        organization.touristPhone ||
+        "";
+
+      const mapsUrl =
+        googleMapsSearch(
+          name,
+          district
+        );
+
+      const directionUrl =
+        googleMapsDirections(
+          name,
+          district
+        );
+
+      const searchable =
+        (
+          name +
+          " " +
+          district +
+          " " +
+          address +
+          " ichki ishlar iib iio fmb 102 1102"
+        )
+          .toLowerCase()
+          .replace(/"/g, "&quot;");
+
+      return `
+
+        <article
+          class="courtCard"
+          data-type="internal_affairs"
+          data-search="${esc(searchable)}"
+          data-name="${esc(name)}"
+          data-district="${esc(district)}"
+          data-map="${esc(mapsUrl)}"
+        >
+
+          <div class="courtCardTop">
+
+            <span class="courtType">
+              👮 ICHKI ISHLAR
+            </span>
+
+            <span class="courtDistrict">
+              ${esc(district)}
+            </span>
+
+          </div>
 
 
-                <a
-                  class="courtMapButton primary"
-                  href="${directionUrl}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  🧭 ${t.direction}
-                </a>
+          <h3>
+            ${esc(name)}
+          </h3>
 
-              </div>
 
-            </article>
+          ${
+            address
+              ? `
+                <p>
+                  📍
+                  <strong>Manzil:</strong>
+                  ${esc(address)}
+                </p>
+              `
+              : ""
+          }
 
-          `;
 
-        }
-      )
-      .join("");
+          ${
+            phone
+              ? `
+                <p>
+                  ☎
+                  <strong>Telefon:</strong>
+
+                  <a
+                    href="tel:${esc(phone.replace(/\s/g, ""))}"
+                  >
+                    ${esc(phone)}
+                  </a>
+                </p>
+              `
+              : ""
+          }
+
+
+          ${
+            appealsPhone
+              ? `
+                <p>
+                  ☎
+                  <strong>Murojaatlar:</strong>
+
+                  <a
+                    href="tel:${esc(appealsPhone.replace(/\s/g, ""))}"
+                  >
+                    ${esc(appealsPhone)}
+                  </a>
+                </p>
+              `
+              : ""
+          }
+
+
+          <p>
+            🚨
+            <strong>Tezkor raqam:</strong>
+
+            <a href="tel:${esc(emergencyPhone)}">
+              ${esc(emergencyPhone)}
+            </a>
+          </p>
+
+
+          <p>
+            ☎
+            <strong>Ishonch telefoni:</strong>
+
+            <a href="tel:${esc(hotline)}">
+              ${esc(hotline)}
+            </a>
+          </p>
+
+
+          ${
+            touristPhone
+              ? `
+                <p>
+                  🌐
+                  <strong>Turistlar uchun:</strong>
+
+                  <a href="tel:${esc(touristPhone)}">
+                    ${esc(touristPhone)}
+                  </a>
+                </p>
+              `
+              : ""
+          }
+
+
+          <div class="courtCardActions">
+
+            <button
+              type="button"
+              class="courtMapButton"
+              data-map="${esc(mapsUrl)}"
+              data-name="${esc(name)}"
+              onclick="showCourtMap(this)"
+            >
+              📍 Xaritada ko‘rish
+            </button>
+
+
+            <a
+              class="courtMapButton primary"
+              href="${directionUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🧭 Yo‘nalish
+            </a>
+
+          </div>
+
+        </article>
+
+      `;
+
+    })
+    .join("");
+
+
+// SUD + ICHKI ISHLAR
+const cards =
+  courtCards +
+  internalAffairsCards;
 
 
   const initialMap =
