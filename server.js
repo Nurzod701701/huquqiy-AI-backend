@@ -10457,15 +10457,12 @@ function courtPage(lang) {
           "all";
 
 
-        function normalize(value){
-
-          return String(value || "")
-            .toLowerCase()
-            .replace(/['‘’ʻ`]/g, "")
-            .trim();
-
-        }
-
+        function normalize(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/['‘’ʻ\u0060]/g, "")
+    .trim();
+}
 
         function applyFilters(){
 
