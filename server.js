@@ -496,7 +496,8 @@ const LEGAL_AREAS = [
   {
     id: "children",
 
-    icon: "👨‍👩‍👧",
+    icon:
+      "👨‍👩‍👧",
 
     title: {
       uz:
@@ -670,737 +671,49 @@ const LEGAL_AREAS = [
 
 
 // ======================================================
-// OILAVIY HUQUQ SAVOLNOMASI
-// ======================================================
-
-const FAMILY_QUESTIONS = [
-
-  {
-    id:
-      "marriage_registered",
-
-    label: {
-      uz:
-        "Nikoh FHDYO organida rasman qayd etilganmi?",
-
-      ru:
-        "Брак официально зарегистрирован в органах ЗАГС?",
-
-      en:
-        "Is the marriage officially registered?"
-    },
-
-    type:
-      "select",
-
-    options: {
-      uz: [
-        ["", "Tanlang"],
-        ["yes", "Ha"],
-        ["no", "Yo‘q"]
-      ],
-
-      ru: [
-        ["", "Выберите"],
-        ["yes", "Да"],
-        ["no", "Нет"]
-      ],
-
-      en: [
-        ["", "Select"],
-        ["yes", "Yes"],
-        ["no", "No"]
-      ]
-    }
-  },
-
-
-  {
-    id:
-      "marriage_date",
-
-    label: {
-      uz:
-        "Nikoh qachon qayd etilgan?",
-
-      ru:
-        "Когда был зарегистрирован брак?",
-
-      en:
-        "When was the marriage registered?"
-    },
-
-    type:
-      "date"
-  },
-
-
-  {
-    id:
-      "marriage_place",
-
-    label: {
-      uz:
-        "Nikoh qayerda qayd etilgan?",
-
-      ru:
-        "Где был зарегистрирован брак?",
-
-      en:
-        "Where was the marriage registered?"
-    },
-
-    type:
-      "text"
-  },
-
-
-  {
-    id:
-      "mutual_consent",
-
-    label: {
-      uz:
-        "Er-xotinning ikkalasi ham ajrashishga rozimi?",
-
-      ru:
-        "Оба супруга согласны на развод?",
-
-      en:
-        "Do both spouses consent to divorce?"
-    },
-
-    type:
-      "select",
-
-    options: {
-      uz: [
-        ["", "Tanlang"],
-        ["yes", "Ha"],
-        ["no", "Yo‘q"],
-        ["unknown", "Aniq emas"]
-      ],
-
-      ru: [
-        ["", "Выберите"],
-        ["yes", "Да"],
-        ["no", "Нет"],
-        ["unknown", "Неизвестно"]
-      ],
-
-      en: [
-        ["", "Select"],
-        ["yes", "Yes"],
-        ["no", "No"],
-        ["unknown", "Unknown"]
-      ]
-    }
-  },
-
-
-  {
-    id:
-      "reason",
-
-    label: {
-      uz:
-        "Ajrashishning asosiy sababi nima?",
-
-      ru:
-        "Какова основная причина развода?",
-
-      en:
-        "What is the main reason for divorce?"
-    },
-
-    type:
-      "textarea"
-  },
-
-
-  {
-    id:
-      "children_count",
-
-    label: {
-      uz:
-        "Voyaga yetmagan farzandlar soni nechta?",
-
-      ru:
-        "Сколько несовершеннолетних детей?",
-
-      en:
-        "How many minor children are there?"
-    },
-
-    type:
-      "number"
-  },
-
-
-  {
-    id:
-      "children_ages",
-
-    label: {
-      uz:
-        "Farzandlarning yoshlarini kiriting.",
-
-      ru:
-        "Укажите возраст детей.",
-
-      en:
-        "Enter the children's ages."
-    },
-
-    type:
-      "text"
-  },
-
-
-  {
-    id:
-      "children_residence",
-
-    label: {
-      uz:
-        "Farzandlar kim bilan yashashi rejalashtirilmoqda?",
-
-      ru:
-        "С кем планируется проживание детей?",
-
-      en:
-        "Who are the children expected to live with?"
-    },
-
-    type:
-      "select",
-
-    options: {
-      uz: [
-        ["", "Tanlang"],
-        ["mother", "Ona bilan"],
-        ["father", "Ota bilan"],
-        ["dispute", "Nizo mavjud"],
-        ["unknown", "Hali aniqlanmagan"]
-      ],
-
-      ru: [
-        ["", "Выберите"],
-        ["mother", "С матерью"],
-        ["father", "С отцом"],
-        ["dispute", "Есть спор"],
-        ["unknown", "Не определено"]
-      ],
-
-      en: [
-        ["", "Select"],
-        ["mother", "With mother"],
-        ["father", "With father"],
-        ["dispute", "There is a dispute"],
-        ["unknown", "Not determined"]
-      ]
-    }
-  },
-
-
-  {
-    id:
-      "aliment_needed",
-
-    label: {
-      uz:
-        "Aliment masalasi mavjudmi?",
-
-      ru:
-        "Есть вопрос об алиментах?",
-
-      en:
-        "Is child support an issue?"
-    },
-
-    type:
-      "select",
-
-    options: {
-      uz: [
-        ["", "Tanlang"],
-        ["yes", "Ha"],
-        ["no", "Yo‘q"],
-        ["agreement", "Kelishuv mavjud"]
-      ],
-
-      ru: [
-        ["", "Выберите"],
-        ["yes", "Да"],
-        ["no", "Нет"],
-        ["agreement", "Есть соглашение"]
-      ],
-
-      en: [
-        ["", "Select"],
-        ["yes", "Yes"],
-        ["no", "No"],
-        ["agreement", "There is an agreement"]
-      ]
-    }
-  },
-
-
-  {
-    id:
-      "employment",
-
-    label: {
-      uz:
-        "Aliment to‘lashi mumkin bo‘lgan shaxsning ish joyi qanday?",
-
-      ru:
-        "Где работает лицо, которое может выплачивать алименты?",
-
-      en:
-        "What is the employment status of the potential child-support payer?"
-    },
-
-    type:
-      "text"
-  },
-
-
-  {
-    id:
-      "income",
-
-    label: {
-      uz:
-        "Taxminiy oylik daromadi qancha?",
-
-      ru:
-        "Каков примерный ежемесячный доход?",
-
-      en:
-        "What is the approximate monthly income?"
-    },
-
-    type:
-      "text"
-  },
-
-
-  {
-    id:
-      "property_exists",
-
-    label: {
-      uz:
-        "Nikoh davrida olingan umumiy mol-mulk bormi?",
-
-      ru:
-        "Есть совместное имущество, приобретённое в браке?",
-
-      en:
-        "Is there marital property acquired during the marriage?"
-    },
-
-    type:
-      "select",
-
-    options: {
-      uz: [
-        ["", "Tanlang"],
-        ["yes", "Ha"],
-        ["no", "Yo‘q"],
-        ["unknown", "Aniq emas"]
-      ],
-
-      ru: [
-        ["", "Выберите"],
-        ["yes", "Да"],
-        ["no", "Нет"],
-        ["unknown", "Неизвестно"]
-      ],
-
-      en: [
-        ["", "Select"],
-        ["yes", "Yes"],
-        ["no", "No"],
-        ["unknown", "Unknown"]
-      ]
-    }
-  },
-
-
-  {
-    id:
-      "property_list",
-
-    label: {
-      uz:
-        "Mol-mulklarni sanab chiqing.",
-
-      ru:
-        "Перечислите имущество.",
-
-      en:
-        "List the property."
-    },
-
-    type:
-      "textarea"
-  },
-
-
-  {
-    id:
-      "property_owner",
-
-    label: {
-      uz:
-        "Mol-mulklar kimning nomiga rasmiylashtirilgan?",
-
-      ru:
-        "На чьё имя зарегистрировано имущество?",
-
-      en:
-        "In whose name is the property registered?"
-    },
-
-    type:
-      "text"
-  },
-
-
-  {
-    id:
-      "property_acquisition",
-
-    label: {
-      uz:
-        "Mol-mulk qachon va qanday mablag‘ hisobidan olingan?",
-
-      ru:
-        "Когда и за счёт каких средств было приобретено имущество?",
-
-      en:
-        "When was the property acquired and from what source of funds?"
-    },
-
-    type:
-      "textarea"
-  },
-
-
-  {
-    id:
-      "renovation",
-
-    label: {
-      uz:
-        "Mol-mulkka ta’mirlash yoki katta mablag‘ sarflanganmi?",
-
-      ru:
-        "Проводился ли ремонт или вкладывались значительные средства в имущество?",
-
-      en:
-        "Were renovations or significant funds invested in the property?"
-    },
-
-    type:
-      "textarea"
-  },
-
-
-  {
-    id:
-      "prenup",
-
-    label: {
-      uz:
-        "Nikoh shartnomasi mavjudmi?",
-
-      ru:
-        "Есть брачный договор?",
-
-      en:
-        "Is there a prenuptial agreement?"
-    },
-
-    type:
-      "select",
-
-    options: {
-      uz: [
-        ["", "Tanlang"],
-        ["yes", "Ha"],
-        ["no", "Yo‘q"]
-      ],
-
-      ru: [
-        ["", "Выберите"],
-        ["yes", "Да"],
-        ["no", "Нет"]
-      ],
-
-      en: [
-        ["", "Select"],
-        ["yes", "Yes"],
-        ["no", "No"]
-      ]
-    }
-  },
-
-
-  {
-    id:
-      "prenup_terms",
-
-    label: {
-      uz:
-        "Nikoh shartnomasida qanday muhim shartlar bor?",
-
-      ru:
-        "Какие важные условия предусмотрены брачным договором?",
-
-      en:
-        "What important terms are contained in the prenuptial agreement?"
-    },
-
-    type:
-      "textarea"
-  },
-
-
-  {
-    id:
-      "reconciliation",
-
-    label: {
-      uz:
-        "Yarashish imkoniyati mavjud deb hisoblaysizmi?",
-
-      ru:
-        "Считаете ли вы примирение возможным?",
-
-      en:
-        "Do you believe reconciliation may be possible?"
-    },
-
-    type:
-      "select",
-
-    options: {
-      uz: [
-        ["", "Tanlang"],
-        ["yes", "Ha"],
-        ["no", "Yo‘q"],
-        ["unknown", "Aniq emas"]
-      ],
-
-      ru: [
-        ["", "Выберите"],
-        ["yes", "Да"],
-        ["no", "Нет"],
-        ["unknown", "Неизвестно"]
-      ],
-
-      en: [
-        ["", "Select"],
-        ["yes", "Yes"],
-        ["no", "No"],
-        ["unknown", "Unknown"]
-      ]
-    }
-  }
-
-];
-
-
-// ======================================================
-// SAVOLNOMA JAVOBLARINI AI CONTEXTGA AYLANTIRISH
-// ======================================================
-
-function buildFamilyContext(form = {}) {
-  const lines = [];
-
-  FAMILY_QUESTIONS.forEach(question => {
-    const value = form[question.id];
-
-    if (
-      value !== undefined &&
-      value !== null &&
-      String(value).trim()
-    ) {
-      lines.push(
-        `${question.id}: ${String(value).trim()}`
-      );
-    }
-  });
-
-  return lines.join("\n");
-}
-
-
-// ======================================================
-// HUJJAT TURLARI
-// ======================================================
-
-const DOCUMENT_TYPES = [
-
-  {
-    id:
-      "divorce_claim",
-
-    title: {
-      uz:
-        "Nikohdan ajratish to‘g‘risida da’vo arizasi",
-
-      ru:
-        "Исковое заявление о расторжении брака",
-
-      en:
-        "Statement of claim for divorce"
-    },
-
-    description: {
-      uz:
-        "Nikohni sud tartibida bekor qilish uchun dastlabki hujjat loyihasi.",
-
-      ru:
-        "Первичный проект документа для расторжения брака в судебном порядке.",
-
-      en:
-        "Initial draft for judicial dissolution of marriage."
-    }
-  },
-
-
-  {
-    id:
-      "aliment_claim",
-
-    title: {
-      uz:
-        "Aliment undirish bo‘yicha ariza",
-
-      ru:
-        "Заявление о взыскании алиментов",
-
-      en:
-        "Child-support application"
-    },
-
-    description: {
-      uz:
-        "Voyaga yetmagan farzand ta’minoti bo‘yicha hujjat tayyorlash.",
-
-      ru:
-        "Подготовка документа по содержанию несовершеннолетнего ребёнка.",
-
-      en:
-        "Document preparation concerning support of a minor child."
-    }
-  },
-
-
-  {
-    id:
-      "property_claim",
-
-    title: {
-      uz:
-        "Mol-mulkni bo‘lish bo‘yicha da’vo",
-
-      ru:
-        "Иск о разделе имущества",
-
-      en:
-        "Property division claim"
-    },
-
-    description: {
-      uz:
-        "Nikoh davrida orttirilgan mol-mulk bo‘yicha dastlabki da’vo loyihasi.",
-
-      ru:
-        "Первичный проект иска по разделу имущества супругов.",
-
-      en:
-        "Initial claim draft concerning division of marital property."
-    }
-  }
-
-];
-
-
-// ======================================================
-// PREMIUM DESIGN — ASOSIY CSS BOSHLANISHI
+// PREMIUM GLOBAL CSS
 // ======================================================
 
 const CSS = `
 
 :root{
-  --navy:#06111f;
-  --navy2:#0a223a;
-  --navy3:#0d3150;
-
+  --navy:#071522;
+  --navy2:#0b2946;
   --gold:#c9a86a;
-  --gold2:#e6c98e;
-  --gold3:#a67d42;
-  --goldSoft:#fff7e8;
-
-  --ink:#12263a;
-  --muted:#6f7f91;
-
-  --bg:#f4f6f8;
-  --surface:#ffffff;
-
-  --line:#e2e7eb;
-  --line2:#d5dde4;
-
-  --shadow:
-    0 18px 50px rgba(6,17,31,.08);
-
-  --shadowStrong:
-    0 30px 80px rgba(6,17,31,.13);
+  --gold2:#a77b3c;
+  --paper:#f4f6f8;
+  --white:#ffffff;
+  --text:#263d55;
+  --muted:#748395;
+  --line:#dfe5ea;
+  --success:#2f7d65;
+  --danger:#a74444;
+  --shadow:0 18px 50px rgba(6,17,31,.08);
 }
-
 
 *{
   box-sizing:border-box;
 }
 
-
 html{
   scroll-behavior:smooth;
 }
 
-
 body{
   margin:0;
-
-  color:var(--ink);
-
-  background:
-    #f4f6f8;
-
+  color:var(--text);
+  background:var(--paper);
   font-family:
     Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
     Arial,
+    Helvetica,
     sans-serif;
-
-  -webkit-font-smoothing:
-    antialiased;
 }
-
 
 a{
   color:inherit;
   text-decoration:none;
 }
-
 
 button,
 input,
@@ -1409,344 +722,275 @@ select{
   font:inherit;
 }
 
-
-button,
-a{
-  -webkit-tap-highlight-color:
-    transparent;
-}
-
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-.nav{
-  position:sticky;
-
-  top:0;
-
-  z-index:1000;
-
-  height:78px;
-
-  background:
-    rgba(255,255,255,.94);
-
-  backdrop-filter:
-    blur(18px);
-
-  border-bottom:
-    1px solid rgba(213,221,228,.85);
-
-  box-shadow:
-    0 3px 20px rgba(6,17,31,.025);
-}
-
-
-.navin{
-  width:min(1320px,94%);
-
-  height:100%;
-
-  margin:auto;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:
-    space-between;
-
-  gap:25px;
-}
-
-
-.brand{
-  display:flex;
-
-  align-items:center;
-
-  gap:12px;
-}
-
-
-.brandMark{
-  position:relative;
-
-  width:42px;
-  height:42px;
-
-  display:grid;
-
-  place-items:center;
-
-  overflow:hidden;
-
-  border-radius:11px;
-
-  color:var(--gold2);
-
-  background:
-    linear-gradient(
-      145deg,
-      #06111f,
-      #0d3150
-    );
-
-  border:
-    1px solid rgba(201,168,106,.25);
-
-  box-shadow:
-    0 8px 25px rgba(6,17,31,.12);
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size:21px;
-}
-
-
-.brandMark::after{
-  content:"";
-
-  position:absolute;
-
-  width:25px;
-  height:25px;
-
-  right:-12px;
-  bottom:-12px;
-
-  border-radius:50%;
-
-  background:
-    rgba(201,168,106,.22);
-}
-
-
-.brandText{
-  display:flex;
-
-  flex-direction:column;
-}
-
-
-.brandText strong{
-  color:var(--navy);
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size:20px;
-
-  font-weight:600;
-
-  letter-spacing:-.4px;
-}
-
-
-.brandText small{
-  margin-top:2px;
-
-  color:#8c98a5;
-
-  font-size:8px;
-
-  font-weight:800;
-
-  letter-spacing:1.6px;
-}
-
-
-.navlinks{
-  display:flex;
-
-  align-items:center;
-
-  gap:4px;
-}
-
-
-.navlinks a{
-  position:relative;
-
-  padding:
-    10px 12px;
-
-  color:#526276;
-
-  border-radius:8px;
-
-  font-size:11px;
-
-  font-weight:700;
-
-  transition:.18s ease;
-}
-
-
-.navlinks a:hover{
-  color:var(--navy);
-
-  background:#f1f4f6;
-}
-
-
-.navlinks a::after{
-  content:"";
-
-  position:absolute;
-
-  left:12px;
-  right:12px;
-  bottom:4px;
-
-  height:1px;
-
-  transform:
-    scaleX(0);
-
-  background:
-    var(--gold);
-
-  transition:
-    transform .18s ease;
-}
-
-
-.navlinks a:hover::after{
-  transform:
-    scaleX(1);
-}
-
-
-.navRight{
-  display:flex;
-
-  align-items:center;
-
-  gap:10px;
-}
-
-
-.languages{
-  display:flex;
-
-  padding:3px;
-
-  border:
-    1px solid var(--line);
-
-  border-radius:9px;
-
-  background:#f7f9fa;
-}
-
-
-.languages a{
-  padding:
-    7px 9px;
-
-  color:#7a8795;
-
-  border-radius:6px;
-
-  font-size:9px;
-
-  font-weight:850;
-
-  transition:.18s ease;
-}
-
-
-.languages a:hover{
-  color:var(--navy);
-}
-
-
-.languages a.active{
-  color:#fff;
-
-  background:
-    linear-gradient(
-      145deg,
-      #06111f,
-      #0b2946
-    );
-
-  box-shadow:
-    0 4px 12px rgba(6,17,31,.12);
-}
-
-
-.mobileMenu{
-  display:none;
-
-  width:40px;
-  height:40px;
-
-  border:
-    1px solid var(--line);
-
-  border-radius:9px;
-
-  background:#fff;
-
-  color:var(--navy);
-
+button{
   cursor:pointer;
 }
 
-
-/* =====================================================
-   GENERAL
-===================================================== */
-
-.container{
-  width:min(1260px,92%);
-
-  margin:auto;
+img{
+  max-width:100%;
 }
 
+.container{
+  width:min(1440px,94%);
+  margin:0 auto;
+}
+
+.nav{
+  position:sticky;
+  top:0;
+  z-index:1000;
+
+  background:
+    rgba(6,17,31,.97);
+
+  border-bottom:
+    1px solid rgba(201,168,106,.18);
+
+  backdrop-filter:
+    blur(18px);
+}
+
+.navin{
+  width:min(1480px,96%);
+  min-height:72px;
+  margin:0 auto;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  flex:0 0 auto;
+}
+
+.brandMark{
+  width:38px;
+  height:38px;
+
+  display:grid;
+  place-items:center;
+
+  color:#06111f;
+
+  background:
+    linear-gradient(
+      145deg,
+      #efd69e,
+      #b88a47
+    );
+
+  border-radius:9px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.5);
+
+  font-family:Georgia,serif;
+  font-size:19px;
+}
+
+.brandText strong{
+  display:block;
+  color:#fff;
+  font-family:Georgia,serif;
+  font-size:17px;
+  font-weight:500;
+}
+
+.brandText small{
+  display:block;
+  margin-top:2px;
+  color:#6f8296;
+  font-size:7px;
+  font-weight:800;
+  letter-spacing:1.5px;
+}
+
+.navlinks{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  flex:1;
+}
+
+.navlinks a{
+  position:relative;
+  padding:27px 10px 24px;
+  color:#a9b5c1;
+  font-size:9px;
+  font-weight:700;
+  transition:.18s ease;
+}
+
+.navlinks a:hover{
+  color:#fff;
+}
+
+.navlinks a.active{
+  color:#fff;
+}
+
+.navlinks a.active::after{
+  content:"";
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:0;
+  height:2px;
+  background:var(--gold);
+}
+
+.navRight{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex:0 0 auto;
+}
+
+.languages{
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.languages a{
+  min-width:31px;
+  height:28px;
+
+  display:grid;
+  place-items:center;
+
+  color:#718397;
+
+  border:
+    1px solid rgba(255,255,255,.08);
+
+  border-radius:5px;
+
+  font-size:7px;
+  font-weight:900;
+
+  transition:.18s ease;
+}
+
+.languages a:hover,
+.languages a.active{
+  color:#071522;
+  background:var(--gold);
+  border-color:var(--gold);
+}
+
+.mobileMenu{
+  width:35px;
+  height:35px;
+  display:none;
+  color:#d6dde4;
+  background:transparent;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:7px;
+}
+
+.hero{
+  position:relative;
+  overflow:hidden;
+
+  background:
+    radial-gradient(
+      circle at 82% 25%,
+      rgba(201,168,106,.16),
+      transparent 23%
+    ),
+    radial-gradient(
+      circle at 10% 90%,
+      rgba(29,76,119,.14),
+      transparent 28%
+    ),
+    linear-gradient(
+      135deg,
+      #06111f 0%,
+      #0a2036 58%,
+      #071522 100%
+    );
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.018) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    46px 46px;
+
+  pointer-events:none;
+}
+
+.heroInner{
+  position:relative;
+  z-index:2;
+
+  min-height:610px;
+
+  display:grid;
+
+  grid-template-columns:
+    1.12fr .88fr;
+
+  align-items:center;
+
+  gap:70px;
+
+  padding:
+    65px 0;
+}
 
 .eyebrow{
   display:inline-flex;
 
   align-items:center;
 
-  gap:7px;
+  gap:8px;
 
-  padding:
-    8px 11px;
+  color:#caa968;
 
-  color:#88662f;
-
-  background:
-    var(--goldSoft);
-
-  border:
-    1px solid #ead9b9;
-
-  border-radius:7px;
-
-  font-size:9px;
+  font-size:8px;
 
   font-weight:900;
 
-  letter-spacing:1.3px;
+  letter-spacing:1.8px;
 }
 
+.eyebrow::before{
+  content:"";
 
-.sectionTitle{
+  width:27px;
+  height:1px;
+
+  background:#caa968;
+}
+
+.hero h1{
+  max-width:780px;
+
   margin:
-    9px 0 0;
+    15px 0 18px;
 
-  color:var(--navy);
+  color:#fff;
 
   font-family:
     Georgia,
@@ -1754,48 +998,52 @@ a{
     serif;
 
   font-size:
-    clamp(32px,4vw,44px);
+    clamp(47px,5.3vw,78px);
 
-  font-weight:500;
+  font-weight:400;
 
-  letter-spacing:-1.1px;
+  line-height:.99;
+
+  letter-spacing:-2.8px;
 }
 
+.hero h1 span{
+  display:block;
 
-.sectionText{
-  max-width:570px;
+  margin-top:8px;
 
-  color:var(--muted);
+  color:#e3c486;
+
+  font-style:italic;
+}
+
+.heroDescription{
+  max-width:680px;
+
+  margin:0;
+
+  color:#9dacbb;
 
   font-size:13px;
 
-  line-height:1.75;
+  line-height:1.8;
 }
 
-
-.sectionHead{
+.heroActions{
   display:flex;
 
-  align-items:flex-end;
+  flex-wrap:wrap;
 
-  justify-content:
-    space-between;
+  gap:10px;
 
-  gap:30px;
-
-  margin-bottom:32px;
+  margin-top:29px;
 }
 
-
-/* =====================================================
-   BUTTONS
-===================================================== */
-
 .btn{
-  min-height:49px;
+  min-height:44px;
 
   padding:
-    12px 20px;
+    11px 17px;
 
   display:inline-flex;
 
@@ -1805,297 +1053,130 @@ a{
 
   gap:8px;
 
-  border:0;
+  border-radius:7px;
 
-  border-radius:10px;
+  border:
+    1px solid transparent;
 
-  cursor:pointer;
+  font-size:9px;
 
-  font-size:11px;
+  font-weight:850;
 
-  font-weight:800;
+  letter-spacing:.15px;
 
   transition:
     transform .18s ease,
     box-shadow .18s ease,
-    background .18s ease;
+    border-color .18s ease;
 }
-
 
 .btn:hover{
   transform:
-    translateY(-2px);
+    translateY(-1px);
 }
 
-
 .btnPrimary{
-  color:#fff;
+  color:#071522;
 
   background:
     linear-gradient(
       145deg,
-      #06111f,
-      #0b2946
+      #e5c786,
+      #b88946
     );
 
-  border:
-    1px solid rgba(201,168,106,.16);
+  border-color:
+    rgba(255,255,255,.15);
 
   box-shadow:
-    0 12px 30px rgba(6,17,31,.16);
+    0 10px 24px rgba(184,137,70,.18);
 }
-
-
-.btnPrimary:hover{
-  box-shadow:
-    0 17px 35px rgba(6,17,31,.21);
-}
-
 
 .btnOutline{
-  color:var(--navy);
+  color:#c9d2dc;
 
-  background:#fff;
+  background:
+    rgba(255,255,255,.025);
 
-  border:
-    1px solid var(--line2);
+  border-color:
+    rgba(255,255,255,.14);
 }
-
 
 .btnOutline:hover{
   border-color:
-    rgba(201,168,106,.6);
-
-  box-shadow:
-    0 10px 25px rgba(6,17,31,.07);
+    rgba(201,168,106,.5);
 }
-
 
 .btnGold{
-  color:#071728;
-
-  background:
-    linear-gradient(
-      145deg,
-      #efd69e,
-      #c09551
-    );
-
-  border:
-    1px solid rgba(166,125,66,.35);
-
-  box-shadow:
-    0 10px 25px rgba(201,168,106,.18);
+  color:#071522;
+  background:#d8b66f;
 }
-
-
-/* =====================================================
-   HERO
-===================================================== */
-
-.hero{
-  position:relative;
-
-  overflow:hidden;
-
-  background:
-    radial-gradient(
-      circle at 85% 15%,
-      rgba(201,168,106,.09),
-      transparent 28%
-    ),
-    linear-gradient(
-      180deg,
-      #ffffff 0%,
-      #f5f7f9 100%
-    );
-}
-
-
-.hero::before{
-  content:"";
-
-  position:absolute;
-
-  width:620px;
-  height:620px;
-
-  top:-340px;
-  right:-180px;
-
-  border:
-    1px solid rgba(184,145,80,.14);
-
-  border-radius:50%;
-}
-
-
-.hero::after{
-  content:"";
-
-  position:absolute;
-
-  width:420px;
-  height:420px;
-
-  top:-245px;
-  right:-80px;
-
-  border:
-    1px solid rgba(184,145,80,.09);
-
-  border-radius:50%;
-}
-
-
-.heroInner{
-  min-height:650px;
-
-  display:grid;
-
-  grid-template-columns:
-    1.08fr .92fr;
-
-  align-items:center;
-
-  gap:80px;
-
-  padding:
-    70px 0 80px;
-}
-
-
-.heroCopy{
-  position:relative;
-
-  z-index:2;
-}
-
-
-.hero h1{
-  max-width:760px;
-
-  margin:
-    22px 0 22px;
-
-  color:var(--navy);
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size:
-    clamp(46px,5.5vw,70px);
-
-  line-height:1.02;
-
-  font-weight:500;
-
-  letter-spacing:-2.4px;
-}
-
-
-.hero h1 span{
-  display:block;
-
-  margin-top:7px;
-
-  color:#315d8b;
-}
-
-
-.heroDescription{
-  max-width:680px;
-
-  margin:0;
-
-  color:#68798c;
-
-  font-size:15px;
-
-  line-height:1.85;
-}
-
-
-.heroActions{
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:11px;
-
-  margin-top:31px;
-}
-
 
 .heroTrust{
   display:flex;
 
   flex-wrap:wrap;
 
-  gap:19px;
+  gap:18px;
 
-  margin-top:32px;
+  margin-top:28px;
+
+  color:#718397;
+
+  font-size:8px;
+
+  font-weight:700;
 }
-
 
 .heroTrust span{
   display:flex;
 
   align-items:center;
 
-  gap:7px;
-
-  color:#748295;
-
-  font-size:10px;
-
-  font-weight:700;
+  gap:6px;
 }
 
-
 .heroTrust i{
-  width:20px;
-  height:20px;
+  width:15px;
+  height:15px;
 
   display:grid;
 
   place-items:center;
 
-  color:#97743d;
+  color:#d7b66f;
 
-  background:#faf5eb;
+  border:
+    1px solid rgba(201,168,106,.32);
 
   border-radius:50%;
+
+  font-size:7px;
 
   font-style:normal;
 }
 
-
-/* =====================================================
-   LEGAL ROADMAP
-===================================================== */
-
 .roadmap{
   position:relative;
 
-  z-index:2;
-
-  padding:30px;
+  padding:
+    28px;
 
   background:
-    rgba(255,255,255,.96);
+    linear-gradient(
+      160deg,
+      rgba(255,255,255,.97),
+      rgba(245,248,250,.94)
+    );
 
   border:
-    1px solid var(--line);
+    1px solid rgba(255,255,255,.65);
 
   border-radius:18px;
 
   box-shadow:
-    var(--shadowStrong);
+    0 30px 70px rgba(0,0,0,.25);
 }
-
 
 .roadmap::before{
   content:"";
@@ -2117,7 +1198,6 @@ a{
     );
 }
 
-
 .roadmapHeader{
   display:flex;
 
@@ -2134,7 +1214,6 @@ a{
     1px solid #e9edf1;
 }
 
-
 .roadmapHeader small{
   display:block;
 
@@ -2149,7 +1228,6 @@ a{
   letter-spacing:1.3px;
 }
 
-
 .roadmapHeader strong{
   color:var(--navy);
 
@@ -2161,7 +1239,6 @@ a{
 
   font-weight:500;
 }
-
 
 .roadmapBadge{
   padding:
@@ -2177,7 +1254,6 @@ a{
 
   font-weight:850;
 }
-
 
 .roadStep{
   position:relative;
@@ -2196,13 +1272,11 @@ a{
     1px solid #edf0f3;
 }
 
-
 .roadStep:last-child{
   padding-bottom:0;
 
   border-bottom:0;
 }
-
 
 .roadNumber{
   width:38px;
@@ -2233,7 +1307,6 @@ a{
   font-size:11px;
 }
 
-
 .roadStep strong{
   display:block;
 
@@ -2243,7 +1316,6 @@ a{
 
   font-size:12px;
 }
-
 
 .roadStep p{
   margin:0;
@@ -2264,7 +1336,6 @@ a{
   padding:
     80px 0 35px;
 }
-
 
 .quickBox{
   position:relative;
@@ -2304,7 +1375,6 @@ a{
     0 22px 55px rgba(6,17,31,.15);
 }
 
-
 .quickBox small{
   color:#d7b66f;
 
@@ -2314,7 +1384,6 @@ a{
 
   letter-spacing:1.3px;
 }
-
 
 .quickBox h2{
   margin:
@@ -2330,7 +1399,6 @@ a{
 
   font-weight:500;
 }
-
 
 .quickBox p{
   max-width:690px;
@@ -2354,7 +1422,6 @@ a{
     75px 0 85px;
 }
 
-
 .serviceGrid{
   display:grid;
 
@@ -2363,7 +1430,6 @@ a{
 
   gap:15px;
 }
-
 
 .serviceCard{
   position:relative;
@@ -2390,7 +1456,6 @@ a{
     box-shadow .22s ease;
 }
 
-
 .serviceCard:hover{
   transform:
     translateY(-5px);
@@ -2401,7 +1466,6 @@ a{
   box-shadow:
     0 22px 48px rgba(6,17,31,.09);
 }
-
 
 .serviceNo{
   position:absolute;
@@ -2418,7 +1482,6 @@ a{
 
   font-size:35px;
 }
-
 
 .serviceIcon{
   width:46px;
@@ -2451,7 +1514,6 @@ a{
   font-size:18px;
 }
 
-
 .serviceCard h3{
   margin:
     0 0 10px;
@@ -2467,7 +1529,6 @@ a{
   font-weight:600;
 }
 
-
 .serviceCard p{
   margin:0;
 
@@ -2477,7 +1538,6 @@ a{
 
   line-height:1.7;
 }
-
 
 .serviceArrow{
   position:absolute;
@@ -2508,7 +1568,6 @@ a{
     1px solid #e0e5e9;
 }
 
-
 .coreGrid{
   display:grid;
 
@@ -2527,7 +1586,6 @@ a{
   border-radius:14px;
 }
 
-
 .coreItem{
   min-height:205px;
 
@@ -2535,7 +1593,6 @@ a{
 
   background:#fff;
 }
-
 
 .coreItem span{
   display:block;
@@ -2551,7 +1608,6 @@ a{
   font-size:21px;
 }
 
-
 .coreItem strong{
   display:block;
 
@@ -2561,7 +1617,6 @@ a{
 
   font-size:12px;
 }
-
 
 .coreItem p{
   margin:0;
@@ -2583,7 +1638,6 @@ a{
     85px 0;
 }
 
-
 .sourcesGrid{
   display:grid;
 
@@ -2602,263 +1656,22 @@ a{
 const CSS_APP = `
 
 /* =====================================================
-   SOURCE CARDS
+   APP SHELL
 ===================================================== */
-
-.sourceCard{
-  position:relative;
-
-  min-height:185px;
-
-  padding:25px;
-
-  overflow:hidden;
-
-  background:#fff;
-
-  border:1px solid var(--line);
-
-  border-radius:14px;
-
-  box-shadow:
-    0 10px 30px rgba(6,17,31,.035);
-
-  transition:
-    transform .2s ease,
-    border-color .2s ease,
-    box-shadow .2s ease;
-}
-
-.sourceCard:hover{
-  transform:translateY(-4px);
-
-  border-color:
-    rgba(201,168,106,.5);
-
-  box-shadow:
-    0 20px 45px rgba(6,17,31,.08);
-}
-
-.sourceCard::before{
-  content:"";
-
-  position:absolute;
-
-  top:0;
-  left:0;
-
-  width:100%;
-  height:2px;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      var(--gold),
-      transparent
-    );
-}
-
-.sourceTop{
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:15px;
-
-  margin-bottom:19px;
-}
-
-.sourceIcon{
-  width:42px;
-  height:42px;
-
-  display:grid;
-
-  place-items:center;
-
-  color:#9b763d;
-
-  background:#fff8ec;
-
-  border:1px solid #ead9b8;
-
-  border-radius:10px;
-
-  font-family:Georgia,serif;
-
-  font-size:17px;
-}
-
-.sourceExternal{
-  color:#a5afb9;
-
-  font-size:16px;
-}
-
-.sourceCard h3{
-  margin:0 0 8px;
-
-  color:var(--navy);
-
-  font-family:Georgia,serif;
-
-  font-size:18px;
-
-  font-weight:600;
-}
-
-.sourceCard p{
-  margin:0;
-
-  color:#7a8998;
-
-  font-size:11px;
-
-  line-height:1.7;
-}
-
-
-/* =====================================================
-   FOOTER
-===================================================== */
-
-.footer{
-  padding:
-    50px 0 25px;
-
-  color:#9eacba;
-
-  background:
-    linear-gradient(
-      135deg,
-      #06111f,
-      #081c30
-    );
-
-  border-top:
-    1px solid rgba(201,168,106,.16);
-}
-
-.footerGrid{
-  display:grid;
-
-  grid-template-columns:
-    1.4fr 1fr 1fr;
-
-  gap:50px;
-
-  padding-bottom:40px;
-}
-
-.footerBrand{
-  max-width:420px;
-}
-
-.footerBrand h3{
-  margin:
-    16px 0 9px;
-
-  color:#fff;
-
-  font-family:Georgia,serif;
-
-  font-size:23px;
-
-  font-weight:500;
-}
-
-.footerBrand p{
-  margin:0;
-
-  color:#8191a2;
-
-  font-size:11px;
-
-  line-height:1.75;
-}
-
-.footerTitle{
-  margin-bottom:15px;
-
-  color:#d9bd83;
-
-  font-size:9px;
-
-  font-weight:900;
-
-  letter-spacing:1.4px;
-}
-
-.footerLinks{
-  display:grid;
-
-  gap:9px;
-}
-
-.footerLinks a{
-  color:#92a0ae;
-
-  font-size:11px;
-
-  transition:.18s ease;
-}
-
-.footerLinks a:hover{
-  color:#fff;
-}
-
-.footerBottom{
-  padding-top:20px;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:20px;
-
-  border-top:
-    1px solid rgba(255,255,255,.07);
-
-  color:#657587;
-
-  font-size:9px;
-}
-
-
-/* =====================================================
-   APP LAYOUT
-===================================================== */
-
-.appPage{
-  min-height:100vh;
-
-  background:
-    linear-gradient(
-      180deg,
-      #f5f7f9 0%,
-      #eef2f5 100%
-    );
-}
 
 .appLayout{
-  width:min(1480px,96%);
-
-  margin:
-    24px auto 50px;
+  width:min(1500px,96%);
+  margin:0 auto;
 
   display:grid;
 
   grid-template-columns:
-    255px minmax(0,1fr);
+    245px minmax(0,1fr);
 
-  gap:22px;
+  gap:18px;
 
-  align-items:start;
+  padding:
+    18px 0 45px;
 }
 
 
@@ -2869,7 +1682,14 @@ const CSS_APP = `
 .sidebar{
   position:sticky;
 
-  top:100px;
+  top:90px;
+
+  height:
+    calc(100vh - 108px);
+
+  display:flex;
+
+  flex-direction:column;
 
   overflow:hidden;
 
@@ -2877,66 +1697,43 @@ const CSS_APP = `
     linear-gradient(
       180deg,
       #071522,
-      #081c30
+      #0a2138
     );
 
   border:
-    1px solid rgba(201,168,106,.15);
+    1px solid rgba(201,168,106,.12);
 
-  border-radius:17px;
+  border-radius:15px;
 
   box-shadow:
-    0 20px 55px rgba(6,17,31,.14);
+    0 18px 45px rgba(6,17,31,.12);
+}
+
+.sidebarTop{
+  padding:
+    21px 17px 16px;
+
+  border-bottom:
+    1px solid rgba(255,255,255,.06);
 }
 
 .sidebarBrand{
-  position:relative;
-
-  padding:
-    25px 22px 22px;
-
-  border-bottom:
-    1px solid rgba(255,255,255,.07);
-}
-
-.sidebarBrand::after{
-  content:"";
-
-  position:absolute;
-
-  left:22px;
-  right:22px;
-  bottom:-1px;
-
-  height:1px;
-
-  background:
-    linear-gradient(
-      90deg,
-      var(--gold),
-      transparent
-    );
-}
-
-.sidebarBrandTop{
   display:flex;
 
   align-items:center;
 
-  gap:11px;
+  gap:10px;
 }
 
 .sidebarBrandMark{
-  width:38px;
-  height:38px;
+  width:36px;
+  height:36px;
 
   display:grid;
 
   place-items:center;
 
   flex:0 0 auto;
-
-  border-radius:10px;
 
   color:#071522;
 
@@ -2947,9 +1744,13 @@ const CSS_APP = `
       #b88a47
     );
 
-  font-family:Georgia,serif;
+  border-radius:9px;
 
-  font-size:18px;
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:17px;
 }
 
 .sidebarBrand strong{
@@ -2957,9 +1758,11 @@ const CSS_APP = `
 
   color:#fff;
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
-  font-size:17px;
+  font-size:15px;
 
   font-weight:500;
 }
@@ -2967,37 +1770,40 @@ const CSS_APP = `
 .sidebarBrand small{
   display:block;
 
-  margin-top:3px;
+  margin-top:2px;
 
-  color:#718398;
+  color:#6e8297;
 
   font-size:7px;
 
   font-weight:850;
 
-  letter-spacing:1.3px;
+  letter-spacing:1.2px;
 }
 
-.sidebarMenu{
-  padding:15px 10px;
+.sidebarNav{
+  flex:1;
+
+  padding:
+    15px 11px;
+
+  overflow-y:auto;
 }
 
 .sidebarLabel{
-  padding:
-    10px 12px 7px;
+  margin:
+    8px 10px 9px;
 
-  color:#66798e;
+  color:#526a82;
 
   font-size:7px;
 
   font-weight:900;
 
-  letter-spacing:1.6px;
+  letter-spacing:1.3px;
 }
 
 .sideLink{
-  position:relative;
-
   display:flex;
 
   align-items:center;
@@ -3278,7 +2084,9 @@ const CSS_APP = `
   color:
     rgba(201,168,106,.055);
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size:125px;
 }
@@ -3310,7 +2118,9 @@ const CSS_APP = `
 
   color:#fff;
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size:
     clamp(29px,4vw,41px);
@@ -3367,7 +2177,9 @@ const CSS_APP = `
 
   color:var(--navy);
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size:21px;
 
@@ -3628,7 +2440,9 @@ const CSS_APP = `
 
   border-radius:10px;
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size:17px;
 }
@@ -3655,7 +2469,9 @@ const CSS_APP = `
 .aiIdentity strong{
   display:block;
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size:16px;
 
@@ -3720,7 +2536,9 @@ const CSS_APP = `
 
   color:var(--navy);
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size:25px;
 
@@ -3973,9 +2791,65 @@ const CSS_APP = `
 }
 
 .questionCard textarea{
-  min-height:100px;
+  min-height:105px;
 
   resize:vertical;
+}
+
+.questionCard input:focus,
+.questionCard select:focus,
+.questionCard textarea:focus{
+  background:#fff;
+
+  border-color:
+    rgba(201,168,106,.65);
+
+  box-shadow:
+    0 0 0 3px rgba(201,168,106,.08);
+}
+
+
+/* =====================================================
+   RESULT / ANALYSIS
+===================================================== */
+
+.analysisBox{
+  padding:25px;
+
+  background:#fff;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:14px;
+
+  box-shadow:
+    0 14px 35px rgba(6,17,31,.05);
+}
+
+.analysisBox h2{
+  margin:
+    0 0 15px;
+
+  color:var(--navy);
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:25px;
+
+  font-weight:500;
+}
+
+.analysisContent{
+  color:#465a70;
+
+  font-size:12px;
+
+  line-height:1.8;
+
+  white-space:pre-wrap;
 }
 
 
@@ -3987,29 +2861,27 @@ const CSS_APP = `
   display:grid;
 
   grid-template-columns:
-    repeat(3,minmax(0,1fr));
+    repeat(3,1fr);
 
-  gap:14px;
+  gap:15px;
 }
 
 .documentCard{
   position:relative;
 
-  min-height:215px;
+  min-height:220px;
 
-  padding:22px;
-
-  overflow:hidden;
+  padding:24px;
 
   background:#fff;
 
   border:
     1px solid var(--line);
 
-  border-radius:13px;
+  border-radius:14px;
 
   box-shadow:
-    0 10px 30px rgba(6,17,31,.035);
+    0 10px 30px rgba(6,17,31,.04);
 
   transition:.2s ease;
 }
@@ -4019,132 +2891,422 @@ const CSS_APP = `
     translateY(-4px);
 
   border-color:
-    rgba(201,168,106,.48);
+    rgba(201,168,106,.5);
 
   box-shadow:
     0 20px 45px rgba(6,17,31,.08);
 }
 
-.documentCardIcon{
-  width:42px;
-  height:42px;
-
-  margin-bottom:21px;
-
-  display:grid;
-
-  place-items:center;
-
-  color:#9c773e;
-
-  background:#fff8eb;
-
-  border:
-    1px solid #ead9b8;
-
-  border-radius:9px;
-
-  font-family:Georgia,serif;
-
-  font-size:17px;
-}
-
 .documentCard h3{
   margin:
-    0 0 8px;
+    0 0 10px;
 
   color:var(--navy);
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
-  font-size:17px;
-
-  font-weight:550;
+  font-size:19px;
 }
 
 .documentCard p{
   margin:0;
 
-  color:#7b8997;
+  color:#788696;
 
-  font-size:10px;
+  font-size:11px;
 
   line-height:1.7;
 }
 
-.documentCard .serviceArrow{
-  bottom:17px;
-}
-
 
 /* =====================================================
-   CALCULATOR
+   COURT PAGE
 ===================================================== */
 
-.calculatorGrid{
-  display:grid;
+.courtPage{
+  min-height:100vh;
 
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
-
-  gap:15px;
+  background:
+    linear-gradient(
+      180deg,
+      #f6f8fa,
+      #eef2f5
+    );
 }
 
-.calcCard{
-  padding:23px;
+.courtHero{
+  padding:
+    55px 0 35px;
+}
+
+.courtHero h1{
+  margin:
+    10px 0 12px;
+
+  color:var(--navy);
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(35px,4vw,50px);
+
+  font-weight:500;
+}
+
+.courtHero p{
+  max-width:720px;
+
+  margin:0;
+
+  color:#718093;
+
+  font-size:12px;
+
+  line-height:1.8;
+}
+
+.courtTools{
+  display:flex;
+
+  flex-wrap:wrap;
+
+  align-items:center;
+
+  justify-content:
+    space-between;
+
+  gap:15px;
+
+  margin:
+    20px 0 25px;
+}
+
+.courtSearch{
+  flex:1;
+
+  min-width:260px;
+
+  position:relative;
+}
+
+.courtSearch input{
+  width:100%;
+
+  height:48px;
+
+  padding:
+    0 16px;
+
+  color:#263d55;
 
   background:#fff;
 
   border:
-    1px solid var(--line);
+    1px solid #dce3e8;
 
-  border-radius:13px;
+  border-radius:10px;
+
+  outline:0;
 
   box-shadow:
-    0 10px 30px rgba(6,17,31,.035);
+    0 8px 25px rgba(6,17,31,.035);
 }
 
-.calcCard h3{
-  margin:
-    0 0 7px;
+.courtSearch input:focus{
+  border-color:
+    rgba(201,168,106,.7);
 
+  box-shadow:
+    0 0 0 3px rgba(201,168,106,.08);
+}
+
+.courtFilters{
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:7px;
+}
+
+.courtFilter{
+  padding:
+    9px 12px;
+
+  color:#667789;
+
+  background:#fff;
+
+  border:
+    1px solid #dde4e9;
+
+  border-radius:8px;
+
+  cursor:pointer;
+
+  font-size:9px;
+
+  font-weight:800;
+}
+
+.courtFilter:hover{
   color:var(--navy);
 
-  font-family:Georgia,serif;
-
-  font-size:19px;
-
-  font-weight:550;
+  border-color:
+    rgba(201,168,106,.5);
 }
 
-.calcCard p{
-  margin:
-    0 0 19px;
+.courtFilter.active{
+  color:#fff;
 
-  color:#7b8998;
+  background:
+    linear-gradient(
+      145deg,
+      #06111f,
+      #0b2946
+    );
+
+  border-color:#06111f;
+}
+
+.courtGrid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,minmax(0,1fr));
+
+  gap:16px;
+
+  padding-bottom:60px;
+}
+
+.courtCard{
+  position:relative;
+
+  display:flex;
+
+  flex-direction:column;
+
+  min-height:300px;
+
+  padding:22px;
+
+  overflow:hidden;
+
+  background:#fff;
+
+  border:
+    1px solid #dfe5ea;
+
+  border-radius:14px;
+
+  box-shadow:
+    0 10px 30px rgba(6,17,31,.04);
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.courtCard:hover{
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(201,168,106,.55);
+
+  box-shadow:
+    0 20px 45px rgba(6,17,31,.09);
+}
+
+.courtCard::before{
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:0;
+
+  width:100%;
+  height:2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--gold),
+      transparent
+    );
+}
+
+.courtCardTop{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:
+    space-between;
+
+  gap:10px;
+
+  margin-bottom:15px;
+}
+
+.courtType{
+  display:inline-flex;
+
+  padding:
+    6px 8px;
+
+  color:#87652e;
+
+  background:#fff7e8;
+
+  border:
+    1px solid #ead9b9;
+
+  border-radius:6px;
+
+  font-size:8px;
+
+  font-weight:900;
+}
+
+.courtDistrict{
+  color:#8290a0;
+
+  font-size:8px;
+
+  font-weight:800;
+}
+
+.courtCard h3{
+  margin:
+    0 0 14px;
+
+  color:#142b43;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:18px;
+
+  font-weight:600;
+
+  line-height:1.35;
+}
+
+.courtCard p{
+  margin:
+    0 0 8px;
+
+  color:#69798a;
 
   font-size:10px;
 
   line-height:1.65;
 }
 
-.calcResult{
-  margin-top:15px;
+.courtCard p strong{
+  color:#3d5268;
+}
 
-  padding:16px;
+.courtCard p a{
+  color:#315d8b;
 
-  color:#29415a;
+  font-weight:700;
+}
 
-  background:#f5f8fa;
+.courtCardActions{
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:8px;
+
+  margin-top:auto;
+
+  padding-top:17px;
+}
+
+.courtMapButton{
+  min-height:38px;
+
+  padding:
+    9px 11px;
+
+  display:inline-flex;
+
+  align-items:center;
+
+  justify-content:center;
 
   border:
-    1px solid #e1e7eb;
+    1px solid #dce3e8;
 
-  border-radius:9px;
+  border-radius:8px;
 
-  font-size:11px;
+  color:#294966;
 
-  line-height:1.65;
+  background:#fff;
+
+  cursor:pointer;
+
+  font-size:9px;
+
+  font-weight:800;
+}
+
+.courtMapButton:hover{
+  border-color:
+    rgba(201,168,106,.65);
+
+  background:#fffaf1;
+}
+
+.courtMapButton.primary{
+  color:#fff;
+
+  background:
+    linear-gradient(
+      145deg,
+      #06111f,
+      #0b2946
+    );
+
+  border-color:#06111f;
+}
+
+.courtCounter{
+  margin-bottom:15px;
+
+  color:#778697;
+
+  font-size:10px;
+
+  font-weight:700;
+}
+
+.courtEmpty{
+  display:none;
+
+  padding:35px;
+
+  text-align:center;
+
+  color:#7a8998;
+
+  background:#fff;
+
+  border:
+    1px dashed #d6dde3;
+
+  border-radius:13px;
 }
 
 
@@ -4152,7 +3314,27 @@ const CSS_APP = `
    RESPONSIVE
 ===================================================== */
 
-@media(max-width:1150px){
+@media(max-width:1100px){
+
+  .serviceGrid,
+  .coreGrid{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+  .courtGrid{
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
+  }
+
+  .documentGrid{
+    grid-template-columns:
+      repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:850px){
 
   .navlinks{
     display:none;
@@ -4160,131 +3342,43 @@ const CSS_APP = `
 
   .mobileMenu{
     display:grid;
+
     place-items:center;
   }
 
   .heroInner{
-    grid-template-columns:1fr;
-
-    gap:45px;
-  }
-
-  .heroCopy{
-    padding-top:25px;
-  }
-
-  .serviceGrid{
     grid-template-columns:
-      repeat(2,1fr);
-  }
+      1fr;
 
-  .coreGrid{
-    grid-template-columns:
-      repeat(2,1fr);
-  }
-
-  .sourcesGrid{
-    grid-template-columns:
-      repeat(2,1fr);
+    gap:40px;
   }
 
   .appLayout{
     grid-template-columns:
-      220px minmax(0,1fr);
-  }
-
-}
-
-
-@media(max-width:900px){
-
-  .appLayout{
-    width:min(94%,900px);
-
-    grid-template-columns:1fr;
+      1fr;
   }
 
   .sidebar{
     position:relative;
 
-    top:auto;
+    top:0;
   }
 
-  .sidebarMenu{
-    display:grid;
-
+  .footerGrid{
     grid-template-columns:
-      repeat(3,1fr);
-
-    gap:4px;
-  }
-
-  .sidebarLabel{
-    display:none;
-  }
-
-  .sideLink{
-    justify-content:center;
-
-    flex-direction:column;
-
-    gap:5px;
-
-    text-align:center;
-  }
-
-  .sidebarBottom{
-    display:none;
-  }
-
-  .formGrid,
-  .calculatorGrid{
-    grid-template-columns:1fr;
-  }
-
-  .documentGrid{
-    grid-template-columns:
-      repeat(2,1fr);
+      1fr;
   }
 
 }
 
-
-@media(max-width:720px){
-
-  .nav{
-    height:68px;
-  }
-
-  .brandText small{
-    display:none;
-  }
-
-  .languages{
-    display:none;
-  }
-
-  .heroInner{
-    min-height:auto;
-
-    padding:
-      65px 0;
-  }
-
-  .hero h1{
-    font-size:
-      clamp(40px,12vw,58px);
-  }
-
-  .quickBox{
-    grid-template-columns:1fr;
-  }
+@media(max-width:650px){
 
   .serviceGrid,
   .coreGrid,
-  .sourcesGrid,
-  .documentGrid{
-    grid-template-columns:1fr;
+  .documentGrid,
+  .courtGrid{
+    grid-template-columns:
+      1fr;
   }
 
   .sectionHead{
@@ -4293,113 +3387,25 @@ const CSS_APP = `
     flex-direction:column;
   }
 
-  .footerGrid{
-    grid-template-columns:1fr;
-
-    gap:30px;
-  }
-
-  .footerBottom{
-    align-items:flex-start;
+  .courtTools{
+    align-items:stretch;
 
     flex-direction:column;
   }
 
-  .sidebarMenu{
-    grid-template-columns:
-      repeat(2,1fr);
+  .courtSearch{
+    width:100%;
   }
 
-  .appTop{
-    align-items:flex-start;
-  }
+  .heroInner{
+    min-height:auto;
 
-  .appBreadcrumb{
-    display:none;
-  }
-
-  .appHeader{
     padding:
-      25px 22px;
+      50px 0;
   }
 
-  .appHeader::after{
-    font-size:90px;
-  }
-
-  .aiBody{
-    padding:19px;
-  }
-
-  .aiInputBottom{
-    align-items:stretch;
-
-    flex-direction:column;
-  }
-
-  .aiInputBottom .btn{
-    width:100%;
-  }
-
-}
-
-
-@media(max-width:450px){
-
-  .container{
-    width:91%;
-  }
-
-  .brandText strong{
-    font-size:17px;
-  }
-
-  .heroActions{
-    flex-direction:column;
-  }
-
-  .heroActions .btn{
-    width:100%;
-  }
-
-  .heroTrust{
-    display:grid;
-
-    grid-template-columns:1fr;
-  }
-
-  .roadmap{
-    padding:22px;
-  }
-
-  .sidebarMenu{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .sideLink{
-    font-size:8px;
-  }
-
-  .appLayout{
-    width:94%;
-  }
-
-  .appTop{
-    padding:10px;
-  }
-
-  .appLang a{
-    padding:6px;
-  }
-
-  .formActions{
-    align-items:stretch;
-
-    flex-direction:column;
-  }
-
-  .formActions .btn{
-    width:100%;
+  .hero h1{
+    font-size:42px;
   }
 
 }
@@ -4408,86 +3414,570 @@ const CSS_APP = `
 
 
 // ======================================================
-// LANGUAGE MENU
+// STATE ORGANIZATIONS
+// SERVER TOMONDA TURADI
 // ======================================================
 
-function languageMenu(lang, path = "/") {
+const STATE_ORGANIZATIONS = [
 
-  lang = getLang(lang);
+  // ====================================================
+  // OLIY SUD
+  // ====================================================
 
-  return `
-    <div class="languages">
+  {
+    id:"supreme-court",
+    category:"court",
+    type:"supreme",
+    region:"Toshkent shahri",
+    district:"Shayxontohur",
 
-      <a
-        href="${path}?lang=uz"
-        class="${lang === "uz" ? "active" : ""}"
-      >
-        UZ
-      </a>
+    name:
+      "O‘zbekiston Respublikasi Oliy sudi",
 
-      <a
-        href="${path}?lang=ru"
-        class="${lang === "ru" ? "active" : ""}"
-      >
-        RU
-      </a>
+    address:
+      "Abdulla Qodiriy ko‘chasi, 1-uy, 100186",
 
-      <a
-        href="${path}?lang=en"
-        class="${lang === "en" ? "active" : ""}"
-      >
-        EN
-      </a>
+    phone:
+      "+998 71 207-73-77",
 
-    </div>
-  `;
+    extension:
+      "01613",
+
+    email:
+      "info@supcourt.uz",
+
+    source:
+      "sud.uz"
+  },
+
+
+  // ====================================================
+  // TOSHKENT SHAHAR SUDI
+  // ====================================================
+
+  {
+    id:"tashkent-city-court",
+    category:"court",
+    type:"general",
+    region:"Toshkent shahri",
+
+    name:
+      "Toshkent shahar sudi",
+
+    address:
+      "A. Navoiy ko‘chasi, 23A-uy",
+
+    phone:
+      "+998 55 501-11-15",
+
+    source:
+      "sud.uz"
+  },
+
+  {
+    id:"tashkent-criminal-panel",
+    category:"court",
+    type:"criminal",
+    region:"Toshkent shahri",
+
+    name:
+      "Toshkent shahar sudi — Jinoyat ishlari bo‘yicha sudlov hay’ati",
+
+    address:
+      "A. Navoiy ko‘chasi, 23A-uy",
+
+    phone:
+      "+998 55 501-11-15",
+
+    extension:
+      "02001",
+
+    source:
+      "sud.uz"
+  },
+
+  {
+    id:"tashkent-civil-panel",
+    category:"court",
+    type:"civil",
+    region:"Toshkent shahri",
+    district:"Yakkasaroy",
+
+    name:
+      "Toshkent shahar sudi — Fuqarolik ishlari bo‘yicha sudlov hay’ati",
+
+    address:
+      "Shota Rustaveli ko‘chasi, 93-uy",
+
+    phone:
+      "+998 55 501-00-23",
+
+    extension:
+      "02629",
+
+    source:
+      "sud.uz"
+  },
+
+  {
+    id:"tashkent-economic-panel",
+    category:"court",
+    type:"economic",
+    region:"Toshkent shahri",
+    district:"Yakkasaroy",
+
+    name:
+      "Toshkent shahar sudi — Iqtisodiy ishlar bo‘yicha sudlov hay’ati",
+
+    address:
+      "Shota Rustaveli ko‘chasi, 93-uy",
+
+    phone:
+      "+998 55 501-00-16",
+
+    extension:
+      "03124",
+
+    source:
+      "sud.uz"
+  },
+
+  {
+    id:"tashkent-administrative",
+    category:"court",
+    type:"administrative",
+    region:"Toshkent shahri",
+    district:"Yunusobod",
+
+    name:
+      "Toshkent shahar ma’muriy sudi",
+
+    address:
+      "Amir Temur ko‘chasi, 118A-uy",
+
+    phone:
+      "+998 55 501-11-14",
+
+    extension:
+      "03001",
+
+    source:
+      "sud.uz"
+  },
+
+  {
+    id:"tashkent-economic-interdistrict",
+    category:"court",
+    type:"economic",
+    region:"Toshkent shahri",
+    district:"Chilonzor",
+
+    name:
+      "Toshkent tumanlararo iqtisodiy sudi",
+
+    address:
+      "Cho‘pon-ota ko‘chasi, 6-uy",
+
+    phone:
+      "+998 55 501-05-04",
+
+    extension:
+      "03165",
+
+    source:
+      "sud.uz"
+  },
+
+
+  // ====================================================
+  // MIROBOD JINOYAT SUDI
+  // ====================================================
+
+  {
+    id:"mirobod-criminal-court",
+    category:"court",
+    type:"criminal",
+    region:"Toshkent shahri",
+    district:"Mirobod",
+
+    name:
+      "Jinoyat ishlari bo‘yicha Mirobod tuman sudi",
+
+    address:
+      "Fidokor ko‘chasi, 38-uy, 100015",
+
+    phone:
+      "+998 71 252-00-03",
+
+    email:
+      "j.mirobod@sud.uz",
+
+    source:
+      "sud.uz"
+  },
+
+
+  // ====================================================
+  // TOSHKENT TUMAN JINOYAT SUDLARI
+  // ====================================================
+
+  ...[
+    "Bektemir",
+    "Chilonzor",
+    "Mirzo Ulug‘bek",
+    "Olmazor",
+    "Sergeli",
+    "Shayxontohur",
+    "Uchtepa",
+    "Yakkasaroy",
+    "Yashnobod",
+    "Yunusobod",
+    "Yangihayot"
+  ].map(district => ({
+
+    id:
+      district
+        .toLowerCase()
+        .replace(/[‘’']/g,"")
+        .replace(/\s+/g,"-") +
+      "-criminal",
+
+    category:
+      "court",
+
+    type:
+      "criminal",
+
+    region:
+      "Toshkent shahri",
+
+    district,
+
+    name:
+      `Jinoyat ishlari bo‘yicha ${district} tuman sudi`,
+
+    phone:
+      null,
+
+    verification:
+      "Telefon raqami rasmiy manbadan yangilanmoqda"
+
+  })),
+
+
+  // ====================================================
+  // SUD DEPARTAMENTI
+  // ====================================================
+
+  {
+    id:
+      "court-department-tashkent",
+
+    category:
+      "court_department",
+
+    type:
+      "department",
+
+    region:
+      "Toshkent shahri",
+
+    district:
+      "Yakkasaroy",
+
+    name:
+      "Oliy sud huzuridagi Sudlar faoliyatini ta’minlash departamentining Toshkent shahar hududiy bo‘limi",
+
+    address:
+      "Shota Rustaveli ko‘chasi, 62-uy",
+
+    phone:
+      "+998 55 501-00-04",
+
+    extension:
+      "03142",
+
+    source:
+      "sud.uz"
+  },
+
+
+  // ====================================================
+  // TOSHKENT SHAHAR IIBB
+  // ====================================================
+
+  {
+    id:
+      "tashkent-iibb",
+
+    category:
+      "internal_affairs",
+
+    type:
+      "regional",
+
+    region:
+      "Toshkent shahri",
+
+    district:
+      "Toshkent shahri",
+
+    name:
+      "Toshkent shahar Ichki ishlar bosh boshqarmasi",
+
+    address:
+      "S. Azimov ko‘chasi, 87-uy",
+
+    phone:
+      "+998 71 206-41-65",
+
+    appealsPhone:
+      "+998 71 206-43-34",
+
+    emergencyPhone:
+      "102",
+
+    hotline:
+      "1102",
+
+    source:
+      "iibb.uz"
+  },
+
+
+  // ====================================================
+  // ICHKI ISHLAR TEZKOR RAQAMI
+  // ====================================================
+
+  {
+    id:
+      "police-emergency-102",
+
+    category:
+      "internal_affairs",
+
+    type:
+      "emergency",
+
+    region:
+      "O‘zbekiston",
+
+    district:
+      "O‘zbekiston",
+
+    name:
+      "Ichki ishlar organlari tezkor raqami",
+
+    phone:
+      "102",
+
+    emergencyPhone:
+      "102",
+
+    hotline:
+      "1102",
+
+    description:
+      "Huquqbuzarlik, jinoyat yoki tezkor ichki ishlar yordami zarur bo‘lgan holatlar uchun.",
+
+    source:
+      "iibb.uz"
+  },
+
+
+  // ====================================================
+  // TOSHKENT SHAHRI — TUMAN IIO FMB
+  // ====================================================
+
+  ...[
+    "Bektemir",
+    "Chilonzor",
+    "Mirobod",
+    "Mirzo Ulug‘bek",
+    "Olmazor",
+    "Sergeli",
+    "Shayxontohur",
+    "Uchtepa",
+    "Yakkasaroy",
+    "Yashnobod",
+    "Yunusobod",
+    "Yangihayot"
+  ].map(district => ({
+
+    id:
+      district
+        .toLowerCase()
+        .replace(/[‘’']/g,"")
+        .replace(/\s+/g,"-") +
+      "-iio-fmb",
+
+    category:
+      "internal_affairs",
+
+    type:
+      "district",
+
+    region:
+      "Toshkent shahri",
+
+    district,
+
+    name:
+      `${district} tumani IIO FMB`,
+
+    emergencyPhone:
+      "102",
+
+    hotline:
+      "1102",
+
+    source:
+      "iibb.uz"
+
+  }))
+
+];
+
+
+// ======================================================
+// STATE_ORGANIZATIONS TUGADI
+// MUHIM: BU HTML <script> ICHIDA EMAS.
+// SERVER SCOPE'DA TURIBDI.
+// ======================================================
+
+
+// ======================================================
+// GOOGLE MAPS YORDAMCHI FUNKSIYALAR
+// ======================================================
+
+function googleMapsSearch(
+  name = "",
+  district = ""
+) {
+
+  const query = [
+    name,
+    district,
+    "Toshkent"
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return (
+    "https://www.google.com/maps/search/?api=1&query=" +
+    encodeURIComponent(query)
+  );
+}
+
+
+function googleMapsDirections(
+  name = "",
+  district = ""
+) {
+
+  const destination = [
+    name,
+    district,
+    "Toshkent"
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return (
+    "https://www.google.com/maps/dir/?api=1&destination=" +
+    encodeURIComponent(destination)
+  );
 }
 
 
 // ======================================================
-// APP LANGUAGE MENU
+// COURT TYPE LABEL
 // ======================================================
 
-function appLanguageMenu(lang, path = "/") {
+function courtTypeLabel(
+  type,
+  lang = "uz"
+) {
 
-  lang = getLang(lang);
+  lang =
+    getLang(lang);
 
-  return `
-    <div class="appLang">
+  const labels = {
 
-      <a
-        href="${path}?lang=uz"
-        class="${lang === "uz" ? "active" : ""}"
-      >
-        UZ
-      </a>
+    uz:{
+      supreme:"Oliy sud",
+      general:"Shahar sudi",
+      criminal:"Jinoyat sudi",
+      civil:"Fuqarolik sudi",
+      economic:"Iqtisodiy sud",
+      administrative:"Ma’muriy sud",
+      department:"Sud departamenti"
+    },
 
-      <a
-        href="${path}?lang=ru"
-        class="${lang === "ru" ? "active" : ""}"
-      >
-        RU
-      </a>
+    ru:{
+      supreme:"Верховный суд",
+      general:"Городской суд",
+      criminal:"Уголовный суд",
+      civil:"Гражданский суд",
+      economic:"Экономический суд",
+      administrative:"Административный суд",
+      department:"Судебный департамент"
+    },
 
-      <a
-        href="${path}?lang=en"
-        class="${lang === "en" ? "active" : ""}"
-      >
-        EN
-      </a>
+    en:{
+      supreme:"Supreme Court",
+      general:"City Court",
+      criminal:"Criminal Court",
+      civil:"Civil Court",
+      economic:"Economic Court",
+      administrative:"Administrative Court",
+      department:"Court Department"
+    }
 
-    </div>
-  `;
+  };
+
+  return (
+    labels[lang]?.[type] ||
+    labels.uz[type] ||
+    type ||
+    "Sud"
+  );
 }
 
 
 // ======================================================
-// MAIN NAVIGATION
+// NAVIGATION
 // ======================================================
 
-function navigation(lang) {
+function nav(
+  lang = "uz",
+  active = ""
+) {
 
-  lang = getLang(lang);
+  lang =
+    getLang(lang);
+
+  const navLink = (
+    href,
+    key,
+    id
+  ) => {
+
+    const className =
+      active === id
+        ? "active"
+        : "";
+
+    return `
+      <a
+        class="${className}"
+        href="${href}${q(lang)}"
+      >
+        ${esc(tr(lang,key))}
+      </a>
+    `;
+  };
+
 
   return `
 
@@ -4507,11 +3997,11 @@ function navigation(lang) {
           <span class="brandText">
 
             <strong>
-              ${tr(lang, "brand")}
+              Huquqiy AI
             </strong>
 
             <small>
-              LEGAL INTELLIGENCE PLATFORM
+              LEGAL INTELLIGENCE
             </small>
 
           </span>
@@ -4521,45 +4011,93 @@ function navigation(lang) {
 
         <nav class="navlinks">
 
-          <a href="/${q(lang)}">
-            ${tr(lang, "home")}
-          </a>
+          ${navLink(
+            "/",
+            "home",
+            "home"
+          )}
 
-          <a href="/ai${q(lang)}">
-            ${tr(lang, "assistant")}
-          </a>
+          ${navLink(
+            "/assistant",
+            "assistant",
+            "assistant"
+          )}
 
-          <a href="/questionnaire${q(lang)}">
-            ${tr(lang, "questionnaire")}
-          </a>
+          ${navLink(
+            "/questionnaire",
+            "questionnaire",
+            "questionnaire"
+          )}
 
-          <a href="/sources${q(lang)}">
-            ${tr(lang, "sources")}
-          </a>
+          ${navLink(
+            "/sources",
+            "sources",
+            "sources"
+          )}
 
-          <a href="/documents${q(lang)}">
-            ${tr(lang, "documents")}
-          </a>
+          ${navLink(
+            "/documents",
+            "documents",
+            "documents"
+          )}
 
-          <a href="/court${q(lang)}">
-            ${tr(lang, "court")}
-          </a>
+          ${navLink(
+            "/court",
+            "court",
+            "court"
+          )}
 
-          <a href="/calculators${q(lang)}">
-            ${tr(lang, "calculators")}
-          </a>
+          ${navLink(
+            "/calculators",
+            "calculators",
+            "calculators"
+          )}
 
         </nav>
 
 
         <div class="navRight">
 
-          ${languageMenu(lang, "/")}
+          <div class="languages">
+
+            <a
+              class="${
+                lang === "uz"
+                  ? "active"
+                  : ""
+              }"
+              href="?lang=uz"
+            >
+              UZ
+            </a>
+
+            <a
+              class="${
+                lang === "ru"
+                  ? "active"
+                  : ""
+              }"
+              href="?lang=ru"
+            >
+              RU
+            </a>
+
+            <a
+              class="${
+                lang === "en"
+                  ? "active"
+                  : ""
+              }"
+              href="?lang=en"
+            >
+              EN
+            </a>
+
+          </div>
 
           <button
             class="mobileMenu"
             type="button"
-            onclick="document.getElementById('mobileNav').classList.toggle('show')"
             aria-label="Menu"
           >
             ☰
@@ -4569,283 +4107,32 @@ function navigation(lang) {
 
       </div>
 
-
-      <div
-        id="mobileNav"
-        style="
-          display:none;
-          width:92%;
-          margin:auto;
-          padding:10px 0 15px;
-          gap:7px;
-        "
-      >
-
-        <a href="/${q(lang)}">
-          ${tr(lang, "home")}
-        </a>
-
-        <a href="/ai${q(lang)}">
-          ${tr(lang, "assistant")}
-        </a>
-
-        <a href="/questionnaire${q(lang)}">
-          ${tr(lang, "questionnaire")}
-        </a>
-
-        <a href="/sources${q(lang)}">
-          ${tr(lang, "sources")}
-        </a>
-
-        <a href="/documents${q(lang)}">
-          ${tr(lang, "documents")}
-        </a>
-
-        <a href="/court${q(lang)}">
-          ${tr(lang, "court")}
-        </a>
-
-        <a href="/calculators${q(lang)}">
-          ${tr(lang, "calculators")}
-        </a>
-
-      </div>
-
     </header>
 
-    <style>
-
-      #mobileNav.show{
-        display:grid !important;
-      }
-
-      #mobileNav a{
-        padding:10px 12px;
-
-        color:#526276;
-
-        background:#fff;
-
-        border:1px solid #e3e8ec;
-
-        border-radius:8px;
-
-        font-size:10px;
-
-        font-weight:750;
-      }
-
-      @media(min-width:1151px){
-
-        #mobileNav{
-          display:none !important;
-        }
-
-      }
-
-    </style>
-
   `;
 }
 
 
 // ======================================================
-// FOOTER
+// HTML LAYOUT
 // ======================================================
 
-function footer(lang) {
-
-  lang = getLang(lang);
-
-  const t = {
-
-    uz: {
-      text:
-        "O‘zbekiston huquqiy tizimida yo‘l topishga yordam beruvchi raqamli huquqiy platforma.",
-
-      platform:
-        "PLATFORMA",
-
-      official:
-        "RASMIY MANBALAR",
-
-      disclaimer:
-        "Huquqiy AI advokat yoki sudning o‘rnini bosmaydi.",
-
-      privacy:
-        "Maxfiylik va shaxsiy ma’lumotlarni himoya qilish muhim tamoyildir."
-    },
-
-    ru: {
-      text:
-        "Цифровая юридическая платформа для навигации в правовой системе Узбекистана.",
-
-      platform:
-        "ПЛАТФОРМА",
-
-      official:
-        "ОФИЦИАЛЬНЫЕ ИСТОЧНИКИ",
-
-      disclaimer:
-        "Huquqiy AI не заменяет адвоката или суд.",
-
-      privacy:
-        "Конфиденциальность и защита персональных данных являются важными принципами."
-    },
-
-    en: {
-      text:
-        "A digital legal platform designed to help navigate the legal system of Uzbekistan.",
-
-      platform:
-        "PLATFORM",
-
-      official:
-        "OFFICIAL SOURCES",
-
-      disclaimer:
-        "Huquqiy AI does not replace a lawyer or a court.",
-
-      privacy:
-        "Privacy and personal-data protection are important principles."
-    }
-
-  }[lang];
-
-
-  return `
-
-    <footer class="footer">
-
-      <div class="container">
-
-        <div class="footerGrid">
-
-          <div class="footerBrand">
-
-            <span class="brandMark">
-              §
-            </span>
-
-            <h3>
-              Huquqiy AI
-            </h3>
-
-            <p>
-              ${t.text}
-            </p>
-
-          </div>
-
-
-          <div>
-
-            <div class="footerTitle">
-              ${t.platform}
-            </div>
-
-            <div class="footerLinks">
-
-              <a href="/ai${q(lang)}">
-                ${tr(lang, "assistant")}
-              </a>
-
-              <a href="/questionnaire${q(lang)}">
-                ${tr(lang, "questionnaire")}
-              </a>
-
-              <a href="/documents${q(lang)}">
-                ${tr(lang, "documents")}
-              </a>
-
-              <a href="/court${q(lang)}">
-                ${tr(lang, "court")}
-              </a>
-
-            </div>
-
-          </div>
-
-
-          <div>
-
-            <div class="footerTitle">
-              ${t.official}
-            </div>
-
-            <div class="footerLinks">
-
-              <a
-                href="https://lex.uz"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LexUZ ↗
-              </a>
-
-              <a
-                href="https://sud.uz"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                sud.uz ↗
-              </a>
-
-              <a
-                href="https://my.sud.uz"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                my.sud.uz ↗
-              </a>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="footerBottom">
-
-          <span>
-            © ${new Date().getFullYear()} Huquqiy AI
-          </span>
-
-          <span>
-            ${t.disclaimer}
-          </span>
-
-          <span>
-            ${t.privacy}
-          </span>
-
-        </div>
-
-      </div>
-
-    </footer>
-
-  `;
-}
-
-
-// ======================================================
-// STANDARD PAGE
-// ======================================================
-
-function page({
+function layout({
   lang = "uz",
   title = "Huquqiy AI",
-  content = ""
+  active = "",
+  body = "",
+  extraCss = "",
+  extraJs = ""
 }) {
 
-  lang = getLang(lang);
+  lang =
+    getLang(lang);
 
   return `
 <!DOCTYPE html>
 
-<html lang="${lang}">
+<html lang="${esc(lang)}">
 
 <head>
 
@@ -4857,8 +4144,8 @@ function page({
   >
 
   <meta
-    name="theme-color"
-    content="#06111f"
+    name="description"
+    content="Huquqiy AI — O‘zbekiston fuqarolari uchun huquqiy axborot va hujjat tayyorlash yordamchisi."
   >
 
   <title>
@@ -4868,339 +4155,18 @@ function page({
   <style>
     ${CSS}
     ${CSS_APP}
+    ${extraCss}
   </style>
 
 </head>
-
 
 <body>
 
-  ${navigation(lang)}
+  ${nav(lang,active)}
 
-  ${content}
+  ${body}
 
-  ${footer(lang)}
-
-</body>
-
-</html>
-  `;
-}
-
-
-// ======================================================
-// SIDEBAR
-// ======================================================
-
-function sidebar(lang, active = "") {
-
-  lang = getLang(lang);
-
-  function link(
-    id,
-    href,
-    icon,
-    label
-  ) {
-
-    return `
-
-      <a
-        class="sideLink ${active === id ? "active" : ""}"
-        href="${href}${q(lang)}"
-      >
-
-        <span class="sideIcon">
-          ${icon}
-        </span>
-
-        <span>
-          ${label}
-        </span>
-
-      </a>
-
-    `;
-  }
-
-
-  const security = {
-
-    uz:
-      "Shaxsiy ma’lumotlaringizni ochiq maydonga kiritishda ehtiyot bo‘ling.",
-
-    ru:
-      "Будьте осторожны при вводе персональных данных.",
-
-    en:
-      "Be careful when entering personal information."
-
-  }[lang];
-
-
-  return `
-
-    <aside class="sidebar">
-
-      <div class="sidebarBrand">
-
-        <div class="sidebarBrandTop">
-
-          <span class="sidebarBrandMark">
-            §
-          </span>
-
-          <div>
-
-            <strong>
-              Huquqiy AI
-            </strong>
-
-            <small>
-              LEGAL WORKSPACE
-            </small>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="sidebarMenu">
-
-        <div class="sidebarLabel">
-          WORKSPACE
-        </div>
-
-        ${link(
-          "ai",
-          "/ai",
-          "✦",
-          tr(lang, "assistant")
-        )}
-
-        ${link(
-          "questionnaire",
-          "/questionnaire",
-          "✓",
-          tr(lang, "questionnaire")
-        )}
-
-        ${link(
-          "documents",
-          "/documents",
-          "▤",
-          tr(lang, "documents")
-        )}
-
-
-        <div class="sidebarLabel">
-          LEGAL TOOLS
-        </div>
-
-        ${link(
-          "sources",
-          "/sources",
-          "§",
-          tr(lang, "sources")
-        )}
-
-        ${link(
-          "court",
-          "/court",
-          "⚖",
-          tr(lang, "court")
-        )}
-
-        ${link(
-          "calculators",
-          "/calculators",
-          "∑",
-          tr(lang, "calculators")
-        )}
-
-      </div>
-
-
-      <div class="sidebarBottom">
-
-        <div class="sidebarSecurity">
-
-          <span>
-            ◈
-          </span>
-
-          <span>
-            ${security}
-          </span>
-
-        </div>
-
-      </div>
-
-    </aside>
-
-  `;
-}
-
-
-// ======================================================
-// APP LAYOUT
-// ======================================================
-
-function appLayout(
-  lang,
-  active,
-  content,
-  title,
-  description = ""
-) {
-
-  lang = getLang(lang);
-
-  const pathMap = {
-    ai: "/ai",
-    questionnaire: "/questionnaire",
-    sources: "/sources",
-    documents: "/documents",
-    court: "/court",
-    calculators: "/calculators"
-  };
-
-
-  const currentPath =
-    pathMap[active] ||
-    "/";
-
-
-  const workspaceText = {
-
-    uz:
-      "HUQUQIY ISH MAYDONI",
-
-    ru:
-      "ЮРИДИЧЕСКОЕ ПРОСТРАНСТВО",
-
-    en:
-      "LEGAL WORKSPACE"
-
-  }[lang];
-
-
-  return `
-<!DOCTYPE html>
-
-<html lang="${lang}">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#06111f"
-  >
-
-  <title>
-    ${esc(title)} — Huquqiy AI
-  </title>
-
-
-  <style>
-    ${CSS}
-    ${CSS_APP}
-  </style>
-
-</head>
-
-
-<body class="appPage">
-
-  ${navigation(lang)}
-
-
-  <div class="appLayout">
-
-    ${sidebar(lang, active)}
-
-
-    <main class="appMain">
-
-
-      <div class="appTop">
-
-        <div class="appBreadcrumb">
-
-          <span>
-            Huquqiy AI
-          </span>
-
-          <span>
-            /
-          </span>
-
-          <strong>
-            ${esc(title)}
-          </strong>
-
-        </div>
-
-
-        <div class="appTopRight">
-
-          ${appLanguageMenu(
-            lang,
-            currentPath
-          )}
-
-          <a
-            class="appHomeButton"
-            href="/${q(lang)}"
-            title="${tr(lang, "home")}"
-          >
-            ⌂
-          </a>
-
-        </div>
-
-      </div>
-
-
-      <section class="appHeader">
-
-        <div class="appHeaderSmall">
-          ${workspaceText}
-        </div>
-
-        <h1>
-          ${esc(title)}
-        </h1>
-
-        ${
-          description
-            ? `
-              <p>
-                ${esc(description)}
-              </p>
-            `
-            : ""
-        }
-
-      </section>
-
-
-      ${content}
-
-
-    </main>
-
-  </div>
+  ${extraJs}
 
 </body>
 
@@ -5213,343 +4179,139 @@ function appLayout(
 // HOME PAGE
 // ======================================================
 
-function homePage(lang) {
+function homePage(
+  lang = "uz"
+) {
 
-  lang = getLang(lang);
+  lang =
+    getLang(lang);
 
+  const content = {
 
-  const t = {
-
-    uz: {
-
+    uz:{
       eyebrow:
-        "O‘ZBEKISTON UCHUN RAQAMLI HUQUQIY YORDAMCHI",
+        "HUQUQIY YORDAMNING YANGI FORMATI",
 
-      hero1:
-        "Huquqiy muammoingizni",
+      title:
+        "Huquqiy muammoni tushuning.",
 
-      hero2:
-        "tushunishdan boshlang.",
+      title2:
+        "Keyingi qadamni biling.",
 
-      heroText:
-        "Huquqiy AI vaziyatingizni bosqichma-bosqich tahlil qilish, muhim faktlarni aniqlash, rasmiy manbalarni tekshirish va keyingi huquqiy qadamlarni tushunishga yordam beradi.",
+      description:
+        "Huquqiy AI vaziyatingizni tizimli savollar orqali o‘rganadi, muhim faktlarni ajratadi va keyingi huquqiy qadamlarni tushunarli shaklda ko‘rsatadi.",
 
-      ai:
-        "AI yordamchini ochish",
+      start:
+        "Huquqiy tahlilni boshlash",
 
       questionnaire:
-        "Savolnomani boshlash",
-
-      trust1:
-        "O‘zbekiston huquq tizimiga yo‘naltirilgan",
-
-      trust2:
-        "Rasmiy manbalar bilan ishlash",
-
-      trust3:
-        "3 tilda ishlaydi",
-
-      roadmapSmall:
-        "HUQUQIY TAHLIL TIZIMI",
-
-      roadmap:
-        "Vaziyatdan yechimgacha",
-
-      active:
-        "FAOL",
-
-      r1:
-        "Muammo",
-
-      r1t:
-        "Foydalanuvchining asosiy huquqiy muammosini aniqlash.",
-
-      r2:
-        "Muhim savollar",
-
-      r2t:
-        "Huquqiy ahamiyatga ega faktlarni aniqlashtirish.",
-
-      r3:
-        "Huquqiy tahlil",
-
-      r3t:
-        "Vaziyatni huquqiy yo‘nalishlar va manbalar asosida tahlil qilish.",
-
-      r4:
-        "Keyingi qadam",
-
-      r4t:
-        "Hujjat, rasmiy manba yoki sudga murojaat yo‘lini ko‘rsatish.",
+        "Savolnomani ochish",
 
       quickSmall:
         "TEZKOR BOSHLASH",
 
       quickTitle:
-        "Muammoingizni oddiy tilda yozing.",
+        "Muammoingizni bir necha jumlada yozing",
 
       quickText:
-        "Murakkab yuridik terminlardan foydalanishingiz shart emas. Vaziyatni qanday bo‘lgan bo‘lsa, shunday tushuntiring.",
+        "AI vaziyatni dastlabki tahlil qiladi. Zarur bo‘lsa, keyingi bosqichda aniqlashtiruvchi savollar beradi.",
 
-      quickButton:
-        "Tahlilni boshlash",
+      services:
+        "Huquqiy yo‘nalishlar",
 
-      areasSmall:
-        "HUQUQIY YO‘NALISHLAR",
-
-      areasTitle:
-        "Asosiy huquqiy masalalar",
-
-      areasText:
-        "Platforma bir nechta huquqiy yo‘nalish bo‘yicha dastlabki tahlil va yo‘naltirish imkonini beradi.",
-
-      coreSmall:
-        "HUQUQIY AI METODI",
-
-      coreTitle:
-        "Tizimli huquqiy tahlil",
-
-      coreText:
-        "Javob faqat bitta umumiy matndan iborat emas. Vaziyat faktlardan keyingi amaliy qadamgacha tizimli ravishda ko‘rib chiqiladi.",
-
-      sourceSmall:
-        "RASMIY MANBALAR",
-
-      sourceTitle:
-        "Ishonchli huquqiy manbalar",
-
-      sourceText:
-        "Muhim huquqiy ma’lumotlarni rasmiy manbalardan tekshirish tavsiya etiladi."
-
+      servicesText:
+        "Kerakli yo‘nalishni tanlang yoki huquqiy yordamchiga to‘g‘ridan-to‘g‘ri savol bering."
     },
 
-
-    ru: {
-
+    ru:{
       eyebrow:
-        "ЦИФРОВОЙ ЮРИДИЧЕСКИЙ ПОМОЩНИК ДЛЯ УЗБЕКИСТАНА",
+        "НОВЫЙ ФОРМАТ ЮРИДИЧЕСКОЙ ПОМОЩИ",
 
-      hero1:
-        "Начните с понимания",
+      title:
+        "Разберитесь в правовой проблеме.",
 
-      hero2:
-        "вашей правовой ситуации.",
+      title2:
+        "Узнайте следующий шаг.",
 
-      heroText:
-        "Huquqiy AI помогает поэтапно анализировать ситуацию, выявлять важные факты, проверять официальные источники и понимать дальнейшие юридические действия.",
+      description:
+        "Huquqiy AI изучает ситуацию через последовательные вопросы, выделяет важные факты и объясняет возможные дальнейшие действия.",
 
-      ai:
-        "Открыть AI-помощника",
+      start:
+        "Начать правовой анализ",
 
       questionnaire:
-        "Начать опрос",
-
-      trust1:
-        "Ориентирован на право Узбекистана",
-
-      trust2:
-        "Работа с официальными источниками",
-
-      trust3:
-        "Работает на 3 языках",
-
-      roadmapSmall:
-        "СИСТЕМА ПРАВОВОГО АНАЛИЗА",
-
-      roadmap:
-        "От ситуации к решению",
-
-      active:
-        "АКТИВНО",
-
-      r1:
-        "Проблема",
-
-      r1t:
-        "Определение основной правовой проблемы пользователя.",
-
-      r2:
-        "Важные вопросы",
-
-      r2t:
-        "Уточнение юридически значимых фактов.",
-
-      r3:
-        "Правовой анализ",
-
-      r3t:
-        "Анализ ситуации с учётом правовых направлений и источников.",
-
-      r4:
-        "Следующий шаг",
-
-      r4t:
-        "Переход к документу, официальному источнику или суду.",
+        "Открыть вопросы",
 
       quickSmall:
         "БЫСТРЫЙ СТАРТ",
 
       quickTitle:
-        "Опишите проблему простыми словами.",
+        "Опишите проблему несколькими предложениями",
 
       quickText:
-        "Вам не обязательно использовать сложные юридические термины. Просто расскажите, что произошло.",
+        "AI выполнит первоначальный анализ и при необходимости предложит уточняющие вопросы.",
 
-      quickButton:
-        "Начать анализ",
+      services:
+        "Правовые направления",
 
-      areasSmall:
-        "НАПРАВЛЕНИЯ ПРАВА",
-
-      areasTitle:
-        "Основные правовые вопросы",
-
-      areasText:
-        "Платформа предоставляет первичный анализ и навигацию по нескольким правовым направлениям.",
-
-      coreSmall:
-        "МЕТОД HUQUQIY AI",
-
-      coreTitle:
-        "Системный правовой анализ",
-
-      coreText:
-        "Ответ строится от фактов и правового вопроса до возможных дальнейших действий.",
-
-      sourceSmall:
-        "ОФИЦИАЛЬНЫЕ ИСТОЧНИКИ",
-
-      sourceTitle:
-        "Надёжные правовые источники",
-
-      sourceText:
-        "Важную юридическую информацию рекомендуется проверять по официальным источникам."
-
+      servicesText:
+        "Выберите направление или задайте вопрос юридическому помощнику."
     },
 
-
-    en: {
-
+    en:{
       eyebrow:
-        "DIGITAL LEGAL ASSISTANT FOR UZBEKISTAN",
+        "A NEW FORMAT OF LEGAL ASSISTANCE",
 
-      hero1:
-        "Start by understanding",
+      title:
+        "Understand the legal problem.",
 
-      hero2:
-        "your legal situation.",
+      title2:
+        "Know the next step.",
 
-      heroText:
-        "Huquqiy AI helps analyze your situation step by step, identify important facts, check official sources and understand possible next legal steps.",
+      description:
+        "Huquqiy AI examines your situation through structured questions, identifies important facts and explains possible next legal steps.",
 
-      ai:
-        "Open AI assistant",
+      start:
+        "Start legal analysis",
 
       questionnaire:
-        "Start questionnaire",
-
-      trust1:
-        "Focused on Uzbekistan law",
-
-      trust2:
-        "Official-source oriented",
-
-      trust3:
-        "Available in 3 languages",
-
-      roadmapSmall:
-        "LEGAL ANALYSIS SYSTEM",
-
-      roadmap:
-        "From situation to next step",
-
-      active:
-        "ACTIVE",
-
-      r1:
-        "Problem",
-
-      r1t:
-        "Identify the user's central legal issue.",
-
-      r2:
-        "Key questions",
-
-      r2t:
-        "Clarify legally important facts.",
-
-      r3:
-        "Legal analysis",
-
-      r3t:
-        "Analyze the situation using relevant legal areas and sources.",
-
-      r4:
-        "Next step",
-
-      r4t:
-        "Move toward a document, official source or court process.",
+        "Open questionnaire",
 
       quickSmall:
         "QUICK START",
 
       quickTitle:
-        "Describe your problem in plain language.",
+        "Describe your problem in a few sentences",
 
       quickText:
-        "You do not need complicated legal terminology. Simply explain what happened.",
+        "AI will perform an initial analysis and ask clarifying questions when necessary.",
 
-      quickButton:
-        "Start analysis",
+      services:
+        "Legal areas",
 
-      areasSmall:
-        "LEGAL AREAS",
-
-      areasTitle:
-        "Key legal matters",
-
-      areasText:
-        "The platform provides initial analysis and navigation across several legal areas.",
-
-      coreSmall:
-        "HUQUQIY AI METHOD",
-
-      coreTitle:
-        "Structured legal analysis",
-
-      coreText:
-        "The response is structured from facts and legal issues through possible next steps.",
-
-      sourceSmall:
-        "OFFICIAL SOURCES",
-
-      sourceTitle:
-        "Reliable legal sources",
-
-      sourceText:
-        "Important legal information should be verified through official sources."
-
+      servicesText:
+        "Choose an area or ask the legal assistant directly."
     }
 
   }[lang];
 
 
-  const areaCards =
+  const serviceCards =
     LEGAL_AREAS
       .map(
-        (area, index) => `
+        (area,index) => `
 
           <a
             class="serviceCard"
-            href="/ai${q(lang)}&area=${encodeURIComponent(area.id)}"
+            href="/assistant${q(lang)}&area=${encodeURIComponent(area.id)}"
           >
 
             <span class="serviceNo">
-              ${String(index + 1).padStart(2, "0")}
+              ${String(index + 1).padStart(2,"0")}
             </span>
 
             <div class="serviceIcon">
-              ${area.icon}
+              ${esc(area.icon)}
             </div>
 
             <h3>
@@ -5581,744 +4343,185 @@ function homePage(lang) {
       .join("");
 
 
-  const sourceCards =
-    LEGAL_SOURCES
-      .map(
-        source => `
-
-          <a
-            class="sourceCard"
-            href="${source.url}"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-
-            <div class="sourceTop">
-
-              <span class="sourceIcon">
-                §
-              </span>
-
-              <span class="sourceExternal">
-                ↗
-              </span>
-
-            </div>
-
-            <h3>
-              ${esc(source.name)}
-            </h3>
-
-            <p>
-              ${esc(
-                localized(
-                  source.description,
-                  lang
-                )
-              )}
-            </p>
-
-          </a>
-
-        `
-      )
-      .join("");
-
-
-  return page({
+  return layout({
 
     lang,
 
     title:
       "Huquqiy AI",
 
-    content: `
+    active:
+      "home",
 
-      <!-- HERO -->
+    body:`
 
-      <section class="hero">
+      <main>
 
-        <div class="container heroInner">
+        <section class="hero">
 
+          <div class="container heroInner">
 
-          <div class="heroCopy">
-
-            <span class="eyebrow">
-              § ${t.eyebrow}
-            </span>
-
-
-            <h1>
-
-              ${t.hero1}
-
-              <span>
-                ${t.hero2}
-              </span>
-
-            </h1>
-
-
-            <p class="heroDescription">
-              ${t.heroText}
-            </p>
-
-
-            <div class="heroActions">
-
-              <a
-                class="btn btnPrimary"
-                href="/ai${q(lang)}"
-              >
-                ✦ ${t.ai}
-              </a>
-
-              <a
-                class="btn btnOutline"
-                href="/questionnaire${q(lang)}"
-              >
-                ✓ ${t.questionnaire}
-              </a>
-
-            </div>
-
-
-            <div class="heroTrust">
-
-              <span>
-                <i>✓</i>
-                ${t.trust1}
-              </span>
-
-              <span>
-                <i>✓</i>
-                ${t.trust2}
-              </span>
-
-              <span>
-                <i>✓</i>
-                ${t.trust3}
-              </span>
-
-            </div>
-
-          </div>
-
-
-
-          <div class="roadmap">
-
-            <div class="roadmapHeader">
-
-              <div>
-
-                <small>
-                  ${t.roadmapSmall}
-                </small>
-
-                <strong>
-                  ${t.roadmap}
-                </strong>
-
-              </div>
-
-              <span class="roadmapBadge">
-                ● ${t.active}
-              </span>
-
-            </div>
-
-
-            <div class="roadStep">
-
-              <span class="roadNumber">
-                01
-              </span>
-
-              <div>
-
-                <strong>
-                  ${t.r1}
-                </strong>
-
-                <p>
-                  ${t.r1t}
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div class="roadStep">
-
-              <span class="roadNumber">
-                02
-              </span>
-
-              <div>
-
-                <strong>
-                  ${t.r2}
-                </strong>
-
-                <p>
-                  ${t.r2t}
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div class="roadStep">
-
-              <span class="roadNumber">
-                03
-              </span>
-
-              <div>
-
-                <strong>
-                  ${t.r3}
-                </strong>
-
-                <p>
-                  ${t.r3t}
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <div class="roadStep">
-
-              <span class="roadNumber">
-                04
-              </span>
-
-              <div>
-
-                <strong>
-                  ${t.r4}
-                </strong>
-
-                <p>
-                  ${t.r4t}
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-        </div>
-
-      </section>
-
-
-
-      <!-- QUICK START -->
-
-      <section class="quickSection">
-
-        <div class="container">
-
-          <div class="quickBox">
-
-            <div>
-
-              <small>
-                ${t.quickSmall}
-              </small>
-
-              <h2>
-                ${t.quickTitle}
-              </h2>
-
-              <p>
-                ${t.quickText}
-              </p>
-
-            </div>
-
-
-            <a
-              class="btn btnGold"
-              href="/ai${q(lang)}"
-            >
-              ${t.quickButton} →
-            </a>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- LEGAL AREAS -->
-
-      <section class="services">
-
-        <div class="container">
-
-          <div class="sectionHead">
-
-            <div>
+            <div class="heroCopy">
 
               <span class="eyebrow">
-                ${t.areasSmall}
+                ${esc(content.eyebrow)}
               </span>
 
-              <h2 class="sectionTitle">
-                ${t.areasTitle}
-              </h2>
+              <h1>
 
-            </div>
+                ${esc(content.title)}
 
-            <p class="sectionText">
-              ${t.areasText}
-            </p>
+                <span>
+                  ${esc(content.title2)}
+                </span>
 
-          </div>
+              </h1>
 
-
-          <div class="serviceGrid">
-
-            ${areaCards}
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- CORE METHOD -->
-
-      <section class="coreSection">
-
-        <div class="container">
-
-          <div class="sectionHead">
-
-            <div>
-
-              <span class="eyebrow">
-                ${t.coreSmall}
-              </span>
-
-              <h2 class="sectionTitle">
-                ${t.coreTitle}
-              </h2>
-
-            </div>
-
-            <p class="sectionText">
-              ${t.coreText}
-            </p>
-
-          </div>
-
-
-          <div class="coreGrid">
-
-            <div class="coreItem">
-
-              <span>
-                01
-              </span>
-
-              <strong>
-                PROBLEM
-              </strong>
-
-              <p>
-                ${
-                  lang === "uz"
-                    ? "Huquqiy muammo aniqlanadi."
-                    : lang === "ru"
-                    ? "Определяется правовая проблема."
-                    : "The legal problem is identified."
-                }
+              <p class="heroDescription">
+                ${esc(content.description)}
               </p>
 
-            </div>
+              <div class="heroActions">
 
+                <a
+                  class="btn btnPrimary"
+                  href="/assistant${q(lang)}"
+                >
+                  ${esc(content.start)}
+                </a>
 
-            <div class="coreItem">
+                <a
+                  class="btn btnOutline"
+                  href="/questionnaire${q(lang)}"
+                >
+                  ${esc(content.questionnaire)}
+                </a>
 
-              <span>
-                02
-              </span>
+              </div>
 
-              <strong>
-                FACTS
-              </strong>
+              <div class="heroTrust">
 
-              <p>
-                ${
-                  lang === "uz"
-                    ? "Huquqiy ahamiyatga ega faktlar ajratiladi."
-                    : lang === "ru"
-                    ? "Выделяются юридически значимые факты."
-                    : "Legally significant facts are identified."
-                }
-              </p>
+                <span>
+                  <i>✓</i>
+                  O‘zbekiston huquqi
+                </span>
 
-            </div>
+                <span>
+                  <i>✓</i>
+                  Rasmiy manbalar
+                </span>
 
+                <span>
+                  <i>✓</i>
+                  UZ / RU / EN
+                </span>
 
-            <div class="coreItem">
-
-              <span>
-                03
-              </span>
-
-              <strong>
-                ANALYSIS
-              </strong>
-
-              <p>
-                ${
-                  lang === "uz"
-                    ? "Vaziyat huquqiy jihatdan tahlil qilinadi."
-                    : lang === "ru"
-                    ? "Ситуация анализируется с правовой точки зрения."
-                    : "The situation is legally analyzed."
-                }
-              </p>
+              </div>
 
             </div>
 
 
-            <div class="coreItem">
+            <div class="roadmap">
 
-              <span>
-                04
-              </span>
+              <div class="roadmapHeader">
 
-              <strong>
-                NEXT STEP
-              </strong>
+                <div>
 
-              <p>
-                ${
-                  lang === "uz"
-                    ? "Keyingi amaliy qadamlar tushuntiriladi."
-                    : lang === "ru"
-                    ? "Объясняются дальнейшие практические шаги."
-                    : "Practical next steps are explained."
-                }
-              </p>
+                  <small>
+                    HUQUQIY YO‘L XARITASI
+                  </small>
 
-            </div>
+                  <strong>
+                    Vaziyatdan yechimgacha
+                  </strong>
 
-          </div>
+                </div>
 
-        </div>
+                <span class="roadmapBadge">
+                  AI
+                </span>
 
-      </section>
+              </div>
 
 
+              <div class="roadStep">
 
-      <!-- SOURCES -->
+                <div class="roadNumber">
+                  01
+                </div>
 
-      <section class="sourcesSection">
+                <div>
 
-        <div class="container">
+                  <strong>
+                    Muammo
+                  </strong>
 
-          <div class="sectionHead">
+                  <p>
+                    Foydalanuvchi huquqiy vaziyatini bayon qiladi.
+                  </p>
 
-            <div>
+                </div>
 
-              <span class="eyebrow">
-                ${t.sourceSmall}
-              </span>
+              </div>
 
-              <h2 class="sectionTitle">
-                ${t.sourceTitle}
-              </h2>
 
-            </div>
+              <div class="roadStep">
 
-            <p class="sectionText">
-              ${t.sourceText}
-            </p>
+                <div class="roadNumber">
+                  02
+                </div>
 
-          </div>
+                <div>
 
+                  <strong>
+                    Aniqlashtiruvchi savollar
+                  </strong>
 
-          <div class="sourcesGrid">
+                  <p>
+                    Huquqiy ahamiyatga ega faktlar aniqlanadi.
+                  </p>
 
-            ${sourceCards}
+                </div>
 
-          </div>
+              </div>
 
-        </div>
 
-      </section>
+              <div class="roadStep">
 
-    `
+                <div class="roadNumber">
+                  03
+                </div>
 
-  });
+                <div>
 
-}
+                  <strong>
+                    Huquqiy tahlil
+                  </strong>
 
+                  <p>
+                    Vaziyat, huquqiy masalalar va mumkin bo‘lgan variantlar ajratiladi.
+                  </p>
 
-// ======================================================
-// END OF PART 2/4
-// ======================================================
-// ======================================================
-// PART 3/4
-// AI / QUESTIONNAIRE / DOCUMENTS / SOURCES / CALCULATORS
-// ======================================================
+                </div>
 
+              </div>
 
-// ======================================================
-// AI PAGE
-// ======================================================
 
-function aiPage(lang) {
+              <div class="roadStep">
 
-  lang = getLang(lang);
+                <div class="roadNumber">
+                  04
+                </div>
 
-  const t = {
+                <div>
 
-    uz: {
-      title: "Huquqiy AI yordamchi",
-      description:
-        "Huquqiy vaziyatingizni oddiy tilda yozing. Tizim muammoni, muhim faktlarni va keyingi qadamlarni tahlil qiladi.",
+                  <strong>
+                    Keyingi qadam
+                  </strong>
 
-      status: "TIZIM TAYYOR",
-
-      heading:
-        "Huquqiy vaziyatingizni yozing",
-
-      text:
-        "Muammoni imkon qadar aniq tushuntiring. Ismlar, pasport ma’lumotlari yoki boshqa ortiqcha shaxsiy ma’lumotlarni kiritishingiz shart emas.",
-
-      placeholder:
-        "Masalan: Turmush o‘rtog‘im bilan ajrashmoqchimiz. Ikki nafar voyaga yetmagan farzandimiz bor. Uy nikoh davomida sotib olingan...",
-
-      hint:
-        "Huquqiy vaziyatni matn orqali kiriting.",
-
-      button:
-        "Huquqiy tahlil qilish",
-
-      chip1:
-        "Nikohdan ajratish",
-
-      chip2:
-        "Aliment",
-
-      chip3:
-        "Mol-mulkni bo‘lish",
-
-      chip4:
-        "Farzandlar masalasi",
-
-      chip5:
-        "Meros",
-
-      notice:
-        "AI javobi dastlabki huquqiy yo‘naltirish hisoblanadi. Muhim qaror qabul qilishdan oldin amaldagi qonunchilik va rasmiy manbalarni tekshiring."
-    },
-
-
-    ru: {
-      title: "Юридический AI-помощник",
-
-      description:
-        "Опишите правовую ситуацию простыми словами. Система поможет определить проблему, важные факты и возможные дальнейшие действия.",
-
-      status: "СИСТЕМА ГОТОВА",
-
-      heading:
-        "Опишите вашу правовую ситуацию",
-
-      text:
-        "Постарайтесь описать ситуацию точно. Не обязательно указывать Ф.И.О., паспортные данные и лишние персональные сведения.",
-
-      placeholder:
-        "Например: Мы с супругом хотим развестись. У нас двое несовершеннолетних детей. Квартира была приобретена в период брака...",
-
-      hint:
-        "Введите правовую ситуацию текстом.",
-
-      button:
-        "Провести правовой анализ",
-
-      chip1:
-        "Развод",
-
-      chip2:
-        "Алименты",
-
-      chip3:
-        "Раздел имущества",
-
-      chip4:
-        "Вопросы детей",
-
-      chip5:
-        "Наследство",
-
-      notice:
-        "Ответ AI является первичной юридической навигацией. Перед принятием важных решений проверьте действующее законодательство и официальные источники."
-    },
-
-
-    en: {
-      title: "Legal AI Assistant",
-
-      description:
-        "Describe your legal situation in plain language. The system helps identify the problem, important facts and possible next steps.",
-
-      status: "SYSTEM READY",
-
-      heading:
-        "Describe your legal situation",
-
-      text:
-        "Describe the situation as accurately as possible. You do not need to provide names, passport details or unnecessary personal information.",
-
-      placeholder:
-        "Example: My spouse and I are considering divorce. We have two minor children. The apartment was purchased during the marriage...",
-
-      hint:
-        "Enter your legal situation as text.",
-
-      button:
-        "Analyze legal situation",
-
-      chip1:
-        "Divorce",
-
-      chip2:
-        "Child support",
-
-      chip3:
-        "Property division",
-
-      chip4:
-        "Children",
-
-      chip5:
-        "Inheritance",
-
-      notice:
-        "The AI response provides initial legal guidance. Verify current law and official sources before making important decisions."
-    }
-
-  }[lang];
-
-
-  return appLayout(
-
-    lang,
-
-    "ai",
-
-    `
-
-      <div class="notice noticeGold">
-
-        <span class="noticeIcon">
-          ◈
-        </span>
-
-        <span>
-          ${t.notice}
-        </span>
-
-      </div>
-
-
-      <section class="aiShell">
-
-        <div class="aiTopBar">
-
-          <div class="aiIdentity">
-
-            <div class="aiOrb">
-              §
-            </div>
-
-            <div>
-
-              <strong>
-                Huquqiy AI
-              </strong>
-
-              <small>
-                LEGAL INTELLIGENCE
-              </small>
-
-            </div>
-
-          </div>
-
-
-          <div class="aiStatus">
-            ${t.status}
-          </div>
-
-        </div>
-
-
-        <div class="aiBody">
-
-          <div class="aiIntro">
-
-            <h2>
-              ${t.heading}
-            </h2>
-
-            <p>
-              ${t.text}
-            </p>
-
-          </div>
-
-
-          <form
-            method="POST"
-            action="/ai-result${q(lang)}"
-          >
-
-            <div class="aiInputWrap">
-
-              <div class="aiInputInner">
-
-                <textarea
-                  id="legalQuestion"
-                  name="question"
-                  required
-                  maxlength="12000"
-                  placeholder="${esc(t.placeholder)}"
-                ></textarea>
-
-
-                <div class="aiInputBottom">
-
-                  <span class="aiHint">
-                    ✎ ${t.hint}
-                  </span>
-
-                  <button
-                    type="submit"
-                    class="btn btnGold"
-                  >
-                    ✦ ${t.button}
-                  </button>
+                  <p>
+                    Murojaat, kelishuv yoki hujjat tayyorlash bo‘yicha yo‘l ko‘rsatiladi.
+                  </p>
 
                 </div>
 
@@ -6326,111 +4529,502 @@ function aiPage(lang) {
 
             </div>
 
+          </div>
 
-            <div class="aiSuggestions">
+        </section>
 
-              <button
-                type="button"
-                class="aiChip"
-                data-ai-example="${esc(t.chip1)}"
+
+        <section class="quickSection">
+
+          <div class="container">
+
+            <div class="quickBox">
+
+              <div>
+
+                <small>
+                  ${esc(content.quickSmall)}
+                </small>
+
+                <h2>
+                  ${esc(content.quickTitle)}
+                </h2>
+
+                <p>
+                  ${esc(content.quickText)}
+                </p>
+
+              </div>
+
+              <a
+                class="btn btnGold"
+                href="/assistant${q(lang)}"
               >
-                ⚖ ${t.chip1}
-              </button>
-
-
-              <button
-                type="button"
-                class="aiChip"
-                data-ai-example="${esc(t.chip2)}"
-              >
-                ◇ ${t.chip2}
-              </button>
-
-
-              <button
-                type="button"
-                class="aiChip"
-                data-ai-example="${esc(t.chip3)}"
-              >
-                ⌂ ${t.chip3}
-              </button>
-
-
-              <button
-                type="button"
-                class="aiChip"
-                data-ai-example="${esc(t.chip4)}"
-              >
-                ✓ ${t.chip4}
-              </button>
-
-
-              <button
-                type="button"
-                class="aiChip"
-                data-ai-example="${esc(t.chip5)}"
-              >
-                § ${t.chip5}
-              </button>
+                ${esc(tr(lang,"start"))}
+              </a>
 
             </div>
 
-          </form>
+          </div>
 
-        </div>
-
-      </section>
+        </section>
 
 
-      <script>
+        <section class="services">
 
-        (() => {
+          <div class="container">
 
-          const textarea =
-            document.getElementById(
-              "legalQuestion"
-            );
+            <div class="sectionHead">
 
-          document
-            .querySelectorAll(
-              "[data-ai-example]"
-            )
-            .forEach(button => {
+              <div>
 
-              button.addEventListener(
-                "click",
-                () => {
+                <span class="eyebrow">
+                  HUQUQIY XIZMATLAR
+                </span>
 
-                  if (!textarea) return;
+                <h2 class="sectionTitle">
+                  ${esc(content.services)}
+                </h2>
 
-                  const value =
-                    button.dataset.aiExample || "";
+              </div>
 
-                  textarea.value =
-                    value + ": ";
+              <p class="sectionText">
+                ${esc(content.servicesText)}
+              </p>
 
-                  textarea.focus();
+            </div>
 
-                }
-              );
+            <div class="serviceGrid">
+              ${serviceCards}
+            </div>
 
-            });
+          </div>
 
-        })();
+        </section>
 
-      </script>
+      </main>
 
-    `,
-
-    t.title,
-
-    t.description
-
-  );
-
+    `
+  });
 }
 
 
+// ======================================================
+// ASSISTANT PAGE
+// ======================================================
+
+function assistantPage(
+  lang = "uz",
+  area = ""
+) {
+
+  lang =
+    getLang(lang);
+
+  const selectedArea =
+    LEGAL_AREAS.find(
+      item =>
+        item.id === area
+    );
+
+
+  const intro = {
+
+    uz:
+      "Huquqiy vaziyatingizni yozing. Shaxsiy ma’lumotlarni imkon qadar kiritmaslik tavsiya etiladi.",
+
+    ru:
+      "Опишите вашу правовую ситуацию. По возможности не указывайте лишние персональные данные.",
+
+    en:
+      "Describe your legal situation. Avoid unnecessary personal information where possible."
+
+  }[lang];
+
+
+  const selectedTitle =
+    selectedArea
+      ? localized(
+          selectedArea.title,
+          lang
+        )
+      : "";
+
+
+  return layout({
+
+    lang,
+
+    title:
+      tr(lang,"assistant"),
+
+    active:
+      "assistant",
+
+    body:`
+
+      <main class="appLayout">
+
+        <aside class="sidebar">
+
+          <div class="sidebarTop">
+
+            <div class="sidebarBrand">
+
+              <span class="sidebarBrandMark">
+                §
+              </span>
+
+              <div>
+
+                <strong>
+                  Huquqiy AI
+                </strong>
+
+                <small>
+                  LEGAL ASSISTANT
+                </small>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="sidebarNav">
+
+            <div class="sidebarLabel">
+              HUQUQIY XIZMATLAR
+            </div>
+
+            <a
+              class="sideLink active"
+              href="/assistant${q(lang)}"
+            >
+              <span class="sideIcon">
+                ✦
+              </span>
+
+              ${esc(tr(lang,"assistant"))}
+            </a>
+
+
+            <a
+              class="sideLink"
+              href="/questionnaire${q(lang)}"
+            >
+              <span class="sideIcon">
+                ✓
+              </span>
+
+              ${esc(tr(lang,"questionnaire"))}
+            </a>
+
+
+            <a
+              class="sideLink"
+              href="/documents${q(lang)}"
+            >
+              <span class="sideIcon">
+                ▤
+              </span>
+
+              ${esc(tr(lang,"documents"))}
+            </a>
+
+
+            <a
+              class="sideLink"
+              href="/court${q(lang)}"
+            >
+              <span class="sideIcon">
+                ⚖
+              </span>
+
+              ${esc(tr(lang,"court"))}
+            </a>
+
+
+            <a
+              class="sideLink"
+              href="/calculators${q(lang)}"
+            >
+              <span class="sideIcon">
+                ∑
+              </span>
+
+              ${esc(tr(lang,"calculators"))}
+            </a>
+
+
+            <a
+              class="sideLink"
+              href="/sources${q(lang)}"
+            >
+              <span class="sideIcon">
+                §
+              </span>
+
+              ${esc(tr(lang,"sources"))}
+            </a>
+
+          </div>
+
+
+          <div class="sidebarBottom">
+
+            <div class="sidebarSecurity">
+
+              <span>
+                ◈
+              </span>
+
+              <span>
+                ${
+                  lang === "uz"
+                    ? "Shaxsiy ma’lumotlarni faqat zarur bo‘lganda kiriting."
+                    : lang === "ru"
+                    ? "Указывайте персональные данные только при необходимости."
+                    : "Enter personal information only when necessary."
+                }
+              </span>
+
+            </div>
+
+          </div>
+
+        </aside>
+
+
+        <section class="appMain">
+
+          <div class="appTop">
+
+            <div class="appBreadcrumb">
+
+              <span>
+                Huquqiy AI
+              </span>
+
+              <span>
+                /
+              </span>
+
+              <strong>
+                ${esc(tr(lang,"assistant"))}
+              </strong>
+
+            </div>
+
+
+            <div class="appTopRight">
+
+              <div class="appLang">
+
+                <a
+                  class="${lang === "uz" ? "active" : ""}"
+                  href="/assistant?lang=uz${area ? "&area=" + encodeURIComponent(area) : ""}"
+                >
+                  UZ
+                </a>
+
+                <a
+                  class="${lang === "ru" ? "active" : ""}"
+                  href="/assistant?lang=ru${area ? "&area=" + encodeURIComponent(area) : ""}"
+                >
+                  RU
+                </a>
+
+                <a
+                  class="${lang === "en" ? "active" : ""}"
+                  href="/assistant?lang=en${area ? "&area=" + encodeURIComponent(area) : ""}"
+                >
+                  EN
+                </a>
+
+              </div>
+
+
+              <a
+                class="appHomeButton"
+                href="/${q(lang)}"
+                title="${esc(tr(lang,"home"))}"
+              >
+                ⌂
+              </a>
+
+            </div>
+
+          </div>
+
+
+          <div class="appHeader">
+
+            <div class="appHeaderSmall">
+              HUQUQIY AI
+            </div>
+
+            <h1>
+              ${esc(tr(lang,"assistant"))}
+            </h1>
+
+            <p>
+              ${esc(intro)}
+            </p>
+
+          </div>
+
+
+          <div class="aiShell">
+
+            <div class="aiTopBar">
+
+              <div class="aiIdentity">
+
+                <span class="aiOrb">
+                  §
+                </span>
+
+                <div>
+
+                  <strong>
+                    Huquqiy AI
+                  </strong>
+
+                  <small>
+                    UZBEKISTAN LEGAL ASSISTANT
+                  </small>
+
+                </div>
+
+              </div>
+
+
+              <div class="aiStatus">
+                ONLINE
+              </div>
+
+            </div>
+
+
+            <div class="aiBody">
+
+              <div class="aiIntro">
+
+                <h2>
+                  ${
+                    selectedTitle
+                      ? esc(selectedTitle)
+                      : esc(tr(lang,"assistant"))
+                  }
+                </h2>
+
+                <p>
+                  ${esc(intro)}
+                </p>
+
+              </div>
+
+
+              <form
+                method="POST"
+                action="/ai-result${q(lang)}"
+              >
+
+                <input
+                  type="hidden"
+                  name="area"
+                  value="${esc(area)}"
+                >
+
+
+                <div class="aiInputWrap">
+
+                  <div class="aiInputInner">
+
+                    <textarea
+                      name="question"
+                      required
+                      placeholder="${
+                        lang === "uz"
+                          ? "Masalan: Turmush o‘rtog‘im bilan ajrashmoqchiman. Ikki nafar farzandimiz bor..."
+                          : lang === "ru"
+                          ? "Например: Я хочу развестись. У нас двое детей..."
+                          : "For example: I want to get divorced. We have two children..."
+                      }"
+                    ></textarea>
+
+
+                    <div class="aiInputBottom">
+
+                      <span class="aiHint">
+
+                        ${
+                          lang === "uz"
+                            ? "Ism, pasport yoki aniq manzil kabi ortiqcha ma’lumotlarni yozmang."
+                            : lang === "ru"
+                            ? "Не указывайте лишние данные, такие как паспорт или точный адрес."
+                            : "Avoid unnecessary details such as passport information or exact address."
+                        }
+
+                      </span>
+
+
+                      <button
+                        class="btn btnPrimary"
+                        type="submit"
+                      >
+                        ✦ ${esc(tr(lang,"analyze"))}
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </form>
+
+
+              <div class="aiSuggestions">
+
+                ${
+                  LEGAL_AREAS
+                    .slice(0,6)
+                    .map(
+                      item => `
+
+                        <a
+                          class="aiChip"
+                          href="/assistant${q(lang)}&area=${encodeURIComponent(item.id)}"
+                        >
+                          ${esc(
+                            localized(
+                              item.title,
+                              lang
+                            )
+                          )}
+                        </a>
+
+                      `
+                    )
+                    .join("")
+                }
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </main>
+
+    `
+  });
+}
 // ======================================================
 // AI RESULT
 // ======================================================
@@ -7035,10 +5629,10 @@ Do not guarantee a court outcome and do not invent legislation.`
 
     answer =
       lang === "uz"
-        ? "AI tahlilini olishda xatolik yuz berdi. Serverdagi OPENROUTER_API_KEY sozlamasini tekshiring."
+        ? "Tahlilni yaratishda xatolik yuz berdi. OPENROUTER_API_KEY va server sozlamalarini tekshiring."
         : lang === "ru"
-        ? "Не удалось получить AI-анализ. Проверьте OPENROUTER_API_KEY на сервере."
-        : "The AI analysis could not be generated. Check OPENROUTER_API_KEY on the server.";
+        ? "Не удалось выполнить анализ. Проверьте OPENROUTER_API_KEY и настройки сервера."
+        : "The analysis could not be generated. Check OPENROUTER_API_KEY and server configuration.";
 
   }
 
@@ -7108,10 +5702,10 @@ function sourcesPage(lang) {
         "Rasmiy huquqiy manbalar",
 
       description:
-        "Huquqiy ma’lumotlarni tekshirish uchun asosiy rasmiy resurslar.",
+        "Huquqiy ma’lumotlarni tekshirish uchun rasmiy va ishonchli manbalardan foydalaning.",
 
-      info:
-        "AI tomonidan berilgan muhim huquqiy ma’lumotni amaldagi rasmiy matn bilan solishtirish tavsiya etiladi.",
+      warning:
+        "Qonunchilik o‘zgarishi mumkin. Muhim qaror qabul qilishdan oldin amaldagi tahrirni rasmiy manbadan tekshiring.",
 
       open:
         "Rasmiy saytni ochish"
@@ -7123,10 +5717,10 @@ function sourcesPage(lang) {
         "Официальные правовые источники",
 
       description:
-        "Основные официальные ресурсы для проверки правовой информации.",
+        "Используйте официальные и надёжные источники для проверки правовой информации.",
 
-      info:
-        "Важную правовую информацию, полученную от AI, рекомендуется сверять с действующим официальным текстом.",
+      warning:
+        "Законодательство может изменяться. Перед принятием важного решения проверьте действующую редакцию в официальном источнике.",
 
       open:
         "Открыть официальный сайт"
@@ -7138,10 +5732,10 @@ function sourcesPage(lang) {
         "Official legal sources",
 
       description:
-        "Key official resources for verifying legal information.",
+        "Use official and reliable sources to verify legal information.",
 
-      info:
-        "Important legal information provided by AI should be checked against the current official text.",
+      warning:
+        "Legislation may change. Verify the current version through an official source before making an important decision.",
 
       open:
         "Open official website"
@@ -7155,30 +5749,15 @@ function sourcesPage(lang) {
       .map(
         source => `
 
-          <a
-            class="sourceCard"
-            href="${source.url}"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <article class="documentCard">
 
-            <div class="sourceTop">
-
-              <span class="sourceIcon">
-                §
-              </span>
-
-              <span class="sourceExternal">
-                ↗
-              </span>
-
-            </div>
-
+            <span class="eyebrow">
+              RASMIY MANBA
+            </span>
 
             <h3>
               ${esc(source.name)}
             </h3>
-
 
             <p>
               ${esc(
@@ -7190,18 +5769,20 @@ function sourcesPage(lang) {
             </p>
 
 
-            <div
-              style="
-                margin-top:18px;
-                color:#99733b;
-                font-size:9px;
-                font-weight:850;
-              "
-            >
-              ${t.open} →
+            <div class="formActions">
+
+              <a
+                class="btn btnPrimary"
+                href="${esc(source.url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ${t.open} ↗
+              </a>
+
             </div>
 
-          </a>
+          </article>
 
         `
       )
@@ -7219,17 +5800,17 @@ function sourcesPage(lang) {
       <div class="notice noticeGold">
 
         <span class="noticeIcon">
-          §
+          !
         </span>
 
         <span>
-          ${t.info}
+          ${t.warning}
         </span>
 
       </div>
 
 
-      <div class="sourcesGrid">
+      <div class="documentGrid">
 
         ${cards}
 
@@ -7262,13 +5843,13 @@ function documentsPage(lang) {
         "Huquqiy hujjatlar",
 
       description:
-        "Vaziyatingizga mos dastlabki huquqiy hujjat loyihasini tayyorlang.",
+        "Vaziyatingizga mos hujjat turini tanlang va kerakli ma’lumotlarni kiriting.",
 
-      info:
-        "Tayyorlangan hujjat loyiha hisoblanadi. Sudga yoki boshqa organga topshirishdan oldin faktlar, talablar, rekvizitlar va amaldagi qonunchilikni tekshirish kerak.",
+      start:
+        "Hujjat tayyorlash",
 
-      create:
-        "Hujjat tayyorlash"
+      note:
+        "AI tayyorlagan hujjat loyihasini topshirishdan oldin faktlar, rekvizitlar va amaldagi qonunchilik bo‘yicha tekshirish tavsiya etiladi."
     },
 
 
@@ -7277,13 +5858,13 @@ function documentsPage(lang) {
         "Юридические документы",
 
       description:
-        "Подготовьте первичный проект юридического документа с учётом вашей ситуации.",
+        "Выберите тип документа и укажите необходимые сведения.",
 
-      info:
-        "Созданный документ является проектом. Перед подачей необходимо проверить факты, требования, реквизиты и действующее законодательство.",
+      start:
+        "Подготовить документ",
 
-      create:
-        "Подготовить документ"
+      note:
+        "Перед подачей документа, подготовленного AI, рекомендуется проверить факты, реквизиты и действующее законодательство."
     },
 
 
@@ -7292,13 +5873,13 @@ function documentsPage(lang) {
         "Legal documents",
 
       description:
-        "Prepare an initial legal-document draft based on your situation.",
+        "Choose a document type and provide the necessary information.",
 
-      info:
-        "The generated document is a draft. Verify facts, claims, details and current law before filing.",
+      start:
+        "Prepare document",
 
-      create:
-        "Prepare document"
+      note:
+        "Before filing an AI-generated document, verify the facts, details and current law."
     }
 
   }[lang];
@@ -7307,21 +5888,18 @@ function documentsPage(lang) {
   const cards =
     DOCUMENT_TYPES
       .map(
-        document => `
+        item => `
 
-          <a
-            class="documentCard"
-            href="/claim${q(lang)}&type=${encodeURIComponent(document.id)}"
-          >
+          <article class="documentCard">
 
-            <div class="documentCardIcon">
-              ▤
-            </div>
+            <span class="eyebrow">
+              HUJJAT
+            </span>
 
             <h3>
               ${esc(
                 localized(
-                  document.title,
+                  item.title,
                   lang
                 )
               )}
@@ -7330,17 +5908,25 @@ function documentsPage(lang) {
             <p>
               ${esc(
                 localized(
-                  document.description,
+                  item.description,
                   lang
                 )
               )}
             </p>
 
-            <span class="serviceArrow">
-              →
-            </span>
 
-          </a>
+            <div class="formActions">
+
+              <a
+                class="btn btnPrimary"
+                href="/claim${q(lang)}&type=${encodeURIComponent(item.id)}"
+              >
+                ${t.start} →
+              </a>
+
+            </div>
+
+          </article>
 
         `
       )
@@ -7355,14 +5941,14 @@ function documentsPage(lang) {
 
     `
 
-      <div class="notice noticeGold">
+      <div class="notice noticeInfo">
 
         <span class="noticeIcon">
-          !
+          ✓
         </span>
 
         <span>
-          ${t.info}
+          ${t.note}
         </span>
 
       </div>
@@ -7391,15 +5977,16 @@ function documentsPage(lang) {
 
 function claimPage(
   lang,
-  type = "divorce_claim"
+  type = ""
 ) {
 
   lang = getLang(lang);
 
 
-  const selectedType =
+  const documentType =
     DOCUMENT_TYPES.find(
-      item => item.id === type
+      item =>
+        item.id === type
     ) ||
     DOCUMENT_TYPES[0];
 
@@ -7408,172 +5995,118 @@ function claimPage(
 
     uz: {
       title:
-        "Hujjat loyihasini tayyorlash",
+        "Hujjat ma’lumotlari",
 
       description:
-        "Quyidagi ma’lumotlarni kiriting. AI ularni huquqiy hujjat loyihasiga aylantiradi.",
+        "Hujjat loyihasini tayyorlash uchun asosiy ma’lumotlarni kiriting.",
 
-      documentType:
+      type:
         "Hujjat turi",
 
       court:
-        "Sud nomi",
-
-      courtPlaceholder:
-        "Masalan: Fuqarolik ishlari bo‘yicha ... sudi",
+        "Sud yoki tashkilot nomi",
 
       claimant:
         "Arizachi / da’vogar",
 
-      claimantPlaceholder:
-        "F.I.Sh. yoki keyin to‘ldirish uchun belgi",
-
       defendant:
-        "Ikkinchi taraf / javobgar",
-
-      defendantPlaceholder:
-        "F.I.Sh. yoki keyin to‘ldirish uchun belgi",
+        "Javobgar / ikkinchi tomon",
 
       address:
         "Manzil va aloqa ma’lumotlari",
 
       facts:
-        "Ish holatlari",
-
-      factsPlaceholder:
-        "Vaziyatni xronologik va aniq bayon qiling...",
+        "Vaziyat va muhim faktlar",
 
       request:
-        "Suddan yoki organdan nima so‘ralmoqda?",
-
-      requestPlaceholder:
-        "Talablaringizni yozing...",
+        "Talab yoki so‘rov",
 
       evidence:
-        "Mavjud dalillar va ilovalar",
+        "Dalillar va ilovalar",
 
-      evidencePlaceholder:
-        "Guvohnoma, shartnoma, to‘lov hujjati va boshqalar...",
-
-      create:
+      submit:
         "Hujjat loyihasini yaratish",
 
-      warning:
-        "Maxfiy ma’lumotlarni zarurat bo‘lmasa kiritmang."
+      privacy:
+        "Hujjat yaratish uchun zarur bo‘lmagan maxfiy ma’lumotlarni kiritmang."
     },
 
 
     ru: {
       title:
-        "Подготовка проекта документа",
+        "Данные документа",
 
       description:
-        "Введите данные ниже. AI сформирует первичный проект юридического документа.",
+        "Введите основные сведения для подготовки проекта документа.",
 
-      documentType:
+      type:
         "Тип документа",
 
       court:
-        "Наименование суда",
-
-      courtPlaceholder:
-        "Например: Межрайонный суд по гражданским делам...",
+        "Наименование суда или организации",
 
       claimant:
         "Заявитель / истец",
 
-      claimantPlaceholder:
-        "Ф.И.О. или отметка для последующего заполнения",
-
       defendant:
-        "Вторая сторона / ответчик",
-
-      defendantPlaceholder:
-        "Ф.И.О. или отметка для последующего заполнения",
+        "Ответчик / другая сторона",
 
       address:
         "Адрес и контактные данные",
 
       facts:
-        "Обстоятельства дела",
-
-      factsPlaceholder:
-        "Изложите ситуацию последовательно и точно...",
+        "Обстоятельства и важные факты",
 
       request:
-        "Что вы просите у суда или органа?",
-
-      requestPlaceholder:
-        "Укажите требования...",
+        "Требование или просьба",
 
       evidence:
-        "Имеющиеся доказательства и приложения",
+        "Доказательства и приложения",
 
-      evidencePlaceholder:
-        "Свидетельство, договор, платежные документы и т.д.",
-
-      create:
+      submit:
         "Создать проект документа",
 
-      warning:
-        "Не указывайте конфиденциальные сведения без необходимости."
+      privacy:
+        "Не указывайте конфиденциальные данные, которые не нужны для подготовки документа."
     },
 
 
     en: {
       title:
-        "Prepare document draft",
+        "Document information",
 
       description:
-        "Enter the information below. AI will turn it into an initial legal-document draft.",
+        "Provide the main information needed to prepare the document draft.",
 
-      documentType:
+      type:
         "Document type",
 
       court:
-        "Court name",
-
-      courtPlaceholder:
-        "Example: Interdistrict Civil Court...",
+        "Court or organization",
 
       claimant:
         "Applicant / claimant",
 
-      claimantPlaceholder:
-        "Full name or placeholder",
-
       defendant:
-        "Other party / defendant",
-
-      defendantPlaceholder:
-        "Full name or placeholder",
+        "Defendant / other party",
 
       address:
         "Address and contact information",
 
       facts:
-        "Facts of the case",
-
-      factsPlaceholder:
-        "Describe the situation chronologically and accurately...",
+        "Situation and important facts",
 
       request:
-        "What are you asking the court or authority to do?",
-
-      requestPlaceholder:
-        "State the requested relief...",
+        "Request or relief sought",
 
       evidence:
-        "Available evidence and attachments",
+        "Evidence and attachments",
 
-      evidencePlaceholder:
-        "Certificate, agreement, payment records, etc.",
+      submit:
+        "Generate document draft",
 
-      create:
-        "Create document draft",
-
-      warning:
-        "Do not provide confidential information unless necessary."
+      privacy:
+        "Do not provide confidential information that is unnecessary for preparing the document."
     }
 
   }[lang];
@@ -7594,7 +6127,7 @@ function claimPage(
         </span>
 
         <span>
-          ${t.warning}
+          ${t.privacy}
         </span>
 
       </div>
@@ -7605,17 +6138,16 @@ function claimPage(
         <h2 class="cardTitle">
           ${esc(
             localized(
-              selectedType.title,
+              documentType.title,
               lang
             )
           )}
         </h2>
 
-
         <p class="cardDescription">
           ${esc(
             localized(
-              selectedType.description,
+              documentType.description,
               lang
             )
           )}
@@ -7630,7 +6162,7 @@ function claimPage(
           <input
             type="hidden"
             name="type"
-            value="${esc(selectedType.id)}"
+            value="${esc(documentType.id)}"
           >
 
 
@@ -7640,38 +6172,18 @@ function claimPage(
             <div class="formGroup full">
 
               <label>
-                ${t.documentType}
+                ${t.type}
               </label>
 
-              <select
-                name="document_type"
-              >
-
-                ${DOCUMENT_TYPES
-                  .map(
-                    item => `
-
-                      <option
-                        value="${esc(item.id)}"
-                        ${
-                          item.id === selectedType.id
-                            ? "selected"
-                            : ""
-                        }
-                      >
-                        ${esc(
-                          localized(
-                            item.title,
-                            lang
-                          )
-                        )}
-                      </option>
-
-                    `
+              <input
+                value="${esc(
+                  localized(
+                    documentType.title,
+                    lang
                   )
-                  .join("")}
-
-              </select>
+                )}"
+                readonly
+              >
 
             </div>
 
@@ -7684,7 +6196,7 @@ function claimPage(
 
               <input
                 name="court"
-                placeholder="${esc(t.courtPlaceholder)}"
+                type="text"
               >
 
             </div>
@@ -7698,7 +6210,7 @@ function claimPage(
 
               <input
                 name="claimant"
-                placeholder="${esc(t.claimantPlaceholder)}"
+                type="text"
               >
 
             </div>
@@ -7712,7 +6224,7 @@ function claimPage(
 
               <input
                 name="defendant"
-                placeholder="${esc(t.defendantPlaceholder)}"
+                type="text"
               >
 
             </div>
@@ -7724,9 +6236,9 @@ function claimPage(
                 ${t.address}
               </label>
 
-              <input
+              <textarea
                 name="address"
-              >
+              ></textarea>
 
             </div>
 
@@ -7740,7 +6252,6 @@ function claimPage(
               <textarea
                 name="facts"
                 required
-                placeholder="${esc(t.factsPlaceholder)}"
               ></textarea>
 
             </div>
@@ -7754,7 +6265,6 @@ function claimPage(
 
               <textarea
                 name="request"
-                placeholder="${esc(t.requestPlaceholder)}"
               ></textarea>
 
             </div>
@@ -7768,10 +6278,10 @@ function claimPage(
 
               <textarea
                 name="evidence"
-                placeholder="${esc(t.evidencePlaceholder)}"
               ></textarea>
 
             </div>
+
 
           </div>
 
@@ -7782,7 +6292,7 @@ function claimPage(
               type="submit"
               class="btn btnGold"
             >
-              ✦ ${t.create}
+              ✦ ${t.submit}
             </button>
 
           </div>
@@ -7803,7 +6313,7 @@ function claimPage(
 
 
 // ======================================================
-// CLAIM RESULT
+// CLAIM RESULT PAGE
 // ======================================================
 
 async function claimResultPage(
@@ -7818,11 +6328,7 @@ async function claimResultPage(
     DOCUMENT_TYPES.find(
       item =>
         item.id ===
-        String(
-          form.document_type ||
-          form.type ||
-          ""
-        )
+        String(form.type || "")
     ) ||
     DOCUMENT_TYPES[0];
 
@@ -7834,28 +6340,28 @@ async function claimResultPage(
         "Hujjat loyihasi",
 
       description:
-        "Taqdim etilgan ma’lumotlar asosida yaratilgan dastlabki huquqiy hujjat.",
+        "Kiritilgan ma’lumotlar asosida shakllantirilgan dastlabki hujjat loyihasi.",
 
       label:
         "HUQUQIY AI • HUJJAT LOYIHASI",
 
       edit:
-        "Qayta tayyorlash",
+        "Ma’lumotlarni o‘zgartirish",
 
       documents:
-        "Hujjatlar",
+        "Hujjatlar bo‘limi",
 
       instruction:
-        `Quyidagi ma’lumotlar asosida professional huquqiy hujjat loyihasini tayyorlang.
+        `Kiritilgan ma’lumotlar asosida professional huquqiy hujjat loyihasini tayyorlang.
 
-Muhim:
+Muhim talablar:
 - mavjud bo‘lmagan faktlarni uydirmang;
 - mavjud bo‘lmagan qonun moddalarini uydirmang;
-- yetishmayotgan rekvizitlar uchun [TO‘LDIRING] belgisi qo‘ying;
+- yetishmayotgan rekvizitlar uchun [TO‘LDIRILADI] deb yozing;
 - rasmiy va professional uslubdan foydalaning;
-- hujjat tuzilishini saqlang;
+- hujjatning tegishli tuzilishini saqlang;
 - ilovalar bo‘limini kiriting;
-- zarur bo‘lsa, topshirishdan oldin amaldagi qonunchilikni tekshirish kerakligini qayd eting.`
+- zarur hollarda topshirishdan oldin amaldagi qonunchilikni tekshirish kerakligini ko‘rsating.`
     },
 
 
@@ -7864,28 +6370,28 @@ Muhim:
         "Проект документа",
 
       description:
-        "Первичный юридический документ, сформированный на основе предоставленных данных.",
+        "Предварительный проект документа на основе введённых данных.",
 
       label:
         "HUQUQIY AI • ПРОЕКТ ДОКУМЕНТА",
 
       edit:
-        "Подготовить заново",
+        "Изменить данные",
 
       documents:
-        "Документы",
+        "Раздел документов",
 
       instruction:
-        `Подготовьте профессиональный проект юридического документа на основе предоставленной информации.
+        `Подготовьте профессиональный проект юридического документа на основе предоставленных данных.
 
 Важно:
 - не придумывайте отсутствующие факты;
-- не придумывайте статьи законодательства;
+- не придумывайте нормы законодательства;
 - для недостающих реквизитов используйте [ЗАПОЛНИТЬ];
 - используйте официальный профессиональный стиль;
-- соблюдайте структуру документа;
+- соблюдайте соответствующую структуру документа;
 - добавьте раздел приложений;
-- при необходимости укажите, что перед подачей следует проверить действующее законодательство.`
+- при необходимости укажите, что перед подачей необходимо проверить действующее законодательство.`
     },
 
 
@@ -7894,16 +6400,16 @@ Muhim:
         "Document draft",
 
       description:
-        "Initial legal document generated from the information provided.",
+        "A preliminary document draft generated from the information provided.",
 
       label:
         "HUQUQIY AI • DOCUMENT DRAFT",
 
       edit:
-        "Prepare again",
+        "Edit information",
 
       documents:
-        "Documents",
+        "Documents section",
 
       instruction:
         `Prepare a professional legal-document draft using the information provided.
@@ -8498,7 +7004,7 @@ function notFoundPage(lang) {
       >
 
         <div
-          class="surface surfacePad"
+                  class="surface surfacePad"
           style="
             width:min(600px,92%);
             text-align:center;
@@ -8710,6 +7216,29 @@ const TASHKENT_COURTS = [
 
 
   {
+    id: "civil-uchtepa",
+
+    type: "civil",
+
+    district: "Uchtepa",
+
+    name: {
+      uz:
+        "Fuqarolik ishlari bo‘yicha Uchtepa tumanlararo sudi",
+
+      ru:
+        "Учтепинский межрайонный суд по гражданским делам",
+
+      en:
+        "Uchtepa Interdistrict Civil Court"
+    },
+
+    keywords:
+      "fuqarolik uchtepa tumanlararo sudi civil"
+  },
+
+
+  {
     id: "civil-yakkasaroy",
 
     type: "civil",
@@ -8732,8 +7261,169 @@ const TASHKENT_COURTS = [
   },
 
 
+  {
+    id: "civil-chilonzor",
+
+    type: "civil",
+
+    district: "Chilonzor",
+
+    name: {
+      uz:
+        "Fuqarolik ishlari bo‘yicha Chilonzor tumanlararo sudi",
+
+      ru:
+        "Чиланзарский межрайонный суд по гражданским делам",
+
+      en:
+        "Chilonzor Interdistrict Civil Court"
+    },
+
+    keywords:
+      "fuqarolik chilonzor tumanlararo sudi civil"
+  },
+
+
+  {
+    id: "civil-mirzo-ulugbek",
+
+    type: "civil",
+
+    district: "Mirzo Ulug‘bek",
+
+    name: {
+      uz:
+        "Fuqarolik ishlari bo‘yicha Mirzo Ulug‘bek tumanlararo sudi",
+
+      ru:
+        "Мирзо-Улугбекский межрайонный суд по гражданским делам",
+
+      en:
+        "Mirzo Ulugbek Interdistrict Civil Court"
+    },
+
+    keywords:
+      "fuqarolik mirzo ulugbek tumanlararo sudi civil"
+  },
+
+
+  {
+    id: "civil-sergeli",
+
+    type: "civil",
+
+    district: "Sergeli",
+
+    name: {
+      uz:
+        "Fuqarolik ishlari bo‘yicha Sergeli tumanlararo sudi",
+
+      ru:
+        "Сергелийский межрайонный суд по гражданским делам",
+
+      en:
+        "Sergeli Interdistrict Civil Court"
+    },
+
+    keywords:
+      "fuqarolik sergeli tumanlararo sudi civil"
+  },
+
+
+  {
+    id: "civil-yashnobod",
+
+    type: "civil",
+
+    district: "Yashnobod",
+
+    name: {
+      uz:
+        "Fuqarolik ishlari bo‘yicha Yashnobod tumanlararo sudi",
+
+      ru:
+        "Яшнабадский межрайонный суд по гражданским делам",
+
+      en:
+        "Yashnobod Interdistrict Civil Court"
+    },
+
+    keywords:
+      "fuqarolik yashnobod tumanlararo sudi civil"
+  },
+
+
+  {
+    id: "civil-olmazor",
+
+    type: "civil",
+
+    district: "Olmazor",
+
+    name: {
+      uz:
+        "Fuqarolik ishlari bo‘yicha Olmazor tumanlararo sudi",
+
+      ru:
+        "Алмазарский межрайонный суд по гражданским делам",
+
+      en:
+        "Olmazor Interdistrict Civil Court"
+    },
+
+    keywords:
+      "fuqarolik olmazor tumanlararo sudi civil"
+  },
+
+
+  {
+    id: "civil-bektemir",
+
+    type: "civil",
+
+    district: "Bektemir",
+
+    name: {
+      uz:
+        "Fuqarolik ishlari bo‘yicha Bektemir tumanlararo sudi",
+
+      ru:
+        "Бектемирский межрайонный суд по гражданским делам",
+
+      en:
+        "Bektemir Interdistrict Civil Court"
+    },
+
+    keywords:
+      "fuqarolik bektemir tumanlararo sudi civil"
+  },
+
+
+  {
+    id: "civil-yangihayot",
+
+    type: "civil",
+
+    district: "Yangihayot",
+
+    name: {
+      uz:
+        "Fuqarolik ishlari bo‘yicha Yangihayot tumanlararo sudi",
+
+      ru:
+        "Янгиҳаётский межрайонный суд по гражданским делам",
+
+      en:
+        "Yangihayot Interdistrict Civil Court"
+    },
+
+    keywords:
+      "fuqarolik yangihayot tumanlararo sudi civil"
+  },
+
+
   // ----------------------------------------------------
-  // CRIMINAL DISTRICT COURTS
+  // CRIMINAL COURTS
   // ----------------------------------------------------
 
   {
@@ -8755,7 +7445,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat bektemir criminal court"
+      "jinoyat bektemir tuman sudi criminal"
   },
 
 
@@ -8778,7 +7468,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat chilonzor criminal court"
+      "jinoyat chilonzor tuman sudi criminal"
   },
 
 
@@ -8801,7 +7491,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat mirobod criminal court"
+      "jinoyat mirobod tuman sudi criminal"
   },
 
 
@@ -8824,7 +7514,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat mirzo ulugbek criminal court"
+      "jinoyat mirzo ulugbek tuman sudi criminal"
   },
 
 
@@ -8847,7 +7537,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat olmazor criminal court"
+      "jinoyat olmazor tuman sudi criminal"
   },
 
 
@@ -8870,7 +7560,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat sergeli criminal court"
+      "jinoyat sergeli tuman sudi criminal"
   },
 
 
@@ -8893,7 +7583,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat shayxontohur criminal court"
+      "jinoyat shayxontohur tuman sudi criminal"
   },
 
 
@@ -8916,7 +7606,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat uchtepa criminal court"
+      "jinoyat uchtepa tuman sudi criminal"
   },
 
 
@@ -8939,7 +7629,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat yakkasaroy criminal court"
+      "jinoyat yakkasaroy tuman sudi criminal"
   },
 
 
@@ -8962,7 +7652,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat yashnobod criminal court"
+      "jinoyat yashnobod tuman sudi criminal"
   },
 
 
@@ -8985,7 +7675,7 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat yunusobod criminal court"
+      "jinoyat yunusobod tuman sudi criminal"
   },
 
 
@@ -9008,23 +7698,30 @@ const TASHKENT_COURTS = [
     },
 
     keywords:
-      "jinoyat yangihayot criminal court"
+      "jinoyat yangihayot tuman sudi criminal"
   }
 
 ];
 
 
 // ======================================================
-// GOOGLE MAPS HELPERS
+// GOOGLE MAPS
 // ======================================================
 
 function googleMapsSearch(
   name,
-  district = ""
+  district
 ) {
 
   const query =
-    `${name}, ${district}, Toshkent, Uzbekistan`;
+    [
+      name,
+      district,
+      "Toshkent",
+      "Uzbekistan"
+    ]
+      .filter(Boolean)
+      .join(", ");
 
 
   return (
@@ -9037,27 +7734,182 @@ function googleMapsSearch(
 
 function googleMapsDirections(
   name,
-  district = ""
+  district
 ) {
 
   const destination =
-    `${name}, ${district}, Toshkent, Uzbekistan`;
+    [
+      name,
+      district,
+      "Toshkent",
+      "Uzbekistan"
+    ]
+      .filter(Boolean)
+      .join(", ");
 
 
   return (
     "https://www.google.com/maps/dir/?api=1&destination=" +
-    encodeURIComponent(destination) +
-    "&travelmode=driving"
+    encodeURIComponent(destination)
   );
 
 }
 
 
 // ======================================================
-// COURT FINDER CSS
+// COURT PAGE CSS
 // ======================================================
 
 const COURT_CSS = `
+
+.courtHero{
+  position:relative;
+  overflow:hidden;
+
+  padding:
+    58px 0 38px;
+
+  color:#fff;
+
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(201,168,106,.17),
+      transparent 28%
+    ),
+    linear-gradient(
+      135deg,
+      #06111f,
+      #0b2946
+    );
+
+  border-bottom:
+    1px solid rgba(201,168,106,.16);
+}
+
+
+.courtHero::after{
+  content:"⚖";
+
+  position:absolute;
+
+  right:6%;
+  top:50%;
+
+  transform:
+    translateY(-50%);
+
+  color:
+    rgba(201,168,106,.06);
+
+  font-size:
+    clamp(120px,18vw,220px);
+}
+
+
+.courtHeroInner{
+  position:relative;
+  z-index:2;
+}
+
+
+.courtHero .eyebrow{
+  color:#d7b972;
+}
+
+
+.courtHero h1{
+  max-width:850px;
+
+  margin:
+    12px 0 12px;
+
+  color:#fff;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(34px,5vw,54px);
+
+  font-weight:500;
+
+  line-height:1.06;
+}
+
+
+.courtHero p{
+  max-width:760px;
+
+  margin:0;
+
+  color:#aebdca;
+
+  font-size:12px;
+
+  line-height:1.8;
+}
+
+
+.courtMain{
+  padding:
+    28px 0 65px;
+}
+
+
+.courtInfoGrid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(4,minmax(0,1fr));
+
+  gap:12px;
+
+  margin-bottom:22px;
+}
+
+
+.courtInfoCard{
+  padding:17px;
+
+  background:#fff;
+
+  border:
+    1px solid #e0e5e9;
+
+  border-radius:11px;
+
+  box-shadow:
+    0 8px 25px rgba(6,17,31,.035);
+}
+
+
+.courtInfoCard small{
+  display:block;
+
+  margin-bottom:6px;
+
+  color:#a27a3f;
+
+  font-size:7px;
+
+  font-weight:900;
+
+  letter-spacing:1.2px;
+}
+
+
+.courtInfoCard strong{
+  display:block;
+
+  color:#1e354c;
+
+  font-size:11px;
+
+  line-height:1.45;
+}
+
 
 .courtToolbar{
   display:flex;
@@ -9068,19 +7920,7 @@ const COURT_CSS = `
 
   gap:15px;
 
-  margin-bottom:15px;
-
-  padding:15px;
-
-  background:#fff;
-
-  border:
-    1px solid #e0e6eb;
-
-  border-radius:13px;
-
-  box-shadow:
-    0 9px 28px rgba(6,17,31,.04);
+  margin-bottom:18px;
 }
 
 
@@ -9091,72 +7931,72 @@ const COURT_CSS = `
 }
 
 
-.courtSearch span{
-  position:absolute;
-
-  left:14px;
-
-  top:50%;
-
-  transform:
-    translateY(-50%);
-
-  color:#a27b40;
-
-  font-size:14px;
-}
-
-
 .courtSearch input{
   width:100%;
 
-  height:47px;
+  height:50px;
 
   padding:
-    10px 14px 10px 40px;
+    0 16px 0 42px;
 
   color:#263d55;
 
-  background:#f8fafb;
+  background:#fff;
 
   border:
     1px solid #dde4e9;
 
-  border-radius:9px;
+  border-radius:10px;
 
   outline:0;
 
-  font-size:10px;
+  box-shadow:
+    0 8px 25px rgba(6,17,31,.035);
 }
 
 
 .courtSearch input:focus{
-  background:#fff;
-
   border-color:
-    rgba(201,168,106,.65);
+    rgba(201,168,106,.7);
 
   box-shadow:
     0 0 0 3px rgba(201,168,106,.09);
 }
 
 
+.courtSearchIcon{
+  position:absolute;
+
+  left:15px;
+  top:50%;
+
+  transform:
+    translateY(-50%);
+
+  color:#a58047;
+
+  font-size:15px;
+
+  pointer-events:none;
+}
+
+
 .courtCount{
-  min-width:110px;
+  min-width:105px;
 
   padding:
-    10px 13px;
+    11px 14px;
 
   text-align:center;
 
-  color:#617183;
+  color:#40566d;
 
-  background:#f6f8f9;
+  background:#fff;
 
   border:
-    1px solid #e0e6ea;
+    1px solid #dde4e9;
 
-  border-radius:8px;
+  border-radius:9px;
 
   font-size:9px;
 
@@ -9171,7 +8011,7 @@ const COURT_CSS = `
 
   gap:7px;
 
-  margin-bottom:15px;
+  margin-bottom:20px;
 }
 
 
@@ -9179,7 +8019,7 @@ const COURT_CSS = `
   padding:
     9px 12px;
 
-  color:#6f7e8e;
+  color:#68798a;
 
   background:#fff;
 
@@ -9199,10 +8039,10 @@ const COURT_CSS = `
 
 
 .courtFilter:hover{
-  color:#8e6a33;
+  color:#172e45;
 
   border-color:
-    rgba(201,168,106,.5);
+    rgba(201,168,106,.55);
 }
 
 
@@ -9212,233 +8052,174 @@ const COURT_CSS = `
   background:
     linear-gradient(
       145deg,
-      #071522,
-      #0a2946
+      #06111f,
+      #0b2946
     );
 
-  border-color:#0a2946;
-
-  box-shadow:
-    0 7px 18px rgba(6,17,31,.13);
+  border-color:#06111f;
 }
 
 
-.courtFinderGrid{
+.courtGrid{
   display:grid;
 
   grid-template-columns:
-    minmax(360px,.82fr)
-    minmax(450px,1.18fr);
+    repeat(3,minmax(0,1fr));
 
   gap:15px;
-
-  align-items:start;
 }
 
 
-.courtListPanel{
+.courtCard{
+  position:relative;
+
+  min-height:310px;
+
+  padding:21px;
+
+  display:flex;
+
+  flex-direction:column;
+
   overflow:hidden;
 
   background:#fff;
 
   border:
-    1px solid #e0e6eb;
+    1px solid #dfe5ea;
 
-  border-radius:14px;
+  border-radius:13px;
 
   box-shadow:
-    0 12px 35px rgba(6,17,31,.045);
-}
+    0 10px 30px rgba(6,17,31,.04);
 
-
-.courtListHeader{
-  padding:
-    17px 19px;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:15px;
-
-  border-bottom:
-    1px solid #edf0f2;
-}
-
-
-.courtListHeader strong{
-  color:#172f47;
-
-  font-family:Georgia,serif;
-
-  font-size:17px;
-
-  font-weight:550;
-}
-
-
-.courtListHeader span{
-  color:#9b7840;
-
-  font-size:8px;
-
-  font-weight:850;
-
-  letter-spacing:1px;
-}
-
-
-.courtList{
-  max-height:650px;
-
-  padding:10px;
-
-  overflow:auto;
-}
-
-
-.courtList::-webkit-scrollbar{
-  width:5px;
-}
-
-
-.courtList::-webkit-scrollbar-thumb{
-  background:#d4dce3;
-
-  border-radius:20px;
-}
-
-
-.courtCard{
-  margin-bottom:8px;
-
-  padding:15px;
-
-  background:#fbfcfd;
-
-  border:
-    1px solid #e6eaee;
-
-  border-radius:10px;
-
-  transition:.18s ease;
+  transition:.2s ease;
 }
 
 
 .courtCard:hover{
-  background:#fff;
+  transform:
+    translateY(-4px);
 
   border-color:
-    rgba(201,168,106,.5);
+    rgba(201,168,106,.55);
 
   box-shadow:
-    0 10px 25px rgba(6,17,31,.06);
+    0 20px 45px rgba(6,17,31,.085);
+}
+
+
+.courtCard::before{
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:0;
+
+  width:100%;
+  height:2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #c9a86a,
+      transparent
+    );
 }
 
 
 .courtCardTop{
   display:flex;
 
-  align-items:flex-start;
+  align-items:center;
 
   justify-content:space-between;
 
-  gap:12px;
+  gap:8px;
+
+  margin-bottom:14px;
 }
 
 
-.courtTypeIcon{
-  width:36px;
-  height:36px;
+.courtType{
+  display:inline-flex;
 
-  display:grid;
+  padding:
+    6px 8px;
 
-  place-items:center;
+  color:#8b6832;
 
-  flex:0 0 auto;
-
-  color:#94703a;
-
-  background:#fff7e8;
+  background:#fff8ea;
 
   border:
     1px solid #ead9b8;
 
-  border-radius:8px;
-
-  font-family:Georgia,serif;
-
-  font-size:14px;
-}
-
-
-.courtCardContent{
-  flex:1;
-
-  min-width:0;
-}
-
-
-.courtCard h3{
-  margin:0;
-
-  color:#19324b;
-
-  font-family:Georgia,serif;
-
-  font-size:14px;
-
-  line-height:1.4;
-
-  font-weight:550;
-}
-
-
-.courtMeta{
-  display:flex;
-
-  flex-wrap:wrap;
-
-  gap:6px;
-
-  margin-top:8px;
-}
-
-
-.courtTag{
-  padding:
-    5px 7px;
-
-  color:#718090;
-
-  background:#f1f4f6;
-
-  border-radius:5px;
+  border-radius:6px;
 
   font-size:7px;
+
+  font-weight:900;
+
+  letter-spacing:.6px;
+}
+
+
+.courtDistrict{
+  color:#8492a1;
+
+  font-size:8px;
 
   font-weight:800;
 }
 
 
-.courtTag.gold{
-  color:#86632f;
+.courtCard h3{
+  margin:
+    0 0 13px;
 
-  background:#fff6e6;
+  color:#172e45;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:17px;
+
+  font-weight:600;
+
+  line-height:1.4;
 }
 
 
-.courtActions{
-  display:grid;
+.courtCard p{
+  margin:
+    0 0 7px;
 
-  grid-template-columns:
-    1fr 1fr;
+  color:#6e7e8e;
+
+  font-size:9px;
+
+  line-height:1.6;
+}
+
+
+.courtCard p strong{
+  color:#3c5268;
+}
+
+
+.courtCardActions{
+  display:flex;
+
+  flex-wrap:wrap;
 
   gap:7px;
 
-  margin-top:12px;
+  margin-top:auto;
+
+  padding-top:15px;
 }
 
 
@@ -9446,127 +8227,127 @@ const COURT_CSS = `
   min-height:37px;
 
   padding:
-    8px 9px;
+    9px 11px;
 
-  display:flex;
+  display:inline-flex;
 
   align-items:center;
 
   justify-content:center;
 
-  gap:6px;
-
-  color:#314960;
+  color:#294a68;
 
   background:#fff;
 
   border:
-    1px solid #dde4e9;
+    1px solid #dce3e8;
 
   border-radius:7px;
 
   font-size:8px;
 
-  font-weight:800;
+  font-weight:850;
 
   transition:.18s ease;
 }
 
 
 .courtMapButton:hover{
-  color:#805f2f;
+  background:#fffaf0;
 
   border-color:
-    rgba(201,168,106,.55);
+    rgba(201,168,106,.6);
 }
 
 
 .courtMapButton.primary{
   color:#fff;
 
-  background:#0a223a;
+  background:
+    linear-gradient(
+      145deg,
+      #06111f,
+      #0b2946
+    );
 
-  border-color:#0a223a;
-}
-
-
-.courtMapPanel{
-  position:sticky;
-
-  top:100px;
-
-  overflow:hidden;
-
-  min-height:650px;
-
-  background:#fff;
-
-  border:
-    1px solid #e0e6eb;
-
-  border-radius:14px;
-
-  box-shadow:
-    0 12px 35px rgba(6,17,31,.045);
-}
-
-
-.courtMapHeader{
-  padding:
-    17px 19px;
-
-  display:flex;
-
-  align-items:center;
-
-  justify-content:space-between;
-
-  gap:20px;
-
-  border-bottom:
-    1px solid #edf0f2;
-}
-
-
-.courtMapHeader strong{
-  color:#19324b;
-
-  font-family:Georgia,serif;
-
-  font-size:17px;
-
-  font-weight:550;
-}
-
-
-.courtMapHeader span{
-  color:#8996a4;
-
-  font-size:8px;
-}
-
-
-.courtMapFrame{
-  width:100%;
-
-  height:590px;
-
-  border:0;
-
-  display:block;
-
-  background:#eef2f5;
+  border-color:#06111f;
 }
 
 
 .courtEmpty{
-  padding:35px 20px;
+  display:none;
+
+  margin-top:15px;
+
+  padding:35px;
 
   text-align:center;
 
-  color:#84919f;
+  color:#788797;
 
-  font-size:10px;
+  background:#fff;
+
+  border:
+    1px dashed #d8dfe5;
+
+  border-radius:12px;
+}
+
+
+.courtGuide{
+  margin-top:30px;
+
+  padding:27px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #071522,
+      #0a2946
+    );
+
+  border:
+    1px solid rgba(201,168,106,.15);
+
+  border-radius:15px;
+
+  box-shadow:
+    0 17px 45px rgba(6,17,31,.11);
+}
+
+
+.courtGuideHeader{
+  margin-bottom:20px;
+}
+
+
+.courtGuideHeader small{
+  display:block;
+
+  margin-bottom:6px;
+
+  color:#d3b36d;
+
+  font-size:7px;
+
+  font-weight:900;
+
+  letter-spacing:1.4px;
+}
+
+
+.courtGuideHeader h2{
+  margin:0;
+
+  color:#fff;
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size:24px;
+
+  font-weight:500;
 }
 
 
@@ -9574,36 +8355,35 @@ const COURT_CSS = `
   display:grid;
 
   grid-template-columns:
-    repeat(4,1fr);
+    repeat(4,minmax(0,1fr));
 
-  gap:10px;
-
-  margin-top:15px;
+  gap:12px;
 }
 
 
 .courtStep{
-  padding:18px;
+  padding:17px;
 
-  background:#fff;
+  background:
+    rgba(255,255,255,.045);
 
   border:
-    1px solid #e0e6eb;
+    1px solid rgba(255,255,255,.07);
 
-  border-radius:11px;
+  border-radius:9px;
 }
 
 
 .courtStep span{
   display:block;
 
-  margin-bottom:11px;
+  margin-bottom:8px;
 
-  color:#ad874a;
+  color:#d3b36d;
 
-  font-family:Georgia,serif;
+  font-size:9px;
 
-  font-size:17px;
+  font-weight:900;
 }
 
 
@@ -9612,7 +8392,7 @@ const COURT_CSS = `
 
   margin-bottom:6px;
 
-  color:#1c354e;
+  color:#fff;
 
   font-size:10px;
 }
@@ -9621,35 +8401,38 @@ const COURT_CSS = `
 .courtStep p{
   margin:0;
 
-  color:#7e8c9b;
+  color:#899caf;
 
-  font-size:9px;
+  font-size:8px;
 
   line-height:1.6;
 }
 
 
-@media(max-width:1100px){
+@media(max-width:1000px){
 
-  .courtFinderGrid{
-    grid-template-columns:1fr;
+  .courtGrid{
+    grid-template-columns:
+      repeat(2,minmax(0,1fr));
   }
 
-  .courtMapPanel{
-    position:relative;
-
-    top:auto;
-  }
-
+  .courtInfoGrid,
   .courtSteps{
     grid-template-columns:
-      repeat(2,1fr);
+      repeat(2,minmax(0,1fr));
   }
 
 }
 
 
-@media(max-width:600px){
+@media(max-width:650px){
+
+  .courtGrid,
+  .courtInfoGrid,
+  .courtSteps{
+    grid-template-columns:
+      1fr;
+  }
 
   .courtToolbar{
     align-items:stretch;
@@ -9659,22 +8442,6 @@ const COURT_CSS = `
 
   .courtCount{
     width:100%;
-  }
-
-  .courtActions{
-    grid-template-columns:1fr;
-  }
-
-  .courtMapFrame{
-    height:420px;
-  }
-
-  .courtMapPanel{
-    min-height:auto;
-  }
-
-  .courtSteps{
-    grid-template-columns:1fr;
   }
 
 }
@@ -9694,40 +8461,68 @@ function courtTypeLabel(
   const labels = {
 
     uz: {
-      general: "Shahar sudi",
-      civil: "Fuqarolik",
-      criminal: "Jinoyat",
-      administrative: "Ma’muriy",
-      economic: "Iqtisodiy"
+      general:
+        "Shahar sudi",
+
+      civil:
+        "Fuqarolik sudi",
+
+      criminal:
+        "Jinoyat sudi",
+
+      administrative:
+        "Ma’muriy sud",
+
+      economic:
+        "Iqtisodiy sud"
     },
+
 
     ru: {
-      general: "Городской суд",
-      civil: "Гражданский",
-      criminal: "Уголовный",
-      administrative: "Административный",
-      economic: "Экономический"
+      general:
+        "Городской суд",
+
+      civil:
+        "Гражданский суд",
+
+      criminal:
+        "Уголовный суд",
+
+      administrative:
+        "Административный суд",
+
+      economic:
+        "Экономический суд"
     },
 
+
     en: {
-      general: "City court",
-      civil: "Civil",
-      criminal: "Criminal",
-      administrative: "Administrative",
-      economic: "Economic"
+      general:
+        "City Court",
+
+      civil:
+        "Civil Court",
+
+      criminal:
+        "Criminal Court",
+
+      administrative:
+        "Administrative Court",
+
+      economic:
+        "Economic Court"
     }
 
   };
 
 
   return (
-    labels[getLang(lang)][type] ||
+    labels[lang]?.[type] ||
+    labels.uz[type] ||
     type
   );
 
 }
-
-
 // ======================================================
 // COURT PAGE
 // ======================================================
@@ -9741,17 +8536,17 @@ function courtPage(lang) {
 
     uz: {
 
+      eyebrow:
+        "SUD VA DAVLAT ORGANLARI",
+
       title:
-        "Sudlar va xarita",
+        "Kerakli sud yoki davlat organini toping",
 
       description:
-        "Toshkent shahridagi sudni yo‘nalishi yoki nomi bo‘yicha toping va Google Maps orqali manzil hamda yo‘nalishni oching.",
+        "Toshkent shahridagi sudlar va ayrim davlat organlari bo‘yicha ma’lumotlarni qidiring. Tashkilot nomi, tuman yoki sud turi orqali filtrlashingiz mumkin.",
 
-      warning:
-        "Sudga borishdan oldin sudning amaldagi nomi, hududiy sudlovga tegishliligi va manzilini rasmiy sud resurslaridan tekshirish tavsiya etiladi.",
-
-      search:
-        "Sud nomi yoki tumanni yozing...",
+      searchPlaceholder:
+        "Sud, tuman yoki tashkilot nomini yozing...",
 
       all:
         "Barchasi",
@@ -9768,79 +8563,78 @@ function courtPage(lang) {
       economic:
         "Iqtisodiy",
 
-      city:
-        "Shahar sudi",
+      internalAffairs:
+        "Ichki ishlar",
 
-      list:
-        "Toshkent sudlari",
+      courtsFound:
+        "ta tashkilot",
 
-      finder:
-        "COURT FINDER",
+      district:
+        "Hudud",
+
+      address:
+        "Manzil",
+
+      phone:
+        "Telefon",
+
+      email:
+        "Elektron pochta",
 
       map:
-        "Google Maps",
+        "Xaritada ko‘rish",
 
-      mapHint:
-        "Sudni tanlang",
+      route:
+        "Yo‘nalish",
 
-      maps:
-        "Google Maps’da ochish",
+      noResults:
+        "Qidiruv bo‘yicha tashkilot topilmadi.",
 
-      direction:
-        "Yo‘lni ko‘rsatish",
+      guideSmall:
+        "AMALIY YO‘L XARITASI",
 
-      found:
-        "ta sud topildi",
-
-      empty:
-        "Qidiruv bo‘yicha sud topilmadi.",
+      guideTitle:
+        "Sudga murojaat qilishdan oldin",
 
       step1:
-        "Vaziyatni aniqlang",
+        "Vakolatni aniqlang",
 
       step1Text:
-        "Nizo qaysi huquqiy yo‘nalishga tegishli ekanini aniqlang.",
+        "Nizo qaysi sud yoki davlat organi vakolatiga kirishini aniqlang.",
 
       step2:
-        "Tegishli sudni aniqlang",
+        "Hududni tekshiring",
 
       step2Text:
-        "Ishning turi va hududiy sudlovga tegishliligini tekshiring.",
+        "Ariza qaysi hududdagi sudga berilishi kerakligini aniqlang.",
 
       step3:
         "Hujjatlarni tayyorlang",
 
       step3Text:
-        "Ariza, da’vo va mavjud dalillarni tartibga keltiring.",
+        "Ariza, da’vo va mavjud dalillarni tartibga soling.",
 
       step4:
         "Rasmiy ma’lumotni tekshiring",
 
       step4Text:
-        "Sud manzili va murojaat tartibini rasmiy sud tizimidan tekshiring.",
-
-      documents:
-        "Hujjat tayyorlash",
-
-      official:
-        "Sud tizimini ochish"
-
+        "Topshirishdan oldin sudning amaldagi manzili va aloqa ma’lumotlarini rasmiy manbadan tekshiring."
     },
 
 
     ru: {
 
+      eyebrow:
+        "СУДЫ И ГОСУДАРСТВЕННЫЕ ОРГАНЫ",
+
       title:
-        "Суды и карта",
+        "Найдите нужный суд или государственный орган",
 
       description:
-        "Найдите суд в Ташкенте по названию или направлению и откройте местоположение и маршрут через Google Maps.",
+        "Поиск судов Ташкента и отдельных государственных органов. Можно фильтровать по названию, району или типу суда.",
 
-      warning:
-        "Перед посещением суда рекомендуется проверить актуальное наименование, территориальную подсудность и адрес по официальным судебным ресурсам.",
-
-      search:
-        "Введите название суда или район...",
+      searchPlaceholder:
+        "Введите название суда, района или организации...",
 
       all:
         "Все",
@@ -9857,44 +8651,50 @@ function courtPage(lang) {
       economic:
         "Экономические",
 
-      city:
-        "Городской суд",
+      internalAffairs:
+        "Органы внутренних дел",
 
-      list:
-        "Суды Ташкента",
+      courtsFound:
+        "организаций",
 
-      finder:
-        "COURT FINDER",
+      district:
+        "Район",
+
+      address:
+        "Адрес",
+
+      phone:
+        "Телефон",
+
+      email:
+        "Электронная почта",
 
       map:
-        "Google Maps",
+        "Открыть карту",
 
-      mapHint:
-        "Выберите суд",
+      route:
+        "Маршрут",
 
-      maps:
-        "Открыть в Google Maps",
+      noResults:
+        "По вашему запросу организации не найдены.",
 
-      direction:
-        "Построить маршрут",
+      guideSmall:
+        "ПРАКТИЧЕСКАЯ СХЕМА",
 
-      found:
-        "судов найдено",
-
-      empty:
-        "По вашему запросу суд не найден.",
+      guideTitle:
+        "Перед обращением в суд",
 
       step1:
-        "Определите ситуацию",
+        "Определите компетенцию",
 
       step1Text:
-        "Определите, к какой категории права относится спор.",
+        "Определите, какой суд или государственный орган компетентен рассматривать вопрос.",
 
       step2:
-        "Определите суд",
+        "Проверьте территорию",
 
       step2Text:
-        "Проверьте вид дела и территориальную подсудность.",
+        "Определите, в какой территориальный суд необходимо подать заявление.",
 
       step3:
         "Подготовьте документы",
@@ -9906,30 +8706,23 @@ function courtPage(lang) {
         "Проверьте официальные данные",
 
       step4Text:
-        "Проверьте адрес суда и порядок обращения на официальном судебном ресурсе.",
-
-      documents:
-        "Подготовить документ",
-
-      official:
-        "Открыть судебную систему"
-
+        "Перед подачей проверьте актуальный адрес и контактные данные суда в официальном источнике."
     },
 
 
     en: {
 
+      eyebrow:
+        "COURTS AND STATE AUTHORITIES",
+
       title:
-        "Courts and map",
+        "Find the appropriate court or state authority",
 
       description:
-        "Find a court in Tashkent by name or legal category and open its location or directions through Google Maps.",
+        "Search courts in Tashkent and selected state authorities by organization name, district or court type.",
 
-      warning:
-        "Before visiting a court, verify its current name, territorial jurisdiction and address through official judicial resources.",
-
-      search:
-        "Enter court name or district...",
+      searchPlaceholder:
+        "Enter court, district or organization name...",
 
       all:
         "All",
@@ -9946,44 +8739,50 @@ function courtPage(lang) {
       economic:
         "Economic",
 
-      city:
-        "City court",
+      internalAffairs:
+        "Internal affairs",
 
-      list:
-        "Tashkent courts",
+      courtsFound:
+        "organizations",
 
-      finder:
-        "COURT FINDER",
+      district:
+        "District",
+
+      address:
+        "Address",
+
+      phone:
+        "Phone",
+
+      email:
+        "Email",
 
       map:
-        "Google Maps",
+        "Open map",
 
-      mapHint:
-        "Select a court",
+      route:
+        "Directions",
 
-      maps:
-        "Open in Google Maps",
+      noResults:
+        "No organizations matched your search.",
 
-      direction:
-        "Get directions",
+      guideSmall:
+        "PRACTICAL ROADMAP",
 
-      found:
-        "courts found",
-
-      empty:
-        "No court matches your search.",
+      guideTitle:
+        "Before applying to court",
 
       step1:
-        "Identify the situation",
+        "Determine jurisdiction",
 
       step1Text:
-        "Determine the legal category of the dispute.",
+        "Identify which court or state authority has jurisdiction over the matter.",
 
       step2:
-        "Identify the court",
+        "Check territorial jurisdiction",
 
       step2Text:
-        "Check the case type and territorial jurisdiction.",
+        "Determine which territorial court should receive the application.",
 
       step3:
         "Prepare documents",
@@ -9995,1212 +8794,1019 @@ function courtPage(lang) {
         "Verify official information",
 
       step4Text:
-        "Verify the court address and filing procedure through official judicial resources.",
-
-      documents:
-        "Prepare document",
-
-      official:
-        "Open court system"
-
+        "Before filing, verify the court's current address and contact information through an official source."
     }
 
   }[lang];
 
 
- const courtCards =
-  TASHKENT_COURTS
-    .map(court => {
+// ======================================================
+// COURT CARDS
+// ======================================================
 
-      const name =
-        localized(
-          court.name,
-          lang
-        );
+  const courtCards =
 
-      const mapsUrl =
-        googleMapsSearch(
-          name,
-          court.district
-        );
+    TASHKENT_COURTS
+      .map(court => {
 
-      const directionUrl =
-        googleMapsDirections(
-          name,
-          court.district
-        );
+        const name =
+          localized(
+            court.name,
+            lang
+          );
 
-      const searchable =
-        (
-          name +
-          " " +
-          (court.district || "") +
-          " " +
-          (court.type || "") +
-          " " +
-          (court.keywords || "")
-        )
-          .toLowerCase()
-          .replace(/"/g, "&quot;");
 
-      return `
+        const mapUrl =
+          googleMapsSearch(
+            name,
+            court.district
+          );
 
-        <article
-          class="courtCard"
-          data-type="${esc(court.type || "court")}"
-          data-search="${esc(searchable)}"
-          data-name="${esc(name)}"
-          data-district="${esc(court.district || "")}"
-          data-map="${esc(mapsUrl)}"
-        >
 
-          <div class="courtCardTop">
+        const routeUrl =
+          googleMapsDirections(
+            name,
+            court.district
+          );
 
-            <span class="courtType">
-              ⚖ SUD
-            </span>
 
-            <span class="courtDistrict">
-              ${esc(court.district || "Toshkent")}
-            </span>
+        return `
 
-          </div>
+          <article
+            class="courtCard"
+            data-category="court"
+            data-type="${esc(court.type)}"
+            data-search="${esc(
+              (
+                name +
+                " " +
+                court.district +
+                " " +
+                court.keywords
+              ).toLowerCase()
+            )}"
+          >
 
-          <h3>
-            ${esc(name)}
-          </h3>
+            <div class="courtCardTop">
 
-          ${
-            court.address
-              ? `
-                <p>
-                  📍 ${esc(court.address)}
-                </p>
-              `
-              : ""
-          }
+              <span class="courtType">
+                ${esc(
+                  courtTypeLabel(
+                    court.type,
+                    lang
+                  )
+                )}
+              </span>
 
-          ${
-            court.phone
-              ? `
-                <p>
-                  ☎
-                  <a href="tel:${esc(court.phone.replace(/\s/g, ""))}">
-                    ${esc(court.phone)}
-                  </a>
-                </p>
-              `
-              : ""
-          }
+              <span class="courtDistrict">
+                ${esc(court.district)}
+              </span>
 
-          <div class="courtCardActions">
+            </div>
 
-            <button
-              type="button"
-              class="courtMapButton"
-              data-map="${esc(mapsUrl)}"
-              data-name="${esc(name)}"
-              onclick="showCourtMap(this)"
-            >
-              📍 ${t.maps}
-            </button>
 
-            <a
-              class="courtMapButton primary"
-              href="${directionUrl}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              🧭 ${t.direction}
-            </a>
+            <h3>
+              ${esc(name)}
+            </h3>
 
-          </div>
 
-        </article>
+            <p>
 
-      `;
+              <strong>
+                ${t.district}:
+              </strong>
 
-    })
-    .join("");
+              ${esc(court.district)}
+
+            </p>
+
+
+            <div class="courtCardActions">
+
+              <a
+                class="courtMapButton primary"
+                href="${esc(mapUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ⌖ ${t.map}
+              </a>
+
+
+              <a
+                class="courtMapButton"
+                href="${esc(routeUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                → ${t.route}
+              </a>
+
+            </div>
+
+          </article>
+
+        `;
+
+      })
+      .join("");
 
 
 // ======================================================
-// ICHKI ISHLAR KARTALARI
+// INTERNAL AFFAIRS + OTHER STATE ORGANIZATIONS
+// ======================================================
+//
+// MUHIM:
+// STATE_ORGANIZATIONS server scope'da yuqorida e'lon qilingan.
+// Uni pastdagi browser <script> ichiga ko'chirmang.
+//
 // ======================================================
 
-const internalAffairsCards =
-  STATE_ORGANIZATIONS
-    .filter(
+  const internalAffairsCards =
+
+    STATE_ORGANIZATIONS
+      .filter(
+        organization =>
+          organization.category ===
+          "internal_affairs"
+      )
+      .map(organization => {
+
+        const name =
+          organization.name || "";
+
+
+        const district =
+          organization.district ||
+          organization.region ||
+          "";
+
+
+        const mapUrl =
+          googleMapsSearch(
+            name,
+            district
+          );
+
+
+        const routeUrl =
+          googleMapsDirections(
+            name,
+            district
+          );
+
+
+        const phone =
+          organization.phone ||
+          organization.emergencyPhone ||
+          organization.hotline ||
+          "";
+
+
+        const searchText = [
+
+          name,
+
+          district,
+
+          organization.region,
+
+          organization.address,
+
+          organization.phone,
+
+          organization.emergencyPhone,
+
+          organization.hotline,
+
+          "ichki ishlar",
+
+          "iib",
+
+          "iibb",
+
+          "iio fmb",
+
+          "police",
+
+          "102"
+
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        return `
+
+          <article
+            class="courtCard"
+            data-category="internal_affairs"
+            data-type="internal_affairs"
+            data-search="${esc(searchText)}"
+          >
+
+            <div class="courtCardTop">
+
+              <span class="courtType">
+
+                ${
+                  lang === "uz"
+                    ? "Ichki ishlar"
+                    : lang === "ru"
+                    ? "Внутренние дела"
+                    : "Internal affairs"
+                }
+
+              </span>
+
+
+              <span class="courtDistrict">
+                ${esc(district)}
+              </span>
+
+            </div>
+
+
+            <h3>
+              ${esc(name)}
+            </h3>
+
+
+            ${
+              district
+                ? `
+
+                  <p>
+
+                    <strong>
+                      ${t.district}:
+                    </strong>
+
+                    ${esc(district)}
+
+                  </p>
+
+                `
+                : ""
+            }
+
+
+            ${
+              organization.address
+                ? `
+
+                  <p>
+
+                    <strong>
+                      ${t.address}:
+                    </strong>
+
+                    ${esc(
+                      organization.address
+                    )}
+
+                  </p>
+
+                `
+                : ""
+            }
+
+
+            ${
+              phone
+                ? `
+
+                  <p>
+
+                    <strong>
+                      ${t.phone}:
+                    </strong>
+
+                    <a
+                      href="tel:${esc(
+                        String(phone)
+                          .replace(/\s+/g, "")
+                      )}"
+                    >
+                      ${esc(phone)}
+                    </a>
+
+                  </p>
+
+                `
+                : ""
+            }
+
+
+            ${
+              organization.appealsPhone
+                ? `
+
+                  <p>
+
+                    <strong>
+                      ${
+                        lang === "uz"
+                          ? "Murojaatlar"
+                          : lang === "ru"
+                          ? "Обращения"
+                          : "Appeals"
+                      }:
+                    </strong>
+
+                    <a
+                      href="tel:${esc(
+                        String(
+                          organization.appealsPhone
+                        ).replace(/\s+/g, "")
+                      )}"
+                    >
+                      ${esc(
+                        organization.appealsPhone
+                      )}
+                    </a>
+
+                  </p>
+
+                `
+                : ""
+            }
+
+
+            ${
+              organization.hotline
+                ? `
+
+                  <p>
+
+                    <strong>
+                      ${
+                        lang === "uz"
+                          ? "Ishonch telefoni"
+                          : lang === "ru"
+                          ? "Телефон доверия"
+                          : "Hotline"
+                      }:
+                    </strong>
+
+                    ${esc(
+                      organization.hotline
+                    )}
+
+                  </p>
+
+                `
+                : ""
+            }
+
+
+            ${
+              organization.email
+                ? `
+
+                  <p>
+
+                    <strong>
+                      ${t.email}:
+                    </strong>
+
+                    <a
+                      href="mailto:${esc(
+                        organization.email
+                      )}"
+                    >
+                      ${esc(
+                        organization.email
+                      )}
+                    </a>
+
+                  </p>
+
+                `
+                : ""
+            }
+
+
+            ${
+              organization.description
+                ? `
+
+                  <p>
+                    ${esc(
+                      organization.description
+                    )}
+                  </p>
+
+                `
+                : ""
+            }
+
+
+            <div class="courtCardActions">
+
+              <a
+                class="courtMapButton primary"
+                href="${esc(mapUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ⌖ ${t.map}
+              </a>
+
+
+              <a
+                class="courtMapButton"
+                href="${esc(routeUrl)}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                → ${t.route}
+              </a>
+
+            </div>
+
+          </article>
+
+        `;
+
+      })
+      .join("");
+
+
+// ======================================================
+// COURT PAGE HTML
+// ======================================================
+
+  const totalOrganizations =
+
+    TASHKENT_COURTS.length +
+
+    STATE_ORGANIZATIONS.filter(
       organization =>
         organization.category ===
         "internal_affairs"
-    )
-    .map(organization => {
+    ).length;
 
-      const name =
-        organization.name || "";
 
-      const district =
-        organization.district ||
-        organization.region ||
-        "Toshkent shahri";
+  return layout({
 
-      const address =
-        organization.address || "";
+    lang,
 
-      const phone =
-        organization.phone ||
-        organization.localPhone ||
-        "";
+    title:
+      t.title,
 
-      const appealsPhone =
-        organization.appealsPhone ||
-        "";
+    active:
+      "court",
 
-      const emergencyPhone =
-        organization.emergencyPhone ||
-        "102";
+    extraCss:
+      COURT_CSS,
 
-      const hotline =
-        organization.hotline ||
-        "1102";
+    body: `
 
-      const touristPhone =
-        organization.touristPhone ||
-        "";
+      <main class="courtPage">
 
-      const mapsUrl =
-        googleMapsSearch(
-          name,
-          district
-        );
 
-      const directionUrl =
-        googleMapsDirections(
-          name,
-          district
-        );
-
-      const searchable =
-        (
-          name +
-          " " +
-          district +
-          " " +
-          address +
-          " ichki ishlar iib iio fmb 102 1102"
-        )
-          .toLowerCase()
-          .replace(/"/g, "&quot;");
-
-      return `
-
-        <article
-          class="courtCard"
-          data-type="internal_affairs"
-          data-search="${esc(searchable)}"
-          data-name="${esc(name)}"
-          data-district="${esc(district)}"
-          data-map="${esc(mapsUrl)}"
-        >
-
-          <div class="courtCardTop">
-
-            <span class="courtType">
-              👮 ICHKI ISHLAR
-            </span>
-
-            <span class="courtDistrict">
-              ${esc(district)}
-            </span>
-
-          </div>
-
-
-          <h3>
-            ${esc(name)}
-          </h3>
-
-
-          ${
-            address
-              ? `
-                <p>
-                  📍
-                  <strong>Manzil:</strong>
-                  ${esc(address)}
-                </p>
-              `
-              : ""
-          }
-
-
-          ${
-            phone
-              ? `
-                <p>
-                  ☎
-                  <strong>Telefon:</strong>
-
-                  <a
-                    href="tel:${esc(phone.replace(/\s/g, ""))}"
-                  >
-                    ${esc(phone)}
-                  </a>
-                </p>
-              `
-              : ""
-          }
-
-
-          ${
-            appealsPhone
-              ? `
-                <p>
-                  ☎
-                  <strong>Murojaatlar:</strong>
-
-                  <a
-                    href="tel:${esc(appealsPhone.replace(/\s/g, ""))}"
-                  >
-                    ${esc(appealsPhone)}
-                  </a>
-                </p>
-              `
-              : ""
-          }
-
-
-          <p>
-            🚨
-            <strong>Tezkor raqam:</strong>
-
-            <a href="tel:${esc(emergencyPhone)}">
-              ${esc(emergencyPhone)}
-            </a>
-          </p>
-
-
-          <p>
-            ☎
-            <strong>Ishonch telefoni:</strong>
-
-            <a href="tel:${esc(hotline)}">
-              ${esc(hotline)}
-            </a>
-          </p>
-
-
-          ${
-            touristPhone
-              ? `
-                <p>
-                  🌐
-                  <strong>Turistlar uchun:</strong>
-
-                  <a href="tel:${esc(touristPhone)}">
-                    ${esc(touristPhone)}
-                  </a>
-                </p>
-              `
-              : ""
-          }
-
-
-          <div class="courtCardActions">
-
-            <button
-              type="button"
-              class="courtMapButton"
-              data-map="${esc(mapsUrl)}"
-              data-name="${esc(name)}"
-              onclick="showCourtMap(this)"
-            >
-              📍 Xaritada ko‘rish
-            </button>
-
-
-            <a
-              class="courtMapButton primary"
-              href="${directionUrl}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              🧭 Yo‘nalish
-            </a>
-
-          </div>
-
-        </article>
-
-      `;
-
-    })
-    .join("");
-
-
-// SUD + ICHKI ISHLAR
-const cards =
-  courtCards +
-  internalAffairsCards;
-
-
-  const initialMap =
-    "https://www.google.com/maps?q=" +
-    encodeURIComponent(
-      "Toshkent shahar sudlari, Tashkent, Uzbekistan"
-    ) +
-    "&output=embed";
-
-
-  const content = `
-
-    <style>
-      ${COURT_CSS}
-    </style>
-
-
-    <div class="notice noticeGold">
-
-      <span class="noticeIcon">
-        ⚖
-      </span>
-
-      <span>
-        ${t.warning}
-      </span>
-
-    </div>
-
-
-    <div class="courtToolbar">
-
-      <div class="courtSearch">
-
-        <span>
-          ⌕
-        </span>
-
-        <input
-          id="courtSearch"
-          type="search"
-          placeholder="${esc(t.search)}"
-          autocomplete="off"
-        >
-
-      </div>
-
-
-      <div
-        class="courtCount"
-        id="courtCount"
-      >
-        ${TASHKENT_COURTS.length}
-        ${t.found}
-      </div>
-
-    </div>
-
-
-    <div class="courtFilters">
-
-      <button
-        class="courtFilter active"
-        type="button"
-        data-filter="all"
-      >
-        ${t.all}
-      </button>
-
-
-      <button
-        class="courtFilter"
-        type="button"
-        data-filter="civil"
-      >
-        ${t.civil}
-      </button>
-
-
-      <button
-        class="courtFilter"
-        type="button"
-        data-filter="criminal"
-      >
-        ${t.criminal}
-      </button>
-
-
-      <button
-        class="courtFilter"
-        type="button"
-        data-filter="administrative"
-      >
-        ${t.administrative}
-      </button>
-
-
-      <button
-        class="courtFilter"
-        type="button"
-        data-filter="economic"
-      >
-        ${t.economic}
-      </button>
-
-
-      <button
-        class="courtFilter"
-        type="button"
-        data-filter="general"
-      >
-        ${t.city}
-      </button>
-
-    </div>
-
-
-
-    <div class="courtFinderGrid">
-
-
-      <section class="courtListPanel">
-
-        <div class="courtListHeader">
-
-          <strong>
-            ${t.list}
-          </strong>
-
-          <span>
-            ${t.finder}
-          </span>
-
-        </div>
-
-
-        <div
-          class="courtList"
-          id="courtList"
-        >
-
-          ${cards}
-
+        <section class="courtHero">
 
           <div
-            class="courtEmpty"
-            id="courtEmpty"
-            style="display:none;"
+            class="container courtHeroInner"
           >
-            ${t.empty}
-          </div>
 
-        </div>
-
-      </section>
-
-
-
-      <section class="courtMapPanel">
-
-        <div class="courtMapHeader">
-
-          <strong
-            id="courtMapTitle"
-          >
-            ${t.map}
-          </strong>
-
-          <span>
-            ${t.mapHint}
-          </span>
-
-        </div>
-
-
-        <iframe
-          id="courtMap"
-          class="courtMapFrame"
-          src="${initialMap}"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          title="Court map"
-        ></iframe>
-
-      </section>
-
-
-    </div>
-
-
-
-    <div class="courtSteps">
-
-
-      <div class="courtStep">
-
-        <span>
-          01
-        </span>
-
-        <strong>
-          ${t.step1}
-        </strong>
-
-        <p>
-          ${t.step1Text}
-        </p>
-
-      </div>
-
-
-      <div class="courtStep">
-
-        <span>
-          02
-        </span>
-
-        <strong>
-          ${t.step2}
-        </strong>
-
-        <p>
-          ${t.step2Text}
-        </p>
-
-      </div>
-
-
-      <div class="courtStep">
-
-        <span>
-          03
-        </span>
-
-        <strong>
-          ${t.step3}
-        </strong>
-
-        <p>
-          ${t.step3Text}
-        </p>
-
-      </div>
-
-
-      <div class="courtStep">
-
-        <span>
-          04
-        </span>
-
-        <strong>
-          ${t.step4}
-        </strong>
-
-        <p>
-          ${t.step4Text}
-        </p>
-
-      </div>
-
-
-    </div>
-
-
-
-    <div class="formActions">
-
-      <a
-        class="btn btnPrimary"
-        href="/documents${q(lang)}"
-      >
-        ▤ ${t.documents}
-      </a>
-
-
-      <a
-        class="btn btnOutline"
-        href="https://my.sud.uz"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        ⚖ ${t.official} ↗
-      </a>
-
-    </div>
-
-
-
-    <script>
-
-      (() => {
-
-        const searchInput =
-          document.getElementById(
-            "courtSearch"
-          );
-
-
-        const cards =
-          Array.from(
-            document.querySelectorAll(
-              ".courtCard"
-            )
-          );
-
-
-        const filterButtons =
-          Array.from(
-            document.querySelectorAll(
-              ".courtFilter"
-            )
-          );
-
-
-        const counter =
-          document.getElementById(
-            "courtCount"
-          );
-
-
-        const empty =
-          document.getElementById(
-            "courtEmpty"
-          );
-
-
-        let currentFilter =
-          "all";
-          // ======================================================
-// DAVLAT ORGANLARI MA'LUMOTLARI
-// BU BLOK internalAffairsCards DAN OLDIN TURISHI SHART
-// ======================================================
-
-const STATE_ORGANIZATIONS = [
-
-  // ====================================================
-  // OLIY SUD
-  // ====================================================
-
-  {
-    id: "supreme-court",
-    category: "court",
-    type: "supreme",
-    region: "Toshkent shahri",
-    district: "Shayxontohur",
-    name: "O‘zbekiston Respublikasi Oliy sudi",
-    address: "Abdulla Qodiriy ko‘chasi, 1-uy, 100186",
-    phone: "+998 71 207-73-77",
-    extension: "01613",
-    email: "info@supcourt.uz",
-    source: "sud.uz"
-  },
-
-
-  // ====================================================
-  // TOSHKENT SHAHAR SUDI
-  // ====================================================
-
-  {
-    id: "tashkent-city-court",
-    category: "court",
-    type: "general",
-    region: "Toshkent shahri",
-    name: "Toshkent shahar sudi",
-    address: "A. Navoiy ko‘chasi, 23A-uy",
-    phone: "+998 55 501-11-15",
-    source: "sud.uz"
-  },
-
-  {
-    id: "tashkent-criminal-panel",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    name: "Toshkent shahar sudi — Jinoyat ishlari bo‘yicha sudlov hay’ati",
-    address: "A. Navoiy ko‘chasi, 23A-uy",
-    phone: "+998 55 501-11-15",
-    extension: "02001",
-    source: "sud.uz"
-  },
-
-  {
-    id: "tashkent-civil-panel",
-    category: "court",
-    type: "civil",
-    region: "Toshkent shahri",
-    district: "Yakkasaroy",
-    name: "Toshkent shahar sudi — Fuqarolik ishlari bo‘yicha sudlov hay’ati",
-    address: "Shota Rustaveli ko‘chasi, 93-uy",
-    phone: "+998 55 501-00-23",
-    extension: "02629",
-    source: "sud.uz"
-  },
-
-  {
-    id: "tashkent-economic-panel",
-    category: "court",
-    type: "economic",
-    region: "Toshkent shahri",
-    district: "Yakkasaroy",
-    name: "Toshkent shahar sudi — Iqtisodiy ishlar bo‘yicha sudlov hay’ati",
-    address: "Shota Rustaveli ko‘chasi, 93-uy",
-    phone: "+998 55 501-00-16",
-    extension: "03124",
-    source: "sud.uz"
-  },
-
-  {
-    id: "tashkent-administrative",
-    category: "court",
-    type: "administrative",
-    region: "Toshkent shahri",
-    district: "Yunusobod",
-    name: "Toshkent shahar ma’muriy sudi",
-    address: "Amir Temur ko‘chasi, 118A-uy",
-    phone: "+998 55 501-11-14",
-    extension: "03001",
-    source: "sud.uz"
-  },
-
-  {
-    id: "tashkent-economic-interdistrict",
-    category: "court",
-    type: "economic",
-    region: "Toshkent shahri",
-    district: "Chilonzor",
-    name: "Toshkent tumanlararo iqtisodiy sudi",
-    address: "Cho‘pon-ota ko‘chasi, 6-uy",
-    phone: "+998 55 501-05-04",
-    extension: "03165",
-    source: "sud.uz"
-  },
-
-  {
-    id: "mirobod-criminal-court",
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district: "Mirobod",
-    name: "Jinoyat ishlari bo‘yicha Mirobod tuman sudi",
-    address: "Fidokor ko‘chasi, 38-uy, 100015",
-    phone: "+998 71 252-00-03",
-    email: "j.mirobod@sud.uz",
-    source: "sud.uz"
-  },
-
-
-  // ====================================================
-  // QOLGAN JINOYAT SUDLARI
-  // ====================================================
-
-  ...[
-    "Bektemir",
-    "Chilonzor",
-    "Mirzo Ulug‘bek",
-    "Olmazor",
-    "Sergeli",
-    "Shayxontohur",
-    "Uchtepa",
-    "Yakkasaroy",
-    "Yashnobod",
-    "Yunusobod",
-    "Yangihayot"
-  ].map(district => ({
-    id:
-      district
-        .toLowerCase()
-        .replace(/[‘’']/g, "")
-        .replace(/\s+/g, "-") +
-      "-criminal",
-
-    category: "court",
-    type: "criminal",
-    region: "Toshkent shahri",
-    district,
-
-    name:
-      `Jinoyat ishlari bo‘yicha ${district} tuman sudi`,
-
-    phone: null,
-
-    verification:
-      "Telefon raqami rasmiy manbadan yangilanmoqda"
-  })),
-
-
-  // ====================================================
-  // SUD DEPARTAMENTI
-  // ====================================================
-
-  {
-    id: "court-department-tashkent",
-    category: "court_department",
-    region: "Toshkent shahri",
-    district: "Yakkasaroy",
-    name:
-      "Oliy sud huzuridagi Sudlar faoliyatini ta’minlash departamentining Toshkent shahar hududiy bo‘limi",
-    address: "Shota Rustaveli ko‘chasi, 62-uy",
-    phone: "+998 55 501-00-04",
-    extension: "03142",
-    source: "sud.uz"
-  },
-
-
-  // ====================================================
-  // TOSHKENT SHAHAR IIBB
-  // ====================================================
-
-  {
-    id: "tashkent-iibb",
-    category: "internal_affairs",
-    type: "regional",
-    region: "Toshkent shahri",
-    district: "Toshkent shahri",
-    name: "Toshkent shahar Ichki ishlar bosh boshqarmasi",
-    address: "S. Azimov ko‘chasi, 87-uy",
-    phone: "+998 71 206-41-65",
-    appealsPhone: "+998 71 206-43-34",
-    emergencyPhone: "102",
-    hotline: "1102",
-    source: "iibb.uz"
-  },
-
-
-  // ====================================================
-  // ICHKI ISHLAR TEZKOR / ISHONCH RAQAMLARI
-  // ====================================================
-
-  {
-    id: "police-emergency-102",
-    category: "internal_affairs",
-    type: "emergency",
-    region: "O‘zbekiston",
-    district: "O‘zbekiston",
-    name: "Ichki ishlar organlari tezkor va ishonch telefonlari",
-    phone: "102",
-    emergencyPhone: "102",
-    hotline: "1102",
-    description:
-      "Huquqbuzarlik, jinoyat yoki tezkor ichki ishlar yordami zarur bo‘lgan holatlar uchun.",
-    source: "iibb.uz"
-  },
-
-
-  // ====================================================
-  // TOSHKENT SHAHRI — TUMAN IIO FMB
-  // ====================================================
-
-  ...[
-    "Bektemir",
-    "Chilonzor",
-    "Mirobod",
-    "Mirzo Ulug‘bek",
-    "Olmazor",
-    "Sergeli",
-    "Shayxontohur",
-    "Uchtepa",
-    "Yakkasaroy",
-    "Yashnobod",
-    "Yunusobod",
-    "Yangihayot"
-  ].map(district => ({
-
-    id:
-      district
-        .toLowerCase()
-        .replace(/[‘’']/g, "")
-        .replace(/\s+/g, "-") +
-      "-iio-fmb",
-
-    category: "internal_affairs",
-    type: "district",
-
-    region:
-      "Toshkent shahri",
-
-    district,
-
-    name:
-      `${district} tumani IIO FMB`,
-
-    emergencyPhone:
-      "102",
-
-    hotline:
-      "1102",
-
-    source:
-      "iibb.uz"
-
-  }))
-
-];
-
-
-// ======================================================
-// ICHKI ISHLAR KARTALARINI YARATISH
-// ======================================================
-
-const internalAffairsCards =
-  STATE_ORGANIZATIONS
-    .filter(
-      organization =>
-        organization.category ===
-        "internal_affairs"
-    )
-    .map(organization => {
-
-      const name =
-        organization.name || "";
-
-      const district =
-        organization.district ||
-        organization.region ||
-        "Toshkent shahri";
-
-      const address =
-        organization.address || "";
-
-      const phone =
-        organization.phone ||
-        organization.localPhone ||
-        "";
-
-      const appealsPhone =
-        organization.appealsPhone || "";
-
-      const emergencyPhone =
-        organization.emergencyPhone || "102";
-
-      const hotline =
-        organization.hotline || "1102";
-
-      const mapsUrl =
-        googleMapsSearch(
-          name,
-          district
-        );
-
-      const directionUrl =
-        googleMapsDirections(
-          name,
-          district
-        );
-
-      const searchable =
-        (
-          name +
-          " " +
-          district +
-          " " +
-          address +
-          " ichki ishlar iib iio fmb 102 1102"
-        )
-          .toLowerCase()
-          .replace(/"/g, "&quot;");
-
-      return `
-
-        <article
-          class="courtCard"
-          data-type="internal_affairs"
-          data-search="${esc(searchable)}"
-          data-name="${esc(name)}"
-          data-district="${esc(district)}"
-          data-map="${esc(mapsUrl)}"
-        >
-
-          <div class="courtCardTop">
-
-            <span class="courtType">
-              👮 ICHKI ISHLAR
+            <span class="eyebrow">
+              ${t.eyebrow}
             </span>
 
-            <span class="courtDistrict">
-              ${esc(district)}
-            </span>
+
+            <h1>
+              ${t.title}
+            </h1>
+
+
+            <p>
+              ${t.description}
+            </p>
 
           </div>
 
-
-          <h3>
-            ${esc(name)}
-          </h3>
+        </section>
 
 
-          ${
-            address
-              ? `
-                <p>
-                  📍 <strong>Manzil:</strong>
-                  ${esc(address)}
-                </p>
-              `
-              : ""
-          }
+        <section class="courtMain">
+
+          <div class="container">
 
 
-          ${
-            phone
-              ? `
-                <p>
-                  ☎ <strong>Telefon:</strong>
-                  <a href="tel:${esc(phone.replace(/\s/g, ""))}">
-                    ${esc(phone)}
-                  </a>
-                </p>
-              `
-              : ""
-          }
+            <div class="courtInfoGrid">
 
 
-          ${
-            appealsPhone
-              ? `
-                <p>
-                  ☎ <strong>Murojaatlar:</strong>
-                  <a href="tel:${esc(appealsPhone.replace(/\s/g, ""))}">
-                    ${esc(appealsPhone)}
-                  </a>
-                </p>
-              `
-              : ""
-          }
+              <div class="courtInfoCard">
+
+                <small>
+                  HUQUQIY AI
+                </small>
+
+                <strong>
+
+                  ${
+                    lang === "uz"
+                      ? "Sud va tashkilotlarni bitta joydan qidiring"
+                      : lang === "ru"
+                      ? "Ищите суды и организации в одном месте"
+                      : "Search courts and organizations in one place"
+                  }
+
+                </strong>
+
+              </div>
 
 
-          <p>
-            🚨 <strong>Tezkor raqam:</strong>
-            <a href="tel:${esc(emergencyPhone)}">
-              ${esc(emergencyPhone)}
-            </a>
-          </p>
+              <div class="courtInfoCard">
+
+                <small>
+                  GOOGLE MAPS
+                </small>
+
+                <strong>
+
+                  ${
+                    lang === "uz"
+                      ? "Xaritada ochish va yo‘nalish olish"
+                      : lang === "ru"
+                      ? "Открытие на карте и построение маршрута"
+                      : "Open the map and get directions"
+                  }
+
+                </strong>
+
+              </div>
 
 
-          <p>
-            ☎ <strong>Ishonch telefoni:</strong>
-            <a href="tel:${esc(hotline)}">
-              ${esc(hotline)}
-            </a>
-          </p>
+              <div class="courtInfoCard">
+
+                <small>
+                  FILTER
+                </small>
+
+                <strong>
+
+                  ${
+                    lang === "uz"
+                      ? "Sud turi yoki ichki ishlar bo‘yicha saralash"
+                      : lang === "ru"
+                      ? "Фильтрация по типу суда или органам внутренних дел"
+                      : "Filter by court type or internal affairs"
+                  }
+
+                </strong>
+
+              </div>
 
 
-          <div class="courtCardActions">
+              <div class="courtInfoCard">
 
-            <button
-              type="button"
-              class="courtMapButton"
-              data-map="${esc(mapsUrl)}"
-              data-name="${esc(name)}"
-              onclick="showCourtMap(this)"
+                <small>
+                  MUHIM
+                </small>
+
+                <strong>
+
+                  ${
+                    lang === "uz"
+                      ? "Murojaatdan oldin rasmiy ma’lumotni tekshiring"
+                      : lang === "ru"
+                      ? "Проверьте официальные данные перед обращением"
+                      : "Verify official information before applying"
+                  }
+
+                </strong>
+
+              </div>
+
+
+            </div>
+
+
+            <div class="courtToolbar">
+
+
+              <div class="courtSearch">
+
+                <span class="courtSearchIcon">
+                  ⌕
+                </span>
+
+                <input
+                  id="courtSearchInput"
+                  type="search"
+                  autocomplete="off"
+                  placeholder="${esc(
+                    t.searchPlaceholder
+                  )}"
+                >
+
+              </div>
+
+
+              <div
+                id="courtCount"
+                class="courtCount"
+              >
+
+                ${totalOrganizations}
+                ${t.courtsFound}
+
+              </div>
+
+
+            </div>
+
+
+            <div class="courtFilters">
+
+
+              <button
+                class="courtFilter active"
+                type="button"
+                data-filter="all"
+              >
+                ${t.all}
+              </button>
+
+
+              <button
+                class="courtFilter"
+                type="button"
+                data-filter="civil"
+              >
+                ${t.civil}
+              </button>
+
+
+              <button
+                class="courtFilter"
+                type="button"
+                data-filter="criminal"
+              >
+                ${t.criminal}
+              </button>
+
+
+              <button
+                class="courtFilter"
+                type="button"
+                data-filter="administrative"
+              >
+                ${t.administrative}
+              </button>
+
+
+              <button
+                class="courtFilter"
+                type="button"
+                data-filter="economic"
+              >
+                ${t.economic}
+              </button>
+
+
+              <button
+                class="courtFilter"
+                type="button"
+                data-filter="internal_affairs"
+              >
+                ${t.internalAffairs}
+              </button>
+
+
+            </div>
+
+
+            <div
+              id="courtGrid"
+              class="courtGrid"
             >
-              📍 Xaritada ko‘rish
-            </button>
 
-            <a
-              class="courtMapButton primary"
-              href="${directionUrl}"
-              target="_blank"
-              rel="noopener noreferrer"
+              ${courtCards}
+
+              ${internalAffairsCards}
+
+            </div>
+
+
+            <div
+              id="courtEmpty"
+              class="courtEmpty"
             >
-              🧭 Yo‘nalish
-            </a>
+              ${t.noResults}
+            </div>
+
+
+            <section class="courtGuide">
+
+
+              <div class="courtGuideHeader">
+
+                <small>
+                  ${t.guideSmall}
+                </small>
+
+                <h2>
+                  ${t.guideTitle}
+                </h2>
+
+              </div>
+
+
+              <div class="courtSteps">
+
+
+                <article class="courtStep">
+
+                  <span>
+                    01
+                  </span>
+
+                  <strong>
+                    ${t.step1}
+                  </strong>
+
+                  <p>
+                    ${t.step1Text}
+                  </p>
+
+                </article>
+
+
+                <article class="courtStep">
+
+                  <span>
+                    02
+                  </span>
+
+                  <strong>
+                    ${t.step2}
+                  </strong>
+
+                  <p>
+                    ${t.step2Text}
+                  </p>
+
+                </article>
+
+
+                <article class="courtStep">
+
+                  <span>
+                    03
+                  </span>
+
+                  <strong>
+                    ${t.step3}
+                  </strong>
+
+                  <p>
+                    ${t.step3Text}
+                  </p>
+
+                </article>
+
+
+                <article class="courtStep">
+
+                  <span>
+                    04
+                  </span>
+
+                  <strong>
+                    ${t.step4}
+                  </strong>
+
+                  <p>
+                    ${t.step4Text}
+                  </p>
+
+                </article>
+
+
+              </div>
+
+            </section>
+
 
           </div>
 
-        </article>
+        </section>
 
-      `;
+      </main>
 
-    })
-    .join("");
-        function normalize(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(/['‘’ʻ\u0060]/g, "")
-    .trim();
-}
 
-        function applyFilters(){
+      <script>
 
-          const query =
-            normalize(
-              searchInput.value
+        (() => {
+
+
+          const searchInput =
+            document.getElementById(
+              "courtSearchInput"
             );
 
 
-          let visibleCount =
-            0;
+          const cards =
+            Array.from(
+              document.querySelectorAll(
+                ".courtCard"
+              )
+            );
 
 
-          cards.forEach(card => {
+          const filters =
+            Array.from(
+              document.querySelectorAll(
+                ".courtFilter"
+              )
+            );
 
-            const type =
-              card.dataset.type;
+
+          const counter =
+            document.getElementById(
+              "courtCount"
+            );
 
 
-            const text =
+          const empty =
+            document.getElementById(
+              "courtEmpty"
+            );
+
+
+          let currentFilter =
+            "all";
+
+
+// ======================================================
+// NORMALIZE SEARCH TEXT
+// ======================================================
+
+          function normalize(value) {
+
+            return String(
+              value || ""
+            )
+              .toLowerCase()
+
+              .replace(
+                /[ʻʼ‘’']/g,
+                ""
+              )
+
+              .replace(
+                /\\s+/g,
+                " "
+              )
+
+              .trim();
+
+          }
+
+
+// ======================================================
+// APPLY FILTERS
+// ======================================================
+
+          function applyFilters() {
+
+            const query =
               normalize(
-                card.dataset.search
+                searchInput
+                  ? searchInput.value
+                  : ""
               );
 
 
-            const filterMatch =
-              currentFilter === "all" ||
-              type === currentFilter;
+            let visibleCount = 0;
 
 
-            const searchMatch =
-              !query ||
-              text.includes(query);
+            cards.forEach(card => {
+
+              const type =
+                card.dataset.type || "";
 
 
-            const visible =
-              filterMatch &&
-              searchMatch;
+              const category =
+                card.dataset.category || "";
 
 
-            card.style.display =
-              visible
-                ? ""
-                : "none";
+              const searchable =
+                normalize(
+                  card.dataset.search || ""
+                );
 
 
-            if(visible){
-              visibleCount++;
+              let filterMatch =
+                false;
+
+
+              if (
+                currentFilter === "all"
+              ) {
+
+                filterMatch = true;
+
+              } else if (
+                currentFilter ===
+                "internal_affairs"
+              ) {
+
+                filterMatch =
+                  category ===
+                  "internal_affairs";
+
+              } else {
+
+                filterMatch =
+                  type ===
+                  currentFilter;
+
+              }
+
+
+              const searchMatch =
+                !query ||
+                searchable.includes(
+                  query
+                );
+
+
+              const visible =
+                filterMatch &&
+                searchMatch;
+
+
+              card.style.display =
+                visible
+                  ? ""
+                  : "none";
+
+
+              if (visible) {
+                visibleCount++;
+              }
+
+            });
+
+
+            if (counter) {
+
+              counter.textContent =
+                visibleCount +
+                " ${t.courtsFound}";
+
             }
 
-          });
+
+            if (empty) {
+
+              empty.style.display =
+                visibleCount === 0
+                  ? "block"
+                  : "none";
+
+            }
+
+          }
 
 
-          counter.textContent =
-            visibleCount +
-            " ${t.found}";
+// ======================================================
+// SEARCH
+// ======================================================
+
+          if (searchInput) {
+
+            searchInput.addEventListener(
+              "input",
+              applyFilters
+            );
+
+          }
 
 
-          empty.style.display =
-            visibleCount === 0
-              ? "block"
-              : "none";
+// ======================================================
+// FILTER BUTTONS
+// ======================================================
 
-        }
-
-
-        searchInput.addEventListener(
-          "input",
-          applyFilters
-        );
-
-
-        filterButtons.forEach(
-          button => {
+          filters.forEach(button => {
 
             button.addEventListener(
               "click",
               () => {
 
-                filterButtons.forEach(
+                currentFilter =
+                  button.dataset.filter ||
+                  "all";
+
+
+                filters.forEach(
                   item =>
                     item.classList.remove(
                       "active"
@@ -11213,180 +9819,24 @@ const internalAffairsCards =
                 );
 
 
-                currentFilter =
-                  button.dataset.filter ||
-                  "all";
-
-
                 applyFilters();
 
               }
             );
 
-          }
-        );
+          });
 
 
-        window.showCourtMap =
-          function(button){
+          applyFilters();
 
-            const mapUrl =
-              button.dataset.map;
 
+        })();
 
-            const courtName =
-              button.dataset.name;
+      </script>
 
+    `
 
-            const frame =
-              document.getElementById(
-                "courtMap"
-              );
-
-
-            const title =
-              document.getElementById(
-                "courtMapTitle"
-              );
-
-
-            if(courtName){
-
-              title.textContent =
-                courtName;
-
-            }
-
-
-            if(!mapUrl){
-              return;
-            }
-
-
-            /*
-             * Google Maps search URL'ni
-             * embed URL'ga aylantiramiz.
-             */
-
-            try{
-
-              const parsed =
-                new URL(mapUrl);
-
-
-              const query =
-                parsed.searchParams.get(
-                  "query"
-                );
-
-
-              if(query){
-
-                frame.src =
-                  "https://www.google.com/maps?q=" +
-                  encodeURIComponent(query) +
-                  "&output=embed";
-
-              }
-
-
-            }catch(error){
-
-              console.error(
-                "Map error:",
-                error
-              );
-
-            }
-
-          };
-
-
-        /*
-         * Agar foydalanuvchi qidiruvdan
-         * Enter bossa, birinchi ko'rinayotgan
-         * sud xaritada ochiladi.
-         */
-
-        searchInput.addEventListener(
-          "keydown",
-          event => {
-
-            if(
-              event.key !== "Enter"
-            ){
-              return;
-            }
-
-
-            event.preventDefault();
-
-
-            const firstVisible =
-              cards.find(
-                card =>
-                  card.style.display !==
-                  "none"
-              );
-
-
-            if(!firstVisible){
-              return;
-            }
-
-
-            const button =
-              firstVisible.querySelector(
-                "[data-map]"
-              );
-
-
-            if(button){
-
-              showCourtMap(button);
-
-            }
-
-          }
-        );
-
-
-      })();
-
-    </script>
-
-  `;
-
-
-  return appLayout(
-
-    lang,
-
-    "court",
-
-    content,
-
-    t.title,
-
-    t.description
-
-  );
-
-}
-
-
-// ======================================================
-// HEALTH RESPONSE
-// ======================================================
-
-function healthResponse(){
-
-  return {
-    ok: true,
-    service: "Huquqiy AI",
-    timestamp:
-      new Date().toISOString()
-  };
+  });
 
 }
 
@@ -11397,13 +9847,9 @@ function healthResponse(){
 
 const server =
   http.createServer(
-    async (
-      req,
-      res
-    ) => {
+    async (req, res) => {
 
       try {
-
 
         const url =
           getUrl(req);
@@ -11421,14 +9867,14 @@ const server =
           );
 
 
-        // ------------------------------------------------
-        // HOME
-        // ------------------------------------------------
+// ======================================================
+// GET ROUTES
+// ======================================================
 
-        if(
+        if (
           req.method === "GET" &&
           pathname === "/"
-        ){
+        ) {
 
           return sendHtml(
             res,
@@ -11438,27 +9884,136 @@ const server =
         }
 
 
-        // ------------------------------------------------
-        // AI
-        // ------------------------------------------------
-
-        if(
+        if (
           req.method === "GET" &&
-          pathname === "/ai"
-        ){
+          (
+            pathname === "/assistant" ||
+            pathname === "/ai"
+          )
+        ) {
+
+          const area =
+            url.searchParams.get(
+              "area"
+            ) || "";
+
 
           return sendHtml(
             res,
-            aiPage(lang)
+            assistantPage(
+              lang,
+              area
+            )
           );
 
         }
 
 
-        if(
+        if (
+          req.method === "GET" &&
+          pathname === "/questionnaire"
+        ) {
+
+          return sendHtml(
+            res,
+            questionnairePage(
+              lang
+            )
+          );
+
+        }
+
+
+        if (
+          req.method === "GET" &&
+          pathname === "/sources"
+        ) {
+
+          return sendHtml(
+            res,
+            sourcesPage(
+              lang
+            )
+          );
+
+        }
+
+
+        if (
+          req.method === "GET" &&
+          pathname === "/documents"
+        ) {
+
+          return sendHtml(
+            res,
+            documentsPage(
+              lang
+            )
+          );
+
+        }
+
+
+        if (
+          req.method === "GET" &&
+          pathname === "/claim"
+        ) {
+
+          const type =
+            url.searchParams.get(
+              "type"
+            ) || "";
+
+
+          return sendHtml(
+            res,
+            claimPage(
+              lang,
+              type
+            )
+          );
+
+        }
+
+
+        if (
+          req.method === "GET" &&
+          pathname === "/calculators"
+        ) {
+
+          return sendHtml(
+            res,
+            calculatorsPage(
+              lang
+            )
+          );
+
+        }
+
+
+        if (
+          req.method === "GET" &&
+          pathname === "/court"
+        ) {
+
+          return sendHtml(
+            res,
+            courtPage(
+              lang
+            )
+          );
+
+        }
+
+
+// ======================================================
+// POST — AI RESULT
+// ======================================================
+
+        if (
           req.method === "POST" &&
           pathname === "/ai-result"
-        ){
+        ) {
 
           const form =
             await readForm(req);
@@ -11479,27 +10034,15 @@ const server =
         }
 
 
-        // ------------------------------------------------
-        // QUESTIONNAIRE
-        // ------------------------------------------------
+// ======================================================
+// POST — QUESTIONNAIRE RESULT
+// ======================================================
 
-        if(
-          req.method === "GET" &&
-          pathname === "/questionnaire"
-        ){
-
-          return sendHtml(
-            res,
-            questionnairePage(lang)
-          );
-
-        }
-
-
-        if(
+        if (
           req.method === "POST" &&
-          pathname === "/questionnaire-result"
-        ){
+          pathname ===
+            "/questionnaire-result"
+        ) {
 
           const form =
             await readForm(req);
@@ -11520,75 +10063,15 @@ const server =
         }
 
 
-        // ------------------------------------------------
-        // SOURCES
-        // ------------------------------------------------
+// ======================================================
+// POST — DOCUMENT RESULT
+// ======================================================
 
-        if(
-          req.method === "GET" &&
-          pathname === "/sources"
-        ){
-
-          return sendHtml(
-            res,
-            sourcesPage(lang)
-          );
-
-        }
-
-
-        // ------------------------------------------------
-        // DOCUMENTS
-        // ------------------------------------------------
-
-        if(
-          req.method === "GET" &&
-          pathname === "/documents"
-        ){
-
-          return sendHtml(
-            res,
-            documentsPage(lang)
-          );
-
-        }
-
-
-        // ------------------------------------------------
-        // CLAIM FORM
-        // ------------------------------------------------
-
-        if(
-          req.method === "GET" &&
-          pathname === "/claim"
-        ){
-
-          const type =
-            url.searchParams.get(
-              "type"
-            ) ||
-            "divorce_claim";
-
-
-          return sendHtml(
-            res,
-            claimPage(
-              lang,
-              type
-            )
-          );
-
-        }
-
-
-        // ------------------------------------------------
-        // CLAIM RESULT
-        // ------------------------------------------------
-
-        if(
+        if (
           req.method === "POST" &&
-          pathname === "/claim-result"
-        ){
+          pathname ===
+            "/claim-result"
+        ) {
 
           const form =
             await readForm(req);
@@ -11609,78 +10092,93 @@ const server =
         }
 
 
-        // ------------------------------------------------
-        // CALCULATORS
-        // ------------------------------------------------
+// ======================================================
+// API — AI
+// ======================================================
 
-        if(
-          req.method === "GET" &&
-          pathname === "/calculators"
-        ){
+        if (
+          req.method === "POST" &&
+          pathname === "/api/ai"
+        ) {
 
-          return sendHtml(
-            res,
-            calculatorsPage(lang)
-          );
-
-        }
+          const data =
+            await readJson(req);
 
 
-        // ------------------------------------------------
-        // COURTS
-        // ------------------------------------------------
-
-        if(
-          req.method === "GET" &&
-          pathname === "/court"
-        ){
-
-          return sendHtml(
-            res,
-            courtPage(lang)
-          );
-
-        }
+          const question =
+            String(
+              data.question || ""
+            ).trim();
 
 
-        // ------------------------------------------------
-        // HEALTH
-        // ------------------------------------------------
+          const context =
+            String(
+              data.context || ""
+            ).trim();
 
-        if(
-          req.method === "GET" &&
-          pathname === "/health"
-        ){
+
+          if (!question) {
+
+            return sendJson(
+              res,
+              {
+                ok: false,
+                error:
+                  "QUESTION_REQUIRED"
+              },
+              400
+            );
+
+          }
+
+
+          const answer =
+            await callAI(
+              question,
+              lang,
+              context
+            );
+
 
           return sendJson(
             res,
-            healthResponse()
+            {
+              ok: true,
+              answer
+            }
           );
 
         }
 
 
-        // ------------------------------------------------
-        // FAVICON
-        // ------------------------------------------------
+// ======================================================
+// HEALTH CHECK
+// ======================================================
 
-        if(
+        if (
           req.method === "GET" &&
-          pathname === "/favicon.ico"
-        ){
+          pathname === "/health"
+        ) {
 
-          res.writeHead(
-            204
+          return sendJson(
+            res,
+            {
+              ok: true,
+              service:
+                "Huquqiy AI",
+
+              timestamp:
+                new Date()
+                  .toISOString()
+            }
           );
-
-          return res.end();
 
         }
 
 
-        // ------------------------------------------------
-        // 404
-        // ------------------------------------------------
+// ======================================================
+// 404
+// ======================================================
 
         return sendHtml(
           res,
@@ -11689,8 +10187,7 @@ const server =
         );
 
 
-      } catch(error){
-
+      } catch (error) {
 
         console.error(
           "SERVER ERROR:",
@@ -11698,103 +10195,98 @@ const server =
         );
 
 
-        const lang = "uz";
-
-
-        const message =
-          process.env.NODE_ENV ===
-          "production"
-            ? "Serverda xatolik yuz berdi."
-            : String(
-                error?.stack ||
-                error?.message ||
-                error
-              );
+        const status =
+          error?.message ===
+          "REQUEST_TOO_LARGE"
+            ? 413
+            : 500;
 
 
         return sendHtml(
           res,
-          page({
+          `
+            <!DOCTYPE html>
 
-            lang,
+            <html lang="uz">
 
-            title:
-              "Server xatosi",
+            <head>
 
-            content: `
+              <meta charset="UTF-8">
 
-              <section
-                style="
-                  min-height:70vh;
-                  display:grid;
-                  place-items:center;
-                  padding:50px 0;
-                "
+              <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
               >
 
-                <div
-                  class="surface surfacePad"
-                  style="
-                    width:min(800px,92%);
-                  "
-                >
+              <title>
+                Huquqiy AI — Server xatosi
+              </title>
 
-                  <div
-                    class="notice noticeDanger"
-                  >
+              <style>
 
-                    <span class="noticeIcon">
-                      !
-                    </span>
+                body{
+                  margin:0;
+                  min-height:100vh;
+                  display:grid;
+                  place-items:center;
+                  padding:25px;
+                  box-sizing:border-box;
+                  background:#f4f6f8;
+                  color:#263d55;
+                  font-family:Arial,sans-serif;
+                }
 
-                    <span>
-                      Serverda xatolik yuz berdi.
-                    </span>
+                .errorBox{
+                  width:min(600px,100%);
+                  padding:30px;
+                  box-sizing:border-box;
+                  background:#fff;
+                  border:1px solid #dfe5ea;
+                  border-radius:15px;
+                  box-shadow:
+                    0 18px 50px
+                    rgba(6,17,31,.08);
+                }
 
-                  </div>
+                h1{
+                  margin:
+                    0 0 10px;
+                  color:#071522;
+                  font-family:Georgia,serif;
+                }
 
+                p{
+                  line-height:1.7;
+                }
 
+              </style>
+
+            </head>
+
+            <body>
+
+              <div class="errorBox">
+
+                <h1>
+                  Serverda xatolik yuz berdi
+                </h1>
+
+                <p>
                   ${
-                    process.env.NODE_ENV !==
-                    "production"
-                      ? `
-
-                        <pre
-                          style="
-                            white-space:pre-wrap;
-                            overflow:auto;
-                            padding:15px;
-                            background:#f5f7f9;
-                            border:1px solid #e1e6ea;
-                            border-radius:9px;
-                            color:#40556b;
-                            font-size:10px;
-                            line-height:1.6;
-                          "
-                        >${esc(message)}</pre>
-
-                      `
-                      : ""
+                    status === 413
+                      ? "Yuborilgan ma’lumot hajmi juda katta."
+                      : "So‘rovni bajarishda server xatosi yuz berdi."
                   }
+                </p>
 
+              </div>
 
-                  <a
-                    class="btn btnPrimary"
-                    href="/${q(lang)}"
-                  >
-                    ← Bosh sahifa
-                  </a>
+            </body>
 
-                </div>
-
-              </section>
-
-            `
-
-          }),
-          500
+            </html>
+          `,
+          status
         );
-
 
       }
 
@@ -11808,44 +10300,10 @@ const server =
 
 server.listen(
   PORT,
-  "0.0.0.0",
   () => {
 
     console.log(
-      "===================================="
-    );
-
-    console.log(
-      " HUQUQIY AI SERVER ISHLADI"
-    );
-
-    console.log(
-      " PORT:",
-      PORT
-    );
-
-    console.log(
-      " AI MODEL:",
-      AI_MODEL
-    );
-
-    console.log(
-      " VOICE:",
-      "OFF"
-    );
-
-    console.log(
-      " LANGUAGES:",
-      "UZ / RU / EN"
-    );
-
-    console.log(
-      " COURT FINDER:",
-      "ON"
-    );
-
-    console.log(
-      "===================================="
+      `Huquqiy AI server running on port ${PORT}`
     );
 
   }
