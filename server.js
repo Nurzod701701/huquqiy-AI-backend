@@ -10455,6 +10455,440 @@ function courtPage(lang) {
 
         let currentFilter =
           "all";
+          const STATE_ORGANIZATIONS = [
+  // =========================
+  // OLIY SUD
+  // =========================
+  {
+    id: "supreme-court",
+    category: "court",
+    type: "supreme",
+    region: "Toshkent shahri",
+    district: "Shayxontohur",
+    name: "O‘zbekiston Respublikasi Oliy sudi",
+    address: "Abdulla Qodiriy ko‘chasi, 1-uy, 100186",
+    phone: "+998 71 207-73-77",
+    extension: "01613",
+    email: "info@supcourt.uz",
+    source: "sud.uz"
+  },
+
+  // =========================
+  // TOSHKENT SHAHAR SUDI
+  // =========================
+  {
+    id: "tashkent-city-court",
+    category: "court",
+    type: "general",
+    region: "Toshkent shahri",
+    name: "Toshkent shahar sudi",
+    address: "A. Navoiy ko‘chasi, 23A-uy",
+    phone: "+998 55 501-11-15",
+    source: "sud.uz"
+  },
+
+  {
+    id: "tashkent-criminal-panel",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    name: "Toshkent shahar sudi — Jinoyat ishlari bo‘yicha sudlov hay’ati",
+    address: "A. Navoiy ko‘chasi, 23A-uy",
+    phone: "+998 55 501-11-15",
+    extension: "02001",
+    source: "sud.uz"
+  },
+
+  {
+    id: "tashkent-civil-panel",
+    category: "court",
+    type: "civil",
+    region: "Toshkent shahri",
+    district: "Yakkasaroy",
+    name: "Toshkent shahar sudi — Fuqarolik ishlari bo‘yicha sudlov hay’ati",
+    address: "Shota Rustaveli ko‘chasi, 93-uy",
+    phone: "+998 55 501-00-23",
+    extension: "02629",
+    source: "sud.uz"
+  },
+
+  {
+    id: "tashkent-economic-panel",
+    category: "court",
+    type: "economic",
+    region: "Toshkent shahri",
+    district: "Yakkasaroy",
+    name: "Toshkent shahar sudi — Iqtisodiy ishlar bo‘yicha sudlov hay’ati",
+    address: "Shota Rustaveli ko‘chasi, 93-uy",
+    phone: "+998 55 501-00-16",
+    extension: "03124",
+    source: "sud.uz"
+  },
+
+  // =========================
+  // MA'MURIY SUD
+  // =========================
+  {
+    id: "tashkent-administrative",
+    category: "court",
+    type: "administrative",
+    region: "Toshkent shahri",
+    district: "Yunusobod",
+    name: "Toshkent shahar ma’muriy sudi",
+    address: "Amir Temur ko‘chasi, 118A-uy",
+    phone: "+998 55 501-11-14",
+    extension: "03001",
+    source: "sud.uz"
+  },
+
+  // =========================
+  // IQTISODIY SUD
+  // =========================
+  {
+    id: "tashkent-economic-interdistrict",
+    category: "court",
+    type: "economic",
+    region: "Toshkent shahri",
+    district: "Chilonzor",
+    name: "Toshkent tumanlararo iqtisodiy sudi",
+    address: "Cho‘pon-ota ko‘chasi, 6-uy",
+    phone: "+998 55 501-05-04",
+    extension: "03165",
+    source: "sud.uz"
+  },
+
+  // =========================
+  // MIROBOD TUMAN SUDI
+  // =========================
+  {
+    id: "mirobod-criminal-court",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Mirobod",
+    name: "Jinoyat ishlari bo‘yicha Mirobod tuman sudi",
+    address: "Fidokor ko‘chasi, 38-uy, 100015",
+    phone: "+998 71 252-00-03",
+    email: "j.mirobod@sud.uz",
+    source: "sud.uz"
+  },
+
+  // =========================
+  // TOSHKENTDAGI QOLGAN
+  // JINOYAT SUDLARI
+  // =========================
+
+  {
+    id: "bektemir-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Bektemir",
+    name: "Jinoyat ishlari bo‘yicha Bektemir tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "chilonzor-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Chilonzor",
+    name: "Jinoyat ishlari bo‘yicha Chilonzor tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "mirzo-ulugbek-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Mirzo Ulug‘bek",
+    name: "Jinoyat ishlari bo‘yicha Mirzo Ulug‘bek tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "olmazor-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Olmazor",
+    name: "Jinoyat ishlari bo‘yicha Olmazor tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "sergeli-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Sergeli",
+    name: "Jinoyat ishlari bo‘yicha Sergeli tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "shayxontohur-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Shayxontohur",
+    name: "Jinoyat ishlari bo‘yicha Shayxontohur tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "uchtepa-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Uchtepa",
+    name: "Jinoyat ishlari bo‘yicha Uchtepa tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "yakkasaroy-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Yakkasaroy",
+    name: "Jinoyat ishlari bo‘yicha Yakkasaroy tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "yashnobod-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Yashnobod",
+    name: "Jinoyat ishlari bo‘yicha Yashnobod tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "yunusobod-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Yunusobod",
+    name: "Jinoyat ishlari bo‘yicha Yunusobod tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  {
+    id: "yangihayot-criminal",
+    category: "court",
+    type: "criminal",
+    region: "Toshkent shahri",
+    district: "Yangihayot",
+    name: "Jinoyat ishlari bo‘yicha Yangihayot tuman sudi",
+    phone: null,
+    verification: "Telefon raqami rasmiy manbadan yangilanmoqda"
+  },
+
+  // =========================
+  // SUD DEPARTAMENTI
+  // =========================
+  {
+    id: "court-department-tashkent",
+    category: "court_department",
+    region: "Toshkent shahri",
+    district: "Yakkasaroy",
+    name: "Oliy sud huzuridagi Sudlar faoliyatini ta’minlash departamentining Toshkent shahar hududiy bo‘limi",
+    address: "Shota Rustaveli ko‘chasi, 62-uy",
+    phone: "+998 55 501-00-04",
+    extension: "03142",
+    source: "sud.uz"
+  }
+  ,
+{
+  id: "tashkent-iibb",
+  category: "internal_affairs",
+  type: "regional",
+  region: "Toshkent shahri",
+  name: "Toshkent shahar Ichki ishlar bosh boshqarmasi",
+  address: "S. Azimov ko‘chasi, 87-uy",
+  phone: "+998 71 206-41-65",
+  appealsPhone: "+998 71 206-43-34",
+  emergencyPhone: "102",
+  source: "iibb.uz"
+},
+
+{
+  id: "police-emergency-102",
+  category: "internal_affairs",
+  type: "emergency",
+  region: "O‘zbekiston",
+  name: "Ichki ishlar organlari tezkor raqami",
+  phone: "102",
+  description: "Huquqbuzarlik, jinoyat yoki tezkor ichki ishlar yordami zarur bo‘lgan holatlar uchun.",
+  source: "iibb.uz"
+}
+,
+
+// ======================================================
+// TOSHKENT SHAHRI — BARCHA TUMAN IIO FMB
+// ======================================================
+
+{
+  id: "bektemir-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Bektemir",
+  name: "Bektemir tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "chilonzor-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Chilonzor",
+  name: "Chilonzor tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "mirobod-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Mirobod",
+  name: "Mirobod tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "mirzo-ulugbek-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Mirzo Ulug‘bek",
+  name: "Mirzo Ulug‘bek tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "olmazor-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Olmazor",
+  name: "Olmazor tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "sergeli-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Sergeli",
+  name: "Sergeli tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "shayxontohur-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Shayxontohur",
+  name: "Shayxontohur tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "uchtepa-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Uchtepa",
+  name: "Uchtepa tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "yakkasaroy-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Yakkasaroy",
+  name: "Yakkasaroy tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "yashnobod-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Yashnobod",
+  name: "Yashnobod tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "yunusobod-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Yunusobod",
+  name: "Yunusobod tumani IIO FMB",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+},
+
+{
+  id: "yangihayot-iio-fmb",
+  category: "internal_affairs",
+  type: "district",
+  region: "Toshkent shahri",
+  district: "Yangihayot",
+  name: "Yangihayot tumani IIO FMB",
+  phone: "+998 71 258-03-11",
+  emergencyPhone: "102",
+  hotline: "1102",
+  source: "iibb.uz"
+}
+
+]; // STATE_ORGANIZATIONS TUGADI
 
 
         function normalize(value) {
