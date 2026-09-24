@@ -5203,6 +5203,76 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 
   </style>
 
+
+<style>
+/* HUQUQIY AI — MAIN 3 AREAS: clean, large entry cards */
+body.homeThreeOnly .domainGrid,
+body.homeThreeOnly .areasGrid,
+body.homeThreeOnly .homeDomains{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:24px!important;
+  margin:34px auto!important;
+}
+body.homeThreeOnly .domainCard,
+body.homeThreeOnly .areaCard,
+body.homeThreeOnly .homeDomainCard{
+  min-height:260px!important;
+  padding:34px 30px!important;
+  border-radius:22px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:flex-start!important;
+}
+body.homeThreeOnly .domainCard h2,
+body.homeThreeOnly .domainCard h3,
+body.homeThreeOnly .areaCard h2,
+body.homeThreeOnly .areaCard h3,
+body.homeThreeOnly .homeDomainCard h2,
+body.homeThreeOnly .homeDomainCard h3{
+  font-size:30px!important;
+  line-height:1.15!important;
+  margin:0 0 14px!important;
+}
+body.homeThreeOnly .domainCard p,
+body.homeThreeOnly .areaCard p,
+body.homeThreeOnly .homeDomainCard p{
+  font-size:15px!important;
+  line-height:1.55!important;
+}
+body.homeThreeOnly .domainCard .btn,
+body.homeThreeOnly .areaCard .btn,
+body.homeThreeOnly .homeDomainCard .btn{
+  font-size:16px!important;
+  padding:13px 20px!important;
+  margin-top:18px!important;
+}
+@media(max-width:900px){
+ body.homeThreeOnly .domainGrid,body.homeThreeOnly .areasGrid,body.homeThreeOnly .homeDomains{grid-template-columns:1fr!important}
+ body.homeThreeOnly .domainCard,body.homeThreeOnly .areaCard,body.homeThreeOnly .homeDomainCard{min-height:190px!important}
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+  if(location.pathname==="/" || location.pathname===""){
+    document.body.classList.add("homeThreeOnly");
+    const wanted=["oila huquqi","mehnat huquqi","biznes huquqi","семейное право","трудовое право","бизнес-право","family law","employment law","business law"];
+    const candidates=[...document.querySelectorAll("main section, main .section, main .panel, main .card, main article")];
+    candidates.forEach(el=>{
+      const txt=(el.innerText||"").toLowerCase();
+      if(!wanted.some(w=>txt.includes(w))) return;
+      const count=wanted.filter(w=>txt.includes(w)).length;
+      if(count>=3){
+        [...el.children].forEach(ch=>{
+          const ct=(ch.innerText||"").toLowerCase();
+          if(ct.trim() && !wanted.some(w=>ct.includes(w))) ch.style.display="none";
+        });
+      }
+    });
+  }
+});
+</script>
 </head>
 
 
