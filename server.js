@@ -1,4 +1,8 @@
-require("dotenv").config();
+try {
+  require("dotenv").config();
+} catch (_) {
+  // Environment variables can also be provided directly by Render/StackBlitz.
+}
 
 const http = require("http");
 const querystring = require("querystring");
@@ -6237,87 +6241,37 @@ function homePage(lang) {
 
 
 
-      <!-- LEGAL AREAS -->
-
+      <!-- THREE MAIN LEGAL DIVISIONS -->
       <section class="services">
-
-        <div class="container">
-
-          <div class="sectionHead">
-
-            <div>
-
-              <span class="eyebrow">
-                ${t.areasSmall}
-              </span>
-
-              <h2 class="sectionTitle">
-                ${t.areasTitle}
-              </h2>
-
-            </div>
-
-            <p class="sectionText">
-              ${t.areasText}
-            </p>
-
-          </div>
-
-
-          <div class="serviceGrid">
-
-            <a class="serviceCard" href="/business${q(lang)}">
-              <div class="serviceIcon">§</div>
-              <h3>${lang==="ru"?"Бизнес-право":lang==="en"?"Business law":"Biznes huquqi"}</h3>
-              <p>${lang==="ru"?"AI бизнес-юрист, споры, заявления, договоры и официальные бизнес-сервисы.":lang==="en"?"AI business lawyer, disputes, documents, contracts and official business services.":"AI biznes yuristi, nizolar, arizalar, shartnomalar va rasmiy biznes xizmatlari."}</p>
-              <span class="serviceLink">${lang==="ru"?"Открыть →":lang==="en"?"Open →":"Kirish →"}</span>
-            </a>
-
-
-            ${areaCards}
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-
-      <!-- CLAIM PREPARATION — ALOHIDA ASOSIY BO‘LIM -->
-      <section class="servicesSection" id="claim-preparation">
         <div class="container">
           <div class="sectionHead">
             <div>
-              <span class="eyebrow">${lang === "uz" ? "ALOHIDA XIZMAT" : lang === "ru" ? "ОТДЕЛЬНЫЙ СЕРВИС" : "DEDICATED SERVICE"}</span>
-              <h2 class="sectionTitle">${lang === "uz" ? "Da’vo arizasi tayyorlash" : lang === "ru" ? "Подготовка искового заявления" : "Claim preparation"}</h2>
+              <span class="eyebrow">${lang==="uz"?"ASOSIY YO‘NALISHLAR":lang==="ru"?"ОСНОВНЫЕ НАПРАВЛЕНИЯ":"MAIN PRACTICE AREAS"}</span>
+              <h2 class="sectionTitle">${lang==="uz"?"Huquqiy yo‘nalishni tanlang":lang==="ru"?"Выберите направление":"Choose a legal area"}</h2>
             </div>
-            <p class="sectionText">${lang === "uz" ? "Huquq sohasi va da’vo turini tanlang, savollarga javob bering va sudga topshirishga tayyor loyiha yarating." : lang === "ru" ? "Выберите отрасль и вид иска, ответьте на вопросы и подготовьте проект для подачи в суд." : "Choose the legal area and claim type, answer the questions, and prepare a draft for court filing."}</p>
+            <p class="sectionText">${lang==="uz"?"Har bir bo‘lim o‘zining AI yuristi, hujjatlari, hisob-kitoblari va rasmiy manbalarini o‘z ichiga oladi.":lang==="ru"?"Каждый раздел содержит своего AI-юриста, документы, инструменты и официальные источники.":"Each area contains its own AI lawyer, documents, tools and official sources."}</p>
           </div>
+
           <div class="serviceGrid">
             <a class="serviceCard" href="/family${q(lang)}">
               <div class="serviceIcon">O</div>
-              <h3>${lang === "uz" ? "Oila huquqi" : lang === "ru" ? "Семейное право" : "Family law"}</h3>
-              <p>${lang === "uz" ? "Oila nizolari, da’volar, hisob-kitoblar va o‘quv manbalari — alohida bo‘lim." : lang === "ru" ? "Семейные споры, иски, расчёты и учебные источники — отдельный раздел." : "Family disputes, claims, calculations and study resources in a separate section."}</p>
-              <span class="serviceLink">${lang === "uz" ? "Oila bo‘limi →" : lang === "ru" ? "Раздел →" : "Open →"}</span>
+              <h3>${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</h3>
+              <p>${lang==="uz"?"Ajrim, aliment, bolalar, mol-mulk, nikoh shartnomasi, da’vo arizalari, hisob-kitob va rasmiy oilaviy-huquqiy manbalar.":lang==="ru"?"Развод, алименты, дети, имущество, брачный договор, иски, расчёты и официальные источники.":"Divorce, alimony, children, property, marriage contracts, claims, calculations and official sources."}</p>
+              <span class="serviceLink">${lang==="uz"?"Oila huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open family law →"}</span>
             </a>
+
             <a class="serviceCard" href="/employment${q(lang)}">
               <div class="serviceIcon">M</div>
-              <h3>${lang === "uz" ? "Mehnat huquqi" : lang === "ru" ? "Трудовое право" : "Employment law"}</h3>
-              <p>${lang === "uz" ? "Mehnat nizolari, shartnoma namunalari, da’volar va qonunchilik manbalari — alohida bo‘lim." : lang === "ru" ? "Трудовые споры, образцы договоров, иски и законодательство — отдельный раздел." : "Employment disputes, contract samples, claims and legislation in a separate section."}</p>
-              <span class="serviceLink">${lang === "uz" ? "Mehnat bo‘limi →" : lang === "ru" ? "Раздел →" : "Open →"}</span>
+              <h3>${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</h3>
+              <p>${lang==="uz"?"Ishdan bo‘shatish, ish haqi, mehnat shartnomasi, ish vaqti, ta’til, mehnat nizolari, da’volar va rasmiy manbalar.":lang==="ru"?"Увольнение, зарплата, трудовой договор, рабочее время, отпуск, споры, иски и официальные источники.":"Dismissal, wages, employment contracts, working time, leave, disputes, claims and official sources."}</p>
+              <span class="serviceLink">${lang==="uz"?"Mehnat huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open employment law →"}</span>
             </a>
-            <a class="serviceCard" href="/calculators${q(lang)}">
-              <div class="serviceIcon">§</div>
-              <h3>${lang === "uz" ? "Hisob-kitob va huquqiy tahlil" : lang === "ru" ? "Расчёты и правовой анализ" : "Calculations and legal analysis"}</h3>
-              <p>${lang === "uz" ? "Aliment va mol-mulk bo‘yicha savol-javobli tahlildan da’vo tayyorlashga o‘ting." : lang === "ru" ? "Проведите анализ алиментов и имущества и перейдите к подготовке иска." : "Analyze alimony or property, then continue to claim preparation."}</p>
-              <span class="serviceLink">${lang === "uz" ? "Tahlil qilish →" : lang === "ru" ? "Анализировать →" : "Analyze →"}</span>
-            </a>
-            <a class="serviceCard" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">
-              <div class="serviceIcon">⚖</div>
-              <h3>${lang === "uz" ? "Da’vo arizasini sudga topshirish" : lang === "ru" ? "Подать иск в суд" : "Submit claim to court"}</h3>
-              <p>${lang === "uz" ? "Bir bosishda Oliy sudning rasmiy ADOLAT elektron qabulxonasiga o‘ting." : lang === "ru" ? "Перейдите напрямую в официальную электронную приёмную ADOLAT." : "Go directly to the official ADOLAT electronic court service."}</p>
-              <span class="serviceLink">${lang === "uz" ? "Rasmiy sud tizimiga o‘tish →" : lang === "ru" ? "Перейти в суд →" : "Open official court service →"}</span>
+
+            <a class="serviceCard" href="/business${q(lang)}">
+              <div class="serviceIcon">B</div>
+              <h3>${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</h3>
+              <p>${lang==="uz"?"Biznes nizolari, qarzdorlik, barcha turdagi ariza va talabnomalar, shartnomalar, Palata, Biznes-ombudsman, iqtisodiy sud va rasmiy biznes platformalari.":lang==="ru"?"Бизнес-споры, долги, заявления, претензии, договоры, Палата, Бизнес-омбудсман, экономический суд и официальные платформы.":"Business disputes, debt, documents, contracts, Chamber services, Business Ombudsman, economic courts and official platforms."}</p>
+              <span class="serviceLink">${lang==="uz"?"Biznes huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open business law →"}</span>
             </a>
           </div>
         </div>
@@ -12811,5 +12765,3 @@ server.listen(
 // ======================================================
 // END OF HUQUQIY AI
 // ======================================================
-
-
