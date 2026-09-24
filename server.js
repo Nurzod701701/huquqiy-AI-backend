@@ -6139,17 +6139,29 @@ function homePage(lang) {
             <p class="sectionText">${lang === "uz" ? "Huquq sohasi va da’vo turini tanlang, savollarga javob bering va sudga topshirishga tayyor loyiha yarating." : lang === "ru" ? "Выберите отрасль и вид иска, ответьте на вопросы и подготовьте проект для подачи в суд." : "Choose the legal area and claim type, answer the questions, and prepare a draft for court filing."}</p>
           </div>
           <div class="serviceGrid">
-            <a class="serviceCard" href="/documents${q(lang)}">
-              <div class="serviceIcon">▤</div>
-              <h3>${lang === "uz" ? "Da’vo arizasini tayyorlash" : lang === "ru" ? "Подготовить иск" : "Prepare a claim"}</h3>
-              <p>${lang === "uz" ? "Oila va mehnat huquqi bo‘yicha da’vo turini tanlab, savol-javob asosida ariza tayyorlang." : lang === "ru" ? "Подготовьте иск по семейному или трудовому праву через пошаговые вопросы." : "Prepare a family or employment claim through guided questions."}</p>
-              <span class="serviceLink">${lang === "uz" ? "Da’voni boshlash →" : lang === "ru" ? "Начать →" : "Start →"}</span>
+            <a class="serviceCard" href="/family${q(lang)}">
+              <div class="serviceIcon">O</div>
+              <h3>${lang === "uz" ? "Oila huquqi" : lang === "ru" ? "Семейное право" : "Family law"}</h3>
+              <p>${lang === "uz" ? "Oila nizolari, da’volar, hisob-kitoblar va o‘quv manbalari — alohida bo‘lim." : lang === "ru" ? "Семейные споры, иски, расчёты и учебные источники — отдельный раздел." : "Family disputes, claims, calculations and study resources in a separate section."}</p>
+              <span class="serviceLink">${lang === "uz" ? "Oila bo‘limi →" : lang === "ru" ? "Раздел →" : "Open →"}</span>
+            </a>
+            <a class="serviceCard" href="/employment${q(lang)}">
+              <div class="serviceIcon">M</div>
+              <h3>${lang === "uz" ? "Mehnat huquqi" : lang === "ru" ? "Трудовое право" : "Employment law"}</h3>
+              <p>${lang === "uz" ? "Mehnat nizolari, shartnoma namunalari, da’volar va qonunchilik manbalari — alohida bo‘lim." : lang === "ru" ? "Трудовые споры, образцы договоров, иски и законодательство — отдельный раздел." : "Employment disputes, contract samples, claims and legislation in a separate section."}</p>
+              <span class="serviceLink">${lang === "uz" ? "Mehnat bo‘limi →" : lang === "ru" ? "Раздел →" : "Open →"}</span>
             </a>
             <a class="serviceCard" href="/calculators${q(lang)}">
               <div class="serviceIcon">§</div>
               <h3>${lang === "uz" ? "Hisob-kitob va huquqiy tahlil" : lang === "ru" ? "Расчёты и правовой анализ" : "Calculations and legal analysis"}</h3>
               <p>${lang === "uz" ? "Aliment va mol-mulk bo‘yicha savol-javobli tahlildan da’vo tayyorlashga o‘ting." : lang === "ru" ? "Проведите анализ алиментов и имущества и перейдите к подготовке иска." : "Analyze alimony or property, then continue to claim preparation."}</p>
               <span class="serviceLink">${lang === "uz" ? "Tahlil qilish →" : lang === "ru" ? "Анализировать →" : "Analyze →"}</span>
+            </a>
+            <a class="serviceCard" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">
+              <div class="serviceIcon">⚖</div>
+              <h3>${lang === "uz" ? "Da’vo arizasini sudga topshirish" : lang === "ru" ? "Подать иск в суд" : "Submit claim to court"}</h3>
+              <p>${lang === "uz" ? "Bir bosishda Oliy sudning rasmiy ADOLAT elektron qabulxonasiga o‘ting." : lang === "ru" ? "Перейдите напрямую в официальную электронную приёмную ADOLAT." : "Go directly to the official ADOLAT electronic court service."}</p>
+              <span class="serviceLink">${lang === "uz" ? "Rasmiy sud tizimiga o‘tish →" : lang === "ru" ? "Перейти в суд →" : "Open official court service →"}</span>
             </a>
           </div>
         </div>
@@ -6529,7 +6541,18 @@ function aiPage(lang) {
                 "click",
                 () => {
 
-                  if (!textarea) return;
+                  if (
+          req.method === "GET" &&
+          pathname === "/family"
+        ) {
+          return sendHtml(
+            res,
+            200,
+            familyPage(lang)
+          );
+        }
+
+        if (!textarea) return;
 
                   const value =
                     button.dataset.aiExample || "";
@@ -8193,6 +8216,105 @@ ${String(form.evidence || "")}
 // MEHNAT HUQUQI — VAZIYAT TAHLILI VA DA’VO
 // ======================================================
 
+
+function familyPage(lang) {
+  lang = getLang(lang);
+
+  const L = {
+    uz: {
+      title: "Oila huquqi",
+      desc: "Oila huquqi bo‘yicha amaliy xizmatlar, da’vo arizalari, hisob-kitoblar va talabalar uchun rasmiy o‘quv manbalari.",
+      practice: "Amaliy xizmatlar",
+      study: "Talabalar uchun o‘quv va qonunchilik manbalari",
+      note: "Tashqi manbalar yangi oynada ochiladi. Qonunchilik uchun birinchi navbatda rasmiy LexUZ va Hukumat portalidan foydalaning."
+    },
+    ru: {
+      title: "Семейное право",
+      desc: "Практические сервисы, иски, расчёты и официальные учебно-правовые источники по семейному праву.",
+      practice: "Практические сервисы",
+      study: "Учебные и законодательные источники",
+      note: "Внешние источники открываются в новой вкладке. Для актуального законодательства используйте прежде всего LexUZ и Правительственный портал."
+    },
+    en: {
+      title: "Family law",
+      desc: "Practical services, claim preparation, calculations and official study resources for family law.",
+      practice: "Practical services",
+      study: "Study and legislation resources",
+      note: "External resources open in a new tab. Use official LexUZ and Government sources for current legislation."
+    }
+  }[lang];
+
+  return appLayout(
+    lang,
+    "family",
+    `
+      <div class="notice noticeGold">
+        <span class="noticeIcon">§</span><span>${esc(L.note)}</span>
+      </div>
+
+      <div class="surface surfacePad">
+        <div class="resultLabel">${esc(L.practice)}</div>
+        <div class="serviceGrid" style="margin-top:16px;">
+          <a class="serviceCard" href="/ai${q(lang)}&area=family">
+            <div class="serviceIcon">AI</div>
+            <h3>${lang === "uz" ? "Oila huquqi bo‘yicha AI yurist" : lang === "ru" ? "AI-юрист по семейному праву" : "Family-law AI lawyer"}</h3>
+            <p>${lang === "uz" ? "Vaziyatni savol-javob orqali tahlil qiling." : lang === "ru" ? "Разберите ситуацию через пошаговые вопросы." : "Analyze a situation through guided questions."}</p>
+          </a>
+          <a class="serviceCard" href="/documents${q(lang)}">
+            <div class="serviceIcon">▤</div>
+            <h3>${lang === "uz" ? "Oila bo‘yicha da’vo arizasi" : lang === "ru" ? "Иск по семейному спору" : "Family-law claim"}</h3>
+            <p>${lang === "uz" ? "Nikohdan ajratish, aliment va mol-mulk bo‘yicha da’vo loyihasi." : lang === "ru" ? "Проект иска о разводе, алиментах или разделе имущества." : "Prepare divorce, alimony or property claims."}</p>
+          </a>
+          <a class="serviceCard" href="/calculators${q(lang)}">
+            <div class="serviceIcon">%</div>
+            <h3>${lang === "uz" ? "Aliment va mol-mulk tahlili" : lang === "ru" ? "Алименты и имущество" : "Alimony and property"}</h3>
+            <p>${lang === "uz" ? "Savol-javobli hisob-kitob va dastlabki huquqiy tahlil." : lang === "ru" ? "Расчёт и предварительный правовой анализ." : "Question-based calculations and preliminary analysis."}</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="surface surfacePad" style="margin-top:18px;">
+        <div class="resultLabel">${esc(L.study)}</div>
+        <div class="serviceGrid" style="margin-top:16px;">
+          <a class="serviceCard" href="https://lex.uz/docs/-104720" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">§</div>
+            <h3>${lang === "uz" ? "Oila kodeksi — LexUZ" : lang === "ru" ? "Семейный кодекс — LexUZ" : "Family Code — LexUZ"}</h3>
+            <p>${lang === "uz" ? "Oila kodeksining amaldagi rasmiy matnini to‘g‘ridan-to‘g‘ri o‘qing." : lang === "ru" ? "Откройте актуальный официальный текст Семейного кодекса." : "Read the current official Family Code."}</p>
+          </a>
+          <a class="serviceCard" href="https://gov.uz/oz/advice/728/document/3585" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">O</div>
+            <h3>${lang === "uz" ? "Oila huquqi asoslari" : lang === "ru" ? "Основы семейного права" : "Family-law basics"}</h3>
+            <p>${lang === "uz" ? "Hukumat portalidagi tushuntiruvchi o‘quv materiali." : lang === "ru" ? "Разъяснительный материал Правительственного портала." : "Government explanatory study material."}</p>
+          </a>
+          <a class="serviceCard" href="https://gov.uz/oz/advice/58/document/2857" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">⚖</div>
+            <h3>${lang === "uz" ? "Nikohni sud tartibida bekor qilish" : lang === "ru" ? "Расторжение брака через суд" : "Court divorce procedure"}</h3>
+            <p>${lang === "uz" ? "Sudga murojaat, hujjatlar va tartib bo‘yicha rasmiy ma’lumot." : lang === "ru" ? "Официальная информация о порядке и документах." : "Official filing and document guidance."}</p>
+          </a>
+          <a class="serviceCard" href="https://gov.uz/oz/advice/72/document/2598" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">₿</div>
+            <h3>${lang === "uz" ? "Aliment kelishuvi" : lang === "ru" ? "Соглашение об алиментах" : "Alimony agreement"}</h3>
+            <p>${lang === "uz" ? "Aliment to‘lash to‘g‘risidagi kelishuv bo‘yicha rasmiy tushuntirish." : lang === "ru" ? "Официальное разъяснение по соглашению об алиментах." : "Official guidance on alimony agreements."}</p>
+          </a>
+          <a class="serviceCard" href="https://gov.uz/oz/advice/58/document/583" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">▤</div>
+            <h3>${lang === "uz" ? "Nikoh shartnomasi" : lang === "ru" ? "Брачный договор" : "Marriage contract"}</h3>
+            <p>${lang === "uz" ? "Nikoh shartnomasining mazmuni, shakli va huquqiy talablari." : lang === "ru" ? "Содержание, форма и правовые требования." : "Content, form and legal requirements."}</p>
+          </a>
+          <a class="serviceCard" href="https://gov.uz/oz/advice/58/document/577" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">⌂</div>
+            <h3>${lang === "uz" ? "Er-xotinning umumiy mulki" : lang === "ru" ? "Общее имущество супругов" : "Marital property"}</h3>
+            <p>${lang === "uz" ? "Umumiy mol-mulk rejimi bo‘yicha rasmiy material." : lang === "ru" ? "Официальный материал об общем имуществе супругов." : "Official material on marital property."}</p>
+          </a>
+        </div>
+      </div>
+    `,
+    L.title,
+    L.desc
+  );
+}
+
+
 function employmentPage(lang) {
 
   lang = getLang(lang);
@@ -8349,6 +8471,52 @@ function employmentPage(lang) {
             <button class="btn btnPrimary" type="submit">§ ${esc(t.submit)}</button>
           </div>
         </form>
+      </div>
+
+      <div class="surface surfacePad" style="margin-top:18px;">
+        <div class="resultLabel">
+          ${lang === "uz" ? "MEHNAT SHARTNOMASI NAMUNALARI" : lang === "ru" ? "ОБРАЗЦЫ ТРУДОВЫХ ДОГОВОРОВ" : "EMPLOYMENT CONTRACT SAMPLES"}
+        </div>
+        <div class="serviceGrid" style="margin-top:16px;">
+          <a class="serviceCard" href="https://gov.uz/oz/madaniymeros/sections/view/37231" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">▤</div>
+            <h3>${lang === "uz" ? "Mehnat shartnomasi namunasi" : lang === "ru" ? "Образец трудового договора" : "Employment contract sample"}</h3>
+            <p>${lang === "uz" ? "Gov.uz saytida e’lon qilingan mehnat shartnomasi namunasi." : lang === "ru" ? "Образец трудового договора на Gov.uz." : "Employment contract sample published on Gov.uz."}</p>
+          </a>
+          <a class="serviceCard" href="https://gov.uz/oz/advice/673/document/3012" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">⌂</div>
+            <h3>${lang === "uz" ? "Kasanachi bilan mehnat shartnomasi" : lang === "ru" ? "Договор с надомником" : "Homeworker employment contract"}</h3>
+            <p>${lang === "uz" ? "Kasanachilik uchun maxsus shartlar va namunaviy shakl bo‘yicha rasmiy material." : lang === "ru" ? "Официальный материал о специальных условиях договора." : "Official guidance on special contract terms."}</p>
+          </a>
+          <a class="serviceCard" href="https://my.gov.uz/uz/service/1235" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">✓</div>
+            <h3>${lang === "uz" ? "Elektron mehnat shartnomasi" : lang === "ru" ? "Электронный трудовой договор" : "Electronic employment contract"}</h3>
+            <p>${lang === "uz" ? "my.gov.uz orqali elektron mehnat shartnomasi xizmatiga o‘ting." : lang === "ru" ? "Перейдите к услуге электронного трудового договора на my.gov.uz." : "Open the electronic employment-contract service on my.gov.uz."}</p>
+          </a>
+        </div>
+      </div>
+
+      <div class="surface surfacePad" style="margin-top:18px;">
+        <div class="resultLabel">
+          ${lang === "uz" ? "QONUNCHILIK VA O‘QUV MANBALARI" : lang === "ru" ? "ЗАКОНОДАТЕЛЬСТВО И УЧЕБНЫЕ ИСТОЧНИКИ" : "LEGISLATION AND STUDY RESOURCES"}
+        </div>
+        <div class="serviceGrid" style="margin-top:16px;">
+          <a class="serviceCard" href="https://lex.uz/docs/-6257288" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">§</div>
+            <h3>${lang === "uz" ? "Mehnat kodeksi — LexUZ" : lang === "ru" ? "Трудовой кодекс — LexUZ" : "Labour Code — LexUZ"}</h3>
+            <p>${lang === "uz" ? "Mehnat kodeksining amaldagi rasmiy matnini to‘g‘ridan-to‘g‘ri o‘qing." : lang === "ru" ? "Откройте актуальный официальный текст Трудового кодекса." : "Read the current official Labour Code."}</p>
+          </a>
+          <a class="serviceCard" href="https://gov.uz/oz/advice/673/document/2915" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">i</div>
+            <h3>${lang === "uz" ? "Mehnat shartnomasi bo‘yicha qo‘llanma" : lang === "ru" ? "Руководство по трудовому договору" : "Employment-contract guide"}</h3>
+            <p>${lang === "uz" ? "Shartnoma mazmuni, shakli, muddati va asosiy talablar." : lang === "ru" ? "Содержание, форма, срок и основные требования." : "Content, form, term and core requirements."}</p>
+          </a>
+          <a class="serviceCard" href="https://gov.uz/oz/advice/554/document/2253" target="_blank" rel="noopener noreferrer">
+            <div class="serviceIcon">J</div>
+            <h3>${lang === "uz" ? "Jamoa shartnomasi" : lang === "ru" ? "Коллективный договор" : "Collective agreement"}</h3>
+            <p>${lang === "uz" ? "Jamoa shartnomasi va uning mazmuni bo‘yicha rasmiy material." : lang === "ru" ? "Официальный материал о коллективном договоре." : "Official material on collective agreements."}</p>
+          </a>
+        </div>
       </div>
     `,
     t.title,
