@@ -4171,7 +4171,6 @@ const CSS_APP = `
 
   line-height:1.5;
 }
-
 .questionCard input,
 .questionCard select,
 .questionCard textarea{
@@ -4871,7 +4870,51 @@ function navigation(lang) {
 
       }
 
-    </style>
+    
+/* PREMIUM LEGALTECH UI */
+body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparent 28rem),linear-gradient(180deg,#fbfaf7,#f3f5f6);color:#14232f;font-size:17px;line-height:1.68}
+.container{max-width:1240px}
+.navbar,.appTopbar{background:rgba(7,24,39,.97)!important;border-bottom:1px solid rgba(217,192,131,.18);box-shadow:0 12px 38px rgba(2,15,25,.16);backdrop-filter:blur(18px)}
+.brand strong,.appBrand strong{font-size:23px;font-weight:850;letter-spacing:-.035em}
+.navlinks a{padding:10px 13px;border-radius:12px;font-size:14px;font-weight:650}
+.navlinks a:hover{background:rgba(255,255,255,.07)}
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 80% 20%,rgba(217,192,131,.15),transparent 22rem),linear-gradient(135deg,#061521,#0b2538 55%,#103149)!important}
+.hero:after{content:"§";position:absolute;right:5vw;top:50%;transform:translateY(-50%);font-family:Georgia,serif;font-size:290px;color:rgba(217,192,131,.045);pointer-events:none}
+.heroInner{position:relative;z-index:1;padding-top:88px;padding-bottom:92px}
+.hero h1,.heroTitle{font-family:Georgia,"Times New Roman",serif;font-size:clamp(43px,5.4vw,72px);line-height:1.02;letter-spacing:-.045em}
+.heroDescription{max-width:720px;font-size:18px;line-height:1.75}
+.btn{min-height:48px;padding:12px 18px;border-radius:13px;font-size:14px;font-weight:780;transition:.2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btnGold{color:#0b1e2e;background:linear-gradient(135deg,#e1c98d,#b9954f)!important;box-shadow:0 12px 28px rgba(185,149,79,.22)}
+.section,.servicesSection{padding-top:72px;padding-bottom:72px}
+.sectionTitle,.appHeader h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.035em}
+.sectionTitle{font-size:clamp(31px,4vw,47px);line-height:1.08}
+.serviceGrid,.documentGrid,.sourceGrid,.coreGrid{gap:18px}
+.serviceCard,.sourceCard,.coreItem,.documentCard,.calcCard,.surface{position:relative;overflow:hidden;border:1px solid rgba(12,36,56,.12);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 10px 35px rgba(7,24,39,.055)}
+.serviceCard,.sourceCard,.documentCard{padding:25px;transition:.22s ease}
+.serviceCard:before,.documentCard:before,.sourceCard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#d9c083,#b9954f);opacity:.72}
+.serviceCard:hover,.sourceCard:hover,.documentCard:hover{transform:translateY(-5px);box-shadow:0 18px 55px rgba(5,24,39,.10);border-color:rgba(185,149,79,.38)}
+.serviceIcon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:20px;border-radius:14px;color:#f1dfb2;background:linear-gradient(145deg,#0b2335,#153d59);border:1px solid rgba(217,192,131,.25);box-shadow:0 10px 25px rgba(7,24,39,.15);font-weight:850}
+.serviceCard h3,.sourceCard h3,.documentCard h3{color:#071827;font-size:20px;line-height:1.25;letter-spacing:-.025em}
+.serviceCard p,.sourceCard p,.documentCard p,.cardDescription{color:#66737d;font-size:14px;line-height:1.65}
+.serviceLink{color:#8a6b2f;font-weight:800}
+.surfacePad{padding:28px}
+.appShell{max-width:1280px;gap:24px}
+.appSidebar{border:1px solid rgba(12,36,56,.09);border-radius:20px;background:rgba(255,255,255,.84);box-shadow:0 14px 45px rgba(7,24,39,.06)}
+.sideLink{border-radius:12px;font-weight:670}.sideLink.active{box-shadow:inset 3px 0 0 #b9954f}
+.appHeader{margin-bottom:22px;padding:26px 28px;border-radius:20px;color:#fff;background:radial-gradient(circle at 90% 10%,rgba(217,192,131,.13),transparent 18rem),linear-gradient(135deg,#081b2b,#0d3048)!important;box-shadow:0 20px 55px rgba(5,24,39,.15)}
+.appHeader h1{color:#fff;font-size:34px}.appHeader p{color:rgba(255,255,255,.7);font-size:15px}
+.resultLabel{color:#98783a;font-size:11px;font-weight:850;letter-spacing:.12em}
+.formGroup label{font-size:13px;font-weight:780}
+.formGroup input,.formGroup textarea,.formGroup select{border-radius:13px!important;background:#fbfcfc;font-size:15px}
+.formGroup input:focus,.formGroup textarea:focus,.formGroup select:focus{outline:none;border-color:rgba(185,149,79,.72)!important;box-shadow:0 0 0 4px rgba(185,149,79,.10)}
+.notice{border-radius:15px}.noticeGold{background:#fbf7ed}
+.calcResult{margin-top:16px;padding:20px;border-radius:15px;color:#eaf2f6;background:linear-gradient(135deg,#0b2335,#123b57)!important}
+.footer{margin-top:70px;background:#061521!important;border-top:1px solid rgba(217,192,131,.16)}
+@media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
+@media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
+
+  </style>
 
   `;
 }
@@ -5096,6 +5139,50 @@ function page({
   <style>
     ${CSS}
     ${CSS_APP}
+  
+/* PREMIUM LEGALTECH UI */
+body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparent 28rem),linear-gradient(180deg,#fbfaf7,#f3f5f6);color:#14232f;font-size:17px;line-height:1.68}
+.container{max-width:1240px}
+.navbar,.appTopbar{background:rgba(7,24,39,.97)!important;border-bottom:1px solid rgba(217,192,131,.18);box-shadow:0 12px 38px rgba(2,15,25,.16);backdrop-filter:blur(18px)}
+.brand strong,.appBrand strong{font-size:23px;font-weight:850;letter-spacing:-.035em}
+.navlinks a{padding:10px 13px;border-radius:12px;font-size:14px;font-weight:650}
+.navlinks a:hover{background:rgba(255,255,255,.07)}
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 80% 20%,rgba(217,192,131,.15),transparent 22rem),linear-gradient(135deg,#061521,#0b2538 55%,#103149)!important}
+.hero:after{content:"§";position:absolute;right:5vw;top:50%;transform:translateY(-50%);font-family:Georgia,serif;font-size:290px;color:rgba(217,192,131,.045);pointer-events:none}
+.heroInner{position:relative;z-index:1;padding-top:88px;padding-bottom:92px}
+.hero h1,.heroTitle{font-family:Georgia,"Times New Roman",serif;font-size:clamp(43px,5.4vw,72px);line-height:1.02;letter-spacing:-.045em}
+.heroDescription{max-width:720px;font-size:18px;line-height:1.75}
+.btn{min-height:48px;padding:12px 18px;border-radius:13px;font-size:14px;font-weight:780;transition:.2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btnGold{color:#0b1e2e;background:linear-gradient(135deg,#e1c98d,#b9954f)!important;box-shadow:0 12px 28px rgba(185,149,79,.22)}
+.section,.servicesSection{padding-top:72px;padding-bottom:72px}
+.sectionTitle,.appHeader h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.035em}
+.sectionTitle{font-size:clamp(31px,4vw,47px);line-height:1.08}
+.serviceGrid,.documentGrid,.sourceGrid,.coreGrid{gap:18px}
+.serviceCard,.sourceCard,.coreItem,.documentCard,.calcCard,.surface{position:relative;overflow:hidden;border:1px solid rgba(12,36,56,.12);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 10px 35px rgba(7,24,39,.055)}
+.serviceCard,.sourceCard,.documentCard{padding:25px;transition:.22s ease}
+.serviceCard:before,.documentCard:before,.sourceCard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#d9c083,#b9954f);opacity:.72}
+.serviceCard:hover,.sourceCard:hover,.documentCard:hover{transform:translateY(-5px);box-shadow:0 18px 55px rgba(5,24,39,.10);border-color:rgba(185,149,79,.38)}
+.serviceIcon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:20px;border-radius:14px;color:#f1dfb2;background:linear-gradient(145deg,#0b2335,#153d59);border:1px solid rgba(217,192,131,.25);box-shadow:0 10px 25px rgba(7,24,39,.15);font-weight:850}
+.serviceCard h3,.sourceCard h3,.documentCard h3{color:#071827;font-size:20px;line-height:1.25;letter-spacing:-.025em}
+.serviceCard p,.sourceCard p,.documentCard p,.cardDescription{color:#66737d;font-size:14px;line-height:1.65}
+.serviceLink{color:#8a6b2f;font-weight:800}
+.surfacePad{padding:28px}
+.appShell{max-width:1280px;gap:24px}
+.appSidebar{border:1px solid rgba(12,36,56,.09);border-radius:20px;background:rgba(255,255,255,.84);box-shadow:0 14px 45px rgba(7,24,39,.06)}
+.sideLink{border-radius:12px;font-weight:670}.sideLink.active{box-shadow:inset 3px 0 0 #b9954f}
+.appHeader{margin-bottom:22px;padding:26px 28px;border-radius:20px;color:#fff;background:radial-gradient(circle at 90% 10%,rgba(217,192,131,.13),transparent 18rem),linear-gradient(135deg,#081b2b,#0d3048)!important;box-shadow:0 20px 55px rgba(5,24,39,.15)}
+.appHeader h1{color:#fff;font-size:34px}.appHeader p{color:rgba(255,255,255,.7);font-size:15px}
+.resultLabel{color:#98783a;font-size:11px;font-weight:850;letter-spacing:.12em}
+.formGroup label{font-size:13px;font-weight:780}
+.formGroup input,.formGroup textarea,.formGroup select{border-radius:13px!important;background:#fbfcfc;font-size:15px}
+.formGroup input:focus,.formGroup textarea:focus,.formGroup select:focus{outline:none;border-color:rgba(185,149,79,.72)!important;box-shadow:0 0 0 4px rgba(185,149,79,.10)}
+.notice{border-radius:15px}.noticeGold{background:#fbf7ed}
+.calcResult{margin-top:16px;padding:20px;border-radius:15px;color:#eaf2f6;background:linear-gradient(135deg,#0b2335,#123b57)!important}
+.footer{margin-top:70px;background:#061521!important;border-top:1px solid rgba(217,192,131,.16)}
+@media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
+@media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
+
   </style>
 
 </head>
@@ -5293,7 +5380,9 @@ function appLayout(
     sources: "/sources",
     documents: "/documents",
     court: "/court",
-    calculators: "/calculators"
+    calculators: "/calculators",
+    family: "/family",
+    employment: "/employment"
   };
 
 
@@ -5343,6 +5432,50 @@ function appLayout(
   <style>
     ${CSS}
     ${CSS_APP}
+  
+/* PREMIUM LEGALTECH UI */
+body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparent 28rem),linear-gradient(180deg,#fbfaf7,#f3f5f6);color:#14232f;font-size:17px;line-height:1.68}
+.container{max-width:1240px}
+.navbar,.appTopbar{background:rgba(7,24,39,.97)!important;border-bottom:1px solid rgba(217,192,131,.18);box-shadow:0 12px 38px rgba(2,15,25,.16);backdrop-filter:blur(18px)}
+.brand strong,.appBrand strong{font-size:23px;font-weight:850;letter-spacing:-.035em}
+.navlinks a{padding:10px 13px;border-radius:12px;font-size:14px;font-weight:650}
+.navlinks a:hover{background:rgba(255,255,255,.07)}
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 80% 20%,rgba(217,192,131,.15),transparent 22rem),linear-gradient(135deg,#061521,#0b2538 55%,#103149)!important}
+.hero:after{content:"§";position:absolute;right:5vw;top:50%;transform:translateY(-50%);font-family:Georgia,serif;font-size:290px;color:rgba(217,192,131,.045);pointer-events:none}
+.heroInner{position:relative;z-index:1;padding-top:88px;padding-bottom:92px}
+.hero h1,.heroTitle{font-family:Georgia,"Times New Roman",serif;font-size:clamp(43px,5.4vw,72px);line-height:1.02;letter-spacing:-.045em}
+.heroDescription{max-width:720px;font-size:18px;line-height:1.75}
+.btn{min-height:48px;padding:12px 18px;border-radius:13px;font-size:14px;font-weight:780;transition:.2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btnGold{color:#0b1e2e;background:linear-gradient(135deg,#e1c98d,#b9954f)!important;box-shadow:0 12px 28px rgba(185,149,79,.22)}
+.section,.servicesSection{padding-top:72px;padding-bottom:72px}
+.sectionTitle,.appHeader h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.035em}
+.sectionTitle{font-size:clamp(31px,4vw,47px);line-height:1.08}
+.serviceGrid,.documentGrid,.sourceGrid,.coreGrid{gap:18px}
+.serviceCard,.sourceCard,.coreItem,.documentCard,.calcCard,.surface{position:relative;overflow:hidden;border:1px solid rgba(12,36,56,.12);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 10px 35px rgba(7,24,39,.055)}
+.serviceCard,.sourceCard,.documentCard{padding:25px;transition:.22s ease}
+.serviceCard:before,.documentCard:before,.sourceCard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#d9c083,#b9954f);opacity:.72}
+.serviceCard:hover,.sourceCard:hover,.documentCard:hover{transform:translateY(-5px);box-shadow:0 18px 55px rgba(5,24,39,.10);border-color:rgba(185,149,79,.38)}
+.serviceIcon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:20px;border-radius:14px;color:#f1dfb2;background:linear-gradient(145deg,#0b2335,#153d59);border:1px solid rgba(217,192,131,.25);box-shadow:0 10px 25px rgba(7,24,39,.15);font-weight:850}
+.serviceCard h3,.sourceCard h3,.documentCard h3{color:#071827;font-size:20px;line-height:1.25;letter-spacing:-.025em}
+.serviceCard p,.sourceCard p,.documentCard p,.cardDescription{color:#66737d;font-size:14px;line-height:1.65}
+.serviceLink{color:#8a6b2f;font-weight:800}
+.surfacePad{padding:28px}
+.appShell{max-width:1280px;gap:24px}
+.appSidebar{border:1px solid rgba(12,36,56,.09);border-radius:20px;background:rgba(255,255,255,.84);box-shadow:0 14px 45px rgba(7,24,39,.06)}
+.sideLink{border-radius:12px;font-weight:670}.sideLink.active{box-shadow:inset 3px 0 0 #b9954f}
+.appHeader{margin-bottom:22px;padding:26px 28px;border-radius:20px;color:#fff;background:radial-gradient(circle at 90% 10%,rgba(217,192,131,.13),transparent 18rem),linear-gradient(135deg,#081b2b,#0d3048)!important;box-shadow:0 20px 55px rgba(5,24,39,.15)}
+.appHeader h1{color:#fff;font-size:34px}.appHeader p{color:rgba(255,255,255,.7);font-size:15px}
+.resultLabel{color:#98783a;font-size:11px;font-weight:850;letter-spacing:.12em}
+.formGroup label{font-size:13px;font-weight:780}
+.formGroup input,.formGroup textarea,.formGroup select{border-radius:13px!important;background:#fbfcfc;font-size:15px}
+.formGroup input:focus,.formGroup textarea:focus,.formGroup select:focus{outline:none;border-color:rgba(185,149,79,.72)!important;box-shadow:0 0 0 4px rgba(185,149,79,.10)}
+.notice{border-radius:15px}.noticeGold{background:#fbf7ed}
+.calcResult{margin-top:16px;padding:20px;border-radius:15px;color:#eaf2f6;background:linear-gradient(135deg,#0b2335,#123b57)!important}
+.footer{margin-top:70px;background:#061521!important;border-top:1px solid rgba(217,192,131,.16)}
+@media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
+@media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
+
   </style>
 
 </head>
@@ -6540,17 +6673,6 @@ function aiPage(lang) {
               button.addEventListener(
                 "click",
                 () => {
-
-                  if (
-          req.method === "GET" &&
-          pathname === "/family"
-        ) {
-          return sendHtml(
-            res,
-            200,
-            familyPage(lang)
-          );
-        }
 
         if (!textarea) return;
 
@@ -11204,7 +11326,51 @@ const cards =
         background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);
       }
       @media(max-width:800px){.agencyCards{grid-template-columns:1fr}.agencySection{padding:12px}}
-    </style>
+    
+/* PREMIUM LEGALTECH UI */
+body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparent 28rem),linear-gradient(180deg,#fbfaf7,#f3f5f6);color:#14232f;font-size:17px;line-height:1.68}
+.container{max-width:1240px}
+.navbar,.appTopbar{background:rgba(7,24,39,.97)!important;border-bottom:1px solid rgba(217,192,131,.18);box-shadow:0 12px 38px rgba(2,15,25,.16);backdrop-filter:blur(18px)}
+.brand strong,.appBrand strong{font-size:23px;font-weight:850;letter-spacing:-.035em}
+.navlinks a{padding:10px 13px;border-radius:12px;font-size:14px;font-weight:650}
+.navlinks a:hover{background:rgba(255,255,255,.07)}
+.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 80% 20%,rgba(217,192,131,.15),transparent 22rem),linear-gradient(135deg,#061521,#0b2538 55%,#103149)!important}
+.hero:after{content:"§";position:absolute;right:5vw;top:50%;transform:translateY(-50%);font-family:Georgia,serif;font-size:290px;color:rgba(217,192,131,.045);pointer-events:none}
+.heroInner{position:relative;z-index:1;padding-top:88px;padding-bottom:92px}
+.hero h1,.heroTitle{font-family:Georgia,"Times New Roman",serif;font-size:clamp(43px,5.4vw,72px);line-height:1.02;letter-spacing:-.045em}
+.heroDescription{max-width:720px;font-size:18px;line-height:1.75}
+.btn{min-height:48px;padding:12px 18px;border-radius:13px;font-size:14px;font-weight:780;transition:.2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btnGold{color:#0b1e2e;background:linear-gradient(135deg,#e1c98d,#b9954f)!important;box-shadow:0 12px 28px rgba(185,149,79,.22)}
+.section,.servicesSection{padding-top:72px;padding-bottom:72px}
+.sectionTitle,.appHeader h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.035em}
+.sectionTitle{font-size:clamp(31px,4vw,47px);line-height:1.08}
+.serviceGrid,.documentGrid,.sourceGrid,.coreGrid{gap:18px}
+.serviceCard,.sourceCard,.coreItem,.documentCard,.calcCard,.surface{position:relative;overflow:hidden;border:1px solid rgba(12,36,56,.12);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 10px 35px rgba(7,24,39,.055)}
+.serviceCard,.sourceCard,.documentCard{padding:25px;transition:.22s ease}
+.serviceCard:before,.documentCard:before,.sourceCard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#d9c083,#b9954f);opacity:.72}
+.serviceCard:hover,.sourceCard:hover,.documentCard:hover{transform:translateY(-5px);box-shadow:0 18px 55px rgba(5,24,39,.10);border-color:rgba(185,149,79,.38)}
+.serviceIcon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:20px;border-radius:14px;color:#f1dfb2;background:linear-gradient(145deg,#0b2335,#153d59);border:1px solid rgba(217,192,131,.25);box-shadow:0 10px 25px rgba(7,24,39,.15);font-weight:850}
+.serviceCard h3,.sourceCard h3,.documentCard h3{color:#071827;font-size:20px;line-height:1.25;letter-spacing:-.025em}
+.serviceCard p,.sourceCard p,.documentCard p,.cardDescription{color:#66737d;font-size:14px;line-height:1.65}
+.serviceLink{color:#8a6b2f;font-weight:800}
+.surfacePad{padding:28px}
+.appShell{max-width:1280px;gap:24px}
+.appSidebar{border:1px solid rgba(12,36,56,.09);border-radius:20px;background:rgba(255,255,255,.84);box-shadow:0 14px 45px rgba(7,24,39,.06)}
+.sideLink{border-radius:12px;font-weight:670}.sideLink.active{box-shadow:inset 3px 0 0 #b9954f}
+.appHeader{margin-bottom:22px;padding:26px 28px;border-radius:20px;color:#fff;background:radial-gradient(circle at 90% 10%,rgba(217,192,131,.13),transparent 18rem),linear-gradient(135deg,#081b2b,#0d3048)!important;box-shadow:0 20px 55px rgba(5,24,39,.15)}
+.appHeader h1{color:#fff;font-size:34px}.appHeader p{color:rgba(255,255,255,.7);font-size:15px}
+.resultLabel{color:#98783a;font-size:11px;font-weight:850;letter-spacing:.12em}
+.formGroup label{font-size:13px;font-weight:780}
+.formGroup input,.formGroup textarea,.formGroup select{border-radius:13px!important;background:#fbfcfc;font-size:15px}
+.formGroup input:focus,.formGroup textarea:focus,.formGroup select:focus{outline:none;border-color:rgba(185,149,79,.72)!important;box-shadow:0 0 0 4px rgba(185,149,79,.10)}
+.notice{border-radius:15px}.noticeGold{background:#fbf7ed}
+.calcResult{margin-top:16px;padding:20px;border-radius:15px;color:#eaf2f6;background:linear-gradient(135deg,#0b2335,#123b57)!important}
+.footer{margin-top:70px;background:#061521!important;border-top:1px solid rgba(217,192,131,.16)}
+@media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
+@media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
+
+  </style>
 
 
     <div class="notice noticeGold">
@@ -12047,6 +12213,23 @@ const server =
           return sendHtml(
             res,
             html
+          );
+
+        }
+
+
+        // ------------------------------------------------
+        // FAMILY LAW
+        // ------------------------------------------------
+
+        if(
+          req.method === "GET" &&
+          pathname === "/family"
+        ){
+
+          return sendHtml(
+            res,
+            familyPage(lang)
           );
 
         }
