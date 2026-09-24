@@ -3535,16 +3535,7 @@ const CSS_APP = `
   max-width:800px;
 
   margin:0 0 8px;
-
-  color:#fff;
-
-  font-family:Georgia,serif;
-
-  font-size:
-    clamp(29px,4vw,41px);
-
-  font-weight:500;
-
+  
   letter-spacing:-.8px;
 }
 
@@ -6291,7 +6282,7 @@ function homePage(lang) {
               <div class="homeLongIcon">O</div>
               <div class="homeLongCopy">
                 <h3>${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</h3>
-                <p>${lang==="uz"?"Ajrim, aliment, bolalar, mol-mulk, nikoh shartnomasi va oilaviy da’volar.":lang==="ru"?"Развод, алименты, дети, имущество, брачный договор и семейные иски.":"Divorce, alimony, children, property, marriage contracts and family claims."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
+                <p>${lang==="uz"?"Ajrashishdan oldin oqibatlarni tushuning: farzandlar, aliment, mol-mulk, kelishuv va faqat zarur bo‘lsa sud.":lang==="ru"?"Развод, алименты, дети, имущество, брачный договор и семейные иски.":"Divorce, alimony, children, property, marriage contracts and family claims."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
               </div>
               <span class="homeLongEnter">${lang==="uz"?"Oila huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open family law →"}</span>
             </a>
@@ -6300,7 +6291,7 @@ function homePage(lang) {
               <div class="homeLongIcon">M</div>
               <div class="homeLongCopy">
                 <h3>${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</h3>
-                <p>${lang==="uz"?"Ishdan bo‘shatish, ish haqi, mehnat shartnomasi, ta’til va mehnat nizolari.":lang==="ru"?"Увольнение, зарплата, трудовой договор, отпуск и трудовые споры.":"Dismissal, wages, employment contracts, leave and employment disputes."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
+                <p>${lang==="uz"?"Huquqingiz buzilgan bo‘lsa, vaziyatni aniqlang, dalillarni tartiblang va bugun nima qilish kerakligini biling.":lang==="ru"?"Увольнение, зарплата, трудовой договор, отпуск и трудовые споры.":"Dismissal, wages, employment contracts, leave and employment disputes."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
               </div>
               <span class="homeLongEnter">${lang==="uz"?"Mehnat huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open employment law →"}</span>
             </a>
@@ -6309,7 +6300,7 @@ function homePage(lang) {
               <div class="homeLongIcon">B</div>
               <div class="homeLongCopy">
                 <h3>${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</h3>
-                <p>${lang==="uz"?"Shartnomalar, qarzdorlik, biznes nizolari, korporativ hujjatlar va iqtisodiy sud.":lang==="ru"?"Договоры, задолженность, бизнес-споры, корпоративные документы и экономический суд.":"Contracts, debt, business disputes, corporate documents and economic court."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
+                <p>${lang==="uz"?"Tadbirkor uchun: muammoni aniqlash, xavfni ko‘rish, sudgacha yechim, hujjat va zarur bo‘lsa iqtisodiy sud.":lang==="ru"?"Договоры, задолженность, бизнес-споры, корпоративные документы и экономический суд.":"Contracts, debt, business disputes, corporate documents and economic court."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
               </div>
               <span class="homeLongEnter">${lang==="uz"?"Biznes huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open business law →"}</span>
             </a>
@@ -6349,17 +6340,103 @@ function homePage(lang) {
         </div>
       </section>
 
+
+      <!-- QAYERGA MUROJAAT QILAMAN — PRIVACY-FIRST LOCATION -->
+      <section class="legalLocationHub">
+        <style>
+          .legalLocationHub{padding:0 0 34px}.locShell{background:#fffdf9;border:1px solid #ded8cc;border-radius:22px;padding:28px 30px;box-shadow:0 12px 34px rgba(6,27,44,.05)}
+          .locTop{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}.locEyebrow{font-size:10px;font-weight:900;letter-spacing:1.4px;color:#aa7d36}.locTitle{font-family:Georgia,"Times New Roman",serif;font-size:29px;color:#0b2235;margin:7px 0 7px}.locText{font-size:12px;line-height:1.6;color:#657582;max-width:780px}
+          .locBadge{padding:9px 12px;border-radius:999px;background:#f6f0e5;color:#795a2c;font-size:9px;font-weight:900;white-space:nowrap}.locControls{display:grid;grid-template-columns:1.15fr .85fr auto;gap:10px;margin-top:20px}
+          .locControls select,.locControls input{min-height:48px;border:1px solid #ddd6ca;border-radius:11px;background:#fff;color:#17334a;padding:0 13px;font-size:12px;outline:none}.locControls button{border:0;border-radius:11px;background:#d4aa5e;color:#0b2235;padding:0 18px;font-size:11px;font-weight:900;cursor:pointer}
+          .locActions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.locAction{border:1px solid #ddd6ca;background:#fffdf9;color:#17334a;border-radius:10px;padding:11px 13px;font-size:10px;font-weight:850;cursor:pointer;text-decoration:none}.locAction.primary{background:#0b2235;color:#fff;border-color:#0b2235}.locStatus{margin-top:12px;font-size:10px;color:#6e7d89;line-height:1.5}.locPrivacy{margin-top:9px;font-size:9px;color:#8b969e}
+          @media(max-width:760px){.locTop{grid-template-columns:1fr}.locBadge{width:max-content}.locControls{grid-template-columns:1fr}.locControls button{min-height:48px}}
+        </style>
+        <div class="container">
+          <div class="locShell">
+            <div class="locTop">
+              <div>
+                <div class="locEyebrow">${lang==="uz"?"AMALIY YO‘NALTIRISH":lang==="ru"?"ПРАКТИЧЕСКОЕ НАПРАВЛЕНИЕ":"PRACTICAL ROUTING"}</div>
+                <h2 class="locTitle">${lang==="uz"?"Qayerga murojaat qilaman?":lang==="ru"?"Куда мне обратиться?":"Where should I apply?"}</h2>
+                <div class="locText">${lang==="uz"?"Muammo turini tanlang. Joylashuvga ruxsat bersangiz, xarita siz turgan joydan kerakli sud yoki davlat organini topishga yordam beradi. Joylashuvni bermasangiz, tuman/shaharni qo‘lda yozishingiz mumkin.":lang==="ru"?"Выберите тип вопроса. Можно разрешить геолокацию или указать район вручную.":"Choose the issue type. You may allow location access or enter your district/city manually."}</div>
+              </div>
+              <div class="locBadge">${lang==="uz"?"JOYlashuv MAJBURIY EMAS":lang==="ru"?"ГЕОЛОКАЦИЯ НЕ ОБЯЗАТЕЛЬНА":"LOCATION IS OPTIONAL"}</div>
+            </div>
+
+            <div class="locControls">
+              <select id="legalPlaceType">
+                <option value="court">${lang==="uz"?"Sud":lang==="ru"?"Суд":"Court"}</option>
+                <option value="civil court">${lang==="uz"?"Fuqarolik ishlari bo‘yicha sud":lang==="ru"?"Суд по гражданским делам":"Civil court"}</option>
+                <option value="economic court">${lang==="uz"?"Iqtisodiy sud":lang==="ru"?"Экономический суд":"Economic court"}</option>
+                <option value="administrative court">${lang==="uz"?"Ma’muriy sud":lang==="ru"?"Административный суд":"Administrative court"}</option>
+                <option value="internal affairs department">${lang==="uz"?"Ichki ishlar organi":lang==="ru"?"Орган внутренних дел":"Internal affairs"}</option>
+                <option value="notary">${lang==="uz"?"Notarius":lang==="ru"?"Нотариус":"Notary"}</option>
+                <option value="public service center">${lang==="uz"?"Davlat xizmatlari markazi":lang==="ru"?"Центр госуслуг":"Public service center"}</option>
+              </select>
+              <input id="legalManualPlace" placeholder="${lang==="uz"?"Tuman yoki shahar (ixtiyoriy)":lang==="ru"?"Район или город (необязательно)":"District or city (optional)"}">
+              <button type="button" onclick="legalFindPlace(false)">${lang==="uz"?"Xaritada topish →":lang==="ru"?"Найти на карте →":"Find on map →"}</button>
+            </div>
+
+            <div class="locActions">
+              <button class="locAction primary" type="button" onclick="legalUseMyLocation()">${lang==="uz"?"⌖ Mening joylashuvimdan foydalanish":lang==="ru"?"⌖ Использовать моё местоположение":"⌖ Use my location"}</button>
+              <a class="locAction" href="/court${q(lang)}">${lang==="uz"?"⚖ Sudlar va xarita":lang==="ru"?"⚖ Суды и карта":"⚖ Courts & map"}</a>
+              <a class="locAction" href="https://cabinet.sud.uz/" target="_blank" rel="noopener">${lang==="uz"?"Sud kabineti ↗":lang==="ru"?"Судебный кабинет ↗":"Court cabinet ↗"}</a>
+            </div>
+            <div id="legalLocationStatus" class="locStatus">${lang==="uz"?"Avval muammo turini tanlang. Tizim sizni darhol sudga yubormaydi — sudgacha mavjud yo‘llarni ham ko‘rib chiqish kerak.":lang==="ru"?"Сначала выберите тип вопроса. Суд не всегда является первым шагом.":"Choose the issue type first. Court is not always the first step."}</div>
+            <div class="locPrivacy">${lang==="uz"?"Maxfiylik: ushbu tugma orqali olingan koordinata serverga yuborilmaydi; u faqat brauzerda Google Maps yo‘nalishini ochish uchun ishlatiladi.":lang==="ru"?"Конфиденциальность: координаты не отправляются на сервер и используются в браузере только для открытия маршрута Google Maps.":"Privacy: coordinates are not sent to the server; they are used in the browser only to open Google Maps."}</div>
+          </div>
+        </div>
+      </section>
+
+      <script>
+        let huquqiyUserCoords=null;
+        function legalPlaceQuery(){
+          const type=(document.getElementById("legalPlaceType")||{}).value||"court";
+          const manual=((document.getElementById("legalManualPlace")||{}).value||"").trim();
+          return [type,manual,"Uzbekistan"].filter(Boolean).join(", ");
+        }
+        function legalFindPlace(fromLocation){
+          const status=document.getElementById("legalLocationStatus");
+          const query=legalPlaceQuery();
+          let url="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(query);
+          if(fromLocation && huquqiyUserCoords){
+            const destination=query;
+            url="https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(huquqiyUserCoords.lat+","+huquqiyUserCoords.lng)+"&destination="+encodeURIComponent(destination)+"&travelmode=driving";
+          }
+          if(status) status.textContent=${JSON.stringify("Xarita yangi oynada ochiladi. Borishdan oldin organ nomi, vakolati va manzilini rasmiy manbadan tekshiring.")};
+          window.open(url,"_blank","noopener");
+        }
+        function legalUseMyLocation(){
+          const status=document.getElementById("legalLocationStatus");
+          if(!navigator.geolocation){
+            if(status) status.textContent=${JSON.stringify("Brauzeringiz joylashuv funksiyasini qo‘llab-quvvatlamaydi. Tuman yoki shaharni qo‘lda yozing.")};
+            return;
+          }
+          if(status) status.textContent=${JSON.stringify("Joylashuv uchun brauzer ruxsatini kutyapman...")};
+          navigator.geolocation.getCurrentPosition(
+            function(pos){
+              huquqiyUserCoords={lat:pos.coords.latitude,lng:pos.coords.longitude};
+              if(status) status.textContent=${JSON.stringify("Joylashuv olindi. Koordinata serverga yuborilmadi. Endi tanlangan organga yo‘l xaritasini ochaman.")};
+              legalFindPlace(true);
+            },
+            function(){
+              if(status) status.textContent=${JSON.stringify("Joylashuvga ruxsat berilmadi. Muammo emas — tuman yoki shaharni qo‘lda yozib xaritada qidiring.")};
+            },
+            {enableHighAccuracy:false,timeout:10000,maximumAge:300000}
+          );
+        }
+      </script>
+
       <section class="popularWrap"><div class="container">
         <h2 class="popularTitle">${lang==="uz"?"Eng ko‘p ishlatiladigan xizmatlar":lang==="ru"?"Популярные услуги":"Popular services"}</h2>
         <div class="popularGrid">
-          <a class="popularLink" href="/family${q(lang)}"><span class="popularIcon">O</span>${lang==="uz"?"Ajrim arizasi":lang==="ru"?"Иск о разводе":"Divorce claim"}</a>
+          <a class="popularLink" href="/family${q(lang)}"><span class="popularIcon">O</span>${lang==="uz"?"Ajrashish oqibatlarini ko‘rish":lang==="ru"?"Понять последствия развода":"Understand divorce consequences"}</a>
           <a class="popularLink" href="/family${q(lang)}"><span class="popularIcon">A</span>${lang==="uz"?"Aliment hisoblash":lang==="ru"?"Расчет алиментов":"Alimony analysis"}</a>
           <a class="popularLink" href="/employment${q(lang)}"><span class="popularIcon">M</span>${lang==="uz"?"Ishga tiklash":lang==="ru"?"Восстановление на работе":"Reinstatement"}</a>
           <a class="popularLink" href="/employment${q(lang)}"><span class="popularIcon">I</span>${lang==="uz"?"Ish haqi undirish":lang==="ru"?"Взыскание зарплаты":"Wage recovery"}</a>
           <a class="popularLink" href="/business${q(lang)}"><span class="popularIcon">Q</span>${lang==="uz"?"Qarzdorlik undirish":lang==="ru"?"Взыскание долга":"Debt recovery"}</a>
           <a class="popularLink" href="/business${q(lang)}"><span class="popularIcon">S</span>${lang==="uz"?"Shartnoma tayyorlash":lang==="ru"?"Подготовка договора":"Draft contract"}</a>
         </div>
-        <div class="trustStrip"><div class="trustMark">✓</div><div><strong>${lang==="uz"?"HUQUQIY AI kiritilmagan faktlarni uydirmaydi":lang==="ru"?"HUQUQIY AI не выдумывает отсутствующие факты":"HUQUQIY AI does not invent missing facts"}</strong><span>${lang==="uz"?"Kiritilmagan ism, sana, summa, sud, shartnoma raqami yoki dalil avtomatik to‘qib chiqarilmaydi; yetishmayotgan ma’lumot foydalanuvchidan so‘raladi yoki to‘ldirish uchun belgilanadi.":lang==="ru"?"Отсутствующие имена, даты, суммы, суды и доказательства не выдумываются.":"Missing names, dates, amounts, courts and evidence are not fabricated."}</span></div></div>
+        <div class="trustStrip"><div class="trustMark">✓</div><div><strong>${lang==="uz"?"HUQUQIY AI: tushuning → oqibatini biling → yechimni tanlang":lang==="ru"?"HUQUQIY AI не выдумывает отсутствующие факты":"HUQUQIY AI does not invent missing facts"}</strong><span>${lang==="uz"?"Tizim darhol sudga yuborishga emas, avval vaziyatni aniqlash, oqibatlarni ko‘rsatish, sudgacha yechimlarni tekshirish va keyingi amaliy qadamni berishga qaratilgan.":lang==="ru"?"Отсутствующие имена, даты, суммы, суды и доказательства не выдумываются.":"Missing names, dates, amounts, courts and evidence are not fabricated."}</span></div></div>
       </div></section>
 
       <script>
@@ -10572,6 +10649,7 @@ const COURT_CSS = `
   display:flex;
 
   align-items:flex-start;
+
   justify-content:space-between;
 
   gap:12px;
@@ -14098,3 +14176,12 @@ server.listen(
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
 
+
+  color:#fff;
+
+  font-family:Georgia,serif;
+
+  font-size:
+    clamp(29px,4vw,41px);
+
+  font-weight:500;
