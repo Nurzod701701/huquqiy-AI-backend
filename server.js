@@ -1,6 +1,3 @@
-// HUQUQIY AI — server.js — PART 1/3
-// PART 1 + PART 2 + PART 3 ni shu tartibda birlashtiring.
-
 require("dotenv").config();
 
 const http = require("http");
@@ -4091,9 +4088,6 @@ const CSS_APP = `
   border-radius:14px;
 
   box-shadow:
-// HUQUQIY AI — server.js — PART 2/3
-// PART 1 + PART 2 + PART 3 ni shu tartibda birlashtiring.
-
     0 15px 40px rgba(6,17,31,.055);
 
   font-size:11px;
@@ -5026,7 +5020,7 @@ function footer(lang) {
               </a>
 
               <a
-                href="https://my.sud.uz"
+                href="https://cabinet.sud.uz/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -6134,132 +6128,32 @@ function homePage(lang) {
 
 
 
-      <!-- CORE METHOD -->
-
-      <section class="coreSection">
-
+      <!-- CLAIM PREPARATION — ALOHIDA ASOSIY BO‘LIM -->
+      <section class="servicesSection" id="claim-preparation">
         <div class="container">
-
           <div class="sectionHead">
-
             <div>
-
-              <span class="eyebrow">
-                ${t.coreSmall}
-              </span>
-
-              <h2 class="sectionTitle">
-                ${t.coreTitle}
-              </h2>
-
+              <span class="eyebrow">${lang === "uz" ? "ALOHIDA XIZMAT" : lang === "ru" ? "ОТДЕЛЬНЫЙ СЕРВИС" : "DEDICATED SERVICE"}</span>
+              <h2 class="sectionTitle">${lang === "uz" ? "Da’vo arizasi tayyorlash" : lang === "ru" ? "Подготовка искового заявления" : "Claim preparation"}</h2>
             </div>
-
-            <p class="sectionText">
-              ${t.coreText}
-            </p>
-
+            <p class="sectionText">${lang === "uz" ? "Huquq sohasi va da’vo turini tanlang, savollarga javob bering va sudga topshirishga tayyor loyiha yarating." : lang === "ru" ? "Выберите отрасль и вид иска, ответьте на вопросы и подготовьте проект для подачи в суд." : "Choose the legal area and claim type, answer the questions, and prepare a draft for court filing."}</p>
           </div>
-
-
-          <div class="coreGrid">
-
-            <div class="coreItem">
-
-              <span>
-                01
-              </span>
-
-              <strong>
-                PROBLEM
-              </strong>
-
-              <p>
-                ${
-                  lang === "uz"
-                    ? "Huquqiy muammo aniqlanadi."
-                    : lang === "ru"
-                    ? "Определяется правовая проблема."
-                    : "The legal problem is identified."
-                }
-              </p>
-
-            </div>
-
-
-            <div class="coreItem">
-
-              <span>
-                02
-              </span>
-
-              <strong>
-                FACTS
-              </strong>
-
-              <p>
-                ${
-                  lang === "uz"
-                    ? "Huquqiy ahamiyatga ega faktlar ajratiladi."
-                    : lang === "ru"
-                    ? "Выделяются юридически значимые факты."
-                    : "Legally significant facts are identified."
-                }
-              </p>
-
-            </div>
-
-
-            <div class="coreItem">
-
-              <span>
-                03
-              </span>
-
-              <strong>
-                ANALYSIS
-              </strong>
-
-              <p>
-                ${
-                  lang === "uz"
-                    ? "Vaziyat huquqiy jihatdan tahlil qilinadi."
-                    : lang === "ru"
-                    ? "Ситуация анализируется с правовой точки зрения."
-                    : "The situation is legally analyzed."
-                }
-              </p>
-
-            </div>
-
-
-            <div class="coreItem">
-
-              <span>
-                04
-              </span>
-
-              <strong>
-                NEXT STEP
-              </strong>
-
-              <p>
-                ${
-                  lang === "uz"
-                    ? "Keyingi amaliy qadamlar tushuntiriladi."
-                    : lang === "ru"
-                    ? "Объясняются дальнейшие практические шаги."
-                    : "Practical next steps are explained."
-                }
-              </p>
-
-            </div>
-
+          <div class="serviceGrid">
+            <a class="serviceCard" href="/documents${q(lang)}">
+              <div class="serviceIcon">▤</div>
+              <h3>${lang === "uz" ? "Da’vo arizasini tayyorlash" : lang === "ru" ? "Подготовить иск" : "Prepare a claim"}</h3>
+              <p>${lang === "uz" ? "Oila va mehnat huquqi bo‘yicha da’vo turini tanlab, savol-javob asosida ariza tayyorlang." : lang === "ru" ? "Подготовьте иск по семейному или трудовому праву через пошаговые вопросы." : "Prepare a family or employment claim through guided questions."}</p>
+              <span class="serviceLink">${lang === "uz" ? "Da’voni boshlash →" : lang === "ru" ? "Начать →" : "Start →"}</span>
+            </a>
+            <a class="serviceCard" href="/calculators${q(lang)}">
+              <div class="serviceIcon">§</div>
+              <h3>${lang === "uz" ? "Hisob-kitob va huquqiy tahlil" : lang === "ru" ? "Расчёты и правовой анализ" : "Calculations and legal analysis"}</h3>
+              <p>${lang === "uz" ? "Aliment va mol-mulk bo‘yicha savol-javobli tahlildan da’vo tayyorlashga o‘ting." : lang === "ru" ? "Проведите анализ алиментов и имущества и перейдите к подготовке иска." : "Analyze alimony or property, then continue to claim preparation."}</p>
+              <span class="serviceLink">${lang === "uz" ? "Tahlil qilish →" : lang === "ru" ? "Анализировать →" : "Analyze →"}</span>
+            </a>
           </div>
-
         </div>
-
       </section>
-
 
 
       <!-- SOURCES -->
@@ -8184,9 +8078,6 @@ ${String(form.claimant || "")}
 
 DEFENDANT:
 ${String(form.defendant || "")}
-// HUQUQIY AI — server.js — PART 3/3
-// PART 1 + PART 2 + PART 3 ni shu tartibda birlashtiring.
-
 
 ADDRESS / CONTACT:
 ${String(form.address || "")}
@@ -8265,8 +8156,8 @@ ${String(form.evidence || "")}
 
       <div class="formActions">
 
-        <a class="btn btnGold" href="https://my.sud.uz" target="_blank" rel="noopener noreferrer">
-          ⚖ ${lang === "uz" ? "Sudga elektron murojaat" : lang === "ru" ? "Подать в электронный суд" : "Continue to e-court"}
+        <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">
+          ⚖ ${lang === "uz" ? "Da’vo arizasini sudga topshirish" : lang === "ru" ? "Подать иск в суд" : "Submit claim to court"}
         </a>
 
         <a
@@ -11448,7 +11339,7 @@ const cards =
 
       <a
         class="btn btnOutline"
-        href="https://my.sud.uz"
+        href="https://cabinet.sud.uz/"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -12278,3 +12169,4 @@ server.listen(
 // ======================================================
 // END OF HUQUQIY AI
 // ======================================================
+
