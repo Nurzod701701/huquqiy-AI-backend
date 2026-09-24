@@ -1,6 +1,5 @@
 // HUQUQIY AI — server.js — PART 1/3
-// IMPORTANT: PART 1 + PART 2 + PART 3 ni aynan shu tartibda birlashtiring.
-// Bu fayl server.js ning ketma-ket bo‘lagi.
+// PART 1 + PART 2 + PART 3 ni shu tartibda birlashtiring.
 
 require("dotenv").config();
 
@@ -115,7 +114,7 @@ const UI = {
     assistant: "Huquqiy yordamchi",
     questionnaire: "Savol-javob",
     sources: "Qonun manbalari",
-    documents: "Hujjatlar",
+    documents: "Da’vo arizasi",
     court: "Sudlar",
     calculators: "Hisob-kitob",
     start: "Boshlash",
@@ -134,7 +133,7 @@ const UI = {
     assistant: "Юридический помощник",
     questionnaire: "Вопросы",
     sources: "Правовые источники",
-    documents: "Документы",
+    documents: "Исковое заявление",
     court: "Суды",
     calculators: "Расчёты",
     start: "Начать",
@@ -153,7 +152,7 @@ const UI = {
     assistant: "Legal assistant",
     questionnaire: "Questionnaire",
     sources: "Legal sources",
-    documents: "Documents",
+    documents: "Claim preparation",
     court: "Courts",
     calculators: "Calculators",
     start: "Start",
@@ -4048,10 +4047,6 @@ const CSS_APP = `
     8px 10px;
 
   color:#657587;
-  // HUQUQIY AI — server.js — PART 2/3
-// IMPORTANT: PART 1 + PART 2 + PART 3 ni aynan shu tartibda birlashtiring.
-// Bu fayl server.js ning ketma-ket bo‘lagi.
-
 
   background:#f7f9fa;
 
@@ -4096,6 +4091,9 @@ const CSS_APP = `
   border-radius:14px;
 
   box-shadow:
+// HUQUQIY AI — server.js — PART 2/3
+// PART 1 + PART 2 + PART 3 ni shu tartibda birlashtiring.
+
     0 15px 40px rgba(6,17,31,.055);
 
   font-size:11px;
@@ -7495,46 +7493,46 @@ function documentsPage(lang) {
 
     uz: {
       title:
-        "Huquqiy hujjatlar",
+        "Da’vo arizasi tayyorlash",
 
       description:
-        "Vaziyatingizga mos dastlabki huquqiy hujjat loyihasini tayyorlang.",
+        "Huquq sohasini va da’vo turini tanlang, ma’lumotlarni kiriting va platformaning o‘zida da’vo arizasi loyihasini tayyorlang.",
 
       info:
         "Tayyorlangan hujjat loyiha hisoblanadi. Sudga yoki boshqa organga topshirishdan oldin faktlar, talablar, rekvizitlar va amaldagi qonunchilikni tekshirish kerak.",
 
       create:
-        "Hujjat tayyorlash"
+        "Da’vo arizasini tayyorlash"
     },
 
 
     ru: {
       title:
-        "Юридические документы",
+        "Подготовка искового заявления",
 
       description:
-        "Подготовьте первичный проект юридического документа с учётом вашей ситуации.",
+        "Выберите отрасль права и вид иска, введите сведения и подготовьте проект искового заявления прямо на платформе.",
 
       info:
         "Созданный документ является проектом. Перед подачей необходимо проверить факты, требования, реквизиты и действующее законодательство.",
 
       create:
-        "Подготовить документ"
+        "Подготовить иск"
     },
 
 
     en: {
       title:
-        "Legal documents",
+        "Claim preparation",
 
       description:
-        "Prepare an initial legal-document draft based on your situation.",
+        "Choose the legal area and claim type, enter the facts, and prepare a claim draft directly on the platform.",
 
       info:
         "The generated document is a draft. Verify facts, claims, details and current law before filing.",
 
       create:
-        "Prepare document"
+        "Prepare claim"
     }
 
   }[lang];
@@ -7603,6 +7601,22 @@ function documentsPage(lang) {
 
       </div>
 
+
+      <div class="surface surfacePad" style="margin-bottom:18px;">
+        <div class="resultLabel">
+          ${lang === "uz" ? "DA’VO ARIZASI MARKAZI" : lang === "ru" ? "ЦЕНТР ИСКОВЫХ ЗАЯВЛЕНИЙ" : "CLAIM CENTER"}
+        </div>
+        <h2 style="margin:8px 0 8px;color:var(--navy);font-size:26px;">
+          ${lang === "uz" ? "Da’vo turini tanlang" : lang === "ru" ? "Выберите вид иска" : "Choose a claim type"}
+        </h2>
+        <p class="cardDescription">
+          ${lang === "uz"
+            ? "Oila yoki mehnat huquqi bo‘yicha kerakli da’voni tanlang. Keyingi sahifada sud, taraflar, faktlar, talablar va dalillar kiritiladi."
+            : lang === "ru"
+            ? "Выберите нужный иск по семейному или трудовому праву. На следующем шаге указываются суд, стороны, факты, требования и доказательства."
+            : "Choose the required family-law or employment-law claim. On the next step, enter the court, parties, facts, requests and evidence."}
+        </p>
+      </div>
 
       <div class="documentGrid">
 
@@ -8099,10 +8113,6 @@ Muhim:
       title:
         "Проект документа",
 
-// HUQUQIY AI — server.js — PART 3/3
-// IMPORTANT: PART 1 + PART 2 + PART 3 ni aynan shu tartibda birlashtiring.
-// Bu fayl server.js ning ketma-ket bo‘lagi.
-
       description:
         "Первичный юридический документ, сформированный на основе предоставленных данных.",
 
@@ -8174,6 +8184,9 @@ ${String(form.claimant || "")}
 
 DEFENDANT:
 ${String(form.defendant || "")}
+// HUQUQIY AI — server.js — PART 3/3
+// PART 1 + PART 2 + PART 3 ni shu tartibda birlashtiring.
+
 
 ADDRESS / CONTACT:
 ${String(form.address || "")}
@@ -8239,7 +8252,22 @@ ${String(form.evidence || "")}
       </div>
 
 
+      <div class="notice noticeGold" style="margin-top:18px;">
+        <span class="noticeIcon">⚖</span>
+        <span>
+          ${lang === "uz"
+            ? "Arizani tekshirgach, rasmiy elektron sud xizmatiga o‘tib topshirishingiz mumkin. Platforma hozircha sud tizimiga arizani avtomatik yubormaydi."
+            : lang === "ru"
+            ? "После проверки заявления вы можете перейти в официальный электронный судебный сервис для подачи. Платформа пока не отправляет заявление в судебную систему автоматически."
+            : "After reviewing the claim, you can continue to the official electronic court service for filing. The platform does not yet submit it automatically to the court system."}
+        </span>
+      </div>
+
       <div class="formActions">
+
+        <a class="btn btnGold" href="https://my.sud.uz" target="_blank" rel="noopener noreferrer">
+          ⚖ ${lang === "uz" ? "Sudga elektron murojaat" : lang === "ru" ? "Подать в электронный суд" : "Continue to e-court"}
+        </a>
 
         <a
           class="btn btnOutline"
@@ -8665,23 +8693,86 @@ function calculatorsPage(lang) {
 
         <section class="calcCard">
           <h3>${esc(t.property)}</h3>
-          <p>${esc(t.propertyText)}</p>
+          <p>
+            ${lang === "uz"
+              ? "Mol-mulkning huquqiy maqomini savol-javob orqali aniqlang. Natija Oila kodeksining 23, 25, 27 va 28-moddalariga tayangan dastlabki tahlildir."
+              : lang === "ru"
+              ? "Определите правовой режим имущества через вопросы. Предварительный анализ опирается на статьи 23, 25, 27 и 28 Семейного кодекса."
+              : "Assess the legal status of property through questions. The preliminary analysis is based on Articles 23, 25, 27 and 28 of the Family Code."}
+          </p>
 
           <div class="formGroup">
-            <label>${esc(t.value)}</label>
+            <label>${lang === "uz" ? "Mol-mulk turi" : lang === "ru" ? "Вид имущества" : "Property type"}</label>
+            <select id="propertyType">
+              <option value="home">${lang === "uz" ? "Uy / kvartira" : lang === "ru" ? "Дом / квартира" : "House / apartment"}</option>
+              <option value="car">${lang === "uz" ? "Avtomobil" : lang === "ru" ? "Автомобиль" : "Vehicle"}</option>
+              <option value="business">${lang === "uz" ? "Biznes / ulush" : lang === "ru" ? "Бизнес / доля" : "Business / share"}</option>
+              <option value="other">${lang === "uz" ? "Boshqa mol-mulk" : lang === "ru" ? "Другое имущество" : "Other property"}</option>
+            </select>
+          </div>
+
+          <div class="formGroup" style="margin-top:12px;">
+            <label>${lang === "uz" ? "Mol-mulk qiymati" : lang === "ru" ? "Стоимость имущества" : "Property value"}</label>
             <input id="propertyValue" type="number" min="0" step="any" placeholder="0">
           </div>
 
           <div class="formGroup" style="margin-top:12px;">
-            <label>${esc(t.share)}</label>
-            <input id="propertyPercent" type="number" min="0" max="100" step="any" placeholder="50">
+            <label>${lang === "uz" ? "Mol-mulk qachon olingan?" : lang === "ru" ? "Когда приобретено имущество?" : "When was it acquired?"}</label>
+            <select id="propertyWhen">
+              <option value="marriage">${lang === "uz" ? "Nikoh davomida" : lang === "ru" ? "Во время брака" : "During marriage"}</option>
+              <option value="before">${lang === "uz" ? "Nikohdan oldin" : lang === "ru" ? "До брака" : "Before marriage"}</option>
+              <option value="separate">${lang === "uz" ? "Oilaviy munosabatlar tugagach, alohida yashash davrida" : lang === "ru" ? "После прекращения семейных отношений, при раздельном проживании" : "After family relations ended, while living separately"}</option>
+            </select>
           </div>
 
-          <button type="button" class="btn btnPrimary" style="margin-top:15px;" onclick="calculateProperty()">
-            ∑ ${esc(t.calculate)}
+          <div class="formGroup" style="margin-top:12px;">
+            <label>${lang === "uz" ? "Hadya, meros yoki boshqa bepul bitim orqali olinganmi?" : lang === "ru" ? "Получено в дар, по наследству или иной безвозмездной сделке?" : "Was it received by gift, inheritance or another gratuitous transaction?"}</label>
+            <select id="propertyGift">
+              <option value="no">${lang === "uz" ? "Yo‘q" : lang === "ru" ? "Нет" : "No"}</option>
+              <option value="yes">${lang === "uz" ? "Ha" : lang === "ru" ? "Да" : "Yes"}</option>
+            </select>
+          </div>
+
+          <div class="formGroup" style="margin-top:12px;">
+            <label>${lang === "uz" ? "Nikoh shartnomasi bormi?" : lang === "ru" ? "Есть брачный договор?" : "Is there a marriage contract?"}</label>
+            <select id="propertyPrenup">
+              <option value="no">${lang === "uz" ? "Yo‘q" : lang === "ru" ? "Нет" : "No"}</option>
+              <option value="yes">${lang === "uz" ? "Ha" : lang === "ru" ? "Да" : "Yes"}</option>
+            </select>
+          </div>
+
+          <div class="formGroup" style="margin-top:12px;">
+            <label>${lang === "uz" ? "Mol-mulk qiymatini sezilarli oshirgan umumiy mablag‘ yoki kapital ta’mir bo‘lganmi?" : lang === "ru" ? "Были общие вложения или капитальный ремонт, существенно увеличившие стоимость?" : "Were there common investments or major renovations that substantially increased value?"}</label>
+            <select id="propertyInvestment">
+              <option value="no">${lang === "uz" ? "Yo‘q / aniq emas" : lang === "ru" ? "Нет / неизвестно" : "No / unknown"}</option>
+              <option value="yes">${lang === "uz" ? "Ha" : lang === "ru" ? "Да" : "Yes"}</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn btnPrimary" style="margin-top:15px;" onclick="analyzeProperty()">
+            § ${lang === "uz" ? "Huquqiy tahlil" : lang === "ru" ? "Правовой анализ" : "Legal analysis"}
           </button>
 
-          <div id="propertyResult" class="calcResult">${esc(t.result)}: —</div>
+          <div id="propertyResult" class="calcResult" style="white-space:pre-line;">
+            ${lang === "uz" ? "Natija: —" : lang === "ru" ? "Результат: —" : "Result: —"}
+          </div>
+
+          <div class="formActions" style="margin-top:12px;">
+            <a class="btn btnOutline" href="/claim${q(lang)}&type=property_claim">
+              ▤ ${lang === "uz" ? "Mol-mulk bo‘yicha da’vo tayyorlash" : lang === "ru" ? "Подготовить иск о разделе имущества" : "Prepare a property claim"}
+            </a>
+          </div>
+
+          <div class="notice noticeGold" style="margin-top:16px;">
+            <span class="noticeIcon">§</span>
+            <span>
+              ${lang === "uz"
+                ? "Huquqiy asos: Oila kodeksi 23-modda — umumiy mulk; 25-modda — har bir er-xotinning alohida mulki va qiymat sezilarli oshirilgan holatlar; 27-modda — umumiy mol-mulkni bo‘lish; 28-modda — ulushlar, odatda teng, lekin qonunda nazarda tutilgan holatlarda sud tenglikdan chekinishi mumkin."
+                : lang === "ru"
+                ? "Правовая основа: статьи 23, 25, 27 и 28 Семейного кодекса — общее имущество, личное имущество, раздел и определение долей."
+                : "Legal basis: Family Code Articles 23, 25, 27 and 28 on common property, separate property, division and determination of shares."}
+            </span>
+          </div>
         </section>
 
       </div>
@@ -8719,12 +8810,49 @@ function calculatorsPage(lang) {
             formatNumber(percent) + "%)." + extra;
         }
 
-        function calculateProperty(){
-          const value = Number(document.getElementById("propertyValue").value);
-          const percent = Number(document.getElementById("propertyPercent").value);
-          const result = value * percent / 100;
+        function analyzeProperty(){
+          const value = Math.max(0, Number(document.getElementById("propertyValue").value || 0));
+          const when = document.getElementById("propertyWhen").value;
+          const gift = document.getElementById("propertyGift").value;
+          const prenup = document.getElementById("propertyPrenup").value;
+          const investment = document.getElementById("propertyInvestment").value;
+
+          let status = "";
+          let article = "";
+          let shareText = "";
+
+          if(prenup === "yes"){
+            status = "${lang === "uz" ? "Nikoh shartnomasi mavjud. Mol-mulk rejimi va ulushlar avvalo uning amaldagi shartlari bilan birga tekshirilishi kerak." : lang === "ru" ? "Имеется брачный договор. Режим имущества и доли необходимо оценивать с учётом его действующих условий." : "A marriage contract exists. Property status and shares should first be assessed together with its applicable terms."}";
+            article = "${lang === "uz" ? "Oila kodeksi 29–31-moddalari ham tekshiriladi." : lang === "ru" ? "Следует также проверить статьи 29–31 Семейного кодекса." : "Family Code Articles 29–31 should also be checked."}";
+          } else if(gift === "yes"){
+            status = "${lang === "uz" ? "Hadya, meros yoki boshqa bepul bitim orqali olingan mol-mulk, odatda, uni olgan er yoki xotinning o‘z mulki hisoblanadi." : lang === "ru" ? "Имущество, полученное в дар, по наследству или иной безвозмездной сделке, как правило, является личным имуществом супруга." : "Property received by gift, inheritance or another gratuitous transaction is generally separate property of the receiving spouse."}";
+            article = "${lang === "uz" ? "Huquqiy asos: Oila kodeksi 25-modda." : lang === "ru" ? "Правовая основа: статья 25 Семейного кодекса." : "Legal basis: Family Code Article 25."}";
+          } else if(when === "before"){
+            status = "${lang === "uz" ? "Nikohdan oldin tegishli bo‘lgan mol-mulk, odatda, o‘sha shaxsning o‘z mulki hisoblanadi." : lang === "ru" ? "Имущество, принадлежавшее супругу до брака, как правило, является его личным имуществом." : "Property owned before marriage is generally separate property."}";
+            article = "${lang === "uz" ? "Huquqiy asos: Oila kodeksi 25-modda." : lang === "ru" ? "Правовая основа: статья 25 Семейного кодекса." : "Legal basis: Family Code Article 25."}";
+          } else if(when === "separate"){
+            status = "${lang === "uz" ? "Oilaviy munosabatlar tugab, er-xotin alohida yashagan davrda olingan mol-mulkni sud ayrim holatlarda har birining o‘z mulki deb topishi mumkin." : lang === "ru" ? "Имущество, приобретённое после прекращения семейных отношений при раздельном проживании, суд в отдельных случаях может признать личным." : "A court may in some circumstances treat property acquired while spouses lived separately after family relations ended as separate property."}";
+            article = "${lang === "uz" ? "Huquqiy asos: Oila kodeksi 27-modda." : lang === "ru" ? "Правовая основа: статья 27 Семейного кодекса." : "Legal basis: Family Code Article 27."}";
+          } else {
+            status = "${lang === "uz" ? "Nikoh davomida orttirilgan mol-mulk, qoida tariqasida, er-xotinning birgalikdagi umumiy mulki hisoblanadi; kimning nomiga rasmiylashtirilgani o‘zi hal qiluvchi emas." : lang === "ru" ? "Имущество, приобретённое во время брака, как правило, является общей совместной собственностью супругов; само по себе оформление на одного из супругов не является решающим." : "Property acquired during marriage is generally common marital property; registration in one spouse's name alone is not decisive."}";
+            article = "${lang === "uz" ? "Huquqiy asos: Oila kodeksi 23-modda." : lang === "ru" ? "Правовая основа: статья 23 Семейного кодекса." : "Legal basis: Family Code Article 23."}";
+            if(value > 0){
+              shareText = "\\n${lang === "uz" ? "Teng ulush boshlang‘ich hisobida har bir tomon uchun: " : lang === "ru" ? "При исходном равенстве долей каждому: " : "At an initial equal-share calculation, each side: "}" + formatNumber(value / 2) + ".";
+            }
+          }
+
+          if(investment === "yes" && (when === "before" || gift === "yes")){
+            status += " ${lang === "uz" ? "Biroq nikoh davomida umumiy mablag‘ yoki mehnat hisobiga mol-mulk qiymati ancha oshgan bo‘lsa, u birgalikdagi mulk deb topilishi mumkin." : lang === "ru" ? "Однако если во время брака за счёт общих средств или труда стоимость имущества существенно увеличилась, оно может быть признано совместным." : "However, if common funds or labor during marriage substantially increased its value, it may be recognized as common property."}";
+            article += " ${lang === "uz" ? "Bu holat ham 25-modda doirasida baholanadi." : lang === "ru" ? "Это также оценивается по статье 25." : "This is also assessed under Article 25."}";
+          }
+
+          if(when === "marriage" && prenup !== "yes" && gift !== "yes"){
+            shareText += "\\n${lang === "uz" ? "Ulushlar, odatda, teng deb hisoblanadi, ammo 28-modda bo‘yicha sud ayrim e’tiborga loyiq holatlarda tenglikdan chekinishi mumkin." : lang === "ru" ? "Доли, как правило, признаются равными, однако по статье 28 суд в предусмотренных случаях может отступить от равенства." : "Shares are generally presumed equal, but Article 28 permits a court to depart from equality in specified circumstances."}";
+          }
+
           document.getElementById("propertyResult").textContent =
-            "${t.result}: " + formatNumber(result);
+            "${lang === "uz" ? "Dastlabki huquqiy baho:" : lang === "ru" ? "Предварительная правовая оценка:" : "Preliminary legal assessment:"} " +
+            status + "\\n" + article + shareText;
         }
       </script>
     `,
@@ -10124,7 +10252,7 @@ function courtPage(lang) {
         "Sud manzili va murojaat tartibini rasmiy sud tizimidan tekshiring.",
 
       documents:
-        "Hujjat tayyorlash",
+        "Da’vo arizasini tayyorlash",
 
       official:
         "Sud tizimini ochish"
@@ -10213,7 +10341,7 @@ function courtPage(lang) {
         "Проверьте адрес суда и порядок обращения на официальном судебном ресурсе.",
 
       documents:
-        "Подготовить документ",
+        "Подготовить иск",
 
       official:
         "Открыть судебную систему"
@@ -10302,7 +10430,7 @@ function courtPage(lang) {
         "Verify the court address and filing procedure through official judicial resources.",
 
       documents:
-        "Prepare document",
+        "Prepare claim",
 
       official:
         "Open court system"
@@ -12150,4 +12278,3 @@ server.listen(
 // ======================================================
 // END OF HUQUQIY AI
 // ======================================================
-
