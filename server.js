@@ -4171,6 +4171,7 @@ const CSS_APP = `
 
   line-height:1.5;
 }
+
 .questionCard input,
 .questionCard select,
 .questionCard textarea{
@@ -4180,7 +4181,6 @@ const CSS_APP = `
 
   padding:
     10px 12px;
-
   color:#263d55;
 
   background:#f9fafb;
@@ -4914,7 +4914,36 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 @media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
 @media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
 
-  </style>
+  
+/* GOLD ONLY ON THE LANDING / KIRISH HERO */
+.homePage .hero{
+  background:
+    radial-gradient(circle at 82% 16%,rgba(255,255,255,.18),transparent 24rem),
+    linear-gradient(135deg,#9b7430 0%,#c7a458 52%,#e0c77f 100%)!important;
+}
+.homePage .hero h1,
+.homePage .hero .heroTitle{
+  color:#071827!important;
+  text-shadow:none!important;
+}
+.homePage .hero .heroDescription{
+  color:#1a2b38!important;
+  font-weight:560;
+}
+.homePage .hero .eyebrow{color:#071827!important}
+.homePage .hero .btnPrimary{
+  background:#071827!important;
+  color:#fff!important;
+  border-color:#071827!important;
+}
+.homePage .hero .btnOutline{
+  background:rgba(255,255,255,.88)!important;
+  color:#071827!important;
+  border-color:rgba(7,24,39,.18)!important;
+}
+.homePage .hero:after{color:rgba(7,24,39,.065)!important}
+
+</style>
 
   `;
 }
@@ -5188,7 +5217,7 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 </head>
 
 
-<body>
+<body class="homePage">
 
   ${navigation(lang)}
 
