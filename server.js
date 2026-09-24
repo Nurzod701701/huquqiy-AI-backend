@@ -8455,67 +8455,67 @@ function businessPage(lang="uz"){
     ? [["debt","Debt recovery"],["contract","Contract dispute"],["supply","Supply / services"],["lease","Lease"],["corporate","Corporate / shareholder dispute"],["registration","Business registration / changes"],["license","License / permit"],["tax","Tax issue"],["inspection","Inspection / public authority"],["procurement","Public procurement"],["ip","Intellectual property"],["court","Economic court"],["other","Other business issue"]]
     : [["debt","Qarzdorlikni undirish"],["contract","Shartnoma nizosi"],["supply","Yetkazib berish / xizmat"],["lease","Ijara"],["corporate","Korporativ / ta'sischilar nizosi"],["registration","Biznesni ro'yxatdan o'tkazish / o'zgartirish"],["license","Litsenziya / ruxsatnoma"],["tax","Soliq masalasi"],["inspection","Tekshiruv / davlat organi"],["procurement","Davlat xaridlari"],["ip","Intellektual mulk"],["court","Iqtisodiy sud"],["other","Boshqa biznes muammosi"]];
 
-  const issueHtml = issueOptions.map(([v,t])=>`<option value="${escapeHtml(v)}">${escapeHtml(t)}</option>`).join("");
+  const issueHtml = issueOptions.map(([v,t])=>`<option value="${esc(v)}">${esc(t)}</option>`).join("");
 
   return appLayout(lang,"business",`
     <div class="appHeader">
-      <div class="resultLabel">${escapeHtml(L.ai)}</div>
-      <h1>${escapeHtml(L.title)}</h1>
-      <p>${escapeHtml(L.sub)}</p>
+      <div class="resultLabel">${esc(L.ai)}</div>
+      <h1>${esc(L.title)}</h1>
+      <p>${esc(L.sub)}</p>
     </div>
 
     <div class="surface surfacePad">
       <form method="POST" action="/business-result${q(lang)}">
         <div class="formGrid">
           <div class="formGroup">
-            <label>${escapeHtml(L.issue)}</label>
+            <label>${esc(L.issue)}</label>
             <select name="issue" required>${issueHtml}</select>
           </div>
           <div class="formGroup">
-            <label>${escapeHtml(L.counterparty)}</label>
+            <label>${esc(L.counterparty)}</label>
             <input name="counterparty" placeholder="${lang==="uz"?"Masalan: ABC MChJ":lang==="ru"?"Например: ООО ABC":"Example: ABC LLC"}">
           </div>
           <div class="formGroup">
-            <label>${escapeHtml(L.amount)}</label>
+            <label>${esc(L.amount)}</label>
             <input name="amount" placeholder="${lang==="uz"?"Masalan: 150 000 000 so'm":lang==="ru"?"Например: 150 000 000 сум":"Example: UZS 150,000,000"}">
           </div>
           <div class="formGroup">
-            <label>${escapeHtml(L.contract)}</label>
+            <label>${esc(L.contract)}</label>
             <input name="contract" placeholder="${lang==="uz"?"Sana, raqam, turi":lang==="ru"?"Дата, номер, вид":"Date, number, type"}">
           </div>
         </div>
         <div class="formGroup">
-          <label>${escapeHtml(L.facts)}</label>
+          <label>${esc(L.facts)}</label>
           <textarea name="facts" rows="7" required placeholder="${lang==="uz"?"Nima bo'lganini, sanalarni va muhim faktlarni yozing...":lang==="ru"?"Опишите факты, даты и обстоятельства...":"Describe facts, dates and circumstances..."}"></textarea>
         </div>
         <div class="formGrid">
           <div class="formGroup">
-            <label>${escapeHtml(L.evidence)}</label>
+            <label>${esc(L.evidence)}</label>
             <textarea name="evidence" rows="4" placeholder="${lang==="uz"?"Shartnoma, akt, hisob-faktura, yozishmalar, to'lov hujjatlari...":lang==="ru"?"Договор, акт, счет-фактура, переписка...":"Contract, act, invoice, correspondence..."}"></textarea>
           </div>
           <div class="formGroup">
-            <label>${escapeHtml(L.goal)}</label>
+            <label>${esc(L.goal)}</label>
             <textarea name="goal" rows="4" placeholder="${lang==="uz"?"Masalan: qarzni undirish, shartnomani bekor qilish...":lang==="ru"?"Например: взыскать долг, расторгнуть договор...":"Example: recover debt, terminate contract..."}"></textarea>
           </div>
         </div>
         <div class="formGroup">
-          <label>${escapeHtml(L.output)}</label>
+          <label>${esc(L.output)}</label>
           <select name="output">
-            <option value="analysis">${escapeHtml(L.analyze)}</option>
-            <option value="claim">${escapeHtml(L.claim)}</option>
-            <option value="agreement">${escapeHtml(L.agreement)}</option>
-            <option value="review">${escapeHtml(L.review)}</option>
+            <option value="analysis">${esc(L.analyze)}</option>
+            <option value="claim">${esc(L.claim)}</option>
+            <option value="agreement">${esc(L.agreement)}</option>
+            <option value="review">${esc(L.review)}</option>
           </select>
         </div>
-        <button class="btn btnPrimary" type="submit">${escapeHtml(L.send)}</button>
+        <button class="btn btnPrimary" type="submit">${esc(L.send)}</button>
       </form>
     </div>
 
     <div style="height:24px"></div>
     <div class="appHeader">
-      <div class="resultLabel">${escapeHtml(L.docs)}</div>
+      <div class="resultLabel">${esc(L.docs)}</div>
       <h1>${lang==="uz"?"Har qanday biznes hujjatini tayyorlash":lang==="ru"?"Подготовка бизнес-документов":"Prepare business documents"}</h1>
-      <p>${escapeHtml(L.docsSub)}</p>
+      <p>${esc(L.docsSub)}</p>
     </div>
     <div class="surface surfacePad">
       <form method="POST" action="/business-result${q(lang)}">
@@ -8551,7 +8551,7 @@ function businessPage(lang="uz"){
 
     <div style="height:28px"></div>
     <div class="appHeader">
-      <div class="resultLabel">${escapeHtml(L.platforms)}</div>
+      <div class="resultLabel">${esc(L.platforms)}</div>
       <h1>${lang==="uz"?"Biznesni boshqarish va huquqlarni himoya qilish":lang==="ru"?"Управление бизнесом и защита прав":"Manage business and protect rights"}</h1>
       <p>${lang==="uz"?"Kerakli rasmiy xizmatga bir bosishda o'ting.":lang==="ru"?"Переходите прямо к нужному официальному сервису.":"Open the relevant official service directly."}</p>
     </div>
@@ -8572,7 +8572,7 @@ function businessPage(lang="uz"){
 
     <div style="height:28px"></div>
     <div class="appHeader">
-      <div class="resultLabel">${escapeHtml(L.sources)}</div>
+      <div class="resultLabel">${esc(L.sources)}</div>
       <h1>${lang==="uz"?"Rasmiy huquqiy kutubxona":lang==="ru"?"Официальная правовая библиотека":"Official legal library"}</h1>
       <p>${lang==="uz"?"Tadbirkorlar, yuristlar va talabalar uchun birlamchi rasmiy manbalar.":lang==="ru"?"Официальные первичные источники для бизнеса, юристов и студентов.":"Primary official sources for businesses, lawyers and students."}</p>
     </div>
@@ -8586,24 +8586,24 @@ function businessPage(lang="uz"){
 }
 
 function businessLinkCard(title,desc,url){
-  return `<a class="sourceCard" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
+  return `<a class="sourceCard" href="${esc(url)}" target="_blank" rel="noopener noreferrer">
     <div class="serviceIcon">§</div>
-    <h3>${escapeHtml(title)}</h3>
-    <p>${escapeHtml(desc)}</p>
+    <h3>${esc(title)}</h3>
+    <p>${esc(desc)}</p>
     <span class="serviceLink">Rasmiy sayt ↗</span>
   </a>`;
 }
 
 async function businessResultPage(lang, body){
   const data = {
-    issue: cleanText(body.issue,120),
-    counterparty: cleanText(body.counterparty,220),
-    amount: cleanText(body.amount,120),
-    contract: cleanText(body.contract,500),
-    facts: cleanText(body.facts,8000),
-    evidence: cleanText(body.evidence,5000),
-    goal: cleanText(body.goal,3000),
-    output: cleanText(body.output,80)
+    issue: String(body.issue || "").trim().slice(0,120),
+    counterparty: String(body.counterparty || "").trim().slice(0,220),
+    amount: String(body.amount || "").trim().slice(0,120),
+    contract: String(body.contract || "").trim().slice(0,500),
+    facts: String(body.facts || "").trim().slice(0,8000),
+    evidence: String(body.evidence || "").trim().slice(0,5000),
+    goal: String(body.goal || "").trim().slice(0,3000),
+    output: String(body.output || "").trim().slice(0,80)
   };
 
   const prompt = `
@@ -8645,7 +8645,7 @@ Requested output: ${data.output}
       <p>${lang==="uz"?"Natijani hujjatlar va amaldagi rasmiy qonunchilik bilan tekshiring.":lang==="ru"?"Сверьте результат с документами и действующим официальным законодательством.":"Verify the result against documents and current official law."}</p>
     </div>
     <div class="surface surfacePad">
-      <div class="aiAnswer">${formatAI(result)}</div>
+      <div class="aiAnswer"><div style="white-space:pre-wrap">${esc(result)}</div></div>
       <div class="formActions" style="margin-top:22px">
         <a class="btn btnOutline" href="/business${q(lang)}">${lang==="uz"?"← Biznes huquqiga qaytish":lang==="ru"?"← Назад":"← Back"}</a>
         <a class="btn btnPrimary" href="https://lex.uz/" target="_blank" rel="noopener noreferrer">LexUZ ↗</a>
@@ -8837,6 +8837,79 @@ function employmentPage(lang) {
         </div>
       </div>
 
+
+      <div class="surface surfacePad" style="margin-top:18px;">
+        <div class="resultLabel">${lang==="uz"?"MEHNAT SHARTNOMALARI":lang==="ru"?"ТРУДОВЫЕ ДОГОВОРЫ":"EMPLOYMENT CONTRACTS"}</div>
+        <h2>${lang==="uz"?"Shartnoma namunalari va AI generator":lang==="ru"?"Шаблоны и AI-генератор договоров":"Contract templates & AI generator"}</h2>
+        <p>${lang==="uz"?"Kerakli mehnat shartnomasi turini tanlang. Yetishmayotgan rekvizitlar [TO‘LDIRILADI] deb qoldiriladi.":lang==="ru"?"Выберите нужный тип трудового договора. Недостающие реквизиты будут отмечены.":"Choose the required employment contract type. Missing details will be marked."}</p>
+        <form method="POST" action="/employment-result${q(lang)}">
+          <input type="hidden" name="result_type" value="contract">
+          <div class="formGrid">
+            <div class="formGroup"><label>${lang==="uz"?"Shartnoma turi":lang==="ru"?"Тип договора":"Contract type"}</label>
+              <select name="issue_type">
+                <option value="nomuayyan muddatli">Nomuayyan muddatli</option>
+                <option value="muddatli">Muddatli</option>
+                <option value="o‘rindoshlik">O‘rindoshlik asosida</option>
+                <option value="masofaviy">Masofadan ishlash</option>
+                <option value="kasanachilik">Kasanachilik / uyda ishlash</option>
+                <option value="mikrofirma">Mikrofirma xodimi</option>
+                <option value="YTT xodimi">YTTda ishlovchi xodim</option>
+                <option value="rahbar">Tashkilot rahbari</option>
+                <option value="mavsumiy">Mavsumiy ish</option>
+                <option value="vaqtinchalik">Vaqtinchalik ish</option>
+                <option value="boshqa">Boshqa turdagi mehnat shartnomasi</option>
+              </select>
+            </div>
+            <div class="formGroup"><label>${lang==="uz"?"Lavozim / kasb":lang==="ru"?"Должность":"Position"}</label><input name="position"></div>
+          </div>
+          <div class="formGroup"><label>${lang==="uz"?"Ish beruvchi":lang==="ru"?"Работодатель":"Employer"}</label><input name="employer"></div>
+          <div class="formGroup"><label>${lang==="uz"?"Tomonlar va asosiy shartlar":lang==="ru"?"Стороны и основные условия":"Parties and key terms"}</label>
+            <textarea name="facts" rows="6" placeholder="${lang==="uz"?"Ish joyi, vazifa, ish haqi, ish vaqti, muddat va boshqa kelishilgan shartlarni yozing...":lang==="ru"?"Укажите место работы, обязанности, зарплату, режим, срок...":"Enter workplace, duties, salary, hours, term and other agreed terms..."}"></textarea>
+          </div>
+          <button class="btn btnPrimary" type="submit">${lang==="uz"?"Shartnoma namunasini tayyorlash":lang==="ru"?"Подготовить договор":"Prepare contract"}</button>
+        </form>
+        <div class="formActions" style="margin-top:16px">
+          <a class="btn btnOutline" href="https://gov.uz/oz/advice/554/document/2234" target="_blank" rel="noopener noreferrer">${lang==="uz"?"Rasmiy namunaviy shakl":lang==="ru"?"Официальный образец":"Official template"} ↗</a>
+          <a class="btn btnOutline" href="https://my.gov.uz/uz/service/1235" target="_blank" rel="noopener noreferrer">${lang==="uz"?"Elektron mehnat shartnomasi":lang==="ru"?"Электронный договор":"Electronic contract"} ↗</a>
+        </div>
+      </div>
+
+      <div class="surface surfacePad" style="margin-top:18px;">
+        <div class="resultLabel">${lang==="uz"?"MEHNAT NIZOLARI BO‘YICHA DA’VOLAR":lang==="ru"?"ИСКИ ПО ТРУДОВЫМ СПОРАМ":"EMPLOYMENT DISPUTE CLAIMS"}</div>
+        <h2>${lang==="uz"?"Har qanday mehnat nizosi uchun da’vo arizasi":lang==="ru"?"Иск по любому трудовому спору":"Claim for any employment dispute"}</h2>
+        <p>${lang==="uz"?"Nizo turini tanlang yoki “Boshqa mehnat nizosi”ni tanlab o‘zingiz yozing.":lang==="ru"?"Выберите вид спора или опишите другой.":"Choose a dispute type or describe another dispute."}</p>
+        <form method="POST" action="/employment-result${q(lang)}">
+          <input type="hidden" name="result_type" value="claim">
+          <div class="formGrid">
+            <div class="formGroup"><label>${lang==="uz"?"Da’vo turi":lang==="ru"?"Вид иска":"Claim type"}</label>
+              <select name="issue_type">
+                <option value="ishga tiklash">Ishga tiklash</option>
+                <option value="bo‘shatish asosini yoki sanasini o‘zgartirish">Bo‘shatish sanasi/asosini o‘zgartirish</option>
+                <option value="majburiy progul haqini undirish">Majburiy progul uchun haq undirish</option>
+                <option value="ish haqi va boshqa to‘lovlarni undirish">Ish haqi va boshqa to‘lovlarni undirish</option>
+                <option value="g‘ayriqonuniy boshqa ishga o‘tkazish">G‘ayriqonuniy boshqa ishga o‘tkazish</option>
+                <option value="ishga qabul qilishni noqonuniy rad etish">Ishga qabul qilishni noqonuniy rad etish</option>
+                <option value="moddiy zarar">Moddiy zarar undirish</option>
+                <option value="ma’naviy zarar">Ma’naviy zarar kompensatsiyasi</option>
+                <option value="mehnatda mayib bo‘lish yoki kasb kasalligi">Mehnatda mayib bo‘lish / kasb kasalligi</option>
+                <option value="ish vaqti dam olish ta’til">Ish vaqti / dam olish / ta’til</option>
+                <option value="intizomiy jazo">Intizomiy jazo</option>
+                <option value="mehnat shartlari">Mehnat shartlari / shartnoma nizosi</option>
+                <option value="boshqa mehnat nizosi">Boshqa mehnat nizosi</option>
+              </select>
+            </div>
+            <div class="formGroup"><label>${lang==="uz"?"Ish beruvchi":lang==="ru"?"Работодатель":"Employer"}</label><input name="employer"></div>
+          </div>
+          <div class="formGroup"><label>${lang==="uz"?"Nizo holatlari":lang==="ru"?"Обстоятельства":"Dispute facts"}</label><textarea name="facts" rows="7" required></textarea></div>
+          <div class="formGroup"><label>${lang==="uz"?"Dalillar":lang==="ru"?"Доказательства":"Evidence"}</label><textarea name="evidence" rows="4"></textarea></div>
+          <button class="btn btnPrimary" type="submit">${lang==="uz"?"Da’vo arizasini tayyorlash":lang==="ru"?"Подготовить иск":"Prepare claim"}</button>
+        </form>
+        <div class="formActions" style="margin-top:16px">
+          <a class="btn btnOutline" href="https://gov.uz/oz/advice/673/document/3031" target="_blank" rel="noopener noreferrer">${lang==="uz"?"Mehnat nizolari — rasmiy":lang==="ru"?"Трудовые споры":"Employment disputes"} ↗</a>
+          <a class="btn btnPrimary" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">${lang==="uz"?"Sudga elektron topshirish":lang==="ru"?"Подать в суд":"File with court"} ↗</a>
+        </div>
+      </div>
+
       <div class="surface surfacePad" style="margin-top:18px;">
         <div class="resultLabel">
           ${lang === "uz" ? "QONUNCHILIK VA O‘QUV MANBALARI" : lang === "ru" ? "ЗАКОНОДАТЕЛЬСТВО И УЧЕБНЫЕ ИСТОЧНИКИ" : "LEGISLATION AND STUDY RESOURCES"}
@@ -8870,11 +8943,13 @@ async function employmentResultPage(lang, form = {}) {
 
   lang = getLang(lang);
 
-  const wantsClaim = String(form.result_type || "") === "claim";
+  const resultType = String(form.result_type || "");
+  const wantsClaim = resultType === "claim";
+  const wantsContract = resultType === "contract";
 
   const labels = {
     uz: {
-      title: wantsClaim ? "Mehnat nizosi bo‘yicha da’vo arizasi loyihasi" : "Mehnat nizosi bo‘yicha huquqiy xulosa",
+      title: wantsContract ? "Mehnat shartnomasi namunasi" : (wantsClaim ? "Mehnat nizosi bo‘yicha da’vo arizasi loyihasi" : "Mehnat nizosi bo‘yicha huquqiy xulosa"),
       description: "Siz kiritgan ma’lumotlar asosida tayyorlangan dastlabki natija.",
       back: "Ma’lumotlarni o‘zgartirish",
       instructionConclusion: `O‘zbekiston mehnat qonunchiligi bo‘yicha professional huquqiy xulosa tayyorlang.
@@ -8890,20 +8965,26 @@ Talablar, ish holatlari, huquqiy asos va ilovalar bo‘limlarini ajrating.
 Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang va amaldagi LexUZ matnini tekshirish kerakligini ko‘rsating.`
     },
     ru: {
-      title: wantsClaim ? "Проект иска по трудовому спору" : "Правовое заключение по трудовому спору",
+      title: wantsContract ? "Проект трудового договора" : (wantsClaim ? "Проект иска по трудовому спору" : "Правовое заключение по трудовому спору"),
       description: "Предварительный результат на основе введённых данных.",
       back: "Изменить данные",
       instructionConclusion: `Подготовьте профессиональное правовое заключение по трудовому законодательству Узбекистана. Отделите факты от правовых вопросов, объясните возможные правовые варианты и дальнейшие шаги. Не придумывайте номера статей и отсутствующие факты; при необходимости укажите на необходимость проверки актуального текста на LexUZ.`,
       instructionClaim: `Подготовьте первоначальный проект искового заявления по трудовому спору в Узбекистане. Используйте официальный стиль. Недостающие реквизиты обозначьте [ЗАПОЛНИТЬ]. Не придумывайте факты или статьи. Отдельно укажите обстоятельства, требования, правовое основание и приложения.`
     },
     en: {
-      title: wantsClaim ? "Employment dispute claim draft" : "Employment-law conclusion",
+      title: wantsContract ? "Employment contract draft" : (wantsClaim ? "Employment dispute claim draft" : "Employment-law conclusion"),
       description: "Preliminary result based on the information entered.",
       back: "Change information",
       instructionConclusion: `Prepare a professional legal conclusion under Uzbekistan employment law. Separate facts from legal issues, explain possible legal options and next steps. Do not invent statutory article numbers or missing facts; where needed, state that the current LexUZ text should be verified.`,
       instructionClaim: `Prepare an initial court claim draft for an employment dispute in Uzbekistan. Use formal style. Mark missing filing details as [TO BE COMPLETED]. Do not invent facts or statutory provisions. Separate facts, requests, legal basis and attachments.`
     }
   }[lang];
+
+  const contractInstruction = lang === "uz"
+    ? `O‘zbekiston mehnat qonunchiligiga mos mehnat shartnomasi loyihasini tayyorlang. Tanlangan shartnoma turiga mos bo‘limlarni kiriting: taraflar, ish joyi va mehnat vazifasi, ish boshlanishi va muddat, ish haqi, ish vaqti va dam olish, huquq va majburiyatlar, mehnatni muhofaza qilish, javobgarlik, shartnomani o‘zgartirish va bekor qilish, yakuniy qoidalar, rekvizit va imzolar. Yetishmayotgan har qanday shaxsiy yoki faktik ma’lumotni [TO‘LDIRILADI] deb belgilang. Fakt, modda, summa yoki rekvizitni o‘ylab topmang.`
+    : lang === "ru"
+    ? `Подготовьте проект трудового договора по законодательству Узбекистана с необходимыми разделами. Все отсутствующие фактические данные обозначьте [ЗАПОЛНИТЬ]. Не придумывайте факты, суммы, реквизиты или статьи.`
+    : `Prepare an Uzbekistan employment contract draft with the necessary sections. Mark every missing factual detail [TO BE COMPLETED]. Do not invent facts, amounts, identifiers or statutory provisions.`;
 
   const context = `
 ISSUE TYPE: ${String(form.issue_type || "")}
@@ -8914,14 +8995,14 @@ EMPLOYMENT END: ${String(form.employment_end || "")}
 ORDER / CONTRACT INFO: ${String(form.order_info || "")}
 FACTS: ${String(form.facts || "")}
 EVIDENCE: ${String(form.evidence || "")}
-REQUESTED OUTPUT: ${wantsClaim ? "CLAIM DRAFT" : "LEGAL CONCLUSION"}
+REQUESTED OUTPUT: ${wantsContract ? "EMPLOYMENT CONTRACT DRAFT" : (wantsClaim ? "CLAIM DRAFT" : "LEGAL CONCLUSION")}
   `.trim();
 
   let answer = "";
 
   try {
     answer = await callAI(
-      wantsClaim ? labels.instructionClaim : labels.instructionConclusion,
+      wantsContract ? contractInstruction : (wantsClaim ? labels.instructionClaim : labels.instructionConclusion),
       lang,
       context
     );
@@ -8946,7 +9027,7 @@ REQUESTED OUTPUT: ${wantsClaim ? "CLAIM DRAFT" : "LEGAL CONCLUSION"}
 
       <div class="formActions">
         <a class="btn btnOutline" href="/employment${q(lang)}">← ${esc(labels.back)}</a>
-        ${wantsClaim ? `<a class="btn btnPrimary" href="/documents${q(lang)}">▤ ${esc(tr(lang, "documents"))}</a>` : ""}
+        ${(wantsClaim || wantsContract) ? `<a class="btn btnPrimary" href="/employment${q(lang)}">↺ ${esc(labels.back)}</a>` : ""}
       </div>
     `,
     labels.title,
@@ -12472,7 +12553,7 @@ const server =
           req.method === "POST" &&
           pathname === "/business-result"
         ){
-          const body = await readBody(req);
+          const body = await readForm(req);
           return sendHtml(
             res,
             await businessResultPage(lang, body)
