@@ -5204,75 +5204,7 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
   </style>
 
 
-<style>
-/* HUQUQIY AI — MAIN 3 AREAS: clean, large entry cards */
-body.homeThreeOnly .domainGrid,
-body.homeThreeOnly .areasGrid,
-body.homeThreeOnly .homeDomains{
-  display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  gap:24px!important;
-  margin:34px auto!important;
-}
-body.homeThreeOnly .domainCard,
-body.homeThreeOnly .areaCard,
-body.homeThreeOnly .homeDomainCard{
-  min-height:260px!important;
-  padding:34px 30px!important;
-  border-radius:22px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:center!important;
-  align-items:flex-start!important;
-}
-body.homeThreeOnly .domainCard h2,
-body.homeThreeOnly .domainCard h3,
-body.homeThreeOnly .areaCard h2,
-body.homeThreeOnly .areaCard h3,
-body.homeThreeOnly .homeDomainCard h2,
-body.homeThreeOnly .homeDomainCard h3{
-  font-size:30px!important;
-  line-height:1.15!important;
-  margin:0 0 14px!important;
-}
-body.homeThreeOnly .domainCard p,
-body.homeThreeOnly .areaCard p,
-body.homeThreeOnly .homeDomainCard p{
-  font-size:15px!important;
-  line-height:1.55!important;
-}
-body.homeThreeOnly .domainCard .btn,
-body.homeThreeOnly .areaCard .btn,
-body.homeThreeOnly .homeDomainCard .btn{
-  font-size:16px!important;
-  padding:13px 20px!important;
-  margin-top:18px!important;
-}
-@media(max-width:900px){
- body.homeThreeOnly .domainGrid,body.homeThreeOnly .areasGrid,body.homeThreeOnly .homeDomains{grid-template-columns:1fr!important}
- body.homeThreeOnly .domainCard,body.homeThreeOnly .areaCard,body.homeThreeOnly .homeDomainCard{min-height:190px!important}
-}
-</style>
-<script>
-document.addEventListener("DOMContentLoaded",function(){
-  if(location.pathname==="/" || location.pathname===""){
-    document.body.classList.add("homeThreeOnly");
-    const wanted=["oila huquqi","mehnat huquqi","biznes huquqi","семейное право","трудовое право","бизнес-право","family law","employment law","business law"];
-    const candidates=[...document.querySelectorAll("main section, main .section, main .panel, main .card, main article")];
-    candidates.forEach(el=>{
-      const txt=(el.innerText||"").toLowerCase();
-      if(!wanted.some(w=>txt.includes(w))) return;
-      const count=wanted.filter(w=>txt.includes(w)).length;
-      if(count>=3){
-        [...el.children].forEach(ch=>{
-          const ct=(ch.innerText||"").toLowerCase();
-          if(ct.trim() && !wanted.some(w=>ct.includes(w))) ch.style.display="none";
-        });
-      }
-    });
-  }
-});
-</script>
+
 </head>
 
 
@@ -6311,37 +6243,70 @@ function homePage(lang) {
 
 
 
-      <!-- THREE MAIN LEGAL DIVISIONS -->
-      <section class="services">
+      <!-- THREE MAIN LEGAL DIVISIONS — LONG PREMIUM ROWS -->
+      <section class="services homeLegalAreas">
+        <style>
+          .homeLegalAreas{padding-top:34px}
+          .homeLegalAreas .sectionHead{display:block;margin-bottom:22px}
+          .homeLegalAreas .sectionText{display:none}
+          .homeLegalAreas .sectionTitle{font-size:46px;line-height:1.08;margin-top:10px}
+          .homeLongGrid{display:grid;grid-template-columns:1fr;gap:18px}
+          .homeLongCard{
+            min-height:205px;border-radius:22px;padding:30px 34px;text-decoration:none;
+            display:grid;grid-template-columns:86px minmax(0,1fr) auto;align-items:center;gap:25px;
+            position:relative;overflow:hidden;border:1px solid rgba(10,36,57,.11);
+            box-shadow:0 12px 34px rgba(6,27,44,.055);transition:.22s ease
+          }
+          .homeLongCard:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(6,27,44,.10)}
+          .homeLongCard:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-90px;top:-145px;border:1px solid rgba(255,255,255,.50)}
+          .homeLongCard.family{background:linear-gradient(105deg,#fffaf1 0%,#fbf3e4 68%,#f0dfbd 100%);border-color:#ead8b4}
+          .homeLongCard.employment{background:linear-gradient(105deg,#f8fbff 0%,#edf5ff 68%,#d9e9fa 100%);border-color:#cfdfef}
+          .homeLongCard.business{background:linear-gradient(105deg,#f6fcf9 0%,#eaf7f1 68%,#cfe9dd 100%);border-color:#c8e2d6}
+          .homeLongIcon{width:78px;height:78px;border-radius:18px;display:grid;place-items:center;font-size:29px;font-weight:900;box-shadow:0 8px 20px rgba(7,30,49,.10)}
+          .family .homeLongIcon{background:#c99843;color:#fff}.employment .homeLongIcon{background:#0a3159;color:#fff}.business .homeLongIcon{background:#116445;color:#fff}
+          .homeLongCopy{position:relative;z-index:2}.homeLongCopy h3{font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1.1;color:#071f36;margin:0 0 10px}
+          .homeLongCopy p{font-size:15px;line-height:1.6;color:#536676;margin:0;max-width:790px}
+          .homeLongEnter{position:relative;z-index:2;min-width:205px;padding:15px 19px;border-radius:12px;background:#092942;color:#fff;font-size:14px;font-weight:900;text-align:center}
+          .family .homeLongEnter{background:#9b6d24}.business .homeLongEnter{background:#11583f}
+          @media(max-width:760px){
+            .homeLegalAreas .sectionTitle{font-size:34px}.homeLongCard{grid-template-columns:62px 1fr;padding:23px;gap:17px}
+            .homeLongIcon{width:58px;height:58px;font-size:22px}.homeLongCopy h3{font-size:27px}.homeLongEnter{grid-column:1/-1;width:100%;min-width:0}
+          }
+        </style>
         <div class="container">
           <div class="sectionHead">
             <div>
               <span class="eyebrow">${lang==="uz"?"ASOSIY YO‘NALISHLAR":lang==="ru"?"ОСНОВНЫЕ НАПРАВЛЕНИЯ":"MAIN PRACTICE AREAS"}</span>
               <h2 class="sectionTitle">${lang==="uz"?"Huquqiy yo‘nalishni tanlang":lang==="ru"?"Выберите направление":"Choose a legal area"}</h2>
             </div>
-            <p class="sectionText">${lang==="uz"?"Har bir bo‘lim o‘zining AI yuristi, hujjatlari, hisob-kitoblari va rasmiy manbalarini o‘z ichiga oladi.":lang==="ru"?"Каждый раздел содержит своего AI-юриста, документы, инструменты и официальные источники.":"Each area contains its own AI lawyer, documents, tools and official sources."}</p>
           </div>
 
-          <div class="serviceGrid">
-            <a class="serviceCard" href="/family${q(lang)}">
-              <div class="serviceIcon">O</div>
-              <h3>${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</h3>
-              <p>${lang==="uz"?"Ajrim, aliment, bolalar, mol-mulk, nikoh shartnomasi, da’vo arizalari, hisob-kitob va rasmiy oilaviy-huquqiy manbalar.":lang==="ru"?"Развод, алименты, дети, имущество, брачный договор, иски, расчёты и официальные источники.":"Divorce, alimony, children, property, marriage contracts, claims, calculations and official sources."}</p>
-              <span class="serviceLink">${lang==="uz"?"Oila huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open family law →"}</span>
+          <div class="homeLongGrid">
+            <a class="homeLongCard family" href="/family${q(lang)}">
+              <div class="homeLongIcon">O</div>
+              <div class="homeLongCopy">
+                <h3>${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</h3>
+                <p>${lang==="uz"?"Ajrim, aliment, bolalar, mol-mulk, nikoh shartnomasi va oilaviy da’volar.":lang==="ru"?"Развод, алименты, дети, имущество, брачный договор и семейные иски.":"Divorce, alimony, children, property, marriage contracts and family claims."}</p>
+              </div>
+              <span class="homeLongEnter">${lang==="uz"?"Oila huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open family law →"}</span>
             </a>
 
-            <a class="serviceCard" href="/employment${q(lang)}">
-              <div class="serviceIcon">M</div>
-              <h3>${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</h3>
-              <p>${lang==="uz"?"Ishdan bo‘shatish, ish haqi, mehnat shartnomasi, ish vaqti, ta’til, mehnat nizolari, da’volar va rasmiy manbalar.":lang==="ru"?"Увольнение, зарплата, трудовой договор, рабочее время, отпуск, споры, иски и официальные источники.":"Dismissal, wages, employment contracts, working time, leave, disputes, claims and official sources."}</p>
-              <span class="serviceLink">${lang==="uz"?"Mehnat huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open employment law →"}</span>
+            <a class="homeLongCard employment" href="/employment${q(lang)}">
+              <div class="homeLongIcon">M</div>
+              <div class="homeLongCopy">
+                <h3>${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</h3>
+                <p>${lang==="uz"?"Ishdan bo‘shatish, ish haqi, mehnat shartnomasi, ta’til va mehnat nizolari.":lang==="ru"?"Увольнение, зарплата, трудовой договор, отпуск и трудовые споры.":"Dismissal, wages, employment contracts, leave and employment disputes."}</p>
+              </div>
+              <span class="homeLongEnter">${lang==="uz"?"Mehnat huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open employment law →"}</span>
             </a>
 
-            <a class="serviceCard" href="/business${q(lang)}">
-              <div class="serviceIcon">B</div>
-              <h3>${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</h3>
-              <p>${lang==="uz"?"Biznes nizolari, qarzdorlik, barcha turdagi ariza va talabnomalar, shartnomalar, Palata, Biznes-ombudsman, iqtisodiy sud va rasmiy biznes platformalari.":lang==="ru"?"Бизнес-споры, долги, заявления, претензии, договоры, Палата, Бизнес-омбудсман, экономический суд и официальные платформы.":"Business disputes, debt, documents, contracts, Chamber services, Business Ombudsman, economic courts and official platforms."}</p>
-              <span class="serviceLink">${lang==="uz"?"Biznes huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open business law →"}</span>
+            <a class="homeLongCard business" href="/business${q(lang)}">
+              <div class="homeLongIcon">B</div>
+              <div class="homeLongCopy">
+                <h3>${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</h3>
+                <p>${lang==="uz"?"Shartnomalar, qarzdorlik, biznes nizolari, korporativ hujjatlar va iqtisodiy sud.":lang==="ru"?"Договоры, задолженность, бизнес-споры, корпоративные документы и экономический суд.":"Contracts, debt, business disputes, corporate documents and economic court."}</p>
+              </div>
+              <span class="homeLongEnter">${lang==="uz"?"Biznes huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open business law →"}</span>
             </a>
           </div>
         </div>
