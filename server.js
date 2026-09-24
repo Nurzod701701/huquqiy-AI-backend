@@ -3535,7 +3535,16 @@ const CSS_APP = `
   max-width:800px;
 
   margin:0 0 8px;
-  
+
+  color:#fff;
+
+  font-family:Georgia,serif;
+
+  font-size:
+    clamp(29px,4vw,41px);
+
+  font-weight:500;
+
   letter-spacing:-.8px;
 }
 
@@ -14175,13 +14184,3 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
-
-
-  color:#fff;
-
-  font-family:Georgia,serif;
-
-  font-size:
-    clamp(29px,4vw,41px);
-
-  font-weight:500;
