@@ -8619,194 +8619,145 @@ function businessPanel(title, text, href, icon="§"){
 }
 
 
+
 function businessPage(lang="uz"){
   const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
-  const businessNav = [
-    ["#biz-overview",t("Umumiy ma’lumot","Общая информация","Overview")],
-    ["#biz-contracts",t("Shartnoma namunalari","Шаблоны договоров","Contract templates")],
-    ["#biz-claims",t("Da’vo arizalari","Исковые заявления","Claims")],
-    ["#biz-registration",t("Ro‘yxatga olish va litsenziya","Регистрация и лицензии","Registration & licensing")],
-    ["#biz-tax",t("Soliq va hisob","Налоги и учет","Tax & accounting")],
-    ["#biz-laws",t("Qonun hujjatlari","Законодательство","Legislation")],
-    ["#biz-advice",t("Amaliy tavsiyalar","Практические рекомендации","Practical guidance")],
-    ["#biz-court",t("Sud amaliyoti","Судебная практика","Court practice")]
+
+  const lawCards = [
+    ["Fuqarolik kodeksi — I qism","Yuridik shaxslar, bitimlar, mulk, majburiyatlarning umumiy qoidalari.","https://lex.uz/docs/-111189","FK I"],
+    ["Fuqarolik kodeksi — II qism","Oldi-sotdi, ijara, pudrat, xizmat, qarz va boshqa shartnomalar.","https://lex.uz/docs/-180552","FK II"],
+    ["Iqtisodiy protsessual kodeks","Iqtisodiy sudda da’vo, dalillar va protsessual tartib.","https://lex.uz/docs/-3523891","IPK"],
+    ["Soliq kodeksi","Tadbirkorlik subyektlarining soliq majburiyatlari.","https://lex.uz/docs/-4674902","SK"],
+    ["Litsenziyalash va ruxsat berish","Litsenziya, ruxsatnoma va xabardor qilish tartib-taomillari.","https://lex.uz/docs/-5511879","L"],
+    ["Davlat xaridlari to‘g‘risida","Davlat xaridlari, ishtirokchilar va shartnomalar.","https://lex.uz/docs/-5382974","DX"],
+    ["Tadbirkorlik erkinligi kafolatlari","Tadbirkorlik faoliyati erkinligi va huquqiy kafolatlar.","https://lex.uz/docs/-2006789","TE"],
+    ["MChJ to‘g‘risida","Mas’uliyati cheklangan jamiyatlar bo‘yicha korporativ qoidalar.","https://lex.uz/docs/-8151376","MChJ"]
   ];
-  const sideNav = businessNav.map(x=>`<a href="${x[0]}" class="bizSideSub"><span>—</span>${esc(x[1])}</a>`).join("");
 
-  const contractCards = [
-    ["supply",t("Tovar yetkazib berish","Поставка","Supply")],
-    ["sale",t("Oldi-sotdi","Купля-продажа","Sale")],
-    ["services",t("Xizmat ko‘rsatish","Оказание услуг","Services")],
-    ["lease",t("Ijara","Аренда","Lease")],
-    ["works",t("Pudrat","Подряд","Works")],
-    ["loan",t("Qarz","Заем","Loan")],
-    ["nda",t("Maxfiylik (NDA)","Конфиденциальность (NDA)","NDA")],
-    ["cooperation",t("Hamkorlik","Сотрудничество","Cooperation")]
-  ].map(x=>`<button type="button" class="bizMiniCard" onclick="bizOpen('contract','${x[0]}','${esc(x[1])}')"><span>${esc(x[1])}</span><b>›</b></button>`).join("");
+  const laws = lawCards.map(x=>`<a class="bLaw" href="${x[2]}" target="_blank" rel="noopener noreferrer">
+      <div class="bLawCode">${x[3]}</div><div><strong>${x[0]}</strong><p>${x[1]}</p></div><span>↗</span>
+    </a>`).join("");
 
-  const claimCards = [
-    ["debt",t("Qarzdorlikni undirish","Взыскание задолженности","Debt recovery")],
-    ["performance",t("Majburiyatni bajarish","Исполнение обязательства","Performance of obligation")],
-    ["damages",t("Zarar undirish","Взыскание убытков","Damages")],
-    ["invalid",t("Bitimni haqiqiy emas deb topish","Недействительность сделки","Invalid transaction")],
-    ["termination",t("Shartnomani bekor qilish","Расторжение договора","Contract termination")],
-    ["corporate",t("Korporativ nizo","Корпоративный спор","Corporate dispute")],
-    ["counterclaim",t("Qarshi da’vo","Встречный иск","Counterclaim")],
-    ["custom",t("Boshqa biznes nizosi","Другой бизнес-спор","Other business dispute")]
-  ].map(x=>`<button type="button" class="bizMiniCard" onclick="bizOpen('claim','${x[0]}','${esc(x[1])}')"><span>${esc(x[1])}</span><b>›</b></button>`).join("");
+  const contractTypes=[
+    ["supply","Tovar yetkazib berish"],["sale","Oldi-sotdi"],["services","Xizmat ko‘rsatish"],["lease","Ijara"],
+    ["works","Pudrat"],["loan","Qarz"],["nda","NDA / maxfiylik"],["cooperation","Hamkorlik"]
+  ].map(x=>`<button class="bAction" onclick="bizOpen('contract','${x[0]}','${x[1]} shartnomasi')"><span class="bDot">S</span><b>${x[1]}</b><i>→</i></button>`).join("");
+
+  const claims=[
+    ["debt","Qarzdorlikni undirish"],["performance","Majburiyatni bajarish"],["damages","Zarar undirish"],["termination","Shartnomani bekor qilish"],
+    ["invalid","Bitimni haqiqiy emas deb topish"],["corporate","Korporativ nizo"],["counterclaim","Qarshi da’vo"],["custom","Boshqa biznes nizosi"]
+  ].map(x=>`<button class="bAction" onclick="bizOpen('document','${x[0]}','${x[1]}')"><span class="bDot">D</span><b>${x[1]}</b><i>→</i></button>`).join("");
 
   return appLayout(lang,"business",`
-    <style>
-      .bizShell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;align-items:start}
-      .bizSidebar{background:linear-gradient(180deg,#06243e,#041c31);border-radius:18px;overflow:hidden;position:sticky;top:18px;box-shadow:0 18px 45px rgba(2,28,49,.14)}
-      .bizBrand{padding:22px;color:#fff;border-bottom:1px solid rgba(255,255,255,.08);font-weight:900;font-size:21px}.bizBrand small{display:block;font-size:9px;letter-spacing:2px;opacity:.65;margin-top:6px}
-      .bizSideHome,.bizSideTitle,.bizSideSub{display:flex;align-items:center;gap:10px;color:#dce8f4;text-decoration:none;padding:12px 18px;font-size:14px}
-      .bizSideHome{font-weight:800;border-bottom:1px solid rgba(255,255,255,.06)}.bizSideTitle{background:linear-gradient(90deg,#e6b960,#f1d28e);color:#08223a;font-weight:900;margin:8px;border-radius:10px}
-      .bizSideSub{padding:9px 24px;font-size:13px}.bizSideSub:hover{background:rgba(255,255,255,.07)}.bizSideSub span{opacity:.35}
-      .bizSideGroup{padding:13px 17px 6px;color:#8298ab;font-size:10px;letter-spacing:1.6px;font-weight:900}
-      .bizHero{background:linear-gradient(105deg,#052a4c,#0b4d82);color:#fff;border-radius:18px;padding:28px 30px;position:relative;overflow:hidden;box-shadow:0 12px 34px rgba(6,45,78,.13)}
-      .bizHero:after{content:"§";position:absolute;right:38px;top:-35px;font-size:180px;font-family:Georgia,serif;opacity:.06}.bizHero h1{font-size:31px;margin:0 0 7px}.bizHero p{margin:0;opacity:.86;font-size:15px}.bizHeroRow{display:flex;gap:18px;align-items:center}.bizHeroIcon{width:72px;height:72px;border-radius:18px;background:linear-gradient(145deg,#f3d28c,#c89239);display:grid;place-items:center;color:#08233d;font-size:34px;font-weight:900}
-      .bizQuick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}.bizQuickCard{border:1px solid #e3eaf1;border-radius:14px;padding:18px;background:#fff;text-decoration:none;color:#0a2540;display:flex;gap:13px;align-items:center;box-shadow:0 6px 18px rgba(14,43,68,.05)}.bizQuickCard:hover{transform:translateY(-2px)}.bizQuickIcon{width:44px;height:44px;border-radius:12px;background:#edf5ff;display:grid;place-items:center;font-size:20px;font-weight:900}.bizQuickCard h3{font-size:14px;margin:0 0 4px}.bizQuickCard p{font-size:11px;color:#66788a;margin:0;line-height:1.4}
-      .bizSection{margin-top:22px}.bizSectionHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.bizSectionHead h2{font-size:19px;margin:0;color:#0b2945}.bizSectionHead a{font-size:12px;text-decoration:none;color:#1874d1}
-      .bizInfoGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.bizInfoCard,.bizMiniCard{border:1px solid #e5eaf0;background:#fff;border-radius:12px;padding:15px;text-align:left;color:#0b2945;box-shadow:0 4px 14px rgba(8,42,70,.04)}.bizInfoCard{text-decoration:none}.bizInfoCard strong{display:block;font-size:14px;margin-bottom:5px}.bizInfoCard span{font-size:11px;color:#6b7c8d;line-height:1.4}
-      .bizMiniGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.bizMiniCard{cursor:pointer;font:inherit;font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center}.bizMiniCard b{color:#1680ea;font-size:23px;font-weight:400}.bizMiniCard:hover{border-color:#b8d5f2;transform:translateY(-1px)}
-      .bizOfficial{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.bizOfficial a{padding:14px;border:1px solid #e5eaf0;border-radius:12px;text-decoration:none;color:#0b2945;background:#fff}.bizOfficial strong{display:block;font-size:13px}.bizOfficial span{display:block;color:#6b7c8d;font-size:11px;margin-top:5px}
-      .bizModal{position:fixed;inset:0;background:rgba(3,20,34,.56);display:none;align-items:center;justify-content:center;padding:22px;z-index:9999}.bizModal.open{display:flex}.bizModalCard{width:min(820px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:25px;box-shadow:0 25px 80px rgba(0,0,0,.28)}.bizModalTop{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:14px}.bizModalTop h2{margin:0}.bizClose{border:0;background:#edf2f7;border-radius:50%;width:38px;height:38px;font-size:20px;cursor:pointer}
-      .bizAIBox{background:#f5f9fd;border:1px solid #dce9f4;border-radius:14px;padding:16px;margin-top:20px}
-      @media(max-width:1000px){.bizShell{grid-template-columns:1fr}.bizSidebar{position:relative;top:0}.bizQuick,.bizInfoGrid,.bizMiniGrid,.bizOfficial{grid-template-columns:repeat(2,1fr)}}
-      @media(max-width:620px){.bizQuick,.bizInfoGrid,.bizMiniGrid,.bizOfficial{grid-template-columns:1fr}.bizHeroRow{align-items:flex-start}.bizHeroIcon{width:56px;height:56px}.bizHero h1{font-size:25px}}
-    </style>
+  <style>
+    .bWrap{max-width:1280px;margin:0 auto}
+    .bTop{position:relative;overflow:hidden;border-radius:24px;padding:34px 38px;background:#071f36;color:#fff;box-shadow:0 18px 48px rgba(5,31,54,.14)}
+    .bTop:before{content:"";position:absolute;width:360px;height:360px;border:1px solid rgba(213,174,101,.20);border-radius:50%;right:-100px;top:-210px}
+    .bTop:after{content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(213,174,101,.14);border-radius:50%;right:35px;top:-160px}
+    .bKicker{font-size:11px;letter-spacing:2px;color:#d6ae65;font-weight:900}.bTop h1{font-size:38px;margin:9px 0 8px}.bTop p{max-width:720px;color:#c9d5df;margin:0;line-height:1.6}
+    .bTopBtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.bTopBtn{border:1px solid rgba(255,255,255,.17);background:rgba(255,255,255,.07);color:#fff;border-radius:11px;padding:11px 15px;text-decoration:none;font-size:13px;font-weight:800}.bTopBtn.gold{background:#d4aa60;color:#082139;border-color:#d4aa60}
+    .bStats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}.bStat{background:#fff;border:1px solid #e6ebef;border-radius:16px;padding:17px 18px}.bStat small{display:block;color:#778594;font-size:10px;text-transform:uppercase;letter-spacing:.8px}.bStat strong{display:block;color:#0a2843;font-size:17px;margin-top:5px}
+    .bLayout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;margin-top:20px}.bPanel{background:#fff;border:1px solid #e5eaee;border-radius:18px;padding:21px;box-shadow:0 7px 22px rgba(8,38,62,.035)}
+    .bHead{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:15px}.bHead h2{font-size:20px;color:#092742;margin:0}.bHead p{font-size:11px;color:#788795;margin:4px 0 0}.bTag{font-size:10px;color:#98702f;background:#fbf5e9;border:1px solid #efe0c3;border-radius:20px;padding:6px 9px;font-weight:900}
+    .bTools{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.bTool{border:1px solid #e4e9ed;border-radius:15px;padding:17px;background:#fff;text-align:left;cursor:pointer;min-height:118px;transition:.18s}.bTool:hover{border-color:#d5b675;box-shadow:0 9px 24px rgba(11,40,65,.07);transform:translateY(-2px)}.bToolIcon{width:38px;height:38px;border-radius:10px;background:#f6f1e7;color:#9b722f;display:grid;place-items:center;font-weight:900}.bTool h3{font-size:14px;margin:12px 0 4px;color:#0b2944}.bTool p{font-size:11px;color:#758492;line-height:1.45;margin:0}
+    .bSideTitle{font-size:13px;color:#0b2944;font-weight:900;margin-bottom:12px}.bSideLink{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #edf0f2;text-decoration:none;color:#153650;font-size:12px;font-weight:750}.bSideLink:last-child{border-bottom:0}.bSideLink span{color:#b1843b}
+    .bSection{margin-top:20px}.bActionGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bAction{border:1px solid #e4e9ed;background:#fff;border-radius:13px;padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;text-align:left;color:#102f49}.bAction:hover{border-color:#d6b776}.bAction b{font-size:12px;flex:1}.bAction i{font-style:normal;color:#aa7b2f}.bDot{width:29px;height:29px;border-radius:8px;background:#f5f0e7;color:#9c7130;display:grid;place-items:center;font-size:10px;font-weight:900}
+    .bLawGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.bLaw{display:grid;grid-template-columns:47px 1fr 18px;gap:12px;align-items:center;border:1px solid #e3e8ec;border-radius:14px;padding:14px;text-decoration:none;background:#fff;color:#0a2944}.bLaw:hover{border-color:#cfae70;box-shadow:0 7px 18px rgba(7,37,61,.05)}.bLawCode{height:42px;border-radius:10px;background:#092a47;color:#e3bd76;display:grid;place-items:center;font-size:10px;font-weight:900}.bLaw strong{font-size:12px}.bLaw p{font-size:10px;color:#788692;margin:4px 0 0;line-height:1.4}.bLaw>span{color:#ad8037}
+    .bOfficial{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bOfficial a{border:1px solid #e4e9ed;border-radius:13px;padding:15px;text-decoration:none;color:#0d2e49;background:#fff}.bOfficial strong{font-size:12px;display:block}.bOfficial small{display:block;color:#7b8996;margin-top:5px;font-size:10px}
+    .bModal{position:fixed;inset:0;background:rgba(3,19,32,.62);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}.bModal.open{display:flex}.bModalCard{background:#fff;width:min(820px,96vw);max-height:90vh;overflow:auto;border-radius:20px;padding:25px}.bModalTop{display:flex;justify-content:space-between;align-items:center}.bModalTop h2{margin:0}.bClose{border:0;width:38px;height:38px;border-radius:50%;font-size:20px;cursor:pointer}
+    @media(max-width:980px){.bLayout{grid-template-columns:1fr}.bStats,.bActionGrid,.bOfficial{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.bStats,.bTools,.bActionGrid,.bOfficial,.bLawGrid{grid-template-columns:1fr}.bTop{padding:26px 22px}.bTop h1{font-size:30px}}
+  </style>
 
-    <div class="bizShell">
-      <aside class="bizSidebar">
-        <div class="bizBrand">⚖ Huquqiy AI<small>LEGAL WORKSPACE</small></div>
-        <a class="bizSideHome" href="/${q(lang)}">⌂ ${t("Bosh sahifa","Главная","Home")}</a>
-        <div class="bizSideGroup">${t("ASOSIY BO‘LIMLAR","ОСНОВНЫЕ РАЗДЕЛЫ","MAIN AREAS")}</div>
-        <a class="bizSideTitle" href="#biz-top">▣ ${t("Biznes huquqi","Бизнес-право","Business law")}</a>
-        ${sideNav}
-        <div class="bizSideGroup">${t("BOSHQA YO‘NALISHLAR","ДРУГИЕ НАПРАВЛЕНИЯ","OTHER AREAS")}</div>
-        <a class="bizSideHome" href="/family${q(lang)}">♟ ${t("Oila huquqi","Семейное право","Family law")}</a>
-        <a class="bizSideHome" href="/employment${q(lang)}">♜ ${t("Mehnat huquqi","Трудовое право","Employment law")}</a>
-      </aside>
+  <div class="bWrap">
+    <section class="bTop">
+      <div class="bKicker">HUQUQIY AI · BUSINESS DESK</div>
+      <h1>${t("Biznes huquqi","Бизнес-право","Business Law")}</h1>
+      <p>${t("Tadbirkor va kompaniya uchun huquqiy ish stoli: AI tahlil, shartnoma, da’vo, korporativ hujjatlar, qonunchilik va rasmiy davlat xizmatlari.","Юридическое рабочее пространство для бизнеса.","A legal workspace for entrepreneurs and companies.")}</p>
+      <div class="bTopBtns"><a class="bTopBtn gold" href="#b-ai">${t("AI biznes yuristi","AI бизнес-юрист","AI business lawyer")}</a><a class="bTopBtn" href="#b-laws">${t("Qonun manbalari","Источники права","Legal sources")}</a><a class="bTopBtn" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">${t("Sud kabineti ↗","Судебный кабинет ↗","Court cabinet ↗")}</a></div>
+    </section>
 
-      <main id="biz-top">
-        <section class="bizHero">
-          <div class="bizHeroRow"><div class="bizHeroIcon">▣</div><div><h1>${t("Biznes huquqi","Бизнес-право","Business law")}</h1><p>${t("Tadbirkorlar, kompaniyalar va yuridik shaxslar uchun huquqiy ma’lumotlar va amaliy AI xizmatlari","Правовая информация и AI-сервисы для предпринимателей и компаний","Legal information and practical AI services for entrepreneurs and companies")}</p></div></div>
-        </section>
-
-        <div class="bizQuick">
-          <a class="bizQuickCard" href="#biz-contracts"><div class="bizQuickIcon">D</div><div><h3>${t("Shartnoma namunalari","Шаблоны договоров","Contract templates")}</h3><p>${t("Namuna + AI generator + tekshiruv","Шаблоны + AI генератор","Templates + AI generator")}</p></div></a>
-          <a class="bizQuickCard" href="#biz-claims"><div class="bizQuickIcon">§</div><div><h3>${t("Da’vo arizalari","Исковые заявления","Claims")}</h3><p>${t("Biznes nizolari bo‘yicha da’volar","Иски по бизнес-спорам","Business dispute claims")}</p></div></a>
-          <a class="bizQuickCard" href="#biz-tax"><div class="bizQuickIcon">%</div><div><h3>${t("Soliq va hisob","Налоги и учет","Tax & accounting")}</h3><p>${t("Soliq, tekshiruv va rasmiy xizmatlar","Налоги, проверки и сервисы","Tax, inspections and services")}</p></div></a>
-          <a class="bizQuickCard" href="#biz-laws"><div class="bizQuickIcon">⚖</div><div><h3>${t("Qonun hujjatlari","Законодательство","Legislation")}</h3><p>${t("Rasmiy qonun va kodekslar","Официальные законы и кодексы","Official laws and codes")}</p></div></a>
-        </div>
-
-        <section id="biz-overview" class="bizSection">
-          <div class="bizSectionHead"><h2>▰ ${t("Umumiy ma’lumotlar","Общая информация","General information")}</h2></div>
-          <div class="bizInfoGrid">
-            <a class="bizInfoCard" href="#biz-registration"><strong>${t("Tadbirkorlik subyektlari","Субъекты предпринимательства","Business entities")}</strong><span>${t("YTT, MChJ va boshqa tashkiliy shakllar","ИП, ООО и другие формы","Sole traders, LLCs and other forms")}</span></a>
-            <a class="bizInfoCard" href="https://my.gov.uz/uz/service/57" target="_blank"><strong>${t("Ro‘yxatga olish tartibi","Порядок регистрации","Registration")}</strong><span>${t("Biznesni davlat ro‘yxatidan o‘tkazish","Государственная регистрация бизнеса","State business registration")}</span></a>
-            <a class="bizInfoCard" href="https://license.gov.uz/" target="_blank"><strong>${t("Litsenziya va ruxsatnomalar","Лицензии и разрешения","Licenses & permits")}</strong><span>${t("Litsenziyalanadigan faoliyat bo‘yicha rasmiy tizim","Официальная система лицензирования","Official licensing system")}</span></a>
-            <button class="bizInfoCard" style="cursor:pointer" onclick="bizOpen('corporate','meeting_minutes','${t("Korporativ boshqaruv","Корпоративное управление","Corporate governance")}')"><strong>${t("Korporativ boshqaruv","Корпоративное управление","Corporate governance")}</strong><span>${t("Ta’sischilar, ustav, ulushlar va direktor","Учредители, устав, доли, директор","Founders, charter, shares and director")}</span></button>
-          </div>
-        </section>
-
-        <section id="biz-contracts" class="bizSection">
-          <div class="bizSectionHead"><h2>▤ ${t("Shartnoma namunalari","Шаблоны договоров","Contract templates")}</h2><button class="btn btnOutline" onclick="bizOpen('contract','custom','${t("Boshqa shartnoma","Другой договор","Other contract")}')">${t("Barchasini ko‘rish","Смотреть все","View all")} →</button></div>
-          <div class="bizMiniGrid">${contractCards}</div>
-        </section>
-
-        <section id="biz-claims" class="bizSection">
-          <div class="bizSectionHead"><h2>⚖ ${t("Da’vo arizalari namunalari","Образцы исковых заявлений","Claim templates")}</h2><button class="btn btnOutline" onclick="bizOpen('document','custom','${t("Boshqa da’vo/ariza","Другой иск/заявление","Other claim/application")}')">${t("Barchasini ko‘rish","Смотреть все","View all")} →</button></div>
-          <div class="bizMiniGrid">${claimCards}</div>
-        </section>
-
-        <section id="biz-registration" class="bizSection">
-          <div class="bizSectionHead"><h2>▣ ${t("Ro‘yxatga olish va korporativ hujjatlar","Регистрация и корпоративные документы","Registration & corporate documents")}</h2></div>
-          <div class="bizMiniGrid">
-            <a class="bizMiniCard" href="https://my.gov.uz/uz/service/57" target="_blank"><span>${t("Biznesni ro‘yxatdan o‘tkazish","Регистрация бизнеса","Register business")}</span><b>›</b></a>
-            <a class="bizMiniCard" href="https://my.gov.uz/uz/service/58" target="_blank"><span>${t("Qayta ro‘yxatdan o‘tkazish","Перерегистрация","Re-registration")}</span><b>›</b></a>
-            <button class="bizMiniCard" onclick="bizOpen('corporate','charter','${t("Ustav loyihasi","Проект устава","Charter draft")}')"><span>${t("Ustav loyihasi","Проект устава","Charter draft")}</span><b>›</b></button>
-            <button class="bizMiniCard" onclick="bizOpen('corporate','founder_decision','${t("Ta’sischi qarori","Решение учредителя","Founder resolution")}')"><span>${t("Ta’sischi qarori","Решение учредителя","Founder resolution")}</span><b>›</b></button>
-          </div>
-        </section>
-
-        <section id="biz-tax" class="bizSection">
-          <div class="bizSectionHead"><h2>% ${t("Soliq va hisob","Налоги и учет","Tax & accounting")}</h2></div>
-          <div class="bizMiniGrid">
-            <a class="bizMiniCard" href="https://soliq.uz/" target="_blank"><span>${t("Soliq xizmatlari","Налоговые сервисы","Tax services")}</span><b>›</b></a>
-            <button class="bizMiniCard" onclick="bizOpen('analysis','tax','${t("Soliq masalasini AI tahlil qilish","AI-анализ налогового вопроса","AI tax analysis")}')"><span>${t("Soliq masalasini tahlil qilish","Анализ налогового вопроса","Analyze tax issue")}</span><b>›</b></button>
-            <button class="bizMiniCard" onclick="bizOpen('protection','tax','${t("Soliq organiga murojaat/e’tiroz","Обращение/возражение в налоговый орган","Tax appeal/objection")}')"><span>${t("Soliq bo‘yicha e’tiroz","Налоговое возражение","Tax objection")}</span><b>›</b></button>
-            <a class="bizMiniCard" href="https://lex.uz/" target="_blank"><span>${t("Soliq qonunchiligi","Налоговое законодательство","Tax legislation")}</span><b>›</b></a>
-          </div>
-        </section>
-
-        <section id="biz-laws" class="bizSection">
-          <div class="bizSectionHead"><h2>⚖ ${t("Qonun hujjatlari","Законодательство","Legislation")}</h2></div>
-          <div class="bizMiniGrid">
-            <a class="bizMiniCard" href="https://lex.uz/" target="_blank"><span>LexUZ — ${t("qonunchilik bazasi","база законодательства","legislation database")}</span><b>›</b></a>
-            <a class="bizMiniCard" href="https://lex.uz/docs/-3523891" target="_blank"><span>${t("Iqtisodiy protsessual kodeks","Экономический процессуальный кодекс","Economic Procedural Code")}</span><b>›</b></a>
-            <a class="bizMiniCard" href="https://lex.uz/" target="_blank"><span>${t("Fuqarolik qonunchiligi","Гражданское законодательство","Civil legislation")}</span><b>›</b></a>
-            <a class="bizMiniCard" href="https://lex.uz/" target="_blank"><span>${t("Korporativ qonunchilik","Корпоративное законодательство","Corporate legislation")}</span><b>›</b></a>
-          </div>
-        </section>
-
-        <section id="biz-advice" class="bizSection">
-          <div class="bizSectionHead"><h2>▥ ${t("Tadbirkorni himoya qilish va amaliy tavsiyalar","Защита бизнеса и практические рекомендации","Business protection & practical guidance")}</h2></div>
-          <div class="bizOfficial">
-            <a href="https://chamber.uz/" target="_blank"><strong>${t("Savdo-sanoat palatasi","Торгово-промышленная палата","Chamber of Commerce")}</strong><span>${t("Tadbirkorlarni qo‘llab-quvvatlash","Поддержка предпринимателей","Business support")}</span></a>
-            <a href="https://murojaat.chamber.uz/oz/appeals" target="_blank"><strong>${t("Palataga murojaat","Обращение в ТПП","Chamber appeal")}</strong><span>${t("Elektron murojaat yuborish","Подать электронное обращение","Submit an electronic appeal")}</span></a>
-            <a href="https://biznesvakil.uz/" target="_blank"><strong>${t("Biznes-ombudsman","Бизнес-омбудсман","Business Ombudsman")}</strong><span>${t("Tadbirkor huquqlarini himoya qilish","Защита прав бизнеса","Protect business rights")}</span></a>
-            <button class="bizInfoCard" style="cursor:pointer" onclick="bizOpen('due_diligence','counterparty','${t("Kontragentni tekshirish","Проверка контрагента","Counterparty check")}')"><strong>${t("Bitimdan oldingi tekshiruv","Проверка перед сделкой","Pre-deal review")}</strong><span>${t("AI due diligence checklist","AI due diligence checklist","AI due diligence checklist")}</span></button>
-          </div>
-        </section>
-
-        <section id="biz-court" class="bizSection">
-          <div class="bizSectionHead"><h2>▥ ${t("Sud amaliyoti va iqtisodiy sud","Судебная практика и экономический суд","Court practice & economic court")}</h2></div>
-          <div class="bizMiniGrid">
-            <button class="bizMiniCard" onclick="bizOpen('court_readiness','court','${t("Sudga tayyorgarlik","Подготовка к суду","Court readiness")}')"><span>${t("Sudga tayyorgarlikni tekshirish","Проверить готовность к суду","Check court readiness")}</span><b>›</b></button>
-            <button class="bizMiniCard" onclick="bizOpen('document','demand','${t("Sudgacha talabnoma","Досудебная претензия","Pre-action demand")}')"><span>${t("Sudgacha talabnoma","Досудебная претензия","Pre-action demand")}</span><b>›</b></button>
-            <a class="bizMiniCard" href="https://sud.uz/" target="_blank"><span>${t("Oliy sud rasmiy sayti","Официальный сайт Верховного суда","Supreme Court website")}</span><b>›</b></a>
-            <a class="bizMiniCard" href="https://cabinet.sud.uz/" target="_blank"><span>${t("Sudga elektron murojaat","Электронное обращение в суд","Electronic court filing")}</span><b>›</b></a>
-          </div>
-        </section>
-      </main>
+    <div class="bStats">
+      <div class="bStat"><small>${t("Yo‘nalish","Направление","Area")}</small><strong>${t("Shartnomalar","Договоры","Contracts")}</strong></div>
+      <div class="bStat"><small>${t("Yo‘nalish","Направление","Area")}</small><strong>${t("Biznes nizolari","Бизнес-споры","Disputes")}</strong></div>
+      <div class="bStat"><small>${t("Yo‘nalish","Направление","Area")}</small><strong>${t("Korporativ huquq","Корпоративное право","Corporate")}</strong></div>
+      <div class="bStat"><small>${t("Manbalar","Источники","Sources")}</small><strong>${t("Bevosita rasmiy","Прямые официальные","Direct official")}</strong></div>
     </div>
 
-    <div id="bizModal" class="bizModal" onclick="if(event.target===this)bizClose()">
-      <div class="bizModalCard">
-        <div class="bizModalTop"><div><div class="resultLabel">${t("AI HUQUQIY GENERATOR","AI ЮРИДИЧЕСКИЙ ГЕНЕРАТОР","AI LEGAL GENERATOR")}</div><h2 id="bizModalTitle">${t("Hujjat tayyorlash","Подготовка документа","Prepare document")}</h2></div><button class="bizClose" onclick="bizClose()">×</button></div>
-        <form method="POST" action="/business-result${q(lang)}">
-          <input id="bizMode" type="hidden" name="mode" value="analysis">
-          <input id="bizIssue" type="hidden" name="issue">
-          <input id="bizDocType" type="hidden" name="document_type">
-          <input id="bizContractType" type="hidden" name="contract_type">
-          <div class="formGrid">
-            <div class="formGroup"><label>${t("Korxona / sizning tomoningiz","Компания / ваша сторона","Company / your side")}</label><input name="party1"></div>
-            <div class="formGroup"><label>${t("Kontragent / qarshi tomon","Контрагент / другая сторона","Counterparty / other side")}</label><input name="counterparty"></div>
-            <div class="formGroup"><label>${t("Summa / narx","Сумма / цена","Amount / price")}</label><input name="amount"></div>
-            <div class="formGroup"><label>${t("Shartnoma/hujjat raqami va sanasi","Номер и дата документа","Document number/date")}</label><input name="contract"></div>
+    <div class="bLayout">
+      <div>
+        <section id="b-ai" class="bPanel">
+          <div class="bHead"><div><h2>${t("Nima qilmoqchisiz?","Что вы хотите сделать?","What do you want to do?")}</h2><p>${t("Xizmatni tanlang — kerakli AI forma ochiladi.","Выберите сервис — откроется нужная AI-форма.","Choose a service to open its AI form.")}</p></div><span class="bTag">AI LEGAL WORKFLOW</span></div>
+          <div class="bTools">
+            <button class="bTool" onclick="bizOpen('analysis','business','${t("Biznes muammosini tahlil qilish","Анализ бизнес-проблемы","Analyze business issue")}')"><div class="bToolIcon">AI</div><h3>${t("Huquqiy tahlil","Правовой анализ","Legal analysis")}</h3><p>${t("Muammo → huquqiy masala → dalillar → variantlar → keyingi qadam.","Проблема → право → доказательства → решение.","Problem → law → evidence → options → next step.")}</p></button>
+            <button class="bTool" onclick="bizOpen('contract','custom','${t("Shartnoma tayyorlash","Подготовить договор","Draft contract")}')"><div class="bToolIcon">S</div><h3>${t("Shartnoma tayyorlash","Подготовить договор","Draft a contract")}</h3><p>${t("Istalgan biznes shartnomasi uchun moslashuvchan generator.","Гибкий генератор бизнес-договоров.","Flexible business contract generator.")}</p></button>
+            <button class="bTool" onclick="bizOpen('document','claim','${t("Da’vo yoki ariza tayyorlash","Подготовить иск или заявление","Draft claim/application")}')"><div class="bToolIcon">D</div><h3>${t("Da’vo va arizalar","Иски и заявления","Claims & applications")}</h3><p>${t("Da’vo, talabnoma, e’tiroz, shikoyat va boshqa hujjatlar.","Иски, претензии, отзывы и жалобы.","Claims, demands, responses and appeals.")}</p></button>
+            <button class="bTool" onclick="bizOpen('contract_review','review','${t("Shartnomani tekshirish","Проверить договор","Review contract")}')"><div class="bToolIcon">✓</div><h3>${t("Shartnomani tekshirish","Проверка договора","Contract review")}</h3><p>${t("Xavfli bandlar, yetishmayotgan shartlar va tavsiya etiladigan tuzatishlar.","Риски и рекомендуемые правки.","Risks, missing terms and suggested edits.")}</p></button>
           </div>
-          <div class="formGroup"><label>${t("Vaziyat, shartlar va muhim faktlar","Ситуация, условия и факты","Situation, terms and key facts")}</label><textarea name="facts" rows="7" required></textarea></div>
-          <div class="formGrid"><div class="formGroup"><label>${t("Dalillar / ilovalar","Доказательства / приложения","Evidence / attachments")}</label><textarea name="evidence" rows="4"></textarea></div><div class="formGroup"><label>${t("Natija / talab","Желаемый результат","Desired result")}</label><textarea name="goal" rows="4"></textarea></div></div>
-          <div class="bizAIBox">${t("AI mavjud ma’lumotlar asosida ishlaydi. Yetishmayotgan rekvizitlarni uydirmaydi va [TO‘LDIRILADI] deb belgilaydi.","AI не выдумывает отсутствующие реквизиты.","AI does not invent missing details and marks them for completion.")}</div>
-          <button class="btn btnPrimary" style="margin-top:16px" type="submit">${t("AI bilan tayyorlash","Подготовить с AI","Prepare with AI")}</button>
-        </form>
+        </section>
       </div>
+
+      <aside class="bPanel">
+        <div class="bSideTitle">${t("Tezkor rasmiy xizmatlar","Быстрые официальные сервисы","Official quick links")}</div>
+        <a class="bSideLink" href="https://my.gov.uz/uz/service/57" target="_blank" rel="noopener noreferrer">${t("Biznesni ro‘yxatdan o‘tkazish","Регистрация бизнеса","Business registration")}<span>↗</span></a>
+        <a class="bSideLink" href="https://my.gov.uz/uz/service/58" target="_blank" rel="noopener noreferrer">${t("Qayta ro‘yxatdan o‘tkazish","Перерегистрация","Re-registration")}<span>↗</span></a>
+        <a class="bSideLink" href="https://my.gov.uz/uz/service/77" target="_blank" rel="noopener noreferrer">${t("Kontragentni tekshirish","Проверить контрагента","Check counterparty")}<span>↗</span></a>
+        <a class="bSideLink" href="https://license.gov.uz/" target="_blank" rel="noopener noreferrer">${t("Litsenziya va ruxsatlar","Лицензии и разрешения","Licenses & permits")}<span>↗</span></a>
+        <a class="bSideLink" href="https://soliq.uz/" target="_blank" rel="noopener noreferrer">${t("Soliq xizmatlari","Налоговые сервисы","Tax services")}<span>↗</span></a>
+        <a class="bSideLink" href="https://murojaat.chamber.uz/oz/appeals" target="_blank" rel="noopener noreferrer">${t("Palataga murojaat","Обращение в ТПП","Chamber appeal")}<span>↗</span></a>
+        <a class="bSideLink" href="https://biznesvakil.uz/" target="_blank" rel="noopener noreferrer">${t("Biznes-ombudsman","Бизнес-омбудсман","Business Ombudsman")}<span>↗</span></a>
+      </aside>
     </div>
 
-    <script>
-      function bizOpen(mode,type,title){
-        document.getElementById("bizMode").value=mode;
-        document.getElementById("bizIssue").value=type||"";
-        document.getElementById("bizDocType").value=(mode==="document"||mode==="protection"||mode==="corporate")?type:"";
-        document.getElementById("bizContractType").value=mode==="contract"?type:"";
-        document.getElementById("bizModalTitle").textContent=title||"AI Biznes yuristi";
-        document.getElementById("bizModal").classList.add("open");
-        document.body.style.overflow="hidden";
-      }
-      function bizClose(){document.getElementById("bizModal").classList.remove("open");document.body.style.overflow="";}
-    </script>
+    <section class="bPanel bSection">
+      <div class="bHead"><div><h2>${t("Shartnomalar","Договоры","Contracts")}</h2><p>${t("Turini tanlang va AI bilan individual loyiha tayyorlang.","Выберите тип и создайте индивидуальный проект.","Choose a type and create a tailored draft.")}</p></div><span class="bTag">${t("NAMUNA + GENERATOR","ШАБЛОН + ГЕНЕРАТОР","TEMPLATE + GENERATOR")}</span></div>
+      <div class="bActionGrid">${contractTypes}</div>
+    </section>
+
+    <section class="bPanel bSection">
+      <div class="bHead"><div><h2>${t("Biznes nizolari va da’volar","Бизнес-споры и иски","Business disputes & claims")}</h2><p>${t("Sudgacha hujjatdan iqtisodiy sud da’vosigacha.","От претензии до экономического суда.","From pre-action demand to economic court claim.")}</p></div></div>
+      <div class="bActionGrid">${claims}</div>
+    </section>
+
+    <section id="b-laws" class="bPanel bSection">
+      <div class="bHead"><div><h2>${t("Biznes huquqi — to‘g‘ridan-to‘g‘ri qonun manbalari","Бизнес-право — прямые источники","Business law — direct legal sources")}</h2><p>${t("Kartani bossangiz LexUZ bosh sahifasi emas, aynan hujjatning o‘zi ochiladi.","Открывается сам документ, а не главная LexUZ.","Each card opens the exact official document, not the LexUZ homepage.")}</p></div><span class="bTag">LEXUZ DIRECT</span></div>
+      <div class="bLawGrid">${laws}</div>
+    </section>
+
+    <section class="bPanel bSection">
+      <div class="bHead"><div><h2>${t("Korporativ va tadbirkorni himoya qilish","Корпоративные документы и защита бизнеса","Corporate & business protection")}</h2></div></div>
+      <div class="bActionGrid">
+        <button class="bAction" onclick="bizOpen('corporate','charter','Ustav loyihasi')"><span class="bDot">K</span><b>${t("Ustav loyihasi","Проект устава","Charter draft")}</b><i>→</i></button>
+        <button class="bAction" onclick="bizOpen('corporate','founder_decision','Ta’sischi qarori')"><span class="bDot">K</span><b>${t("Ta’sischi qarori","Решение учредителя","Founder resolution")}</b><i>→</i></button>
+        <button class="bAction" onclick="bizOpen('protection','chamber','Savdo-sanoat palatasiga murojaat')"><span class="bDot">H</span><b>${t("Palataga murojaat","Обращение в ТПП","Chamber appeal")}</b><i>→</i></button>
+        <button class="bAction" onclick="bizOpen('protection','ombudsman','Biznes-ombudsmanga murojaat')"><span class="bDot">H</span><b>${t("Biznes-ombudsmanga murojaat","Обращение к Бизнес-омбудсману","Business Ombudsman appeal")}</b><i>→</i></button>
+      </div>
+    </section>
+
+    <section class="bPanel bSection">
+      <div class="bHead"><div><h2>${t("Rasmiy platformalar","Официальные платформы","Official platforms")}</h2><p>${t("Har biri tegishli xizmatning o‘ziga olib boradi.","Каждая ссылка ведет прямо к нужному сервису.","Each link goes directly to the relevant service.")}</p></div></div>
+      <div class="bOfficial">
+        <a href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer"><strong>ADOLAT</strong><small>${t("Sudga elektron murojaat","Электронное обращение в суд","Electronic court filing")}</small></a>
+        <a href="https://chamber.uz/" target="_blank" rel="noopener noreferrer"><strong>${t("Savdo-sanoat palatasi","Торгово-промышленная палата","Chamber of Commerce")}</strong><small>${t("Tadbirkorlikni qo‘llab-quvvatlash","Поддержка бизнеса","Business support")}</small></a>
+        <a href="https://license.gov.uz/" target="_blank" rel="noopener noreferrer"><strong>License</strong><small>${t("Litsenziya va ruxsatlar","Лицензии и разрешения","Licenses & permits")}</small></a>
+        <a href="https://soliq.uz/" target="_blank" rel="noopener noreferrer"><strong>Soliq</strong><small>${t("Soliq xizmatlari","Налоговые сервисы","Tax services")}</small></a>
+      </div>
+    </section>
+  </div>
+
+  <div id="bizModal" class="bModal" onclick="if(event.target===this)bizClose()"><div class="bModalCard">
+    <div class="bModalTop"><div><div class="resultLabel">HUQUQIY AI · BUSINESS</div><h2 id="bizModalTitle">${t("AI biznes yuristi","AI бизнес-юрист","AI business lawyer")}</h2></div><button class="bClose" onclick="bizClose()">×</button></div>
+    <form method="POST" action="/business-result${q(lang)}">
+      <input id="bizMode" type="hidden" name="mode" value="analysis"><input id="bizIssue" type="hidden" name="issue"><input id="bizDocType" type="hidden" name="document_type"><input id="bizContractType" type="hidden" name="contract_type">
+      <div class="formGrid"><div class="formGroup"><label>${t("Sizning tomoningiz / korxona","Ваша сторона / компания","Your side / company")}</label><input name="party1"></div><div class="formGroup"><label>${t("Kontragent / qarshi tomon","Контрагент","Counterparty")}</label><input name="counterparty"></div><div class="formGroup"><label>${t("Summa / narx","Сумма / цена","Amount / price")}</label><input name="amount"></div><div class="formGroup"><label>${t("Shartnoma yoki hujjat","Договор или документ","Contract/document")}</label><input name="contract"></div></div>
+      <div class="formGroup"><label>${t("Vaziyat, faktlar va muhim shartlar","Ситуация и факты","Situation, facts and key terms")}</label><textarea name="facts" rows="7" required></textarea></div>
+      <div class="formGrid"><div class="formGroup"><label>${t("Dalillar / ilovalar","Доказательства","Evidence")}</label><textarea name="evidence" rows="4"></textarea></div><div class="formGroup"><label>${t("Siz xohlayotgan natija","Желаемый результат","Desired result")}</label><textarea name="goal" rows="4"></textarea></div></div>
+      <button class="btn btnPrimary" type="submit">${t("AI bilan tayyorlash","Подготовить с AI","Prepare with AI")}</button>
+    </form>
+  </div></div>
+  <script>
+    function bizOpen(mode,type,title){document.getElementById("bizMode").value=mode;document.getElementById("bizIssue").value=type||"";document.getElementById("bizDocType").value=(mode==="document"||mode==="protection"||mode==="corporate")?type:"";document.getElementById("bizContractType").value=mode==="contract"?type:"";document.getElementById("bizModalTitle").textContent=title||"AI Biznes yuristi";document.getElementById("bizModal").classList.add("open");document.body.style.overflow="hidden";}
+    function bizClose(){document.getElementById("bizModal").classList.remove("open");document.body.style.overflow="";}
+  </script>
   `);
 }
 
