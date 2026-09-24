@@ -4176,7 +4176,7 @@ const CSS_APP = `
 .questionCard select,
 .questionCard textarea{
   width:100%;
-  
+
   min-height:45px;
 
   padding:
@@ -5396,7 +5396,8 @@ function appLayout(
     court: "/court",
     calculators: "/calculators",
     family: "/family",
-    employment: "/employment"
+    employment: "/employment",
+    business: "/business"
   };
 
 
@@ -6264,6 +6265,14 @@ function homePage(lang) {
 
 
           <div class="serviceGrid">
+
+            <a class="serviceCard" href="/business${q(lang)}">
+              <div class="serviceIcon">§</div>
+              <h3>${lang==="ru"?"Бизнес-право":lang==="en"?"Business law":"Biznes huquqi"}</h3>
+              <p>${lang==="ru"?"AI бизнес-юрист, споры, заявления, договоры и официальные бизнес-сервисы.":lang==="en"?"AI business lawyer, disputes, documents, contracts and official business services.":"AI biznes yuristi, nizolar, arizalar, shartnomalar va rasmiy biznes xizmatlari."}</p>
+              <span class="serviceLink">${lang==="ru"?"Открыть →":lang==="en"?"Open →":"Kirish →"}</span>
+            </a>
+
 
             ${areaCards}
 
@@ -8448,6 +8457,248 @@ function familyPage(lang) {
     L.title,
     L.desc
   );
+}
+
+
+
+function businessPage(lang="uz"){
+  const L = {
+    uz:{
+      title:"Biznes huquqi",
+      sub:"Tadbirkor va kompaniyalar uchun AI biznes-yurist: nizolar, arizalar, talabnomalar, shartnomalar va rasmiy platformalar bitta markazda.",
+      ai:"AI BIZNES YURISTI",
+      issue:"Muammo turi",
+      facts:"Vaziyatni batafsil yozing",
+      counterparty:"Qarshi tomon / tashkilot",
+      contract:"Shartnoma yoki hujjat ma'lumotlari",
+      evidence:"Mavjud dalillar",
+      amount:"Nizo summasi (mavjud bo'lsa)",
+      goal:"Siz qanday natija xohlaysiz?",
+      output:"Natija turi",
+      analyze:"Huquqiy tahlil",
+      claim:"Ariza / da'vo / talabnoma loyihasi",
+      agreement:"Shartnoma loyihasi",
+      review:"Mavjud shartnomani tahlil qilish",
+      send:"AI biznes yuristiga yuborish",
+      docs:"HUJJATLAR VA SHARTNOMALAR",
+      docsSub:"Ro'yxatdagi hujjatni tanlang yoki kerakli hujjat/shartnomani erkin yozing. AI yetishmayotgan rekvizitlarni uydirmaydi.",
+      platforms:"TADBIRKOR UCHUN RASMIY PLATFORMALAR",
+      sources:"BIZNES QONUNCHILIGI VA O'QUV MANBALARI"
+    },
+    ru:{
+      title:"Бизнес-право",sub:"AI бизнес-юрист для предпринимателей и компаний: споры, заявления, претензии, договоры и официальные платформы в одном месте.",
+      ai:"AI БИЗНЕС-ЮРИСТ",issue:"Тип проблемы",facts:"Опишите ситуацию подробно",counterparty:"Контрагент / организация",contract:"Данные договора или документа",evidence:"Имеющиеся доказательства",amount:"Сумма спора",goal:"Какой результат вам нужен?",output:"Тип результата",analyze:"Правовой анализ",claim:"Проект заявления / иска / претензии",agreement:"Проект договора",review:"Анализ существующего договора",send:"Отправить AI бизнес-юристу",docs:"ДОКУМЕНТЫ И ДОГОВОРЫ",docsSub:"Выберите документ или свободно укажите нужный документ/договор.",platforms:"ОФИЦИАЛЬНЫЕ ПЛАТФОРМЫ ДЛЯ БИЗНЕСА",sources:"ЗАКОНОДАТЕЛЬСТВО И УЧЕБНЫЕ ИСТОЧНИКИ"
+    },
+    en:{
+      title:"Business law",sub:"AI business lawyer for entrepreneurs and companies: disputes, applications, claims, contracts and official platforms in one hub.",
+      ai:"AI BUSINESS LAWYER",issue:"Issue type",facts:"Describe the situation",counterparty:"Counterparty / organization",contract:"Contract or document details",evidence:"Available evidence",amount:"Dispute amount",goal:"Desired outcome",output:"Output type",analyze:"Legal analysis",claim:"Application / claim / demand draft",agreement:"Contract draft",review:"Review an existing contract",send:"Send to AI business lawyer",docs:"DOCUMENTS & CONTRACTS",docsSub:"Choose a document or freely describe any document/contract you need.",platforms:"OFFICIAL BUSINESS PLATFORMS",sources:"BUSINESS LAW & LEARNING SOURCES"
+    }
+  }[lang] || null;
+
+  const issueOptions = lang==="ru"
+    ? [["debt","Взыскание задолженности"],["contract","Договорный спор"],["supply","Поставка / услуги"],["lease","Аренда"],["corporate","Корпоративный спор / участники"],["registration","Регистрация / изменения бизнеса"],["license","Лицензия / разрешение"],["tax","Налоговый вопрос"],["inspection","Проверка / государственный орган"],["procurement","Госзакупки"],["ip","Интеллектуальная собственность"],["court","Экономический суд"],["other","Другая бизнес-проблема"]]
+    : lang==="en"
+    ? [["debt","Debt recovery"],["contract","Contract dispute"],["supply","Supply / services"],["lease","Lease"],["corporate","Corporate / shareholder dispute"],["registration","Business registration / changes"],["license","License / permit"],["tax","Tax issue"],["inspection","Inspection / public authority"],["procurement","Public procurement"],["ip","Intellectual property"],["court","Economic court"],["other","Other business issue"]]
+    : [["debt","Qarzdorlikni undirish"],["contract","Shartnoma nizosi"],["supply","Yetkazib berish / xizmat"],["lease","Ijara"],["corporate","Korporativ / ta'sischilar nizosi"],["registration","Biznesni ro'yxatdan o'tkazish / o'zgartirish"],["license","Litsenziya / ruxsatnoma"],["tax","Soliq masalasi"],["inspection","Tekshiruv / davlat organi"],["procurement","Davlat xaridlari"],["ip","Intellektual mulk"],["court","Iqtisodiy sud"],["other","Boshqa biznes muammosi"]];
+
+  const issueHtml = issueOptions.map(([v,t])=>`<option value="${escapeHtml(v)}">${escapeHtml(t)}</option>`).join("");
+
+  return appLayout(lang,"business",`
+    <div class="appHeader">
+      <div class="resultLabel">${escapeHtml(L.ai)}</div>
+      <h1>${escapeHtml(L.title)}</h1>
+      <p>${escapeHtml(L.sub)}</p>
+    </div>
+
+    <div class="surface surfacePad">
+      <form method="POST" action="/business-result${q(lang)}">
+        <div class="formGrid">
+          <div class="formGroup">
+            <label>${escapeHtml(L.issue)}</label>
+            <select name="issue" required>${issueHtml}</select>
+          </div>
+          <div class="formGroup">
+            <label>${escapeHtml(L.counterparty)}</label>
+            <input name="counterparty" placeholder="${lang==="uz"?"Masalan: ABC MChJ":lang==="ru"?"Например: ООО ABC":"Example: ABC LLC"}">
+          </div>
+          <div class="formGroup">
+            <label>${escapeHtml(L.amount)}</label>
+            <input name="amount" placeholder="${lang==="uz"?"Masalan: 150 000 000 so'm":lang==="ru"?"Например: 150 000 000 сум":"Example: UZS 150,000,000"}">
+          </div>
+          <div class="formGroup">
+            <label>${escapeHtml(L.contract)}</label>
+            <input name="contract" placeholder="${lang==="uz"?"Sana, raqam, turi":lang==="ru"?"Дата, номер, вид":"Date, number, type"}">
+          </div>
+        </div>
+        <div class="formGroup">
+          <label>${escapeHtml(L.facts)}</label>
+          <textarea name="facts" rows="7" required placeholder="${lang==="uz"?"Nima bo'lganini, sanalarni va muhim faktlarni yozing...":lang==="ru"?"Опишите факты, даты и обстоятельства...":"Describe facts, dates and circumstances..."}"></textarea>
+        </div>
+        <div class="formGrid">
+          <div class="formGroup">
+            <label>${escapeHtml(L.evidence)}</label>
+            <textarea name="evidence" rows="4" placeholder="${lang==="uz"?"Shartnoma, akt, hisob-faktura, yozishmalar, to'lov hujjatlari...":lang==="ru"?"Договор, акт, счет-фактура, переписка...":"Contract, act, invoice, correspondence..."}"></textarea>
+          </div>
+          <div class="formGroup">
+            <label>${escapeHtml(L.goal)}</label>
+            <textarea name="goal" rows="4" placeholder="${lang==="uz"?"Masalan: qarzni undirish, shartnomani bekor qilish...":lang==="ru"?"Например: взыскать долг, расторгнуть договор...":"Example: recover debt, terminate contract..."}"></textarea>
+          </div>
+        </div>
+        <div class="formGroup">
+          <label>${escapeHtml(L.output)}</label>
+          <select name="output">
+            <option value="analysis">${escapeHtml(L.analyze)}</option>
+            <option value="claim">${escapeHtml(L.claim)}</option>
+            <option value="agreement">${escapeHtml(L.agreement)}</option>
+            <option value="review">${escapeHtml(L.review)}</option>
+          </select>
+        </div>
+        <button class="btn btnPrimary" type="submit">${escapeHtml(L.send)}</button>
+      </form>
+    </div>
+
+    <div style="height:24px"></div>
+    <div class="appHeader">
+      <div class="resultLabel">${escapeHtml(L.docs)}</div>
+      <h1>${lang==="uz"?"Har qanday biznes hujjatini tayyorlash":lang==="ru"?"Подготовка бизнес-документов":"Prepare business documents"}</h1>
+      <p>${escapeHtml(L.docsSub)}</p>
+    </div>
+    <div class="surface surfacePad">
+      <form method="POST" action="/business-result${q(lang)}">
+        <input type="hidden" name="issue" value="document_generator">
+        <div class="formGrid">
+          <div class="formGroup">
+            <label>${lang==="uz"?"Hujjat turi":lang==="ru"?"Тип документа":"Document type"}</label>
+            <select name="output">
+              <option value="claim">${lang==="uz"?"Da'vo arizasi / ariza":lang==="ru"?"Иск / заявление":"Claim / application"}</option>
+              <option value="demand">${lang==="uz"?"Talabnoma / pretenziya":lang==="ru"?"Претензия / требование":"Demand / pre-action claim"}</option>
+              <option value="agreement">${lang==="uz"?"Shartnoma":lang==="ru"?"Договор":"Contract"}</option>
+              <option value="response">${lang==="uz"?"Javob xati / e'tiroz":lang==="ru"?"Ответ / возражение":"Response / objection"}</option>
+              <option value="appeal">${lang==="uz"?"Shikoyat / apellyatsiya":lang==="ru"?"Жалоба / апелляция":"Complaint / appeal"}</option>
+              <option value="custom">${lang==="uz"?"Boshqa hujjat":lang==="ru"?"Другой документ":"Other document"}</option>
+            </select>
+          </div>
+          <div class="formGroup">
+            <label>${lang==="uz"?"Aniq nomi":lang==="ru"?"Точное название":"Exact document name"}</label>
+            <input name="contract" placeholder="${lang==="uz"?"Masalan: tovar yetkazib berish shartnomasi":lang==="ru"?"Например: договор поставки":"Example: supply agreement"}">
+          </div>
+        </div>
+        <div class="formGroup">
+          <label>${lang==="uz"?"Hujjat uchun ma'lumotlar va shartlar":lang==="ru"?"Данные и условия документа":"Facts and terms for the document"}</label>
+          <textarea name="facts" rows="7" required></textarea>
+        </div>
+        <div class="formGroup">
+          <label>${lang==="uz"?"Qo'shimcha talablar":lang==="ru"?"Дополнительные требования":"Additional requirements"}</label>
+          <textarea name="goal" rows="3"></textarea>
+        </div>
+        <button class="btn btnPrimary" type="submit">${lang==="uz"?"Hujjatni tayyorlash":lang==="ru"?"Подготовить документ":"Prepare document"}</button>
+      </form>
+    </div>
+
+    <div style="height:28px"></div>
+    <div class="appHeader">
+      <div class="resultLabel">${escapeHtml(L.platforms)}</div>
+      <h1>${lang==="uz"?"Biznesni boshqarish va huquqlarni himoya qilish":lang==="ru"?"Управление бизнесом и защита прав":"Manage business and protect rights"}</h1>
+      <p>${lang==="uz"?"Kerakli rasmiy xizmatga bir bosishda o'ting.":lang==="ru"?"Переходите прямо к нужному официальному сервису.":"Open the relevant official service directly."}</p>
+    </div>
+    <div class="sourceGrid">
+      ${businessLinkCard("Savdo-sanoat palatasi","Tadbirkorlar manfaatlarini qo'llab-quvvatlash va Palata xizmatlari.","https://chamber.uz/")}
+      ${businessLinkCard("Savdo-sanoat palatasiga murojaat","Elektron murojaat yuborish.","https://murojaat.chamber.uz/oz/appeals")}
+      ${businessLinkCard("Biznes-ombudsman","Davlat organlari va mansabdor shaxslar bilan bog'liq huquq buzilishlari bo'yicha murojaat.","https://biznesvakil.uz/")}
+      ${businessLinkCard("Biznesni ro'yxatdan o'tkazish","Yangi tadbirkorlik subyektini davlat ro'yxatidan o'tkazish.","https://my.gov.uz/uz/service/57")}
+      ${businessLinkCard("Biznesni qayta ro'yxatdan o'tkazish","Tadbirkorlik subyekti ma'lumotlari va ta'sis hujjatlaridagi o'zgarishlar.","https://my.gov.uz/uz/service/58")}
+      ${businessLinkCard("Kontragentni tekshirish","Yuridik shaxsning hisobga qo'yilgan ma'lumotlarini STIR orqali ko'rish.","https://my.gov.uz/uz/service/77")}
+      ${businessLinkCard("Litsenziya va ruxsatnomalar","Litsenziya yoki ruxsatnoma olish uchun elektron tizim.","https://license.gov.uz/")}
+      ${businessLinkCard("Iqtisodiy sudlar","Iqtisodiy sudlar va ularning aloqa ma'lumotlari.","https://sud.uz/court_type/eco/")}
+      ${businessLinkCard("Sudga elektron murojaat","ADOLAT shaxsiy kabineti orqali sudga elektron murojaat.","https://cabinet.sud.uz/")}
+      ${businessLinkCard("Yagona davlat xizmatlari","Tadbirkorlar uchun davlat xizmatlari.","https://my.gov.uz/")}
+      ${businessLinkCard("Soliq qo'mitasi","Soliq ma'lumotlari va elektron xizmatlar.","https://soliq.uz/")}
+      ${businessLinkCard("LexUZ","Amaldagi normativ-huquqiy hujjatlarni tekshirish.","https://lex.uz/")}
+    </div>
+
+    <div style="height:28px"></div>
+    <div class="appHeader">
+      <div class="resultLabel">${escapeHtml(L.sources)}</div>
+      <h1>${lang==="uz"?"Rasmiy huquqiy kutubxona":lang==="ru"?"Официальная правовая библиотека":"Official legal library"}</h1>
+      <p>${lang==="uz"?"Tadbirkorlar, yuristlar va talabalar uchun birlamchi rasmiy manbalar.":lang==="ru"?"Официальные первичные источники для бизнеса, юристов и студентов.":"Primary official sources for businesses, lawyers and students."}</p>
+    </div>
+    <div class="sourceGrid">
+      ${businessLinkCard("LexUZ — Qonunchilik bazasi","Fuqarolik, korporativ, soliq, iqtisodiy protsess va boshqa hujjatlarni izlash.","https://lex.uz/")}
+      ${businessLinkCard("Oliy sud","Sud amaliyoti, iqtisodiy sudlar va rasmiy ma'lumotlar.","https://sud.uz/")}
+      ${businessLinkCard("Hukumat portali","Davlat organlari va rasmiy ma'lumotlar.","https://gov.uz/")}
+      ${businessLinkCard("YIDXP / my.gov.uz","Elektron davlat xizmatlari va arizalar.","https://my.gov.uz/")}
+    </div>
+  `);
+}
+
+function businessLinkCard(title,desc,url){
+  return `<a class="sourceCard" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
+    <div class="serviceIcon">§</div>
+    <h3>${escapeHtml(title)}</h3>
+    <p>${escapeHtml(desc)}</p>
+    <span class="serviceLink">Rasmiy sayt ↗</span>
+  </a>`;
+}
+
+async function businessResultPage(lang, body){
+  const data = {
+    issue: cleanText(body.issue,120),
+    counterparty: cleanText(body.counterparty,220),
+    amount: cleanText(body.amount,120),
+    contract: cleanText(body.contract,500),
+    facts: cleanText(body.facts,8000),
+    evidence: cleanText(body.evidence,5000),
+    goal: cleanText(body.goal,3000),
+    output: cleanText(body.output,80)
+  };
+
+  const prompt = `
+You are the Business Law module of HUQUQIY AI for Uzbekistan.
+Work from the user's facts only. Do not invent names, dates, amounts, contract numbers, courts, addresses, evidence, statutory articles or case law.
+If a required fact is missing in a document, write [TO'LDIRILADI].
+Use current Uzbekistan law only when you are confident; if an exact article/current wording needs verification, say it must be checked in the current official LexUZ text.
+Distinguish: facts; legal issues; legal basis; evidence; options; risks; next steps; documents.
+For disputes, consider pre-action resolution, negotiation/mediation/arbitration where applicable, jurisdiction and economic-court route without inventing procedural deadlines.
+For contracts, produce a practical structured draft with parties, subject, rights/duties, price/payment, performance/acceptance, liability, force majeure, dispute resolution, term/termination, confidentiality where relevant, details/signatures; adapt to the user's requested contract.
+For claims/applications/demands/responses/appeals, create a professional draft appropriate to the requested purpose and mark missing requisites [TO'LDIRILADI].
+Never promise a legal outcome.
+
+Language: ${lang}
+Issue: ${data.issue}
+Counterparty: ${data.counterparty}
+Amount: ${data.amount}
+Contract/document: ${data.contract}
+Facts: ${data.facts}
+Evidence: ${data.evidence}
+Desired result: ${data.goal}
+Requested output: ${data.output}
+`;
+  let result;
+  try{
+    result = await callAI(prompt, lang);
+  }catch(e){
+    result = lang==="ru"
+      ? "AI-сервис временно недоступен. Проверьте настройки API и повторите попытку."
+      : lang==="en"
+      ? "The AI service is temporarily unavailable. Check the API configuration and try again."
+      : "AI xizmati vaqtincha ishlamayapti. API sozlamalarini tekshirib, qayta urinib ko'ring.";
+  }
+
+  return appLayout(lang,"business",`
+    <div class="appHeader">
+      <div class="resultLabel">${lang==="uz"?"BIZNES HUQUQI NATIJASI":lang==="ru"?"РЕЗУЛЬТАТ ПО БИЗНЕС-ПРАВУ":"BUSINESS LAW RESULT"}</div>
+      <h1>${lang==="uz"?"AI biznes yuristi xulosasi":lang==="ru"?"Заключение AI бизнес-юриста":"AI business lawyer result"}</h1>
+      <p>${lang==="uz"?"Natijani hujjatlar va amaldagi rasmiy qonunchilik bilan tekshiring.":lang==="ru"?"Сверьте результат с документами и действующим официальным законодательством.":"Verify the result against documents and current official law."}</p>
+    </div>
+    <div class="surface surfacePad">
+      <div class="aiAnswer">${formatAI(result)}</div>
+      <div class="formActions" style="margin-top:22px">
+        <a class="btn btnOutline" href="/business${q(lang)}">${lang==="uz"?"← Biznes huquqiga qaytish":lang==="ru"?"← Назад":"← Back"}</a>
+        <a class="btn btnPrimary" href="https://lex.uz/" target="_blank" rel="noopener noreferrer">LexUZ ↗</a>
+        <a class="btn btnPrimary" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">${lang==="uz"?"Sudga elektron murojaat":lang==="ru"?"Обращение в суд":"Electronic court filing"} ↗</a>
+      </div>
+    </div>
+  `);
 }
 
 
@@ -12250,6 +12501,32 @@ const server =
 
 
         // ------------------------------------------------
+        // BUSINESS LAW
+        // ------------------------------------------------
+
+        if(
+          req.method === "GET" &&
+          pathname === "/business"
+        ){
+          return sendHtml(
+            res,
+            businessPage(lang)
+          );
+        }
+
+        if(
+          req.method === "POST" &&
+          pathname === "/business-result"
+        ){
+          const body = await readBody(req);
+          return sendHtml(
+            res,
+            await businessResultPage(lang, body)
+          );
+        }
+
+
+        // ------------------------------------------------
         // EMPLOYMENT LAW
         // ------------------------------------------------
 
@@ -12534,4 +12811,5 @@ server.listen(
 // ======================================================
 // END OF HUQUQIY AI
 // ======================================================
+
 
