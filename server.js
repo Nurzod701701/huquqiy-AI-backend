@@ -4176,11 +4176,12 @@ const CSS_APP = `
 .questionCard select,
 .questionCard textarea{
   width:100%;
-
+  
   min-height:45px;
 
   padding:
     10px 12px;
+
   color:#263d55;
 
   background:#f9fafb;
@@ -4915,33 +4916,17 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 @media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
 
   
-/* GOLD ONLY ON THE LANDING / KIRISH HERO */
+/* CLEAN WHITE LANDING HERO — ONLY THE ENTRY SECTION */
 .homePage .hero{
-  background:
-    radial-gradient(circle at 82% 16%,rgba(255,255,255,.18),transparent 24rem),
-    linear-gradient(135deg,#9b7430 0%,#c7a458 52%,#e0c77f 100%)!important;
+  background:radial-gradient(circle at 82% 12%,rgba(185,149,79,.08),transparent 25rem),linear-gradient(180deg,#ffffff 0%,#faf9f5 100%)!important;
+  border-bottom:1px solid rgba(12,36,56,.10)!important;
 }
-.homePage .hero h1,
-.homePage .hero .heroTitle{
-  color:#071827!important;
-  text-shadow:none!important;
-}
-.homePage .hero .heroDescription{
-  color:#1a2b38!important;
-  font-weight:560;
-}
-.homePage .hero .eyebrow{color:#071827!important}
-.homePage .hero .btnPrimary{
-  background:#071827!important;
-  color:#fff!important;
-  border-color:#071827!important;
-}
-.homePage .hero .btnOutline{
-  background:rgba(255,255,255,.88)!important;
-  color:#071827!important;
-  border-color:rgba(7,24,39,.18)!important;
-}
-.homePage .hero:after{color:rgba(7,24,39,.065)!important}
+.homePage .hero h1,.homePage .hero .heroTitle{color:#071827!important;text-shadow:none!important}
+.homePage .hero .heroDescription{color:#53626d!important;font-weight:500}
+.homePage .hero .eyebrow{color:#9a7735!important}
+.homePage .hero .btnPrimary{background:linear-gradient(135deg,#071827,#123b57)!important;color:#fff!important;border-color:#071827!important;box-shadow:0 12px 28px rgba(7,24,39,.16)!important}
+.homePage .hero .btnOutline{background:#fff!important;color:#071827!important;border-color:rgba(7,24,39,.16)!important;box-shadow:0 8px 22px rgba(7,24,39,.06)!important}
+.homePage .hero:after{color:rgba(7,24,39,.035)!important}
 
 </style>
 
