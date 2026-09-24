@@ -6259,15 +6259,20 @@ function homePage(lang) {
           }
           .homeLongCard:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(6,27,44,.10)}
           .homeLongCard:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-90px;top:-145px;border:1px solid rgba(255,255,255,.50)}
-          .homeLongCard.family{background:linear-gradient(105deg,#fffaf1 0%,#fbf3e4 68%,#f0dfbd 100%);border-color:#ead8b4}
-          .homeLongCard.employment{background:linear-gradient(105deg,#f8fbff 0%,#edf5ff 68%,#d9e9fa 100%);border-color:#cfdfef}
-          .homeLongCard.business{background:linear-gradient(105deg,#f6fcf9 0%,#eaf7f1 68%,#cfe9dd 100%);border-color:#c8e2d6}
+          .homeLongCard.family,.homeLongCard.employment,.homeLongCard.business{
+            background:linear-gradient(105deg,#fffdf9 0%,#fbf8f1 100%);
+            border-color:#ded8cc;
+          }
           .homeLongIcon{width:78px;height:78px;border-radius:18px;display:grid;place-items:center;font-size:29px;font-weight:900;box-shadow:0 8px 20px rgba(7,30,49,.10)}
-          .family .homeLongIcon{background:#c99843;color:#fff}.employment .homeLongIcon{background:#0a3159;color:#fff}.business .homeLongIcon{background:#116445;color:#fff}
+          .family .homeLongIcon,.employment .homeLongIcon,.business .homeLongIcon{
+            background:#0b2235;color:#d6ad63;
+          }
           .homeLongCopy{position:relative;z-index:2}.homeLongCopy h3{font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1.1;color:#071f36;margin:0 0 10px}
           .homeLongCopy p{font-size:15px;line-height:1.6;color:#536676;margin:0;max-width:790px}
           .homeLongEnter{position:relative;z-index:2;min-width:205px;padding:15px 19px;border-radius:12px;background:#092942;color:#fff;font-size:14px;font-weight:900;text-align:center}
-          .family .homeLongEnter{background:#9b6d24}.business .homeLongEnter{background:#11583f}
+          .family .homeLongEnter,.employment .homeLongEnter,.business .homeLongEnter{
+            background:#d4aa5e;color:#0b2235;
+          }
           @media(max-width:760px){
             .homeLegalAreas .sectionTitle{font-size:34px}.homeLongCard{grid-template-columns:62px 1fr;padding:23px;gap:17px}
             .homeLongIcon{width:58px;height:58px;font-size:22px}.homeLongCopy h3{font-size:27px}.homeLongEnter{grid-column:1/-1;width:100%;min-width:0}
@@ -6328,7 +6333,7 @@ function homePage(lang) {
           .popularLink{background:#fff;border:1px solid #e2e8ed;border-radius:13px;padding:14px 12px;text-decoration:none;color:#12324c;font-size:11px;font-weight:850;min-height:70px;display:flex;align-items:center;gap:9px}.popularLink:hover{border-color:#d2b16e;transform:translateY(-1px)}
           .popularIcon{width:30px;height:30px;flex:0 0 30px;border-radius:8px;background:#f6f0e5;color:#a17631;display:grid;place-items:center;font-size:10px;font-weight:900}
           .trustStrip{margin:0 0 34px;border:1px solid #e4e9ed;background:#fbfcfd;border-radius:15px;padding:15px 18px;display:flex;gap:12px;align-items:center}.trustMark{width:38px;height:38px;border-radius:10px;background:#e9f5ef;color:#126246;display:grid;place-items:center;font-weight:900}.trustStrip strong{font-size:12px;color:#0b2944;display:block}.trustStrip span{font-size:10px;color:#758492;display:block;margin-top:3px}
-          .homeLongQuick{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.homeLongQuick em{font-style:normal;font-size:10px;font-weight:850;padding:6px 9px;border:1px solid rgba(10,40,65,.12);border-radius:20px;color:#506577;background:rgba(255,255,255,.48)}
+          .homeLongQuick{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.homeLongQuick em{font-style:normal;font-size:10px;font-weight:850;padding:6px 9px;border:1px solid #ddd6ca;border-radius:20px;color:#4f6070;background:#fffdf9}
           @media(max-width:950px){.popularGrid{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.smartHubGrid{grid-template-columns:1fr}.smartAsk{flex-direction:column}.popularGrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:430px){.popularGrid{grid-template-columns:1fr}}
         </style>
         <div class="container">
@@ -10567,7 +10572,6 @@ const COURT_CSS = `
   display:flex;
 
   align-items:flex-start;
-
   justify-content:space-between;
 
   gap:12px;
@@ -14093,3 +14097,4 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
+
