@@ -1,3 +1,7 @@
+// HUQUQIY AI — server.js — PART 1/3
+// IMPORTANT: PART 1 + PART 2 + PART 3 ni aynan shu tartibda birlashtiring.
+// Bu fayl server.js ning ketma-ket bo‘lagi.
+
 require("dotenv").config();
 
 const http = require("http");
@@ -268,7 +272,16 @@ IMPORTANT RULES:
 11. If the user asks for a document, first identify the legally
     important facts and then prepare a structured draft.
 
-12. Never claim that a predicted court outcome is guaranteed.
+12. For employment-law matters, identify:
+    - employer and employee relationship;
+    - employment contract and position;
+    - relevant dates and employer orders;
+    - dismissal, wage, leave or working-time issue;
+    - available evidence;
+    - the user's requested outcome.
+    Then decide whether a legal conclusion or a document draft is appropriate.
+
+13. Never claim that a predicted court outcome is guaranteed.
 `;
 
   const response = await fetch(
@@ -1328,6 +1341,89 @@ const DOCUMENT_TYPES = [
         "Initial claim draft concerning division of marital property."
     }
   }
+
+  ,
+  {
+    id:
+      "employment_reinstatement_claim",
+
+    title: {
+      uz:
+        "Ishga tiklash bo‘yicha da’vo arizasi",
+
+      ru:
+        "Исковое заявление о восстановлении на работе",
+
+      en:
+        "Claim for reinstatement at work"
+    },
+
+    description: {
+      uz:
+        "Mehnat shartnomasi bekor qilinganidan keyin ishga tiklash masalasi bo‘yicha dastlabki da’vo loyihasi.",
+
+      ru:
+        "Первичный проект иска по вопросу восстановления на работе после прекращения трудового договора.",
+
+      en:
+        "Initial claim draft concerning reinstatement after termination of employment."
+    }
+  },
+
+  {
+    id:
+      "employment_wage_claim",
+
+    title: {
+      uz:
+        "Ish haqi va boshqa to‘lovlarni undirish bo‘yicha da’vo",
+
+      ru:
+        "Иск о взыскании заработной платы и иных выплат",
+
+      en:
+        "Claim for unpaid wages and other payments"
+    },
+
+    description: {
+      uz:
+        "Ish haqi, kompensatsiya yoki boshqa mehnat to‘lovlarini undirish bo‘yicha dastlabki hujjat loyihasi.",
+
+      ru:
+        "Первичный проект документа о взыскании заработной платы, компенсаций или иных трудовых выплат.",
+
+      en:
+        "Initial document draft for recovery of wages, compensation or other employment payments."
+    }
+  },
+
+  {
+    id:
+      "employment_general_claim",
+
+    title: {
+      uz:
+        "Boshqa mehnat nizosi bo‘yicha da’vo",
+
+      ru:
+        "Иск по иному трудовому спору",
+
+      en:
+        "Other employment dispute claim"
+    },
+
+    description: {
+      uz:
+        "Mehnat shartnomasi, ish sharoiti, ta’til yoki boshqa mehnat nizosi bo‘yicha hujjat loyihasi.",
+
+      ru:
+        "Проект документа по спору о трудовом договоре, условиях труда, отпуске или ином трудовом вопросе.",
+
+      en:
+        "Document draft for disputes involving employment contracts, working conditions, leave or other employment matters."
+    }
+  }
+
 
 ];
 
@@ -2593,6 +2689,138 @@ a{
   gap:15px;
 }
 
+
+/* =====================================================
+   2026 UI REFINEMENT — RASMIY VA O‘QILISHI QULAY
+   Mavjud ranglar va umumiy kompozitsiya saqlanadi.
+===================================================== */
+
+body{
+  font-size:17px;
+  line-height:1.65;
+}
+
+.brandText strong{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:-.3px;
+}
+
+.brandText small{
+  font-size:10px;
+}
+
+.navlinks a{
+  font-size:15px;
+  padding:10px 13px;
+}
+
+.languages a{
+  font-size:12px;
+  padding:8px 10px;
+}
+
+.eyebrow{
+  font-size:12px;
+  letter-spacing:.8px;
+}
+
+.sectionTitle,
+.hero h1,
+.roadmapHeader strong,
+.quickBox h2,
+.serviceCard h3{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+
+.hero h1{
+  font-size:clamp(44px,5vw,66px);
+  line-height:1.08;
+  font-weight:800;
+  letter-spacing:-1.8px;
+}
+
+.heroDescription{
+  font-size:18px;
+  line-height:1.75;
+}
+
+.sectionText{
+  font-size:16px;
+}
+
+.btn{
+  min-height:52px;
+  font-size:15px;
+}
+
+.heroTrust span{
+  font-size:13px;
+}
+
+.roadmapHeader small,
+.quickBox small{
+  font-size:11px;
+}
+
+.roadmapHeader strong{
+  font-size:24px;
+  font-weight:800;
+}
+
+.roadmapBadge{
+  font-size:11px;
+}
+
+.roadStep strong{
+  font-size:15px;
+}
+
+.roadStep p{
+  font-size:14px;
+}
+
+.quickBox h2{
+  font-size:31px;
+  font-weight:800;
+}
+
+.quickBox p{
+  font-size:15px;
+}
+
+.serviceCard h3{
+  font-size:20px;
+  font-weight:800;
+}
+
+.serviceCard p{
+  font-size:14px;
+}
+
+.coreItem strong{
+  font-size:15px;
+}
+
+.coreItem p,
+.sourceCard p,
+.footerBrand p,
+.footerLinks a{
+  font-size:14px;
+}
+
+.sourceCard h3{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-size:19px;
+  font-weight:800;
+}
+
+.footerTitle,
+.footerBottom{
+  font-size:11px;
+}
+
 `;
 // ======================================================
 // PART 2/4
@@ -3820,6 +4048,10 @@ const CSS_APP = `
     8px 10px;
 
   color:#657587;
+  // HUQUQIY AI — server.js — PART 2/3
+// IMPORTANT: PART 1 + PART 2 + PART 3 ni aynan shu tartibda birlashtiring.
+// Bu fayl server.js ning ketma-ket bo‘lagi.
+
 
   background:#f7f9fa;
 
@@ -4547,6 +4779,10 @@ function navigation(lang) {
 
           <a href="/calculators${q(lang)}">
             ${tr(lang, "calculators")}
+          </a>
+
+          <a href="/employment${q(lang)}">
+            ${lang === "uz" ? "Mehnat huquqi" : lang === "ru" ? "Трудовое право" : "Employment law"}
           </a>
 
         </nav>
@@ -5541,7 +5777,7 @@ function homePage(lang) {
 
           <a
             class="serviceCard"
-            href="/ai${q(lang)}&area=${encodeURIComponent(area.id)}"
+            href="${area.id === "employment" ? "/employment" + q(lang) : "/ai" + q(lang) + "&area=" + encodeURIComponent(area.id)}"
           >
 
             <span class="serviceNo">
@@ -7863,6 +8099,10 @@ Muhim:
       title:
         "Проект документа",
 
+// HUQUQIY AI — server.js — PART 3/3
+// IMPORTANT: PART 1 + PART 2 + PART 3 ni aynan shu tartibda birlashtiring.
+// Bu fayl server.js ning ketma-ket bo‘lagi.
+
       description:
         "Первичный юридический документ, сформированный на основе предоставленных данных.",
 
@@ -8029,6 +8269,264 @@ ${String(form.evidence || "")}
 }
 
 
+
+// ======================================================
+// MEHNAT HUQUQI — VAZIYAT TAHLILI VA DA’VO
+// ======================================================
+
+function employmentPage(lang) {
+
+  lang = getLang(lang);
+
+  const t = {
+    uz: {
+      title: "Mehnat huquqi",
+      description: "Mehnat nizosini sodda savollar orqali aniqlang. Tizim vaziyatga qarab huquqiy xulosa yoki da’vo arizasi loyihasini tayyorlaydi.",
+      issue: "Muammo turi",
+      issueOptions: [
+        ["dismissal", "Ishdan bo‘shatish / ishga tiklash"],
+        ["wage", "Ish haqi yoki boshqa to‘lov undirilmagan"],
+        ["contract", "Mehnat shartnomasi bilan bog‘liq nizo"],
+        ["leave", "Ta’til yoki ish vaqti bilan bog‘liq nizo"],
+        ["other", "Boshqa mehnat nizosi"]
+      ],
+      employer: "Ish beruvchi / tashkilot nomi",
+      position: "Lavozimingiz",
+      start: "Ish boshlagan sana",
+      end: "Ishdan bo‘shatilgan sana (agar mavjud bo‘lsa)",
+      order: "Buyruq yoki mehnat shartnomasi haqidagi ma’lumot",
+      facts: "Vaziyatni qisqacha bayon qiling",
+      factsPh: "Nima sodir bo‘lganini sana va muhim holatlar bilan yozing...",
+      evidence: "Mavjud hujjatlar va dalillar",
+      evidencePh: "Mehnat shartnomasi, buyruq, hisob-kitob, yozishmalar va boshqalar...",
+      goal: "Natija turi",
+      conclusion: "Huquqiy xulosa",
+      claim: "Da’vo arizasi loyihasi",
+      submit: "Tahlil qilish",
+      note: "Tizim yetishmayotgan faktlarni o‘zi to‘ldirmaydi. Hujjatni topshirishdan oldin amaldagi qonunchilik va rekvizitlarni tekshiring."
+    },
+    ru: {
+      title: "Трудовое право",
+      description: "Опишите трудовой спор через простые вопросы. Система подготовит правовое заключение или проект иска в зависимости от ситуации.",
+      issue: "Тип проблемы",
+      issueOptions: [
+        ["dismissal", "Увольнение / восстановление на работе"],
+        ["wage", "Невыплата заработной платы или иных выплат"],
+        ["contract", "Спор по трудовому договору"],
+        ["leave", "Спор об отпуске или рабочем времени"],
+        ["other", "Другой трудовой спор"]
+      ],
+      employer: "Работодатель / организация",
+      position: "Должность",
+      start: "Дата начала работы",
+      end: "Дата увольнения (если имеется)",
+      order: "Сведения о приказе или трудовом договоре",
+      facts: "Кратко опишите ситуацию",
+      factsPh: "Опишите, что произошло, с датами и важными обстоятельствами...",
+      evidence: "Документы и доказательства",
+      evidencePh: "Трудовой договор, приказ, расчёты, переписка и т.д.",
+      goal: "Тип результата",
+      conclusion: "Правовое заключение",
+      claim: "Проект искового заявления",
+      submit: "Провести анализ",
+      note: "Система не заполняет отсутствующие факты предположениями. Перед подачей документа проверьте действующее законодательство и реквизиты."
+    },
+    en: {
+      title: "Employment law",
+      description: "Describe an employment dispute through simple questions. The system will prepare a legal conclusion or a claim draft depending on the situation.",
+      issue: "Issue type",
+      issueOptions: [
+        ["dismissal", "Dismissal / reinstatement"],
+        ["wage", "Unpaid wages or other payments"],
+        ["contract", "Employment-contract dispute"],
+        ["leave", "Leave or working-time dispute"],
+        ["other", "Other employment dispute"]
+      ],
+      employer: "Employer / organization",
+      position: "Position",
+      start: "Employment start date",
+      end: "Dismissal date (if applicable)",
+      order: "Information about the order or employment contract",
+      facts: "Briefly describe the situation",
+      factsPh: "Describe what happened, including dates and important facts...",
+      evidence: "Available documents and evidence",
+      evidencePh: "Employment contract, order, calculations, correspondence, etc.",
+      goal: "Result type",
+      conclusion: "Legal conclusion",
+      claim: "Claim draft",
+      submit: "Analyze",
+      note: "The system does not invent missing facts. Verify current law and filing details before submitting a document."
+    }
+  }[lang];
+
+  const options = t.issueOptions
+    .map(([value, label]) => `<option value="${esc(value)}">${esc(label)}</option>`)
+    .join("");
+
+  return appLayout(
+    lang,
+    "employment",
+    `
+      <div class="notice noticeGold">
+        <span class="noticeIcon">!</span>
+        <span>${esc(t.note)}</span>
+      </div>
+
+      <div class="surface surfacePad">
+        <form method="POST" action="/employment-result${q(lang)}">
+          <div class="formGrid">
+
+            <div class="formGroup full">
+              <label>${esc(t.issue)}</label>
+              <select name="issue_type" required>${options}</select>
+            </div>
+
+            <div class="formGroup">
+              <label>${esc(t.employer)}</label>
+              <input name="employer" required>
+            </div>
+
+            <div class="formGroup">
+              <label>${esc(t.position)}</label>
+              <input name="position">
+            </div>
+
+            <div class="formGroup">
+              <label>${esc(t.start)}</label>
+              <input type="date" name="employment_start">
+            </div>
+
+            <div class="formGroup">
+              <label>${esc(t.end)}</label>
+              <input type="date" name="employment_end">
+            </div>
+
+            <div class="formGroup full">
+              <label>${esc(t.order)}</label>
+              <input name="order_info">
+            </div>
+
+            <div class="formGroup full">
+              <label>${esc(t.facts)}</label>
+              <textarea name="facts" required placeholder="${esc(t.factsPh)}"></textarea>
+            </div>
+
+            <div class="formGroup full">
+              <label>${esc(t.evidence)}</label>
+              <textarea name="evidence" placeholder="${esc(t.evidencePh)}"></textarea>
+            </div>
+
+            <div class="formGroup full">
+              <label>${esc(t.goal)}</label>
+              <select name="result_type" required>
+                <option value="conclusion">${esc(t.conclusion)}</option>
+                <option value="claim">${esc(t.claim)}</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="formActions">
+            <button class="btn btnPrimary" type="submit">§ ${esc(t.submit)}</button>
+          </div>
+        </form>
+      </div>
+    `,
+    t.title,
+    t.description
+  );
+}
+
+
+async function employmentResultPage(lang, form = {}) {
+
+  lang = getLang(lang);
+
+  const wantsClaim = String(form.result_type || "") === "claim";
+
+  const labels = {
+    uz: {
+      title: wantsClaim ? "Mehnat nizosi bo‘yicha da’vo arizasi loyihasi" : "Mehnat nizosi bo‘yicha huquqiy xulosa",
+      description: "Siz kiritgan ma’lumotlar asosida tayyorlangan dastlabki natija.",
+      back: "Ma’lumotlarni o‘zgartirish",
+      instructionConclusion: `O‘zbekiston mehnat qonunchiligi bo‘yicha professional huquqiy xulosa tayyorlang.
+Faktlarni alohida, huquqiy masalalarni alohida ko‘rsating.
+Amaldagi Mehnat kodeksiga tayangan holda huquqiy imkoniyatlar va keyingi qadamlarni tushuntiring.
+Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang va rasmiy LexUZ matnini tekshirish zarurligini ayting.
+Yetishmayotgan faktlarni taxmin qilmang.`,
+      instructionClaim: `O‘zbekiston mehnat qonunchiligi bo‘yicha sudga taqdim etish uchun dastlabki da’vo arizasi loyihasini tayyorlang.
+Rasmiy uslubdan foydalaning.
+Sud, taraflar yoki boshqa rekvizitlar yetishmasa [TO‘LDIRILADI] deb belgilang.
+Faktlarni o‘ylab topmang.
+Talablar, ish holatlari, huquqiy asos va ilovalar bo‘limlarini ajrating.
+Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang va amaldagi LexUZ matnini tekshirish kerakligini ko‘rsating.`
+    },
+    ru: {
+      title: wantsClaim ? "Проект иска по трудовому спору" : "Правовое заключение по трудовому спору",
+      description: "Предварительный результат на основе введённых данных.",
+      back: "Изменить данные",
+      instructionConclusion: `Подготовьте профессиональное правовое заключение по трудовому законодательству Узбекистана. Отделите факты от правовых вопросов, объясните возможные правовые варианты и дальнейшие шаги. Не придумывайте номера статей и отсутствующие факты; при необходимости укажите на необходимость проверки актуального текста на LexUZ.`,
+      instructionClaim: `Подготовьте первоначальный проект искового заявления по трудовому спору в Узбекистане. Используйте официальный стиль. Недостающие реквизиты обозначьте [ЗАПОЛНИТЬ]. Не придумывайте факты или статьи. Отдельно укажите обстоятельства, требования, правовое основание и приложения.`
+    },
+    en: {
+      title: wantsClaim ? "Employment dispute claim draft" : "Employment-law conclusion",
+      description: "Preliminary result based on the information entered.",
+      back: "Change information",
+      instructionConclusion: `Prepare a professional legal conclusion under Uzbekistan employment law. Separate facts from legal issues, explain possible legal options and next steps. Do not invent statutory article numbers or missing facts; where needed, state that the current LexUZ text should be verified.`,
+      instructionClaim: `Prepare an initial court claim draft for an employment dispute in Uzbekistan. Use formal style. Mark missing filing details as [TO BE COMPLETED]. Do not invent facts or statutory provisions. Separate facts, requests, legal basis and attachments.`
+    }
+  }[lang];
+
+  const context = `
+ISSUE TYPE: ${String(form.issue_type || "")}
+EMPLOYER: ${String(form.employer || "")}
+POSITION: ${String(form.position || "")}
+EMPLOYMENT START: ${String(form.employment_start || "")}
+EMPLOYMENT END: ${String(form.employment_end || "")}
+ORDER / CONTRACT INFO: ${String(form.order_info || "")}
+FACTS: ${String(form.facts || "")}
+EVIDENCE: ${String(form.evidence || "")}
+REQUESTED OUTPUT: ${wantsClaim ? "CLAIM DRAFT" : "LEGAL CONCLUSION"}
+  `.trim();
+
+  let answer = "";
+
+  try {
+    answer = await callAI(
+      wantsClaim ? labels.instructionClaim : labels.instructionConclusion,
+      lang,
+      context
+    );
+  } catch (error) {
+    console.error("EMPLOYMENT AI ERROR:", error);
+    answer =
+      lang === "uz"
+        ? "Mehnat huquqi bo‘yicha natijani yaratishda xatolik yuz berdi. OPENROUTER_API_KEY sozlamasini tekshiring."
+        : lang === "ru"
+        ? "Не удалось сформировать результат. Проверьте OPENROUTER_API_KEY."
+        : "The result could not be generated. Check OPENROUTER_API_KEY.";
+  }
+
+  return appLayout(
+    lang,
+    "employment",
+    `
+      <div class="resultBox">
+        <div class="resultLabel">HUQUQIY AI • EMPLOYMENT</div>
+        ${esc(answer)}
+      </div>
+
+      <div class="formActions">
+        <a class="btn btnOutline" href="/employment${q(lang)}">← ${esc(labels.back)}</a>
+        ${wantsClaim ? `<a class="btn btnPrimary" href="/documents${q(lang)}">▤ ${esc(tr(lang, "documents"))}</a>` : ""}
+      </div>
+    `,
+    labels.title,
+    labels.description
+  );
+}
+
+
 // ======================================================
 // CALCULATORS PAGE
 // ======================================================
@@ -8037,396 +8535,202 @@ function calculatorsPage(lang) {
 
   lang = getLang(lang);
 
-
   const t = {
-
     uz: {
-      title:
-        "Huquqiy hisob-kitoblar",
-
-      description:
-        "Dastlabki hisob-kitob va vaziyatni tushunishga yordam beruvchi vositalar.",
-
-      income:
-        "Daromad bo‘yicha hisob",
-
-      incomeText:
-        "Oylik daromadning foiz yoki ulush bo‘yicha taxminiy qiymatini hisoblang.",
-
-      monthly:
-        "Oylik daromad",
-
-      percent:
-        "Foiz",
-
-      calculate:
-        "Hisoblash",
-
-      result:
-        "Taxminiy natija",
-
-      property:
-        "Mol-mulk ulushi",
-
-      propertyText:
-        "Mol-mulk qiymatidan matematik ulushni hisoblash uchun oddiy vosita.",
-
-      value:
-        "Mol-mulk qiymati",
-
-      share:
-        "Ulush (%)",
-
-      warning:
-        "Bu kalkulyatorlar faqat matematik hisob-kitob uchun. Ular sud qarori yoki qonun bo‘yicha aniq majburiyatni oldindan belgilamaydi."
+      title: "Aliment va huquqiy hisob-kitoblar",
+      description: "Farzandlar soni va oylik daromad asosida alimentning dastlabki hisobini ko‘ring.",
+      aliment: "Aliment hisoblash",
+      alimentText: "Savollarga javob bering. Hisob O‘zbekiston Respublikasi Oila kodeksining 99-moddasidagi umumiy ulushlar asosida ko‘rsatiladi.",
+      children: "Voyaga yetmagan farzandlar soni",
+      income: "Aliment to‘lovchining oylik ish haqi va (yoki) boshqa daromadi",
+      incomeStatus: "Daromad holati",
+      official: "Rasmiy va barqaror daromad",
+      variable: "O‘zgaruvchan yoki to‘liq tasdiqlanmagan daromad",
+      agreement: "Aliment bo‘yicha kelishuv mavjudmi?",
+      no: "Yo‘q",
+      yes: "Ha",
+      calculate: "Hisoblash",
+      result: "Dastlabki hisob",
+      legal: "Huquqiy asos",
+      legalText: "Oila kodeksi 99-moddasi: kelishuv bo‘lmasa, odatda bir bola uchun daromadning 1/4 qismi, ikki bola uchun 1/3 qismi, uch va undan ortiq bola uchun 1/2 qismi undiriladi. Sud taraflarning moddiy yoki oilaviy ahvoli va boshqa e’tiborga loyiq holatlarni hisobga olib miqdorni kamaytirishi yoki ko‘paytirishi mumkin.",
+      minText: "Shuningdek, har bir bola uchun qonunda belgilangan eng kam miqdor talabi mavjud. Aniq yakuniy miqdor uchun amaldagi MHEKM va ish holatini tekshirish kerak.",
+      property: "Mol-mulk ulushi",
+      propertyText: "Mol-mulk qiymatidan matematik ulushni hisoblash uchun yordamchi vosita.",
+      value: "Mol-mulk qiymati",
+      share: "Ulush (%)",
+      warning: "Natija dastlabki ma’lumot uchun. Alimentning yakuniy miqdori sud hujjati, notarial kelishuv va ishning aniq holatlariga bog‘liq."
     },
-
-
     ru: {
-      title:
-        "Юридические расчёты",
-
-      description:
-        "Инструменты для предварительных расчётов и понимания ситуации.",
-
-      income:
-        "Расчёт от дохода",
-
-      incomeText:
-        "Рассчитайте примерное значение в процентах от ежемесячного дохода.",
-
-      monthly:
-        "Ежемесячный доход",
-
-      percent:
-        "Процент",
-
-      calculate:
-        "Рассчитать",
-
-      result:
-        "Примерный результат",
-
-      property:
-        "Доля имущества",
-
-      propertyText:
-        "Простой математический расчёт доли от стоимости имущества.",
-
-      value:
-        "Стоимость имущества",
-
-      share:
-        "Доля (%)",
-
-      warning:
-        "Калькуляторы выполняют только математический расчёт и не определяют заранее решение суда или точный размер юридического обязательства."
+      title: "Алименты и юридические расчёты",
+      description: "Получите предварительный расчёт алиментов по количеству детей и ежемесячному доходу.",
+      aliment: "Расчёт алиментов",
+      alimentText: "Ответьте на вопросы. Расчёт основан на общих долях, предусмотренных статьёй 99 Семейного кодекса Республики Узбекистан.",
+      children: "Количество несовершеннолетних детей",
+      income: "Ежемесячная заработная плата и (или) иной доход плательщика",
+      incomeStatus: "Характер дохода",
+      official: "Официальный и стабильный доход",
+      variable: "Переменный или не полностью подтверждённый доход",
+      agreement: "Есть соглашение об алиментах?",
+      no: "Нет",
+      yes: "Да",
+      calculate: "Рассчитать",
+      result: "Предварительный расчёт",
+      legal: "Правовое основание",
+      legalText: "Статья 99 Семейного кодекса: при отсутствии соглашения обычно взыскивается 1/4 дохода на одного ребёнка, 1/3 — на двух, 1/2 — на трёх и более детей. Суд может уменьшить или увеличить размер с учётом материального и семейного положения и иных заслуживающих внимания обстоятельств.",
+      minText: "Закон также предусматривает минимальный размер на каждого ребёнка. Для точного итогового расчёта необходимо проверить действующий МРОТ/МРЗП и обстоятельства дела.",
+      property: "Доля имущества",
+      propertyText: "Вспомогательный математический расчёт доли от стоимости имущества.",
+      value: "Стоимость имущества",
+      share: "Доля (%)",
+      warning: "Результат носит предварительный характер. Окончательный размер зависит от судебного акта, нотариального соглашения и конкретных обстоятельств."
     },
-
-
     en: {
-      title:
-        "Legal calculations",
-
-      description:
-        "Tools for preliminary mathematical calculations and understanding a situation.",
-
-      income:
-        "Income calculation",
-
-      incomeText:
-        "Calculate an approximate percentage of monthly income.",
-
-      monthly:
-        "Monthly income",
-
-      percent:
-        "Percentage",
-
-      calculate:
-        "Calculate",
-
-      result:
-        "Approximate result",
-
-      property:
-        "Property share",
-
-      propertyText:
-        "A simple mathematical tool for calculating a percentage share of property value.",
-
-      value:
-        "Property value",
-
-      share:
-        "Share (%)",
-
-      warning:
-        "These calculators perform mathematical calculations only. They do not predict a court decision or establish a legal obligation."
+      title: "Child support and legal calculations",
+      description: "See a preliminary child-support calculation based on the number of children and monthly income.",
+      aliment: "Child-support calculation",
+      alimentText: "Answer the questions. The calculation uses the general shares in Article 99 of the Family Code of Uzbekistan.",
+      children: "Number of minor children",
+      income: "Payer's monthly salary and/or other income",
+      incomeStatus: "Income status",
+      official: "Official and stable income",
+      variable: "Variable or not fully documented income",
+      agreement: "Is there a child-support agreement?",
+      no: "No",
+      yes: "Yes",
+      calculate: "Calculate",
+      result: "Preliminary calculation",
+      legal: "Legal basis",
+      legalText: "Family Code Article 99: where there is no agreement, the general shares are 1/4 of income for one child, 1/3 for two children, and 1/2 for three or more children. A court may decrease or increase the amount considering the parties' financial or family circumstances and other relevant factors.",
+      minText: "The law also provides a minimum amount per child. The current statutory minimum and case facts should be checked for a final figure.",
+      property: "Property share",
+      propertyText: "A supporting mathematical tool for calculating a percentage share of property value.",
+      value: "Property value",
+      share: "Share (%)",
+      warning: "This is a preliminary result. The final amount depends on the court order, notarized agreement and specific circumstances."
     }
-
   }[lang];
 
-
   return appLayout(
-
     lang,
-
     "calculators",
-
     `
-
       <div class="notice noticeGold">
-
-        <span class="noticeIcon">
-          !
-        </span>
-
-        <span>
-          ${t.warning}
-        </span>
-
+        <span class="noticeIcon">!</span>
+        <span>${esc(t.warning)}</span>
       </div>
-
 
       <div class="calculatorGrid">
 
-
         <section class="calcCard">
-
-          <h3>
-            ${t.income}
-          </h3>
-
-          <p>
-            ${t.incomeText}
-          </p>
-
+          <h3>${esc(t.aliment)}</h3>
+          <p>${esc(t.alimentText)}</p>
 
           <div class="formGroup">
-
-            <label>
-              ${t.monthly}
-            </label>
-
-            <input
-              id="incomeValue"
-              type="number"
-              min="0"
-              step="any"
-              placeholder="0"
-            >
-
+            <label>${esc(t.children)}</label>
+            <input id="childrenCount" type="number" min="1" step="1" value="1">
           </div>
 
-
-          <div
-            class="formGroup"
-            style="margin-top:12px;"
-          >
-
-            <label>
-              ${t.percent}
-            </label>
-
-            <input
-              id="incomePercent"
-              type="number"
-              min="0"
-              max="100"
-              step="any"
-              placeholder="25"
-            >
-
+          <div class="formGroup" style="margin-top:12px;">
+            <label>${esc(t.income)}</label>
+            <input id="alimentIncome" type="number" min="0" step="any" placeholder="0">
           </div>
 
+          <div class="formGroup" style="margin-top:12px;">
+            <label>${esc(t.incomeStatus)}</label>
+            <select id="incomeStatus">
+              <option value="official">${esc(t.official)}</option>
+              <option value="variable">${esc(t.variable)}</option>
+            </select>
+          </div>
 
-          <button
-            type="button"
-            class="btn btnPrimary"
-            style="margin-top:15px;"
-            onclick="calculateIncome()"
-          >
-            ∑ ${t.calculate}
+          <div class="formGroup" style="margin-top:12px;">
+            <label>${esc(t.agreement)}</label>
+            <select id="alimentAgreement">
+              <option value="no">${esc(t.no)}</option>
+              <option value="yes">${esc(t.yes)}</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn btnPrimary" style="margin-top:15px;" onclick="calculateAliment()">
+            ∑ ${esc(t.calculate)}
           </button>
 
+          <div id="alimentResult" class="calcResult">${esc(t.result)}: —</div>
 
-          <div
-            id="incomeResult"
-            class="calcResult"
-          >
-            ${t.result}: —
+          <div class="notice noticeGold" style="margin-top:16px;">
+            <span class="noticeIcon">§</span>
+            <span><strong>${esc(t.legal)}.</strong> ${esc(t.legalText)} ${esc(t.minText)}</span>
           </div>
-
         </section>
-
-
 
         <section class="calcCard">
-
-          <h3>
-            ${t.property}
-          </h3>
-
-          <p>
-            ${t.propertyText}
-          </p>
-
+          <h3>${esc(t.property)}</h3>
+          <p>${esc(t.propertyText)}</p>
 
           <div class="formGroup">
-
-            <label>
-              ${t.value}
-            </label>
-
-            <input
-              id="propertyValue"
-              type="number"
-              min="0"
-              step="any"
-              placeholder="0"
-            >
-
+            <label>${esc(t.value)}</label>
+            <input id="propertyValue" type="number" min="0" step="any" placeholder="0">
           </div>
 
-
-          <div
-            class="formGroup"
-            style="margin-top:12px;"
-          >
-
-            <label>
-              ${t.share}
-            </label>
-
-            <input
-              id="propertyPercent"
-              type="number"
-              min="0"
-              max="100"
-              step="any"
-              placeholder="50"
-            >
-
+          <div class="formGroup" style="margin-top:12px;">
+            <label>${esc(t.share)}</label>
+            <input id="propertyPercent" type="number" min="0" max="100" step="any" placeholder="50">
           </div>
 
-
-          <button
-            type="button"
-            class="btn btnPrimary"
-            style="margin-top:15px;"
-            onclick="calculateProperty()"
-          >
-            ∑ ${t.calculate}
+          <button type="button" class="btn btnPrimary" style="margin-top:15px;" onclick="calculateProperty()">
+            ∑ ${esc(t.calculate)}
           </button>
 
-
-          <div
-            id="propertyResult"
-            class="calcResult"
-          >
-            ${t.result}: —
-          </div>
-
+          <div id="propertyResult" class="calcResult">${esc(t.result)}: —</div>
         </section>
-
 
       </div>
 
-
       <script>
-
         function formatNumber(value){
-
-          if(
-            !Number.isFinite(value)
-          ){
-            return "0";
-          }
-
+          if(!Number.isFinite(value)){ return "0"; }
           return new Intl.NumberFormat(
             "${lang === "ru" ? "ru-RU" : lang === "en" ? "en-US" : "uz-UZ"}",
-            {
-              maximumFractionDigits:2
-            }
+            { maximumFractionDigits:2 }
           ).format(value);
-
         }
 
+        function calculateAliment(){
+          const children = Math.max(1, Number(document.getElementById("childrenCount").value || 1));
+          const income = Math.max(0, Number(document.getElementById("alimentIncome").value || 0));
+          const status = document.getElementById("incomeStatus").value;
+          const agreement = document.getElementById("alimentAgreement").value;
 
-        function calculateIncome(){
+          let share = children === 1 ? 0.25 : children === 2 ? (1/3) : 0.50;
+          const result = income * share;
+          const percent = share * 100;
 
-          const income =
-            Number(
-              document.getElementById(
-                "incomeValue"
-              ).value
-            );
+          let extra = "";
+          if(status === "variable"){
+            extra += " ${lang === "uz" ? "Daromad o‘zgaruvchan bo‘lsa, aniq undirish tartibi ish holatiga qarab alohida baholanishi kerak." : lang === "ru" ? "При переменном доходе порядок взыскания требует отдельной оценки обстоятельств дела." : "Where income is variable, the method of recovery requires separate assessment of the case."}";
+          }
+          if(agreement === "yes"){
+            extra += " ${lang === "uz" ? "Aliment bo‘yicha mavjud kelishuv shartlari ham tekshirilishi kerak." : lang === "ru" ? "Также необходимо проверить условия существующего соглашения об алиментах." : "The terms of any existing child-support agreement should also be checked."}";
+          }
 
-          const percent =
-            Number(
-              document.getElementById(
-                "incomePercent"
-              ).value
-            );
-
-
-          const result =
-            income *
-            percent /
-            100;
-
-
-          document.getElementById(
-            "incomeResult"
-          ).textContent =
-            "${t.result}: " +
-            formatNumber(result);
-
+          document.getElementById("alimentResult").textContent =
+            "${t.result}: " + formatNumber(result) +
+            " (${lang === "uz" ? "daromadning" : lang === "ru" ? "от дохода" : "of income"} " +
+            formatNumber(percent) + "%)." + extra;
         }
-
 
         function calculateProperty(){
-
-          const value =
-            Number(
-              document.getElementById(
-                "propertyValue"
-              ).value
-            );
-
-          const percent =
-            Number(
-              document.getElementById(
-                "propertyPercent"
-              ).value
-            );
-
-
-          const result =
-            value *
-            percent /
-            100;
-
-
-          document.getElementById(
-            "propertyResult"
-          ).textContent =
-            "${t.result}: " +
-            formatNumber(result);
-
+          const value = Number(document.getElementById("propertyValue").value);
+          const percent = Number(document.getElementById("propertyPercent").value);
+          const result = value * percent / 100;
+          document.getElementById("propertyResult").textContent =
+            "${t.result}: " + formatNumber(result);
         }
-
       </script>
-
     `,
-
     t.title,
-
     t.description
-
   );
-
 }
 
 
@@ -11562,6 +11866,45 @@ const server =
 
 
         // ------------------------------------------------
+        // EMPLOYMENT LAW
+        // ------------------------------------------------
+
+        if(
+          req.method === "GET" &&
+          pathname === "/employment"
+        ){
+
+          return sendHtml(
+            res,
+            employmentPage(lang)
+          );
+
+        }
+
+
+        if(
+          req.method === "POST" &&
+          pathname === "/employment-result"
+        ){
+
+          const form =
+            await readForm(req);
+
+          const html =
+            await employmentResultPage(
+              lang,
+              form
+            );
+
+          return sendHtml(
+            res,
+            html
+          );
+
+        }
+
+
+        // ------------------------------------------------
         // CALCULATORS
         // ------------------------------------------------
 
@@ -11807,3 +12150,4 @@ server.listen(
 // ======================================================
 // END OF HUQUQIY AI
 // ======================================================
+
