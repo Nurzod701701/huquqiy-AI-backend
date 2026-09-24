@@ -8415,172 +8415,410 @@ function familyPage(lang) {
 
 
 
+
+
+const BUSINESS_KNOWLEDGE_TOPICS = [
+  { title: 'Shartnomaviy majburiyatlar', description: 'Shartnoma tuzilishi, bajarilishi, o‘zgartirilishi va bekor qilinishi.' },
+  { title: 'Qarzdorlikni undirish', description: 'Qarz hujjatlari, hisob-kitob, talabnoma, dalillar va da’vo.' },
+  { title: 'Yetkazib berish', description: 'Tovar, miqdor, sifat, muddat, qabul qilish va javobgarlik.' },
+  { title: 'Xizmatlar', description: 'Xizmat hajmi, natija, akt, to‘lov va kamchiliklar.' },
+  { title: 'Pudrat', description: 'Ish hajmi, smeta, topshirish-qabul qilish va nuqsonlar.' },
+  { title: 'Ijara', description: 'Obyekt, muddat, ijara haqi, qaytarish va zarar.' },
+  { title: 'Korporativ boshqaruv', description: 'Ta’sischilar, yig‘ilish, direktor vakolati va qarorlar.' },
+  { title: 'Ulushlar', description: 'Ulush o‘tishi, sotilishi, rozilik va qayta ro‘yxatdan o‘tish.' },
+  { title: 'Davlat ro‘yxati', description: 'Yangi biznes va o‘zgarishlarni ro‘yxatdan o‘tkazish.' },
+  { title: 'Litsenziya', description: 'Faoliyat uchun litsenziya/ruxsat talablari.' },
+  { title: 'Soliq', description: 'Soliq majburiyatlari, tekshiruv va e’tirozlar.' },
+  { title: 'Bojxona', description: 'Import/eksport va bojxona rasmiylashtiruvi.' },
+  { title: 'Davlat xaridlari', description: 'Tender, shartlar, shikoyat va shartnoma.' },
+  { title: 'Raqobat', description: 'Raqobat va monopoliyaga qarshi cheklovlar.' },
+  { title: 'Intellektual mulk', description: 'Tovar belgisi, mualliflik va litsenziyalash.' },
+  { title: 'Bank va to‘lovlar', description: 'Hisobvaraq, to‘lov topshiriqlari va bank munosabatlari.' },
+  { title: 'Sug‘urta', description: 'Sug‘urta hodisasi, to‘lov va nizolar.' },
+  { title: 'To‘lovga qobiliyatsizlik', description: 'Kreditor, qarzdor va to‘lovga qobiliyatsizlik tartibi.' },
+  { title: 'Hakamlik', description: 'Hakamlik kelishuvi va muqobil nizo hal qilish.' },
+  { title: 'Xalqaro arbitraj', description: 'Xalqaro tijorat nizolari va arbitraj bandlari.' },
+  { title: 'Tashqi savdo', description: 'Eksport/import kontraktlari va valyuta/to‘lov shartlari.' },
+  { title: 'Ijro', description: 'Sud hujjati va ijro jarayoni.' },
+  { title: 'Tadbirkor huquqlarini himoya qilish', description: 'Palata, Biznes-ombudsman va davlat organlariga murojaat.' },
+  { title: 'Due diligence', description: 'Kontragent va bitim xavfini huquqiy tekshirish.' },
+];
+
+const BUSINESS_GUIDED_CHECKLISTS = {
+  debt: [
+    'Shartnoma yoki qarz asosini aniqlash',
+    'Majburiyat bajarilish muddatini aniqlash',
+    'Hisob-kitob va qarz summasini tekshirish',
+    'Akt, hisob-faktura va to‘lov hujjatlarini yig‘ish',
+    'Yozishmalar va qarzni tan olish holatini tekshirish',
+    'Sudgacha talab tartibini tekshirish',
+    'Da’vo talabi va ilovalarni shakllantirish',
+  ],
+  contract: [
+    'Tomonlar va vakolatni tekshirish',
+    'Shartnoma predmeti',
+    'Narx va to‘lov',
+    'Muddat va ijro',
+    'Qabul qilish tartibi',
+    'Javobgarlik',
+    'Bekor qilish',
+    'Nizo hal qilish',
+    'Rekvizit va imzo',
+  ],
+  corporate: [
+    'Ta’sis hujjatlari',
+    'Ta’sischilar tarkibi',
+    'Ulushlar',
+    'Ustav kapitali',
+    'Yig‘ilish vakolati',
+    'Kvorum/ovoz',
+    'Direktor vakolati',
+    'Qarorni rasmiylashtirish',
+    'Davlat ro‘yxati zarurati',
+  ],
+  court: [
+    'Sudga taalluqlilik',
+    'Hududiy sudlov',
+    'Sudgacha tartib',
+    'Da’vo muddati/deadline tekshiruvi',
+    'Da’vo bahosi',
+    'Davlat boji tekshiruvi',
+    'Dalillar',
+    'Talablar',
+    'Ilovalar',
+    'Vakolat',
+    'Elektron topshirish',
+  ],
+  contract_review: [
+    'Predmet',
+    'Muhim shartlar',
+    'To‘lov',
+    'Ijro',
+    'Qabul qilish',
+    'Kafolat',
+    'Javobgarlik',
+    'Neustoyka',
+    'Zarar',
+    'Force majeure',
+    'Maxfiylik',
+    'IP',
+    'Bekor qilish',
+    'Nizo hal qilish',
+    'Bildirishnomalar',
+    'Vakolat',
+    'Rekvizitlar',
+  ],
+};
+const BUSINESS_DISPUTE_TYPES = [
+  ["debt","Qarzdorlikni undirish","Взыскание задолженности","Debt recovery"],
+  ["supply","Tovar yetkazib berish nizosi","Спор по поставке","Supply dispute"],
+  ["services","Xizmat ko‘rsatish nizosi","Спор по услугам","Services dispute"],
+  ["works","Pudrat / bajarilgan ishlar nizosi","Подряд / выполненные работы","Works / construction dispute"],
+  ["lease","Ijara nizosi","Арендный спор","Lease dispute"],
+  ["sale","Oldi-sotdi nizosi","Спор купли-продажи","Sale dispute"],
+  ["loan","Qarz / kredit majburiyati","Заем / кредитное обязательство","Loan / credit obligation"],
+  ["penalty","Neustoyka, penya va zarar","Неустойка, пеня и убытки","Penalty and damages"],
+  ["termination","Shartnomani bekor qilish / o‘zgartirish","Расторжение / изменение договора","Contract termination / amendment"],
+  ["invalid_transaction","Bitimni haqiqiy emas deb topish","Недействительность сделки","Invalid transaction"],
+  ["corporate","Korporativ / ta’sischilar nizosi","Корпоративный спор","Corporate / shareholder dispute"],
+  ["share","Ulush / hissa bilan bog‘liq nizo","Спор по доле","Share / participation interest dispute"],
+  ["director","Direktor / boshqaruv organi nizosi","Спор с директором / органом управления","Director / governance dispute"],
+  ["dividend","Dividend / foydani taqsimlash nizosi","Дивиденды / распределение прибыли","Dividend / profit distribution dispute"],
+  ["registration","Davlat ro‘yxatidan o‘tkazish masalasi","Государственная регистрация","State registration issue"],
+  ["license","Litsenziya / ruxsatnoma","Лицензия / разрешение","License / permit"],
+  ["tax","Soliq masalasi","Налоговый вопрос","Tax issue"],
+  ["customs","Bojxona masalasi","Таможенный вопрос","Customs issue"],
+  ["inspection","Tekshiruv / davlat organi harakati","Проверка / действие госоргана","Inspection / public authority action"],
+  ["procurement","Davlat xaridlari","Государственные закупки","Public procurement"],
+  ["competition","Raqobat / monopoliyaga qarshi masala","Конкуренция / антимонопольный вопрос","Competition / antitrust"],
+  ["ip","Tovar belgisi / intellektual mulk","Товарный знак / интеллектуальная собственность","Trademark / intellectual property"],
+  ["bank","Bank / hisobvaraq / to‘lov nizosi","Банк / счет / платежный спор","Bank / account / payment dispute"],
+  ["insurance","Sug‘urta nizosi","Страховой спор","Insurance dispute"],
+  ["insolvency","To‘lovga qobiliyatsizlik","Неплатежеспособность","Insolvency"],
+  ["foreign_trade","Tashqi savdo / xalqaro shartnoma","Внешняя торговля / международный договор","Foreign trade / international contract"],
+  ["arbitration","Hakamlik / arbitraj","Третейский суд / арбитраж","Arbitration"],
+  ["enforcement","Sud hujjatini ijro etish","Исполнение судебного акта","Enforcement"],
+  ["other","Boshqa biznes-huquqiy masala","Другой бизнес-правовой вопрос","Other business-law issue"]
+];
+
+const BUSINESS_DOCUMENT_TYPES = [
+  ["claim","Iqtisodiy sudga da’vo arizasi","Иск в экономический суд","Economic court claim"],
+  ["demand","Sudgacha talabnoma / pretenziya","Досудебная претензия","Pre-action demand"],
+  ["response","Da’voga fikr / e’tiroz","Отзыв / возражение на иск","Response / objection to claim"],
+  ["counterclaim","Qarshi da’vo arizasi","Встречный иск","Counterclaim"],
+  ["appeal","Apellyatsiya shikoyati","Апелляционная жалоба","Appeal"],
+  ["cassation","Kassatsiya shikoyati","Кассационная жалоба","Cassation complaint"],
+  ["motion","Sudga iltimosnoma","Ходатайство в суд","Court motion"],
+  ["evidence_motion","Dalil talab qilib olish haqida iltimosnoma","Ходатайство об истребовании доказательств","Motion to obtain evidence"],
+  ["security_motion","Da’voni ta’minlash haqida ariza","Заявление об обеспечении иска","Interim relief application"],
+  ["enforcement_application","Ijro bo‘yicha ariza","Заявление по исполнению","Enforcement application"],
+  ["chamber_appeal","Savdo-sanoat palatasiga murojaat","Обращение в ТПП","Chamber of Commerce appeal"],
+  ["ombudsman_appeal","Biznes-ombudsmanga murojaat","Обращение к Бизнес-омбудсману","Business Ombudsman appeal"],
+  ["authority_complaint","Davlat organiga shikoyat","Жалоба в государственный орган","Complaint to public authority"],
+  ["tax_objection","Soliq masalasi bo‘yicha e’tiroz / murojaat","Возражение / обращение по налогу","Tax objection / appeal"],
+  ["license_application","Litsenziya/ruxsatnoma bo‘yicha murojaat","Обращение по лицензии/разрешению","License / permit application"],
+  ["notice","Rasmiy bildirishnoma","Официальное уведомление","Formal notice"],
+  ["guarantee","Kafolat xati","Гарантийное письмо","Guarantee letter"],
+  ["reconciliation","Solishtirma / qarzdorlikni tan olish hujjati","Акт сверки / признание долга","Reconciliation / debt acknowledgement"],
+  ["protocol","Bayonnoma / qaror","Протокол / решение","Minutes / resolution"],
+  ["power_of_attorney","Ishonchnoma","Доверенность","Power of attorney"],
+  ["custom","Boshqa hujjat","Другой документ","Other document"]
+];
+
+const BUSINESS_CONTRACT_TYPES = [
+  ["supply","Tovar yetkazib berish shartnomasi","Договор поставки","Supply agreement"],
+  ["sale","Oldi-sotdi shartnomasi","Договор купли-продажи","Sale agreement"],
+  ["services","Xizmat ko‘rsatish shartnomasi","Договор оказания услуг","Services agreement"],
+  ["works","Pudrat shartnomasi","Договор подряда","Works contract"],
+  ["construction","Qurilish pudrati","Договор строительного подряда","Construction contract"],
+  ["lease","Ijara shartnomasi","Договор аренды","Lease agreement"],
+  ["loan","Qarz shartnomasi","Договор займа","Loan agreement"],
+  ["agency","Agentlik shartnomasi","Агентский договор","Agency agreement"],
+  ["commission","Komissiya shartnomasi","Договор комиссии","Commission agreement"],
+  ["transport","Tashish / transport shartnomasi","Договор перевозки","Transportation agreement"],
+  ["storage","Saqlash shartnomasi","Договор хранения","Storage agreement"],
+  ["license_ip","Litsenziya / IP foydalanish shartnomasi","Лицензионный договор / ИС","IP license agreement"],
+  ["nda","Maxfiylik (NDA) kelishuvi","Соглашение о конфиденциальности (NDA)","NDA"],
+  ["cooperation","Hamkorlik shartnomasi","Договор о сотрудничестве","Cooperation agreement"],
+  ["investment","Investitsiya kelishuvi","Инвестиционное соглашение","Investment agreement"],
+  ["founders","Ta’sischilar kelishuvi","Соглашение учредителей","Founders agreement"],
+  ["share_transfer","Ulushni o‘tkazish / sotish hujjati","Передача / продажа доли","Share transfer agreement"],
+  ["settlement","Kelishuv bitimi","Мировое соглашение","Settlement agreement"],
+  ["debt_restructuring","Qarzni restrukturizatsiya qilish kelishuvi","Соглашение о реструктуризации долга","Debt restructuring agreement"],
+  ["foreign_trade","Tashqi savdo shartnomasi","Внешнеторговый контракт","Foreign trade contract"],
+  ["custom","Boshqa turdagi shartnoma","Другой договор","Other contract"]
+];
+
+const BUSINESS_CORPORATE_DOCS = [
+  ["charter","Ustav loyihasi","Проект устава","Charter draft"],
+  ["founder_decision","Yagona ta’sischi qarori","Решение единственного учредителя","Sole founder decision"],
+  ["meeting_minutes","Umumiy yig‘ilish bayonnomasi","Протокол общего собрания","General meeting minutes"],
+  ["director_appointment","Direktor tayinlash qarori","Решение о назначении директора","Director appointment resolution"],
+  ["share_change","Ulush/hissa o‘zgarishi bo‘yicha hujjat","Документ об изменении доли","Share change document"],
+  ["capital_change","Ustav kapitalini o‘zgartirish qarori","Решение об изменении уставного капитала","Capital change resolution"],
+  ["address_change","Yuridik manzilni o‘zgartirish qarori","Решение об изменении адреса","Registered address change"],
+  ["activity_change","Faoliyat turini o‘zgartirish qarori","Решение об изменении вида деятельности","Activity change resolution"],
+  ["reorganization","Qayta tashkil etish hujjati","Документ о реорганизации","Reorganization document"],
+  ["liquidation","Tugatish bo‘yicha qaror","Решение о ликвидации","Liquidation resolution"],
+  ["internal_policy","Ichki nizom / siyosat","Внутреннее положение / политика","Internal policy"],
+  ["custom","Boshqa korporativ hujjat","Другой корпоративный документ","Other corporate document"]
+];
+
+function businessOptions(list, lang){
+  const ix = lang === "ru" ? 2 : lang === "en" ? 3 : 1;
+  return list.map(x => `<option value="${esc(x[0])}">${esc(x[ix])}</option>`).join("");
+}
+
+function businessPanel(title, text, href, icon="§"){
+  return `<a class="serviceCard" href="${esc(href)}">
+    <div class="serviceIcon">${esc(icon)}</div>
+    <h3>${esc(title)}</h3>
+    <p>${esc(text)}</p>
+    <span class="serviceLink">Ochish →</span>
+  </a>`;
+}
+
 function businessPage(lang="uz"){
-  const L = {
-    uz:{
-      title:"Biznes huquqi",
-      sub:"Tadbirkor va kompaniyalar uchun AI biznes-yurist: nizolar, arizalar, talabnomalar, shartnomalar va rasmiy platformalar bitta markazda.",
-      ai:"AI BIZNES YURISTI",
-      issue:"Muammo turi",
-      facts:"Vaziyatni batafsil yozing",
-      counterparty:"Qarshi tomon / tashkilot",
-      contract:"Shartnoma yoki hujjat ma'lumotlari",
-      evidence:"Mavjud dalillar",
-      amount:"Nizo summasi (mavjud bo'lsa)",
-      goal:"Siz qanday natija xohlaysiz?",
-      output:"Natija turi",
-      analyze:"Huquqiy tahlil",
-      claim:"Ariza / da'vo / talabnoma loyihasi",
-      agreement:"Shartnoma loyihasi",
-      review:"Mavjud shartnomani tahlil qilish",
-      send:"AI biznes yuristiga yuborish",
-      docs:"HUJJATLAR VA SHARTNOMALAR",
-      docsSub:"Ro'yxatdagi hujjatni tanlang yoki kerakli hujjat/shartnomani erkin yozing. AI yetishmayotgan rekvizitlarni uydirmaydi.",
-      platforms:"TADBIRKOR UCHUN RASMIY PLATFORMALAR",
-      sources:"BIZNES QONUNCHILIGI VA O'QUV MANBALARI"
-    },
-    ru:{
-      title:"Бизнес-право",sub:"AI бизнес-юрист для предпринимателей и компаний: споры, заявления, претензии, договоры и официальные платформы в одном месте.",
-      ai:"AI БИЗНЕС-ЮРИСТ",issue:"Тип проблемы",facts:"Опишите ситуацию подробно",counterparty:"Контрагент / организация",contract:"Данные договора или документа",evidence:"Имеющиеся доказательства",amount:"Сумма спора",goal:"Какой результат вам нужен?",output:"Тип результата",analyze:"Правовой анализ",claim:"Проект заявления / иска / претензии",agreement:"Проект договора",review:"Анализ существующего договора",send:"Отправить AI бизнес-юристу",docs:"ДОКУМЕНТЫ И ДОГОВОРЫ",docsSub:"Выберите документ или свободно укажите нужный документ/договор.",platforms:"ОФИЦИАЛЬНЫЕ ПЛАТФОРМЫ ДЛЯ БИЗНЕСА",sources:"ЗАКОНОДАТЕЛЬСТВО И УЧЕБНЫЕ ИСТОЧНИКИ"
-    },
-    en:{
-      title:"Business law",sub:"AI business lawyer for entrepreneurs and companies: disputes, applications, claims, contracts and official platforms in one hub.",
-      ai:"AI BUSINESS LAWYER",issue:"Issue type",facts:"Describe the situation",counterparty:"Counterparty / organization",contract:"Contract or document details",evidence:"Available evidence",amount:"Dispute amount",goal:"Desired outcome",output:"Output type",analyze:"Legal analysis",claim:"Application / claim / demand draft",agreement:"Contract draft",review:"Review an existing contract",send:"Send to AI business lawyer",docs:"DOCUMENTS & CONTRACTS",docsSub:"Choose a document or freely describe any document/contract you need.",platforms:"OFFICIAL BUSINESS PLATFORMS",sources:"BUSINESS LAW & LEARNING SOURCES"
-    }
-  }[lang] || null;
-
-  const issueOptions = lang==="ru"
-    ? [["debt","Взыскание задолженности"],["contract","Договорный спор"],["supply","Поставка / услуги"],["lease","Аренда"],["corporate","Корпоративный спор / участники"],["registration","Регистрация / изменения бизнеса"],["license","Лицензия / разрешение"],["tax","Налоговый вопрос"],["inspection","Проверка / государственный орган"],["procurement","Госзакупки"],["ip","Интеллектуальная собственность"],["court","Экономический суд"],["other","Другая бизнес-проблема"]]
-    : lang==="en"
-    ? [["debt","Debt recovery"],["contract","Contract dispute"],["supply","Supply / services"],["lease","Lease"],["corporate","Corporate / shareholder dispute"],["registration","Business registration / changes"],["license","License / permit"],["tax","Tax issue"],["inspection","Inspection / public authority"],["procurement","Public procurement"],["ip","Intellectual property"],["court","Economic court"],["other","Other business issue"]]
-    : [["debt","Qarzdorlikni undirish"],["contract","Shartnoma nizosi"],["supply","Yetkazib berish / xizmat"],["lease","Ijara"],["corporate","Korporativ / ta'sischilar nizosi"],["registration","Biznesni ro'yxatdan o'tkazish / o'zgartirish"],["license","Litsenziya / ruxsatnoma"],["tax","Soliq masalasi"],["inspection","Tekshiruv / davlat organi"],["procurement","Davlat xaridlari"],["ip","Intellektual mulk"],["court","Iqtisodiy sud"],["other","Boshqa biznes muammosi"]];
-
-  const issueHtml = issueOptions.map(([v,t])=>`<option value="${esc(v)}">${esc(t)}</option>`).join("");
-
+  const t = (uz,ru,en) => lang==="ru" ? ru : lang==="en" ? en : uz;
   return appLayout(lang,"business",`
     <div class="appHeader">
-      <div class="resultLabel">${esc(L.ai)}</div>
-      <h1>${esc(L.title)}</h1>
-      <p>${esc(L.sub)}</p>
+      <div class="resultLabel">${t("BIZNES HUQUQI MARKAZI","ЦЕНТР БИЗНЕС-ПРАВА","BUSINESS LAW CENTER")}</div>
+      <h1>${t("AI Biznes yuristi","AI Бизнес-юрист","AI Business Lawyer")}</h1>
+      <p>${t(
+        "Tadbirkor va kompaniya uchun muammodan yechimgacha: huquqiy tahlil, sudgacha talabnoma, iqtisodiy sud da’vosi, shartnoma, korporativ hujjat, Savdo-sanoat palatasi va rasmiy davlat xizmatlari.",
+        "От проблемы до решения: правовой анализ, претензия, экономический суд, договоры, корпоративные документы, Торгово-промышленная палата и государственные сервисы.",
+        "From problem to solution: legal analysis, pre-action demands, economic court claims, contracts, corporate documents, Chamber services and official government services."
+      )}</p>
     </div>
 
-    <div class="surface surfacePad">
+    <div class="serviceGrid">
+      ${businessPanel(t("AI huquqiy tahlil","AI правовой анализ","AI legal analysis"),t("Biznes muammosini faktlar va dalillar asosida tahlil qilish.","Анализ бизнес-проблемы по фактам и доказательствам.","Analyze a business problem from facts and evidence."),"#business-analysis","AI")}
+      ${businessPanel(t("Da’vo va arizalar","Иски и заявления","Claims & applications"),t("Iqtisodiy sud, talabnoma, e’tiroz, shikoyat va boshqa hujjatlar.","Иски, претензии, отзывы, жалобы и другие документы.","Claims, demands, responses, appeals and other documents."),"#business-documents","D")}
+      ${businessPanel(t("Shartnomalar","Договоры","Contracts"),t("Biznes shartnomalarini tayyorlash va xavflarni tekshirish.","Подготовка договоров и проверка рисков.","Draft business contracts and review risks."),"#business-contracts","S")}
+      ${businessPanel(t("MChJ / korporativ hujjatlar","ООО / корпоративные документы","LLC / corporate documents"),t("Ustav, ta’sischi qarori, bayonnoma, direktor, ulush va boshqa hujjatlar.","Устав, решения, протоколы, директор, доли и другие документы.","Charter, resolutions, minutes, director, shares and other documents."),"#business-corporate","M")}
+      ${businessPanel(t("Palata va Biznes-ombudsman","ТПП и Бизнес-омбудсман","Chamber & Business Ombudsman"),t("Murojaat matnini tayyorlash va rasmiy platformaga o‘tish.","Подготовить обращение и перейти на официальный сервис.","Prepare an appeal and open the official service."),"#business-protection","P")}
+      ${businessPanel(t("Rasmiy biznes xizmatlari","Официальные бизнес-сервисы","Official business services"),t("Ro‘yxatdan o‘tish, kontragent, litsenziya, soliq, sud va qonunchilik.","Регистрация, контрагент, лицензии, налоги, суд и законодательство.","Registration, counterparties, licenses, tax, courts and legislation."),"#business-platforms","R")}
+    </div>
+
+    <div id="business-analysis" class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("1. AI BIZNES YURISTI","1. AI БИЗНЕС-ЮРИСТ","1. AI BUSINESS LAWYER")}</div>
+      <h2>${t("Biznes muammosini to‘liq tahlil qilish","Полный анализ бизнес-проблемы","Full business-law analysis")}</h2>
+      <p>${t("Nizo turini tanlang va faktlarni yozing. Tizim huquqiy masala, dalillar, ehtimoliy yo‘llar, sudgacha choralar va keyingi qadamlarni ajratib beradi.","Выберите тип спора и опишите факты.","Choose the dispute type and describe the facts.")}</p>
       <form method="POST" action="/business-result${q(lang)}">
+        <input type="hidden" name="mode" value="analysis">
         <div class="formGrid">
-          <div class="formGroup">
-            <label>${esc(L.issue)}</label>
-            <select name="issue" required>${issueHtml}</select>
-          </div>
-          <div class="formGroup">
-            <label>${esc(L.counterparty)}</label>
-            <input name="counterparty" placeholder="${lang==="uz"?"Masalan: ABC MChJ":lang==="ru"?"Например: ООО ABC":"Example: ABC LLC"}">
-          </div>
-          <div class="formGroup">
-            <label>${esc(L.amount)}</label>
-            <input name="amount" placeholder="${lang==="uz"?"Masalan: 150 000 000 so'm":lang==="ru"?"Например: 150 000 000 сум":"Example: UZS 150,000,000"}">
-          </div>
-          <div class="formGroup">
-            <label>${esc(L.contract)}</label>
-            <input name="contract" placeholder="${lang==="uz"?"Sana, raqam, turi":lang==="ru"?"Дата, номер, вид":"Date, number, type"}">
-          </div>
+          <div class="formGroup"><label>${t("Masala turi","Тип вопроса","Issue type")}</label><select name="issue">${businessOptions(BUSINESS_DISPUTE_TYPES,lang)}</select></div>
+          <div class="formGroup"><label>${t("Qarshi tomon / tashkilot","Контрагент / организация","Counterparty / organization")}</label><input name="counterparty"></div>
+          <div class="formGroup"><label>${t("Nizo summasi","Сумма спора","Dispute amount")}</label><input name="amount"></div>
+          <div class="formGroup"><label>${t("Shartnoma raqami/sanasi","Номер/дата договора","Contract number/date")}</label><input name="contract"></div>
         </div>
-        <div class="formGroup">
-          <label>${esc(L.facts)}</label>
-          <textarea name="facts" rows="7" required placeholder="${lang==="uz"?"Nima bo'lganini, sanalarni va muhim faktlarni yozing...":lang==="ru"?"Опишите факты, даты и обстоятельства...":"Describe facts, dates and circumstances..."}"></textarea>
-        </div>
+        <div class="formGroup"><label>${t("Vaziyat va muhim sanalar","Ситуация и важные даты","Situation and important dates")}</label><textarea name="facts" rows="7" required></textarea></div>
         <div class="formGrid">
-          <div class="formGroup">
-            <label>${esc(L.evidence)}</label>
-            <textarea name="evidence" rows="4" placeholder="${lang==="uz"?"Shartnoma, akt, hisob-faktura, yozishmalar, to'lov hujjatlari...":lang==="ru"?"Договор, акт, счет-фактура, переписка...":"Contract, act, invoice, correspondence..."}"></textarea>
-          </div>
-          <div class="formGroup">
-            <label>${esc(L.goal)}</label>
-            <textarea name="goal" rows="4" placeholder="${lang==="uz"?"Masalan: qarzni undirish, shartnomani bekor qilish...":lang==="ru"?"Например: взыскать долг, расторгнуть договор...":"Example: recover debt, terminate contract..."}"></textarea>
-          </div>
+          <div class="formGroup"><label>${t("Mavjud dalillar","Имеющиеся доказательства","Available evidence")}</label><textarea name="evidence" rows="4"></textarea></div>
+          <div class="formGroup"><label>${t("Siz xohlayotgan natija","Желаемый результат","Desired result")}</label><textarea name="goal" rows="4"></textarea></div>
         </div>
-        <div class="formGroup">
-          <label>${esc(L.output)}</label>
-          <select name="output">
-            <option value="analysis">${esc(L.analyze)}</option>
-            <option value="claim">${esc(L.claim)}</option>
-            <option value="agreement">${esc(L.agreement)}</option>
-            <option value="review">${esc(L.review)}</option>
-          </select>
-        </div>
-        <button class="btn btnPrimary" type="submit">${esc(L.send)}</button>
+        <button class="btn btnPrimary" type="submit">${t("Huquqiy tahlil qilish","Провести правовой анализ","Analyze")}</button>
       </form>
     </div>
 
-    <div style="height:24px"></div>
-    <div class="appHeader">
-      <div class="resultLabel">${esc(L.docs)}</div>
-      <h1>${lang==="uz"?"Har qanday biznes hujjatini tayyorlash":lang==="ru"?"Подготовка бизнес-документов":"Prepare business documents"}</h1>
-      <p>${esc(L.docsSub)}</p>
-    </div>
-    <div class="surface surfacePad">
+    <div id="business-documents" class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("2. DA’VO, ARIZA VA TALABNOMALAR","2. ИСКИ, ЗАЯВЛЕНИЯ И ПРЕТЕНЗИИ","2. CLAIMS, APPLICATIONS & DEMANDS")}</div>
+      <h2>${t("Har qanday biznes hujjatini tayyorlash","Подготовка любого бизнес-документа","Prepare any business document")}</h2>
+      <p>${t("Tayyor turdan tanlang yoki “Boshqa hujjat” orqali erkin nom kiriting. Yetishmayotgan ma’lumotlar uydirilmaydi.","Выберите тип или укажите свой документ.","Choose a type or specify your own document.")}</p>
       <form method="POST" action="/business-result${q(lang)}">
-        <input type="hidden" name="issue" value="document_generator">
+        <input type="hidden" name="mode" value="document">
         <div class="formGrid">
-          <div class="formGroup">
-            <label>${lang==="uz"?"Hujjat turi":lang==="ru"?"Тип документа":"Document type"}</label>
-            <select name="output">
-              <option value="claim">${lang==="uz"?"Da'vo arizasi / ariza":lang==="ru"?"Иск / заявление":"Claim / application"}</option>
-              <option value="demand">${lang==="uz"?"Talabnoma / pretenziya":lang==="ru"?"Претензия / требование":"Demand / pre-action claim"}</option>
-              <option value="agreement">${lang==="uz"?"Shartnoma":lang==="ru"?"Договор":"Contract"}</option>
-              <option value="response">${lang==="uz"?"Javob xati / e'tiroz":lang==="ru"?"Ответ / возражение":"Response / objection"}</option>
-              <option value="appeal">${lang==="uz"?"Shikoyat / apellyatsiya":lang==="ru"?"Жалоба / апелляция":"Complaint / appeal"}</option>
-              <option value="custom">${lang==="uz"?"Boshqa hujjat":lang==="ru"?"Другой документ":"Other document"}</option>
+          <div class="formGroup"><label>${t("Hujjat turi","Тип документа","Document type")}</label><select name="document_type">${businessOptions(BUSINESS_DOCUMENT_TYPES,lang)}</select></div>
+          <div class="formGroup"><label>${t("Hujjatning aniq nomi (ixtiyoriy)","Точное название","Exact title")}</label><input name="custom_type"></div>
+          <div class="formGroup"><label>${t("Kimga yuboriladi","Адресат","Addressee")}</label><input name="addressee"></div>
+          <div class="formGroup"><label>${t("Qarshi tomon","Другая сторона","Other party")}</label><input name="counterparty"></div>
+        </div>
+        <div class="formGroup"><label>${t("Hujjatga kiritiladigan faktlar","Факты для документа","Facts for the document")}</label><textarea name="facts" rows="7" required></textarea></div>
+        <div class="formGrid">
+          <div class="formGroup"><label>${t("Dalillar / ilovalar","Доказательства / приложения","Evidence / attachments")}</label><textarea name="evidence" rows="4"></textarea></div>
+          <div class="formGroup"><label>${t("Talab / so‘rov","Требование / просьба","Requested relief / action")}</label><textarea name="goal" rows="4"></textarea></div>
+        </div>
+        <button class="btn btnPrimary" type="submit">${t("Hujjat loyihasini tayyorlash","Подготовить документ","Draft document")}</button>
+      </form>
+    </div>
+
+    <div id="business-contracts" class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("3. BIZNES SHARTNOMALARI","3. БИЗНЕС-ДОГОВОРЫ","3. BUSINESS CONTRACTS")}</div>
+      <h2>${t("Shartnoma generatori va huquqiy tekshiruv","Генератор и правовая проверка договора","Contract generator & legal review")}</h2>
+      <form method="POST" action="/business-result${q(lang)}">
+        <input type="hidden" name="mode" value="contract">
+        <div class="formGrid">
+          <div class="formGroup"><label>${t("Shartnoma turi","Тип договора","Contract type")}</label><select name="contract_type">${businessOptions(BUSINESS_CONTRACT_TYPES,lang)}</select></div>
+          <div class="formGroup"><label>${t("Boshqa/aniq shartnoma nomi","Другое/точное название","Custom/exact contract title")}</label><input name="custom_type"></div>
+          <div class="formGroup"><label>${t("1-tomon","Сторона 1","Party 1")}</label><input name="party1"></div>
+          <div class="formGroup"><label>${t("2-tomon","Сторона 2","Party 2")}</label><input name="party2"></div>
+        </div>
+        <div class="formGroup"><label>${t("Shartnoma predmeti va asosiy shartlar","Предмет и основные условия","Subject and key terms")}</label><textarea name="facts" rows="7" required></textarea></div>
+        <div class="formGrid">
+          <div class="formGroup"><label>${t("Narx / to‘lov / muddat","Цена / оплата / срок","Price / payment / term")}</label><textarea name="amount" rows="4"></textarea></div>
+          <div class="formGroup"><label>${t("Maxsus talablar va xavflar","Особые условия и риски","Special requirements and risks")}</label><textarea name="goal" rows="4"></textarea></div>
+        </div>
+        <button class="btn btnPrimary" type="submit">${t("Shartnoma tayyorlash","Подготовить договор","Draft contract")}</button>
+      </form>
+    </div>
+
+    <div class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("4. SHARTNOMANI TEKSHIRISH","4. ПРОВЕРКА ДОГОВОРА","4. CONTRACT REVIEW")}</div>
+      <h2>${t("Mavjud shartnomadagi xavflarni aniqlash","Найти риски в существующем договоре","Find risks in an existing contract")}</h2>
+      <form method="POST" action="/business-result${q(lang)}">
+        <input type="hidden" name="mode" value="contract_review">
+        <div class="formGroup"><label>${t("Shartnoma matni","Текст договора","Contract text")}</label><textarea name="facts" rows="12" required></textarea></div>
+        <div class="formGroup"><label>${t("Siz qaysi tomon bo‘lasiz va nimadan xavotirdasiz?","Какая вы сторона и что вас беспокоит?","Which party are you and what concerns you?")}</label><textarea name="goal" rows="4"></textarea></div>
+        <button class="btn btnPrimary" type="submit">${t("Shartnomani tekshirish","Проверить договор","Review contract")}</button>
+      </form>
+    </div>
+
+    <div id="business-corporate" class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("5. MChJ VA KORPORATIV HUJJATLAR","5. ООО И КОРПОРАТИВНЫЕ ДОКУМЕНТЫ","5. LLC & CORPORATE DOCUMENTS")}</div>
+      <h2>${t("Kompaniya hujjatlarini tayyorlash","Подготовка документов компании","Prepare company documents")}</h2>
+      <form method="POST" action="/business-result${q(lang)}">
+        <input type="hidden" name="mode" value="corporate">
+        <div class="formGrid">
+          <div class="formGroup"><label>${t("Hujjat turi","Тип документа","Document type")}</label><select name="document_type">${businessOptions(BUSINESS_CORPORATE_DOCS,lang)}</select></div>
+          <div class="formGroup"><label>${t("Korxona nomi","Название компании","Company name")}</label><input name="company"></div>
+        </div>
+        <div class="formGroup"><label>${t("Ta’sischilar, ulushlar va qaror mazmuni","Учредители, доли и содержание решения","Founders, shares and resolution details")}</label><textarea name="facts" rows="7" required></textarea></div>
+        <button class="btn btnPrimary" type="submit">${t("Korporativ hujjat tayyorlash","Подготовить корпоративный документ","Draft corporate document")}</button>
+      </form>
+    </div>
+
+    <div id="business-protection" class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("6. TADBIRKOR HUQUQLARINI HIMOYA QILISH","6. ЗАЩИТА ПРАВ ПРЕДПРИНИМАТЕЛЯ","6. BUSINESS RIGHTS PROTECTION")}</div>
+      <h2>${t("Palata, Biznes-ombudsman yoki davlat organiga murojaat","Обращение в ТПП, Бизнес-омбудсман или госорган","Appeal to Chamber, Business Ombudsman or authority")}</h2>
+      <form method="POST" action="/business-result${q(lang)}">
+        <input type="hidden" name="mode" value="protection">
+        <div class="formGrid">
+          <div class="formGroup"><label>${t("Murojaat yo‘nalishi","Куда обратиться","Destination")}</label>
+            <select name="document_type">
+              <option value="chamber">Savdo-sanoat palatasi</option>
+              <option value="ombudsman">Biznes-ombudsman</option>
+              <option value="authority">Davlat organi</option>
+              <option value="tax">Soliq organi</option>
+              <option value="license">Litsenziyalovchi organ</option>
+              <option value="other">Boshqa tashkilot</option>
             </select>
           </div>
-          <div class="formGroup">
-            <label>${lang==="uz"?"Aniq nomi":lang==="ru"?"Точное название":"Exact document name"}</label>
-            <input name="contract" placeholder="${lang==="uz"?"Masalan: tovar yetkazib berish shartnomasi":lang==="ru"?"Например: договор поставки":"Example: supply agreement"}">
-          </div>
+          <div class="formGroup"><label>${t("Tashkilot nomi","Название организации","Organization")}</label><input name="addressee"></div>
         </div>
-        <div class="formGroup">
-          <label>${lang==="uz"?"Hujjat uchun ma'lumotlar va shartlar":lang==="ru"?"Данные и условия документа":"Facts and terms for the document"}</label>
-          <textarea name="facts" rows="7" required></textarea>
-        </div>
-        <div class="formGroup">
-          <label>${lang==="uz"?"Qo'shimcha talablar":lang==="ru"?"Дополнительные требования":"Additional requirements"}</label>
-          <textarea name="goal" rows="3"></textarea>
-        </div>
-        <button class="btn btnPrimary" type="submit">${lang==="uz"?"Hujjatni tayyorlash":lang==="ru"?"Подготовить документ":"Prepare document"}</button>
+        <div class="formGroup"><label>${t("Muammo va sodir bo‘lgan holatlar","Проблема и обстоятельства","Problem and circumstances")}</label><textarea name="facts" rows="7" required></textarea></div>
+        <div class="formGroup"><label>${t("Siz so‘rayotgan chora","Просимая мера","Requested action")}</label><textarea name="goal" rows="4"></textarea></div>
+        <button class="btn btnPrimary" type="submit">${t("Murojaat tayyorlash","Подготовить обращение","Prepare appeal")}</button>
       </form>
+      <div class="formActions" style="margin-top:16px;">
+        <a class="btn btnOutline" href="https://chamber.uz/" target="_blank" rel="noopener noreferrer">Savdo-sanoat palatasi ↗</a>
+        <a class="btn btnOutline" href="https://murojaat.chamber.uz/oz/appeals" target="_blank" rel="noopener noreferrer">Palataga murojaat ↗</a>
+        <a class="btn btnOutline" href="https://biznesvakil.uz/" target="_blank" rel="noopener noreferrer">Biznes-ombudsman ↗</a>
+      </div>
     </div>
 
-    <div style="height:28px"></div>
-    <div class="appHeader">
-      <div class="resultLabel">${esc(L.platforms)}</div>
-      <h1>${lang==="uz"?"Biznesni boshqarish va huquqlarni himoya qilish":lang==="ru"?"Управление бизнесом и защита прав":"Manage business and protect rights"}</h1>
-      <p>${lang==="uz"?"Kerakli rasmiy xizmatga bir bosishda o'ting.":lang==="ru"?"Переходите прямо к нужному официальному сервису.":"Open the relevant official service directly."}</p>
-    </div>
-    <div class="sourceGrid">
-      ${businessLinkCard("Savdo-sanoat palatasi","Tadbirkorlar manfaatlarini qo'llab-quvvatlash va Palata xizmatlari.","https://chamber.uz/")}
-      ${businessLinkCard("Savdo-sanoat palatasiga murojaat","Elektron murojaat yuborish.","https://murojaat.chamber.uz/oz/appeals")}
-      ${businessLinkCard("Biznes-ombudsman","Davlat organlari va mansabdor shaxslar bilan bog'liq huquq buzilishlari bo'yicha murojaat.","https://biznesvakil.uz/")}
-      ${businessLinkCard("Biznesni ro'yxatdan o'tkazish","Yangi tadbirkorlik subyektini davlat ro'yxatidan o'tkazish.","https://my.gov.uz/uz/service/57")}
-      ${businessLinkCard("Biznesni qayta ro'yxatdan o'tkazish","Tadbirkorlik subyekti ma'lumotlari va ta'sis hujjatlaridagi o'zgarishlar.","https://my.gov.uz/uz/service/58")}
-      ${businessLinkCard("Kontragentni tekshirish","Yuridik shaxsning hisobga qo'yilgan ma'lumotlarini STIR orqali ko'rish.","https://my.gov.uz/uz/service/77")}
-      ${businessLinkCard("Litsenziya va ruxsatnomalar","Litsenziya yoki ruxsatnoma olish uchun elektron tizim.","https://license.gov.uz/")}
-      ${businessLinkCard("Iqtisodiy sudlar","Iqtisodiy sudlar va ularning aloqa ma'lumotlari.","https://sud.uz/court_type/eco/")}
-      ${businessLinkCard("Sudga elektron murojaat","ADOLAT shaxsiy kabineti orqali sudga elektron murojaat.","https://cabinet.sud.uz/")}
-      ${businessLinkCard("Yagona davlat xizmatlari","Tadbirkorlar uchun davlat xizmatlari.","https://my.gov.uz/")}
-      ${businessLinkCard("Soliq qo'mitasi","Soliq ma'lumotlari va elektron xizmatlar.","https://soliq.uz/")}
-      ${businessLinkCard("LexUZ","Amaldagi normativ-huquqiy hujjatlarni tekshirish.","https://lex.uz/")}
+    <div class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("7. KONTRAGENT VA BITIM XAVFI","7. КОНТРАГЕНТ И РИСК СДЕЛКИ","7. COUNTERPARTY & DEAL RISK")}</div>
+      <h2>${t("Bitimdan oldingi huquqiy checklist","Правовой чек-лист перед сделкой","Pre-deal legal checklist")}</h2>
+      <form method="POST" action="/business-result${q(lang)}">
+        <input type="hidden" name="mode" value="due_diligence">
+        <div class="formGrid">
+          <div class="formGroup"><label>${t("Kontragent nomi / STIR","Контрагент / ИНН","Counterparty / tax ID")}</label><input name="counterparty"></div>
+          <div class="formGroup"><label>${t("Bitim turi","Тип сделки","Deal type")}</label><input name="contract"></div>
+        </div>
+        <div class="formGroup"><label>${t("Sizda mavjud ma’lumotlar","Имеющиеся сведения","Available information")}</label><textarea name="facts" rows="6"></textarea></div>
+        <button class="btn btnPrimary" type="submit">${t("Tekshiruv rejasini tuzish","Составить план проверки","Build review checklist")}</button>
+      </form>
+      <div class="formActions" style="margin-top:16px;"><a class="btn btnOutline" href="https://my.gov.uz/uz/service/77" target="_blank" rel="noopener noreferrer">${t("Kontragent ma’lumotlarini tekshirish","Проверить контрагента","Check counterparty")} ↗</a></div>
     </div>
 
-    <div style="height:28px"></div>
-    <div class="appHeader">
-      <div class="resultLabel">${esc(L.sources)}</div>
-      <h1>${lang==="uz"?"Rasmiy huquqiy kutubxona":lang==="ru"?"Официальная правовая библиотека":"Official legal library"}</h1>
-      <p>${lang==="uz"?"Tadbirkorlar, yuristlar va talabalar uchun birlamchi rasmiy manbalar.":lang==="ru"?"Официальные первичные источники для бизнеса, юристов и студентов.":"Primary official sources for businesses, lawyers and students."}</p>
+    <div class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("8. IQTISODIY SUDGA TAYYORGARLIK","8. ПОДГОТОВКА К ЭКОНОМИЧЕСКОМУ СУДУ","8. ECONOMIC COURT PREPARATION")}</div>
+      <h2>${t("Sudga chiqishdan oldingi tekshiruv","Проверка перед обращением в суд","Pre-filing review")}</h2>
+      <form method="POST" action="/business-result${q(lang)}">
+        <input type="hidden" name="mode" value="court_readiness">
+        <div class="formGrid">
+          <div class="formGroup"><label>${t("Nizo turi","Тип спора","Dispute type")}</label><select name="issue">${businessOptions(BUSINESS_DISPUTE_TYPES,lang)}</select></div>
+          <div class="formGroup"><label>${t("Da’vo summasi","Цена иска","Claim amount")}</label><input name="amount"></div>
+        </div>
+        <div class="formGroup"><label>${t("Faktlar va tomonlar","Факты и стороны","Facts and parties")}</label><textarea name="facts" rows="7" required></textarea></div>
+        <div class="formGroup"><label>${t("Mavjud hujjatlar va dalillar","Документы и доказательства","Documents and evidence")}</label><textarea name="evidence" rows="5"></textarea></div>
+        <button class="btn btnPrimary" type="submit">${t("Sudga tayyorgarlikni tekshirish","Проверить готовность","Check court readiness")}</button>
+      </form>
+      <div class="formActions" style="margin-top:16px;"><a class="btn btnPrimary" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">${t("Sudga elektron murojaat","Электронное обращение в суд","Electronic court filing")} ↗</a></div>
+    </div>
+
+    <div id="business-platforms" class="appHeader" style="margin-top:30px;">
+      <div class="resultLabel">${t("9. RASMIY BIZNES PLATFORMALARI","9. ОФИЦИАЛЬНЫЕ БИЗНЕС-ПЛАТФОРМЫ","9. OFFICIAL BUSINESS PLATFORMS")}</div>
+      <h1>${t("Tadbirkor uchun kerakli xizmatlar","Полезные сервисы для предпринимателя","Useful services for entrepreneurs")}</h1>
+      <p>${t("Platformadan chiqib qidirib yurmaslik uchun asosiy rasmiy xizmatlar bir joyda.","Основные официальные сервисы собраны в одном месте.","Key official services collected in one place.")}</p>
     </div>
     <div class="sourceGrid">
-      ${businessLinkCard("LexUZ — Qonunchilik bazasi","Fuqarolik, korporativ, soliq, iqtisodiy protsess va boshqa hujjatlarni izlash.","https://lex.uz/")}
-      ${businessLinkCard("Oliy sud","Sud amaliyoti, iqtisodiy sudlar va rasmiy ma'lumotlar.","https://sud.uz/")}
-      ${businessLinkCard("Hukumat portali","Davlat organlari va rasmiy ma'lumotlar.","https://gov.uz/")}
-      ${businessLinkCard("YIDXP / my.gov.uz","Elektron davlat xizmatlari va arizalar.","https://my.gov.uz/")}
+      ${businessLinkCard("LexUZ","Amaldagi qonunlar, kodekslar va normativ hujjatlar.","https://lex.uz/")}
+      ${businessLinkCard("my.gov.uz","Yagona interaktiv davlat xizmatlari portali.","https://my.gov.uz/")}
+      ${businessLinkCard("Biznesni ro‘yxatdan o‘tkazish","Yangi tadbirkorlik subyektini davlat ro‘yxatidan o‘tkazish.","https://my.gov.uz/uz/service/57")}
+      ${businessLinkCard("Biznesni qayta ro‘yxatdan o‘tkazish","Ta’sis va ro‘yxat ma’lumotlaridagi o‘zgarishlarni rasmiylashtirish.","https://my.gov.uz/uz/service/58")}
+      ${businessLinkCard("Kontragentni tekshirish","STIR orqali yuridik shaxs/tadbirkor ma’lumotlarini ko‘rish.","https://my.gov.uz/uz/service/77")}
+      ${businessLinkCard("Savdo-sanoat palatasi","Tadbirkorlikni qo‘llab-quvvatlash va Palata xizmatlari.","https://chamber.uz/")}
+      ${businessLinkCard("Palataga elektron murojaat","Savdo-sanoat palatasiga murojaat yuborish.","https://murojaat.chamber.uz/oz/appeals")}
+      ${businessLinkCard("Biznes-ombudsman","Tadbirkorlarning huquq va qonuniy manfaatlarini himoya qilish.","https://biznesvakil.uz/")}
+      ${businessLinkCard("Litsenziya","Litsenziya va ruxsat berish tartib-taomillari.","https://license.gov.uz/")}
+      ${businessLinkCard("Soliq qo‘mitasi","Soliq ma’lumotlari va elektron xizmatlar.","https://soliq.uz/")}
+      ${businessLinkCard("Oliy sud","Sud tizimi, iqtisodiy sudlar va rasmiy ma’lumotlar.","https://sud.uz/")}
+      ${businessLinkCard("ADOLAT sud kabineti","Sudga elektron murojaat qilish.","https://cabinet.sud.uz/")}
+      ${businessLinkCard("Hukumat portali","Davlat organlari va rasmiy ma’lumotlar.","https://gov.uz/")}
+    </div>
+
+    <div class="surface surfacePad" style="margin-top:24px;">
+      <div class="resultLabel">${t("10. BIZNES HUQUQI KUTUBXONASI","10. БИБЛИОТЕКА БИЗНЕС-ПРАВА","10. BUSINESS LAW LIBRARY")}</div>
+      <h2>${t("Yurist, tadbirkor va talaba uchun yo‘nalishlar","Направления для юриста, бизнеса и студента","Topics for lawyers, business owners and students")}</h2>
+      <div class="serviceGrid">
+        ${businessPanel(t("Fuqarolik huquqi","Гражданское право","Civil law"),t("Bitimlar, majburiyatlar, shartnomalar, zarar va javobgarlik.","Сделки, обязательства, договоры, убытки.","Transactions, obligations, contracts and damages."),"https://lex.uz/","F")}
+        ${businessPanel(t("Iqtisodiy protsess","Экономический процесс","Economic procedure"),t("Iqtisodiy sudga taalluqlilik, da’vo va protsessual harakatlar.","Подведомственность и процесс.","Jurisdiction and court procedure."),"https://lex.uz/docs/-3523891","I")}
+        ${businessPanel(t("Korporativ huquq","Корпоративное право","Corporate law"),t("MChJ, ta’sischilar, ulushlar va boshqaruv masalalari.","ООО, участники, доли и управление.","LLCs, shareholders, shares and governance."),"https://lex.uz/","K")}
+        ${businessPanel(t("Soliq va bojxona","Налоги и таможня","Tax & customs"),t("Biznesning soliq va tashqi savdo majburiyatlari.","Налоговые и внешнеторговые обязанности.","Tax and foreign-trade obligations."),"https://lex.uz/","S")}
+        ${businessPanel(t("To‘lovga qobiliyatsizlik","Неплатежеспособность","Insolvency"),t("Qarzdorlik, kreditor talablari va to‘lovga qobiliyatsizlik masalalari.","Долги, кредиторы и неплатежеспособность.","Debt, creditors and insolvency."),"https://lex.uz/","T")}
+        ${businessPanel(t("Hakamlik va arbitraj","Третейский суд и арбитраж","Arbitration"),t("Nizolarni muqobil hal qilish mexanizmlari.","Альтернативное разрешение споров.","Alternative dispute resolution."),"https://lex.uz/","A")}
+      </div>
     </div>
   `);
 }
@@ -8595,61 +8833,101 @@ function businessLinkCard(title,desc,url){
 }
 
 async function businessResultPage(lang, body){
-  const data = {
-    issue: String(body.issue || "").trim().slice(0,120),
-    counterparty: String(body.counterparty || "").trim().slice(0,220),
-    amount: String(body.amount || "").trim().slice(0,120),
-    contract: String(body.contract || "").trim().slice(0,500),
-    facts: String(body.facts || "").trim().slice(0,8000),
-    evidence: String(body.evidence || "").trim().slice(0,5000),
-    goal: String(body.goal || "").trim().slice(0,3000),
-    output: String(body.output || "").trim().slice(0,80)
-  };
+  const get = (k,n=8000) => String((body && body[k]) || "").trim().slice(0,n);
+  const mode = get("mode",80) || "analysis";
+  const issue = get("issue",160);
+  const documentType = get("document_type",160);
+  const contractType = get("contract_type",160);
+  const customType = get("custom_type",300);
+  const counterparty = get("counterparty",400);
+  const party1 = get("party1",400);
+  const party2 = get("party2",400);
+  const company = get("company",400);
+  const addressee = get("addressee",400);
+  const amount = get("amount",2000);
+  const contract = get("contract",1000);
+  const facts = get("facts",12000);
+  const evidence = get("evidence",8000);
+  const goal = get("goal",6000);
+
+  const languageName = lang==="ru" ? "Russian" : lang==="en" ? "English" : "Uzbek (Latin)";
+  const modeInstruction = {
+    analysis: "Provide a structured business-law analysis: facts, missing facts, legal issues, applicable legal framework, evidence, pre-action options, dispute-resolution route, risks, next steps and documents to prepare.",
+    document: "Draft the requested business legal document in professional form. Include addressee, parties, factual basis, legal basis where verified, requests/relief, attachments and signature/date placeholders as appropriate.",
+    contract: "Draft the requested business contract. Include parties, definitions if needed, subject, quantity/quality/specification where relevant, price/payment, delivery/performance/acceptance, rights and duties, warranties, liability, penalties only if supplied or clearly marked, force majeure, confidentiality if relevant, dispute resolution, term/termination, notices, details and signatures.",
+    contract_review: "Review the supplied contract. Separate: unclear/missing essential terms, one-sided clauses, payment/performance risk, liability risk, termination risk, dispute-resolution risk, evidence/documentation risk, suggested edits, and questions before signing. Do not pretend the text contains clauses that are absent.",
+    corporate: "Draft the requested corporate document for an Uzbekistan business. Use placeholders for missing company, founder, share, capital, address, director, date and registration details. Flag matters requiring notarization, registration or official verification instead of guessing.",
+    protection: "Draft a concise but strong entrepreneur-rights appeal for the selected institution. State facts, challenged act/omission if any, supporting documents, requested action and attachments. Do not claim that the institution has jurisdiction unless verified from the facts.",
+    due_diligence: "Create a practical legal due-diligence checklist for this counterparty and transaction. Distinguish what can be checked in official registries from what must be requested from the counterparty. Include authority/signature, registration, licenses, ownership/asset, litigation/enforcement, tax/compliance, contract and payment risks where relevant.",
+    court_readiness: "Assess readiness for an economic-court case. Check parties/status, subject-matter jurisdiction, territorial jurisdiction questions, pre-action requirements, limitation/deadline issues to verify, claim amount, state duty/cost items to verify, evidence, calculation, requested relief, attachments and filing steps."
+  }[mode] || "Provide a structured Uzbekistan business-law response.";
 
   const prompt = `
-You are the Business Law module of HUQUQIY AI for Uzbekistan.
-Work from the user's facts only. Do not invent names, dates, amounts, contract numbers, courts, addresses, evidence, statutory articles or case law.
-If a required fact is missing in a document, write [TO'LDIRILADI].
-Use current Uzbekistan law only when you are confident; if an exact article/current wording needs verification, say it must be checked in the current official LexUZ text.
-Distinguish: facts; legal issues; legal basis; evidence; options; risks; next steps; documents.
-For disputes, consider pre-action resolution, negotiation/mediation/arbitration where applicable, jurisdiction and economic-court route without inventing procedural deadlines.
-For contracts, produce a practical structured draft with parties, subject, rights/duties, price/payment, performance/acceptance, liability, force majeure, dispute resolution, term/termination, confidentiality where relevant, details/signatures; adapt to the user's requested contract.
-For claims/applications/demands/responses/appeals, create a professional draft appropriate to the requested purpose and mark missing requisites [TO'LDIRILADI].
-Never promise a legal outcome.
+You are HUQUQIY AI's BUSINESS LAW module for Uzbekistan.
+Respond in ${languageName}.
 
-Language: ${lang}
-Issue: ${data.issue}
-Counterparty: ${data.counterparty}
-Amount: ${data.amount}
-Contract/document: ${data.contract}
-Facts: ${data.facts}
-Evidence: ${data.evidence}
-Desired result: ${data.goal}
-Requested output: ${data.output}
+CORE RULES:
+- Use only facts supplied by the user. Never invent a company name, STIR, address, bank details, dates, sums, contract numbers, evidence, court name, procedural deadline, state duty, statutory article, government decision or case law.
+- For every missing factual field in a draft write [TO‘LDIRILADI].
+- Clearly distinguish USER FACTS, MISSING INFORMATION, LEGAL ISSUES, LEGAL BASIS, EVIDENCE, OPTIONS/RISKS, NEXT STEPS and DRAFT DOCUMENT when relevant.
+- Uzbekistan law changes. Cite an exact article only when confident it is current; otherwise say the current official LexUZ text must be verified.
+- Do not guarantee an outcome.
+- Do not automatically send every dispute to court. Consider negotiation, pre-action demand, mediation, Chamber mechanisms, arbitration/hakamlik if contractually applicable, competent state body, Business Ombudsman, and economic court depending on the facts.
+- Before an economic-court claim, identify questions of jurisdiction, pre-action procedure, claim calculation and evidence that need verification.
+- For a contract, identify essential/commercial terms that are missing before presenting the draft.
+- For a corporate document, do not invent founder/share/capital data.
+- For tax, customs, licensing, competition, procurement, insolvency, IP or other specialized matters, state which official source/authority should be checked.
+
+TASK:
+${modeInstruction}
+
+INPUT:
+Mode: ${mode}
+Issue: ${issue}
+Document type: ${documentType}
+Contract type: ${contractType}
+Custom type/title: ${customType}
+Company: ${company}
+Party 1: ${party1}
+Party 2: ${party2}
+Counterparty: ${counterparty}
+Addressee: ${addressee}
+Amount/payment/term: ${amount}
+Contract/reference: ${contract}
+Facts: ${facts}
+Evidence: ${evidence}
+Goal/request: ${goal}
 `;
+
   let result;
   try{
     result = await callAI(prompt, lang);
-  }catch(e){
+  }catch(err){
     result = lang==="ru"
-      ? "AI-сервис временно недоступен. Проверьте настройки API и повторите попытку."
+      ? "AI-сервис временно недоступен. Проверьте API-настройки и повторите попытку."
       : lang==="en"
       ? "The AI service is temporarily unavailable. Check the API configuration and try again."
-      : "AI xizmati vaqtincha ishlamayapti. API sozlamalarini tekshirib, qayta urinib ko'ring.";
+      : "AI xizmati vaqtincha ishlamayapti. API sozlamalarini tekshirib, qayta urinib ko‘ring.";
   }
+
+  const title = mode==="contract" ? (lang==="ru"?"Проект договора":lang==="en"?"Contract draft":"Shartnoma loyihasi")
+    : mode==="document" ? (lang==="ru"?"Проект документа":lang==="en"?"Document draft":"Hujjat loyihasi")
+    : mode==="corporate" ? (lang==="ru"?"Корпоративный документ":lang==="en"?"Corporate document":"Korporativ hujjat")
+    : mode==="contract_review" ? (lang==="ru"?"Анализ договора":lang==="en"?"Contract review":"Shartnoma tahlili")
+    : (lang==="ru"?"Результат бизнес-юриста":lang==="en"?"Business lawyer result":"AI biznes yuristi natijasi");
 
   return appLayout(lang,"business",`
     <div class="appHeader">
-      <div class="resultLabel">${lang==="uz"?"BIZNES HUQUQI NATIJASI":lang==="ru"?"РЕЗУЛЬТАТ ПО БИЗНЕС-ПРАВУ":"BUSINESS LAW RESULT"}</div>
-      <h1>${lang==="uz"?"AI biznes yuristi xulosasi":lang==="ru"?"Заключение AI бизнес-юриста":"AI business lawyer result"}</h1>
-      <p>${lang==="uz"?"Natijani hujjatlar va amaldagi rasmiy qonunchilik bilan tekshiring.":lang==="ru"?"Сверьте результат с документами и действующим официальным законодательством.":"Verify the result against documents and current official law."}</p>
+      <div class="resultLabel">${lang==="ru"?"БИЗНЕС-ПРАВО":lang==="en"?"BUSINESS LAW":"BIZNES HUQUQI"}</div>
+      <h1>${esc(title)}</h1>
+      <p>${lang==="uz"?"Natijani amaldagi rasmiy qonunchilik va ish hujjatlari bilan tekshiring.":"AI legal output should be verified against current official law and case documents."}</p>
     </div>
     <div class="surface surfacePad">
-      <div class="aiAnswer"><div style="white-space:pre-wrap">${esc(result)}</div></div>
-      <div class="formActions" style="margin-top:22px">
-        <a class="btn btnOutline" href="/business${q(lang)}">${lang==="uz"?"← Biznes huquqiga qaytish":lang==="ru"?"← Назад":"← Back"}</a>
-        <a class="btn btnPrimary" href="https://lex.uz/" target="_blank" rel="noopener noreferrer">LexUZ ↗</a>
-        <a class="btn btnPrimary" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">${lang==="uz"?"Sudga elektron murojaat":lang==="ru"?"Обращение в суд":"Electronic court filing"} ↗</a>
+      <div style="white-space:pre-wrap;line-height:1.75">${esc(result)}</div>
+      <div class="formActions" style="margin-top:22px;">
+        <a class="btn btnOutline" href="/business${q(lang)}">← ${lang==="uz"?"Biznes huquqiga qaytish":"Back"}</a>
+        <a class="btn btnOutline" href="https://lex.uz/" target="_blank" rel="noopener noreferrer">LexUZ ↗</a>
+        <a class="btn btnPrimary" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">${lang==="uz"?"Sud kabineti":"Court cabinet"} ↗</a>
       </div>
     </div>
   `);
@@ -12846,3 +13124,938 @@ server.listen(
 // ======================================================
 // END OF HUQUQIY AI
 // ======================================================
+
+/* BUSINESS MODULE EXPANSION ROADMAP
+  1. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  2. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  3. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  4. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  5. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  6. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  7. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  8. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  9. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  10. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  11. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  12. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  13. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  14. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  15. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  16. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  17. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  18. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  19. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  20. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  21. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  22. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  23. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  24. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  25. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  26. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  27. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  28. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  29. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  30. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  31. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  32. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  33. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  34. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  35. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  36. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  37. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  38. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  39. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  40. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  41. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  42. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  43. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  44. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  45. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  46. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  47. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  48. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  49. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  50. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  51. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  52. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  53. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  54. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  55. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  56. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  57. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  58. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  59. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  60. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  61. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  62. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  63. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  64. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  65. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  66. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  67. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  68. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  69. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  70. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  71. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  72. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  73. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  74. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  75. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  76. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  77. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  78. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  79. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  80. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  81. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  82. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  83. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  84. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  85. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  86. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  87. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  88. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  89. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  90. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  91. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  92. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  93. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  94. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  95. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  96. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  97. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  98. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  99. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  100. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  101. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  102. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  103. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  104. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  105. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  106. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  107. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  108. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  109. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  110. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  111. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  112. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  113. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  114. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  115. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  116. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  117. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  118. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  119. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  120. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  121. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  122. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  123. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  124. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  125. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  126. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  127. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  128. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  129. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  130. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  131. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  132. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  133. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  134. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  135. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  136. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  137. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  138. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  139. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  140. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  141. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  142. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  143. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  144. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  145. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  146. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  147. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  148. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  149. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  150. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  151. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  152. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  153. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  154. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  155. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  156. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  157. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  158. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  159. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  160. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  161. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  162. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  163. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  164. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  165. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  166. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  167. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  168. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  169. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  170. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  171. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  172. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  173. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  174. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  175. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  176. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  177. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  178. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  179. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  180. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  181. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  182. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  183. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  184. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  185. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  186. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  187. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  188. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  189. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  190. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  191. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  192. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  193. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  194. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  195. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  196. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  197. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  198. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  199. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  200. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  201. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  202. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  203. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  204. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  205. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  206. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  207. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  208. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  209. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  210. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  211. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  212. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  213. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  214. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  215. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  216. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  217. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  218. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  219. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  220. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  221. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  222. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  223. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  224. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  225. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  226. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  227. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  228. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  229. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  230. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  231. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  232. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  233. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  234. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  235. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  236. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  237. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  238. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  239. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  240. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  241. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  242. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  243. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  244. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  245. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  246. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  247. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  248. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  249. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  250. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  251. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  252. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  253. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  254. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  255. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  256. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  257. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  258. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  259. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  260. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  261. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  262. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  263. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  264. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  265. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  266. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  267. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  268. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  269. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  270. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  271. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  272. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  273. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  274. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  275. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  276. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  277. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  278. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  279. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  280. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  281. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  282. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  283. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  284. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  285. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  286. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  287. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  288. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  289. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  290. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  291. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  292. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  293. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  294. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  295. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  296. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  297. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  298. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  299. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  300. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  301. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  302. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  303. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  304. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  305. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  306. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  307. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  308. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  309. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  310. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  311. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  312. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  313. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  314. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  315. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  316. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  317. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  318. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  319. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  320. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  321. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  322. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  323. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  324. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  325. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  326. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  327. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  328. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  329. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  330. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  331. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  332. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  333. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  334. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  335. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  336. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  337. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  338. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  339. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  340. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  341. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  342. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  343. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  344. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  345. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  346. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  347. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  348. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  349. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  350. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  351. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  352. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  353. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  354. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  355. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  356. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  357. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  358. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  359. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  360. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  361. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  362. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  363. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  364. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  365. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  366. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  367. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  368. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  369. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  370. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  371. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  372. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  373. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  374. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  375. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  376. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  377. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  378. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  379. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  380. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  381. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  382. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  383. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  384. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  385. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  386. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  387. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  388. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  389. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  390. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  391. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  392. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  393. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  394. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  395. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  396. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  397. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  398. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  399. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  400. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  401. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  402. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  403. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  404. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  405. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  406. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  407. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  408. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  409. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  410. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  411. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  412. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  413. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  414. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  415. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  416. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  417. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  418. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  419. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  420. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  421. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  422. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  423. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  424. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  425. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  426. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  427. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  428. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  429. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  430. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  431. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  432. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  433. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  434. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  435. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  436. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  437. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  438. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  439. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  440. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  441. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  442. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  443. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  444. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  445. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  446. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  447. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  448. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  449. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  450. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  451. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  452. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  453. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  454. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  455. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  456. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  457. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  458. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  459. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  460. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  461. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  462. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  463. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  464. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  465. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  466. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  467. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  468. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  469. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  470. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  471. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  472. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  473. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  474. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  475. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  476. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  477. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  478. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  479. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  480. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  481. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  482. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  483. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  484. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  485. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  486. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  487. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  488. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  489. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  490. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  491. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  492. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  493. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  494. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  495. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  496. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  497. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  498. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  499. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  500. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  501. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  502. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  503. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  504. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  505. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  506. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  507. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  508. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  509. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  510. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  511. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  512. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  513. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  514. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  515. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  516. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  517. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  518. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  519. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  520. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  521. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  522. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  523. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  524. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  525. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  526. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  527. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  528. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  529. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  530. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  531. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  532. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  533. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  534. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  535. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  536. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  537. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  538. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  539. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  540. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  541. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  542. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  543. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  544. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  545. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  546. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  547. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  548. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  549. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  550. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  551. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  552. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  553. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  554. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  555. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  556. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  557. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  558. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  559. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  560. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  561. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  562. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  563. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  564. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  565. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  566. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  567. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  568. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  569. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  570. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  571. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  572. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  573. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  574. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  575. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  576. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  577. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  578. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  579. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  580. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  581. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  582. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  583. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  584. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  585. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  586. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  587. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  588. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  589. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  590. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  591. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  592. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  593. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  594. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  595. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  596. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  597. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  598. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  599. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  600. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  601. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  602. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  603. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  604. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  605. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  606. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  607. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  608. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  609. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  610. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  611. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  612. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  613. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  614. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  615. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  616. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  617. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  618. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  619. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  620. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  621. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  622. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  623. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  624. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  625. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  626. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  627. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  628. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  629. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  630. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  631. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  632. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  633. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  634. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  635. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  636. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  637. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  638. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  639. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  640. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  641. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  642. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  643. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  644. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  645. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  646. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  647. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  648. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  649. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  650. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  651. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  652. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  653. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  654. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  655. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  656. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  657. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  658. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  659. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  660. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  661. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  662. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  663. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  664. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  665. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  666. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  667. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  668. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  669. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  670. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  671. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  672. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  673. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  674. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  675. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  676. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  677. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  678. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  679. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  680. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  681. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  682. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  683. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  684. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  685. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  686. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  687. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  688. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  689. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  690. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  691. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  692. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  693. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  694. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  695. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  696. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  697. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  698. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  699. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  700. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  701. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  702. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  703. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  704. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  705. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  706. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  707. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  708. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  709. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  710. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  711. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  712. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  713. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  714. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  715. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  716. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  717. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  718. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  719. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  720. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  721. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  722. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  723. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  724. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  725. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  726. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  727. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  728. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  729. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  730. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  731. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  732. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  733. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  734. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  735. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  736. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  737. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  738. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  739. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  740. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  741. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  742. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  743. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  744. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  745. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  746. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  747. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  748. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  749. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  750. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  751. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  752. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  753. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  754. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  755. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  756. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  757. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  758. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  759. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  760. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  761. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  762. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  763. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  764. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  765. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  766. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  767. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  768. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  769. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  770. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  771. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  772. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  773. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  774. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  775. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  776. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  777. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  778. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  779. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  780. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  781. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  782. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  783. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  784. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  785. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  786. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  787. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  788. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  789. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  790. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  791. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  792. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  793. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  794. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  795. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  796. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  797. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  798. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  799. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  800. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  801. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  802. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  803. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  804. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  805. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  806. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  807. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  808. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  809. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  810. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  811. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  812. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  813. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  814. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  815. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  816. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  817. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  818. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  819. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  820. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  821. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  822. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  823. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  824. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  825. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  826. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  827. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  828. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  829. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  830. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  831. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  832. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  833. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  834. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  835. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  836. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  837. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  838. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  839. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  840. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  841. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  842. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  843. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  844. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  845. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  846. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  847. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  848. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  849. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  850. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  851. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  852. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  853. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  854. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  855. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  856. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  857. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  858. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  859. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  860. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  861. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  862. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  863. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  864. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  865. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  866. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  867. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  868. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  869. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  870. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  871. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  872. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  873. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  874. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  875. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  876. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  877. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  878. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  879. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  880. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  881. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  882. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  883. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  884. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  885. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  886. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  887. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  888. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  889. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  890. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  891. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  892. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  893. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  894. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  895. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  896. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  897. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  898. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  899. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  900. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  901. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  902. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  903. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  904. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  905. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  906. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  907. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  908. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  909. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  910. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  911. Qurilish va ruxsatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  912. Energetika shartnomalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  913. Transport va logistika: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  914. Eksport-import: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  915. Valyuta operatsiyalari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  916. Investitsiya nizolari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  917. Kreditorlar bilan kelishuv: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  918. Mediatsiya: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  919. Hakamlik bitimi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  920. Xalqaro arbitraj bandi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  921. Korporativ compliance: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  922. Manfaatlar to‘qnashuvi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  923. Ichki siyosatlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  924. Direktor javobgarligi: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  925. Bank kafolati va ta’minotlar: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  926. Garov va kafillik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  927. Franshiza: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  928. Distribyutorlik: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  929. Elektron tijorat: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  930. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+  932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
+*/
