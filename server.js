@@ -6286,7 +6286,7 @@ function homePage(lang) {
               <div class="homeLongIcon">O</div>
               <div class="homeLongCopy">
                 <h3>${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</h3>
-                <p>${lang==="uz"?"Ajrim, aliment, bolalar, mol-mulk, nikoh shartnomasi va oilaviy da’volar.":lang==="ru"?"Развод, алименты, дети, имущество, брачный договор и семейные иски.":"Divorce, alimony, children, property, marriage contracts and family claims."}</p>
+                <p>${lang==="uz"?"Ajrim, aliment, bolalar, mol-mulk, nikoh shartnomasi va oilaviy da’volar.":lang==="ru"?"Развод, алименты, дети, имущество, брачный договор и семейные иски.":"Divorce, alimony, children, property, marriage contracts and family claims."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
               </div>
               <span class="homeLongEnter">${lang==="uz"?"Oila huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open family law →"}</span>
             </a>
@@ -6295,7 +6295,7 @@ function homePage(lang) {
               <div class="homeLongIcon">M</div>
               <div class="homeLongCopy">
                 <h3>${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</h3>
-                <p>${lang==="uz"?"Ishdan bo‘shatish, ish haqi, mehnat shartnomasi, ta’til va mehnat nizolari.":lang==="ru"?"Увольнение, зарплата, трудовой договор, отпуск и трудовые споры.":"Dismissal, wages, employment contracts, leave and employment disputes."}</p>
+                <p>${lang==="uz"?"Ishdan bo‘shatish, ish haqi, mehnat shartnomasi, ta’til va mehnat nizolari.":lang==="ru"?"Увольнение, зарплата, трудовой договор, отпуск и трудовые споры.":"Dismissal, wages, employment contracts, leave and employment disputes."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
               </div>
               <span class="homeLongEnter">${lang==="uz"?"Mehnat huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open employment law →"}</span>
             </a>
@@ -6304,7 +6304,7 @@ function homePage(lang) {
               <div class="homeLongIcon">B</div>
               <div class="homeLongCopy">
                 <h3>${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</h3>
-                <p>${lang==="uz"?"Shartnomalar, qarzdorlik, biznes nizolari, korporativ hujjatlar va iqtisodiy sud.":lang==="ru"?"Договоры, задолженность, бизнес-споры, корпоративные документы и экономический суд.":"Contracts, debt, business disputes, corporate documents and economic court."}</p>
+                <p>${lang==="uz"?"Shartnomalar, qarzdorlik, biznes nizolari, korporativ hujjatlar va iqtisodiy sud.":lang==="ru"?"Договоры, задолженность, бизнес-споры, корпоративные документы и экономический суд.":"Contracts, debt, business disputes, corporate documents and economic court."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
               </div>
               <span class="homeLongEnter">${lang==="uz"?"Biznes huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open business law →"}</span>
             </a>
@@ -6312,6 +6312,67 @@ function homePage(lang) {
         </div>
       </section>
 
+
+
+      <!-- HUQUQIY AI SMART ENTRY + POPULAR SERVICES -->
+      <section class="smartLegalHub">
+        <style>
+          .smartLegalHub{padding:12px 0 34px}.smartHubBox{background:#071f36;border-radius:24px;padding:30px 34px;color:#fff;position:relative;overflow:hidden}
+          .smartHubBox:after{content:"AI";position:absolute;right:25px;top:-35px;font-size:170px;font-weight:900;color:rgba(255,255,255,.035)}
+          .smartHubGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center;position:relative;z-index:2}
+          .smartHubBox h2{font-size:29px;margin:7px 0 8px}.smartHubBox p{color:#c8d3dc;margin:0;line-height:1.55;font-size:13px}
+          .smartHubLabel{color:#d9b46e;font-size:10px;font-weight:900;letter-spacing:1.5px}
+          .smartAsk{display:flex;gap:9px}.smartAsk input{flex:1;border:1px solid rgba(255,255,255,.15);background:#fff;color:#102b42;border-radius:12px;padding:14px 15px;font-size:13px;outline:none}.smartAsk button{border:0;border-radius:12px;padding:13px 18px;background:#d5aa5e;color:#09233b;font-weight:900;cursor:pointer}
+          .smartHint{font-size:10px;color:#8fa3b3;margin-top:8px}
+          .popularWrap{padding:4px 0 34px}.popularTitle{font-size:19px;color:#0b2944;margin:0 0 13px}.popularGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}
+          .popularLink{background:#fff;border:1px solid #e2e8ed;border-radius:13px;padding:14px 12px;text-decoration:none;color:#12324c;font-size:11px;font-weight:850;min-height:70px;display:flex;align-items:center;gap:9px}.popularLink:hover{border-color:#d2b16e;transform:translateY(-1px)}
+          .popularIcon{width:30px;height:30px;flex:0 0 30px;border-radius:8px;background:#f6f0e5;color:#a17631;display:grid;place-items:center;font-size:10px;font-weight:900}
+          .trustStrip{margin:0 0 34px;border:1px solid #e4e9ed;background:#fbfcfd;border-radius:15px;padding:15px 18px;display:flex;gap:12px;align-items:center}.trustMark{width:38px;height:38px;border-radius:10px;background:#e9f5ef;color:#126246;display:grid;place-items:center;font-weight:900}.trustStrip strong{font-size:12px;color:#0b2944;display:block}.trustStrip span{font-size:10px;color:#758492;display:block;margin-top:3px}
+          .homeLongQuick{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.homeLongQuick em{font-style:normal;font-size:10px;font-weight:850;padding:6px 9px;border:1px solid rgba(10,40,65,.12);border-radius:20px;color:#506577;background:rgba(255,255,255,.48)}
+          @media(max-width:950px){.popularGrid{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.smartHubGrid{grid-template-columns:1fr}.smartAsk{flex-direction:column}.popularGrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:430px){.popularGrid{grid-template-columns:1fr}}
+        </style>
+        <div class="container">
+          <div class="smartHubBox">
+            <div class="smartHubGrid">
+              <div><div class="smartHubLabel">${lang==="uz"?"AI YO‘NALISH TANLASH":lang==="ru"?"AI ВЫБОР НАПРАВЛЕНИЯ":"AI LEGAL ROUTING"}</div>
+                <h2>${lang==="uz"?"Qaysi bo‘lim kerakligini bilmaysizmi?":lang==="ru"?"Не знаете, какой раздел выбрать?":"Not sure which legal area you need?"}</h2>
+                <p>${lang==="uz"?"Muammoingizni bir jumlada yozing. HUQUQIY AI matndagi kalit huquqiy mavzuga qarab sizni Oila, Mehnat yoki Biznes bo‘limiga yo‘naltiradi.":lang==="ru"?"Опишите проблему одним предложением — система предложит подходящий раздел.":"Describe the problem in one sentence and the system will suggest the relevant area."}</p>
+              </div>
+              <div><div class="smartAsk"><input id="smartLegalInput" placeholder="${lang==="uz"?"Masalan: ish haqimni 3 oydan beri bermayapti...":lang==="ru"?"Например: зарплату не платят 3 месяца...":"Example: my salary has not been paid for 3 months..."}"><button type="button" onclick="smartLegalRoute()">${lang==="uz"?"Yo‘nalishni aniqlash →":lang==="ru"?"Определить →":"Find area →"}</button></div><div id="smartLegalHint" class="smartHint"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="popularWrap"><div class="container">
+        <h2 class="popularTitle">${lang==="uz"?"Eng ko‘p ishlatiladigan xizmatlar":lang==="ru"?"Популярные услуги":"Popular services"}</h2>
+        <div class="popularGrid">
+          <a class="popularLink" href="/family${q(lang)}"><span class="popularIcon">O</span>${lang==="uz"?"Ajrim arizasi":lang==="ru"?"Иск о разводе":"Divorce claim"}</a>
+          <a class="popularLink" href="/family${q(lang)}"><span class="popularIcon">A</span>${lang==="uz"?"Aliment hisoblash":lang==="ru"?"Расчет алиментов":"Alimony analysis"}</a>
+          <a class="popularLink" href="/employment${q(lang)}"><span class="popularIcon">M</span>${lang==="uz"?"Ishga tiklash":lang==="ru"?"Восстановление на работе":"Reinstatement"}</a>
+          <a class="popularLink" href="/employment${q(lang)}"><span class="popularIcon">I</span>${lang==="uz"?"Ish haqi undirish":lang==="ru"?"Взыскание зарплаты":"Wage recovery"}</a>
+          <a class="popularLink" href="/business${q(lang)}"><span class="popularIcon">Q</span>${lang==="uz"?"Qarzdorlik undirish":lang==="ru"?"Взыскание долга":"Debt recovery"}</a>
+          <a class="popularLink" href="/business${q(lang)}"><span class="popularIcon">S</span>${lang==="uz"?"Shartnoma tayyorlash":lang==="ru"?"Подготовка договора":"Draft contract"}</a>
+        </div>
+        <div class="trustStrip"><div class="trustMark">✓</div><div><strong>${lang==="uz"?"HUQUQIY AI kiritilmagan faktlarni uydirmaydi":lang==="ru"?"HUQUQIY AI не выдумывает отсутствующие факты":"HUQUQIY AI does not invent missing facts"}</strong><span>${lang==="uz"?"Kiritilmagan ism, sana, summa, sud, shartnoma raqami yoki dalil avtomatik to‘qib chiqarilmaydi; yetishmayotgan ma’lumot foydalanuvchidan so‘raladi yoki to‘ldirish uchun belgilanadi.":lang==="ru"?"Отсутствующие имена, даты, суммы, суды и доказательства не выдумываются.":"Missing names, dates, amounts, courts and evidence are not fabricated."}</span></div></div>
+      </div></section>
+
+      <script>
+        function smartLegalRoute(){
+          const el=document.getElementById("smartLegalInput"), hint=document.getElementById("smartLegalHint");
+          const s=(el.value||"").toLowerCase().replace(/[‘’ʻ']/g,"");
+          if(!s.trim()){hint.textContent="${lang==="uz"?"Muammoingizni qisqacha yozing.":lang==="ru"?"Кратко опишите проблему.":"Briefly describe your issue."}";return;}
+          const family=["aliment","ajrim","nikoh","bola","farzand","erim","xotin","turmush","mol-mulk","otalik","onali"];
+          const labor=["ish haqi","oylik","ishdan","ish beruvchi","mehnat","ta'til","tatil","xodim","ishga tik","bo'shat","boshat"];
+          const business=["mchj","korxona","qarzdor","shartnoma","kontragent","tadbirkor","biznes","soliq","litsenzi","iqtisodiy sud","ta'sischi","tasischi"];
+          const score=a=>a.reduce((n,k)=>n+(s.includes(k)?1:0),0);
+          const f=score(family),l=score(labor),b=score(business);
+          if(f===0&&l===0&&b===0){hint.textContent="${lang==="uz"?"Aniq yo‘nalish topilmadi. Umumiy Huquqiy yordamchidan boshlashingiz mumkin.":lang==="ru"?"Направление не определено. Начните с юридического помощника.":"No clear area detected. Start with the legal assistant."}";return;}
+          const path=f>=l&&f>=b?"/family":l>=f&&l>=b?"/employment":"/business";
+          const name=path==="/family"?"${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}":path==="/employment"?"${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}":"${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}";
+          hint.innerHTML="${lang==="uz"?"Mos yo‘nalish: ":lang==="ru"?"Подходящее направление: ":"Suggested area: "} <b>"+name+"</b> · <a style='color:#e0ba73' href='"+path+"${q(lang)}'>${lang==="uz"?"bo‘limga kirish →":lang==="ru"?"открыть →":"open →"}</a>";
+        }
+      </script>
 
       <!-- SOURCES -->
 
