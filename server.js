@@ -6,6 +6,9 @@ try {
 
 const http = require("http");
 const querystring = require("querystring");
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
 
 const PORT = process.env.PORT || 3000;
 
@@ -103,6 +106,64 @@ async function readJson(req) {
   }
 }
 
+
+// ======================================================
+// PRIVACY + SHAXSIY KABINET — MVP AUTH
+// ======================================================
+
+const DATA_DIR = path.join(__dirname, "data");
+const USERS_FILE = path.join(DATA_DIR, "users.json");
+const SESSIONS = new Map();
+
+function ensureDataStore(){
+  if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR,{recursive:true});
+  if(!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE,"[]","utf8");
+}
+function loadUsers(){
+  ensureDataStore();
+  try { return JSON.parse(fs.readFileSync(USERS_FILE,"utf8")); } catch { return []; }
+}
+function saveUsers(users){
+  ensureDataStore();
+  fs.writeFileSync(USERS_FILE,JSON.stringify(users,null,2),"utf8");
+}
+function normalizeEmail(v){ return String(v||"").trim().toLowerCase(); }
+function hashPassword(password, salt=crypto.randomBytes(16).toString("hex")){
+  const hash=crypto.scryptSync(String(password),salt,64).toString("hex");
+  return {salt,hash};
+}
+function verifyPassword(password,user){
+  try {
+    const candidate=crypto.scryptSync(String(password),user.salt,64);
+    const stored=Buffer.from(user.passwordHash,"hex");
+    return stored.length===candidate.length && crypto.timingSafeEqual(stored,candidate);
+  } catch { return false; }
+}
+function parseCookies(req){
+  const out={};
+  String(req.headers.cookie||"").split(";").forEach(part=>{
+    const i=part.indexOf("="); if(i<0) return;
+    out[part.slice(0,i).trim()]=decodeURIComponent(part.slice(i+1).trim());
+  });
+  return out;
+}
+function currentUser(req){
+  const token=parseCookies(req).huquqiy_session;
+  if(!token) return null;
+  const session=SESSIONS.get(token);
+  if(!session || session.expiresAt<Date.now()){ if(token) SESSIONS.delete(token); return null; }
+  return loadUsers().find(u=>u.id===session.userId)||null;
+}
+function createSession(res,userId){
+  const token=crypto.randomBytes(32).toString("hex");
+  SESSIONS.set(token,{userId,expiresAt:Date.now()+1000*60*60*24*7});
+  res.setHeader("Set-Cookie",`huquqiy_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${process.env.NODE_ENV==="production"?"; Secure":""}`);
+}
+function clearSession(req,res){
+  const token=parseCookies(req).huquqiy_session;
+  if(token) SESSIONS.delete(token);
+  res.setHeader("Set-Cookie",`huquqiy_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${process.env.NODE_ENV==="production"?"; Secure":""}`);
+}
 
 // ======================================================
 // TILLAR — UZ / RU / EN
@@ -4781,6 +4842,10 @@ function navigation(lang) {
             ${lang === "uz" ? "Mehnat huquqi" : lang === "ru" ? "Трудовое право" : "Employment law"}
           </a>
 
+          <a href="/account${q(lang)}">
+            ${lang === "uz" ? "Shaxsiy kabinet" : lang === "ru" ? "Личный кабинет" : "My account"}
+          </a>
+
         </nav>
 
 
@@ -5201,6 +5266,13 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 @media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
 @media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
 
+/* PRIVACY GATE + ACCOUNT */
+.privacyGate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(3,14,24,.76);backdrop-filter:blur(12px)}
+.privacyGate.show{display:flex}.privacyCard{width:min(760px,100%);max-height:90vh;overflow:auto;padding:30px;border-radius:24px;background:#fff;border:1px solid rgba(201,168,106,.35);box-shadow:0 35px 100px rgba(0,0,0,.32)}
+.privacyCard h2{margin:0 0 10px;color:#071827;font-size:30px}.privacyCard p,.privacyCard li{color:#5f6e79;font-size:14px;line-height:1.7}.privacyChecks{display:grid;gap:12px;margin:20px 0}.privacyCheck{display:flex;gap:11px;align-items:flex-start;padding:13px;border:1px solid #e3e8ec;border-radius:13px;background:#fafbfb}.privacyCheck input{margin-top:4px}.privacyActions{display:flex;gap:10px;flex-wrap:wrap}.privacyLinks{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:13px}.privacyLinks a{color:#86662f;font-weight:800}
+.accountGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.accountCard{padding:22px;border:1px solid #e0e6ea;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(6,17,31,.05)}.accountCard h3{margin:0 0 8px}.authWrap{width:min(620px,92%);margin:55px auto}.authTabs{display:flex;gap:10px;margin-bottom:18px}.authForm{display:grid;gap:14px}.authForm input{width:100%;padding:13px 14px;border:1px solid #d8e0e6;border-radius:12px}.accountHero{padding:28px;border-radius:20px;color:#fff;background:linear-gradient(135deg,#071827,#103b59);margin-bottom:20px}.accountHero p{color:#c7d2da}.miniDisclaimer{position:fixed;left:16px;right:16px;bottom:14px;z-index:2000;max-width:920px;margin:auto;padding:10px 14px;border:1px solid #e6d7b7;border-radius:12px;background:rgba(255,250,239,.96);box-shadow:0 10px 30px rgba(6,17,31,.10);font-size:12px;color:#6b5a37;text-align:center}
+@media(max-width:800px){.accountGrid{grid-template-columns:1fr}.privacyCard{padding:22px}.miniDisclaimer{left:8px;right:8px}}
+
   </style>
 
 
@@ -5215,6 +5287,29 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
   ${content}
 
   ${footer(lang)}
+
+  <div id="privacyGate" class="privacyGate" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+    <div class="privacyCard">
+      <div class="eyebrow">HUQUQIY AI · MUHIM MA’LUMOT</div>
+      <h2 id="privacyTitle">${lang === "uz" ? "Foydalanishdan oldin" : lang === "ru" ? "Перед использованием" : "Before you continue"}</h2>
+      <p>${lang === "uz" ? "Huquqiy AI huquqiy axborot va hujjat tayyorlashda yordam beruvchi sun’iy intellekt tizimidir. U advokat, notarius yoki sudning o‘rnini bosmaydi." : lang === "ru" ? "Huquqiy AI — система искусственного интеллекта для правовой информации и подготовки проектов документов. Она не заменяет адвоката, нотариуса или суд." : "Huquqiy AI is an AI system for legal information and document drafting. It does not replace a lawyer, notary or court."}</p>
+      <ul>
+        <li>${lang === "uz" ? "AI javoblarida xatolik yoki eskirgan ma’lumot bo‘lishi mumkin." : lang === "ru" ? "Ответы ИИ могут содержать ошибки или устаревшую информацию." : "AI answers may contain errors or outdated information."}</li>
+        <li>${lang === "uz" ? "Muhim huquqiy qarordan oldin rasmiy manbani tekshiring." : lang === "ru" ? "Перед важным юридическим решением проверьте официальный источник." : "Verify official sources before important legal decisions."}</li>
+        <li>${lang === "uz" ? "Zarur bo‘lmasa pasport, bank karta, parol va boshqa ortiqcha maxfiy ma’lumotlarni kiritmang." : lang === "ru" ? "Не вводите без необходимости паспортные, банковские, парольные и иные избыточные конфиденциальные данные." : "Do not enter unnecessary passport, bank-card, password or other sensitive data."}</li>
+      </ul>
+      <div class="privacyChecks">
+        <label class="privacyCheck"><input id="termsOk" type="checkbox"><span>${lang === "uz" ? "Foydalanish shartlari bilan tanishdim va qabul qilaman." : lang === "ru" ? "Я ознакомился(-ась) и принимаю условия использования." : "I have read and accept the Terms of Use."}</span></label>
+        <label class="privacyCheck"><input id="privacyOk" type="checkbox"><span>${lang === "uz" ? "Maxfiylik va shaxsiy ma’lumotlarni qayta ishlash shartlari bilan tanishdim." : lang === "ru" ? "Я ознакомился(-ась) с условиями конфиденциальности и обработки персональных данных." : "I have read the privacy and personal-data processing terms."}</span></label>
+      </div>
+      <div class="privacyActions"><button id="privacyContinue" class="btn btnPrimary" type="button" disabled>${lang === "uz" ? "Huquqiy AI’ga kirish" : lang === "ru" ? "Войти в Huquqiy AI" : "Enter Huquqiy AI"}</button></div>
+      <div class="privacyLinks"><a href="/terms${q(lang)}">${lang === "uz" ? "Foydalanish shartlari" : lang === "ru" ? "Условия использования" : "Terms of Use"}</a><a href="/privacy${q(lang)}">${lang === "uz" ? "Maxfiylik siyosati" : lang === "ru" ? "Политика конфиденциальности" : "Privacy Policy"}</a></div>
+    </div>
+  </div>
+  <div class="miniDisclaimer">${lang === "uz" ? "Huquqiy AI xato qilishi mumkin. Muhim huquqiy ma’lumotlarni rasmiy manbalardan tekshiring." : lang === "ru" ? "Huquqiy AI может ошибаться. Проверяйте важную юридическую информацию по официальным источникам." : "Huquqiy AI can make mistakes. Verify important legal information with official sources."}</div>
+  <script>
+  (()=>{const gate=document.getElementById('privacyGate'),a=document.getElementById('termsOk'),b=document.getElementById('privacyOk'),btn=document.getElementById('privacyContinue');if(!gate)return;const key='huquqiy_ai_consent_v1';if(localStorage.getItem(key)!=='accepted')gate.classList.add('show');const sync=()=>btn.disabled=!(a.checked&&b.checked);a.addEventListener('change',sync);b.addEventListener('change',sync);btn.addEventListener('click',()=>{if(!(a.checked&&b.checked))return;localStorage.setItem(key,'accepted');localStorage.setItem(key+'_at',new Date().toISOString());gate.classList.remove('show');});})();
+  </script>
 
 </body>
 
@@ -12703,6 +12798,29 @@ function healthResponse(){
 }
 
 
+
+// ======================================================
+// PRIVACY / TERMS / ACCOUNT PAGES
+// ======================================================
+function legalPolicyPage(lang,type){
+  const isPrivacy=type==="privacy";
+  const title=isPrivacy?(lang==="uz"?"Maxfiylik siyosati":lang==="ru"?"Политика конфиденциальности":"Privacy Policy"):(lang==="uz"?"Foydalanish shartlari":lang==="ru"?"Условия использования":"Terms of Use");
+  const body=lang==="uz"
+    ? (isPrivacy?`<p>Huquqiy AI foydalanuvchi taqdim etgan ma’lumotlardan xizmatni ko‘rsatish, huquqiy savolni tahlil qilish va foydalanuvchi so‘ragan hujjat loyihasini tayyorlash maqsadida foydalanadi.</p><p>Zarur bo‘lmagan maxfiy ma’lumotlarni kiritmang. Akkaunt parollari ochiq ko‘rinishda saqlanmaydi. Foydalanuvchi o‘z akkaunti va saqlangan ma’lumotlari bo‘yicha boshqaruv imkoniyatlariga ega bo‘lishi kerak.</p><p>Ushbu MVP matni loyiha real hosting, analitika, uchinchi tomon servislar va ma’lumot saqlash arxitekturasi yakunlangach huquqshunos tomonidan to‘liq moslashtirilishi kerak.</p>`:`<p>Huquqiy AI huquqiy axborot beruvchi va hujjat loyihalarini tayyorlashga yordam beruvchi sun’iy intellekt tizimidir.</p><p>AI javobi yakuniy sud qarori, advokat xulosasi yoki davlat organining rasmiy qarori hisoblanmaydi. Foydalanuvchi muhim ma’lumotlarni amaldagi qonunchilik va rasmiy manbalardan tekshirishi kerak.</p><p>Platformadan qonunga xilof maqsadlarda foydalanish mumkin emas. Foydalanuvchi kiritgan ma’lumotlarning to‘g‘riligi uchun o‘zi javob beradi.</p>`)
+    : lang==="ru"?`<p>Это базовая версия ${isPrivacy?"политики конфиденциальности":"условий использования"}. Перед публичным запуском текст должен быть согласован с фактической архитектурой хранения и обработки данных.</p>`:`<p>This is the MVP ${isPrivacy?"privacy policy":"terms of use"}. Before public launch, it must be aligned with the actual data-storage and processing architecture.</p>`;
+  return page({lang,title,content:`<main class="container" style="padding:55px 0 90px"><div class="surface surfacePad"><div class="eyebrow">HUQUQIY AI</div><h1 class="sectionTitle">${title}</h1><div class="sectionText" style="max-width:900px">${body}</div><a class="btn btnOutline" href="/${q(lang)}">${tr(lang,"back")}</a></div></main>`});
+}
+function authPage(lang,mode="login",message=""){
+  const register=mode==="register";
+  const title=register?(lang==="uz"?"Ro‘yxatdan o‘tish":lang==="ru"?"Регистрация":"Create account"):(lang==="uz"?"Kabinetga kirish":lang==="ru"?"Войти в кабинет":"Sign in");
+  return page({lang,title,content:`<main class="authWrap"><div class="surface surfacePad"><div class="eyebrow">SHAXSIY KABINET</div><h1 class="sectionTitle">${title}</h1>${message?`<div class="notice noticeGold">${esc(message)}</div>`:""}<form class="authForm" method="post" action="/${register?"register":"login"}${q(lang)}">${register?`<label>Ism<input name="name" required minlength="2" maxlength="80" autocomplete="name"></label>`:""}<label>Email<input name="email" type="email" required maxlength="160" autocomplete="email"></label><label>${lang==="uz"?"Parol":lang==="ru"?"Пароль":"Password"}<input name="password" type="password" required minlength="8" maxlength="128" autocomplete="${register?"new-password":"current-password"}"></label><button class="btn btnPrimary" type="submit">${title}</button></form><div class="privacyLinks"><a href="/${register?"login":"register"}${q(lang)}">${register?(lang==="uz"?"Akkauntim bor":lang==="ru"?"У меня уже есть аккаунт":"I already have an account"):(lang==="uz"?"Yangi akkaunt yaratish":lang==="ru"?"Создать аккаунт":"Create an account")}</a></div></div></main>`});
+}
+function accountPage(lang,user){
+  if(!user) return authPage(lang,"login");
+  const t=lang==="uz"?{hello:"Xush kelibsiz",cases:"Mening ishlarim",docs:"Mening hujjatlarim",chats:"AI suhbatlarim",privacy:"Maxfiylik va xavfsizlik",newcase:"Yangi huquqiy ish",empty:"Hozircha saqlangan ma’lumot yo‘q. Keyingi bosqichda mavjud AI savolnomalari va hujjatlarni shu kabinetga bog‘laymiz.",logout:"Chiqish"}:lang==="ru"?{hello:"Добро пожаловать",cases:"Мои дела",docs:"Мои документы",chats:"Диалоги с ИИ",privacy:"Конфиденциальность и безопасность",newcase:"Новое юридическое дело",empty:"Сохранённых данных пока нет. На следующем этапе мы свяжем существующие анкеты и документы с кабинетом.",logout:"Выйти"}:{hello:"Welcome",cases:"My cases",docs:"My documents",chats:"AI conversations",privacy:"Privacy & security",newcase:"New legal matter",empty:"No saved data yet. Next we will connect the existing questionnaires and documents to this account.",logout:"Sign out"};
+  return page({lang,title:t.cases,content:`<main class="container" style="padding:45px 0 100px"><section class="accountHero"><div class="eyebrow">HUQUQIY AI ACCOUNT</div><h1>${t.hello}, ${esc(user.name)}</h1><p>${esc(user.email)}</p><a class="btn btnGold" href="/questionnaire${q(lang)}">${t.newcase}</a> <a class="btn btnOutline" href="/logout${q(lang)}">${t.logout}</a></section><div class="accountGrid"><div class="accountCard"><h3>⚖ ${t.cases}</h3><p>${t.empty}</p></div><div class="accountCard"><h3>▣ ${t.docs}</h3><p>${t.empty}</p></div><div class="accountCard"><h3>AI ${t.chats}</h3><p>${t.empty}</p></div><div class="accountCard"><h3>🔒 ${t.privacy}</h3><p>${lang==="uz"?"Parolingiz scrypt xeshi bilan saqlanadi. Sessiya HttpOnly cookie orqali boshqariladi.":lang==="ru"?"Пароль хранится как scrypt-хеш. Сессия управляется через HttpOnly cookie.":"Your password is stored as a scrypt hash. The session uses an HttpOnly cookie."}</p><a href="/privacy${q(lang)}" class="serviceLink">${t.privacy} →</a></div></div></main>`});
+}
+
 // ======================================================
 // SERVER
 // ======================================================
@@ -12732,6 +12850,27 @@ const server =
             )
           );
 
+
+        // ------------------------------------------------
+        // PRIVACY / TERMS / ACCOUNT
+        // ------------------------------------------------
+        if(req.method==="GET" && pathname==="/privacy") return sendHtml(res,legalPolicyPage(lang,"privacy"));
+        if(req.method==="GET" && pathname==="/terms") return sendHtml(res,legalPolicyPage(lang,"terms"));
+        if(req.method==="GET" && pathname==="/login") return sendHtml(res,authPage(lang,"login"));
+        if(req.method==="GET" && pathname==="/register") return sendHtml(res,authPage(lang,"register"));
+        if(req.method==="GET" && pathname==="/account") return sendHtml(res,accountPage(lang,currentUser(req)));
+        if(req.method==="GET" && pathname==="/logout"){ clearSession(req,res); return redirect(res,"/login"+q(lang)); }
+        if(req.method==="POST" && pathname==="/register"){
+          const form=await readForm(req); const email=normalizeEmail(form.email); const name=String(form.name||"").trim(); const password=String(form.password||"");
+          if(name.length<2 || !email.includes("@") || password.length<8) return sendHtml(res,authPage(lang,"register",lang==="uz"?"Ma’lumotlarni to‘g‘ri kiriting. Parol kamida 8 belgidan iborat bo‘lsin.":"Please check the entered data."),400);
+          const users=loadUsers(); if(users.some(u=>u.email===email)) return sendHtml(res,authPage(lang,"login",lang==="uz"?"Bu email bilan akkaunt mavjud. Kabinetga kiring.":"Account already exists."),409);
+          const hp=hashPassword(password); const user={id:crypto.randomUUID(),name,email,salt:hp.salt,passwordHash:hp.hash,createdAt:new Date().toISOString()}; users.push(user); saveUsers(users); createSession(res,user.id); return redirect(res,"/account"+q(lang));
+        }
+        if(req.method==="POST" && pathname==="/login"){
+          const form=await readForm(req); const email=normalizeEmail(form.email); const user=loadUsers().find(u=>u.email===email);
+          if(!user || !verifyPassword(String(form.password||""),user)) return sendHtml(res,authPage(lang,"login",lang==="uz"?"Email yoki parol noto‘g‘ri.":lang==="ru"?"Неверный email или пароль.":"Incorrect email or password."),401);
+          createSession(res,user.id); return redirect(res,"/account"+q(lang));
+        }
 
         // ------------------------------------------------
         // HOME
@@ -14183,4 +14322,3 @@ server.listen(
   930. Shaxsga doir ma’lumotlar biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
-*/
