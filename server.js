@@ -5168,6 +5168,100 @@ function navigation(lang) {
 }
 
 
+
+// ======================================================
+// APP LAYOUT — RESTORED
+// ======================================================
+function appLayout(lang = "uz", active = "", content = "", title = "Huquqiy AI", description = "") {
+  lang = getLang(lang);
+
+  const items = [
+    ["ai", "/ai", "✦", tr(lang, "assistant")],
+    ["questionnaire", "/questionnaire", "?", tr(lang, "questionnaire")],
+    ["sources", "/sources", "§", tr(lang, "sources")],
+    ["documents", "/documents", "▣", tr(lang, "documents")],
+    ["family", "/family", "⚖", lang === "ru" ? "Семейное право" : lang === "en" ? "Family law" : "Oila huquqi"],
+    ["business", "/business", "◇", lang === "ru" ? "Бизнес-право" : lang === "en" ? "Business law" : "Biznes huquqi"],
+    ["employment", "/employment", "▤", lang === "ru" ? "Трудовое право" : lang === "en" ? "Employment law" : "Mehnat huquqi"],
+    ["court", "/court", "⌖", tr(lang, "court")],
+    ["calculators", "/calculators", "=", tr(lang, "calculators")]
+  ];
+
+  const sideLinks = items.map(([key, href, icon, label]) => `
+    <a class="sideLink ${active === key ? "active" : ""}" href="${href}${q(lang)}">
+      <span class="sideIcon">${icon}</span>
+      <span>${esc(label)}</span>
+    </a>
+  `).join("");
+
+  const securityText =
+    lang === "ru"
+      ? "Перед важным юридическим решением проверяйте актуальные данные по официальным источникам."
+      : lang === "en"
+      ? "Verify current information through official sources before an important legal decision."
+      : "Muhim huquqiy qarordan oldin amaldagi ma’lumotlarni rasmiy manbalardan tekshiring.";
+
+  const appContent = `
+    <div class="appPage">
+      <div class="appLayout">
+        <aside class="sidebar">
+          <div class="sidebarBrand">
+            <div class="sidebarBrandTop">
+              <span class="sidebarBrandMark">§</span>
+              <div>
+                <strong>Huquqiy AI</strong>
+                <small>LEGAL INTELLIGENCE</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebarMenu">
+            <div class="sidebarLabel">${lang === "ru" ? "РАЗДЕЛЫ" : lang === "en" ? "SECTIONS" : "BO‘LIMLAR"}</div>
+            ${sideLinks}
+          </div>
+
+          <div class="sidebarBottom">
+            <div class="sidebarSecurity">
+              <span>✓</span>
+              <span>${esc(securityText)}</span>
+            </div>
+          </div>
+        </aside>
+
+        <section class="appMain">
+          <div class="appTop">
+            <div class="appBreadcrumb">
+              <a href="/${q(lang)}">${esc(tr(lang, "home"))}</a>
+              <span>›</span>
+              <strong>${esc(title || "Huquqiy AI")}</strong>
+            </div>
+            <div class="appTopRight">
+              ${appLanguageMenu(lang, active ? "/" + active : "/")}
+              <a class="appHomeButton" href="/${q(lang)}" title="${esc(tr(lang, "home"))}">⌂</a>
+            </div>
+          </div>
+
+          ${title ? `
+            <div class="appHeader">
+              <div class="appHeaderSmall">HUQUQIY AI</div>
+              <h1>${esc(title)}</h1>
+              ${description ? `<p>${esc(description)}</p>` : ""}
+            </div>
+          ` : ""}
+
+          ${content || ""}
+        </section>
+      </div>
+    </div>
+  `;
+
+  return page({
+    lang,
+    title: title || "Huquqiy AI",
+    content: appContent
+  });
+}
+
 // ======================================================
 // GLOBAL FOOTER — barcha public/account sahifalari uchun
 // ======================================================
@@ -9982,26 +10076,21 @@ function googleMapsSearch(
 }
 
 
-function googleMapsDirections(name, district = "") {
-  // Google Maps navigation uchun toza va barqaror URL.
-  // name ichida Toshkent/Uzbekistan oldindan bo‘lsa ham takrorlamaydi.
-  const parts = [name, district, "Toshkent", "Uzbekistan"]
-    .map(v => String(v || "").trim())
-    .filter(Boolean);
+function googleMapsDirections(
+  name,
+  district = ""
+) {
 
-  const unique = [];
-  for (const part of parts) {
-    if (!unique.some(x => x.toLowerCase() === part.toLowerCase())) {
-      unique.push(part);
-    }
-  }
+  const destination =
+    `${name}, ${district}, Toshkent, Uzbekistan`;
 
-  const destination = unique.join(", ");
+
   return (
     "https://www.google.com/maps/dir/?api=1&destination=" +
     encodeURIComponent(destination) +
-    "&travelmode=driving&dir_action=navigate"
+    "&travelmode=driving"
   );
+
 }
 
 
@@ -11328,10 +11417,8 @@ const STATE_ORGANIZATIONS = [
             </button>
 
             <a
-              class="courtMapButton primary courtNavButton"
+              class="courtMapButton primary"
               href="${directionUrl}"
-              data-nav="${esc(directionUrl)}"
-              onclick="return openCourtNavigation(this,event)"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -11545,10 +11632,8 @@ const internalAffairsCards =
 
 
             <a
-              class="courtMapButton primary courtNavButton"
+              class="courtMapButton primary"
               href="${directionUrl}"
-              data-nav="${esc(directionUrl)}"
-              onclick="return openCourtNavigation(this,event)"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -11609,7 +11694,7 @@ const mibCards = MIB_ORGANIZATIONS.map(name => {
       <div class="courtCardActions">
         <button type="button" class="courtMapButton" data-map="${esc(mapsUrl)}"
           data-name="${esc(name)}" onclick="showCourtMap(this)">📍 Xaritada ko‘rish</button>
-        <a class="courtMapButton primary courtNavButton" href="${directionUrl}" data-nav="${esc(directionUrl)}" onclick="return openCourtNavigation(this,event)" target="_blank"
+        <a class="courtMapButton primary" href="${directionUrl}" target="_blank"
           rel="noopener noreferrer">🧭 Yo‘nalish</a>
       </div>
     </article>
@@ -12177,24 +12262,6 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 
           }
         );
-
-
-        // Sud kartalaridagi “Yo‘nalish” tugmasi uchun barqaror navigation.
-        // Popup bloklansa ham oddiy href fallback ishlaydi.
-        window.openCourtNavigation = function(link, event){
-          const url = (link && (link.dataset.nav || link.href)) || "";
-          if (!url) return true;
-
-          if (event) event.preventDefault();
-
-          try {
-            const opened = window.open(url, "_blank", "noopener,noreferrer");
-            if (!opened) window.location.href = url;
-          } catch (_) {
-            window.location.href = url;
-          }
-          return false;
-        };
 
 
         window.showCourtMap =
