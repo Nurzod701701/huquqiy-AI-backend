@@ -4632,6 +4632,94 @@ const CSS_APP = `
 
 }
 
+
+/* =====================================================
+   HUQUQIY AI — READABLE LARGE TYPOGRAPHY OVERRIDE
+===================================================== */
+body{
+  font-size:16px;
+}
+.navlinks a{
+  font-size:13px !important;
+}
+.brandText strong{
+  font-size:19px !important;
+}
+.brandText small{
+  font-size:9px !important;
+}
+.sideLink{
+  font-size:14px !important;
+  min-height:50px;
+}
+.sidebarLabel{
+  font-size:10px !important;
+}
+.sidebarSecurity{
+  font-size:11px !important;
+}
+.appBreadcrumb{
+  font-size:12px !important;
+}
+.appLang a{
+  font-size:11px !important;
+}
+.appHeaderSmall{
+  font-size:11px !important;
+}
+.appHeader h1{
+  font-size:clamp(32px,4vw,44px) !important;
+}
+.appHeader p{
+  font-size:16px !important;
+  line-height:1.65;
+}
+.cardTitle,
+.calcCard h3{
+  font-size:23px !important;
+}
+.cardDescription,
+.calcCard p{
+  font-size:15px !important;
+  line-height:1.65;
+}
+.formGroup label{
+  font-size:14px !important;
+}
+.input,
+.formGroup input,
+.formGroup textarea,
+.formGroup select{
+  font-size:15px !important;
+  min-height:50px;
+}
+.btn{
+  font-size:14px !important;
+}
+.notice,
+.notice span{
+  font-size:14px !important;
+  line-height:1.6;
+}
+.calcResult{
+  font-size:16px !important;
+  line-height:1.6;
+}
+.resultLabel{
+  font-size:12px !important;
+}
+.footer,
+.footer p,
+.footer a{
+  font-size:13px !important;
+}
+@media(max-width:900px){
+  .sideLink{font-size:13px !important;}
+  .appHeader h1{font-size:30px !important;}
+  .appHeader p{font-size:15px !important;}
+  .calcCard h3{font-size:21px !important;}
+}
+
 `;
 
 
