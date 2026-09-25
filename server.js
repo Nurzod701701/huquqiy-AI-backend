@@ -4842,13 +4842,107 @@ function navigation(lang) {
           ${tr(lang, "court")}
         </a>
 
-        <a href="/calculators${q(lang)}">
+              <a href="/calculators${q(lang)}">
           ${tr(lang, "calculators")}
+        </a>
+
+        <a href="/employment${q(lang)}">
+          ${
+            lang === "uz"
+              ? "Mehnat huquqi"
+              : lang === "ru"
+              ? "Трудовое право"
+              : "Employment law"
+          }
+        </a>
+
+        <a
+          href="/login${q(lang)}"
+          class="mobileAccountLink"
+        >
+          <span>◉</span>
+
+          ${
+            lang === "uz"
+              ? "Shaxsiy kabinet"
+              : lang === "ru"
+              ? "Личный кабинет"
+              : "Personal account"
+          }
         </a>
 
       </div>
 
     </header>
+
+    <style>
+
+      #mobileNav.show{
+        display:grid !important;
+      }
+
+      #mobileNav a{
+        padding:12px 14px;
+        color:#526276;
+        background:#fff;
+        border:1px solid #e3e8ec;
+        border-radius:10px;
+        font-size:12px;
+        font-weight:750;
+        text-decoration:none;
+      }
+
+      /* SHAXSIY KABINET — IPHONE + ANDROID */
+
+      #mobileNav .mobileAccountLink{
+        display:flex !important;
+        align-items:center;
+        justify-content:center;
+        gap:9px;
+
+        min-height:50px;
+        margin-top:6px;
+
+        color:#ffffff !important;
+
+        background:
+          linear-gradient(
+            145deg,
+            #06111f,
+            #0b2946
+          ) !important;
+
+        border:
+          1px solid rgba(201,168,106,.85) !important;
+
+        border-radius:11px;
+
+        font-size:14px !important;
+        font-weight:850 !important;
+
+        box-shadow:
+          0 8px 22px rgba(6,17,31,.16);
+
+        -webkit-tap-highlight-color:
+          transparent;
+      }
+
+      #mobileNav .mobileAccountLink span{
+        color:#d9c083;
+        font-size:18px;
+      }
+
+      #mobileNav .mobileAccountLink:active{
+        transform:scale(.98);
+      }
+
+      @media(min-width:1151px){
+
+        #mobileNav{
+          display:none !important;
+        }
+
+      }
 
     <style>
 
