@@ -5131,7 +5131,9 @@ function navigation(lang) {
       @media(max-width:370px){
 
         .mobileAccountDirectText{
-          display:none;
+          display:inline-block !important;
+          max-width:105px;
+          font-size:10px;
         }
 
         .mobileAccountDirect{
@@ -12362,6 +12364,78 @@ const ACCOUNT_CSS = `
 @media(max-width:620px){.accountMain{padding:16px}.accountStats{grid-template-columns:1fr 1fr}.accountCards{grid-template-columns:1fr}.accountAuth{padding:22px}.accountTop{align-items:flex-start;flex-direction:column}}
 `;
 
+
+// ==================== ACCOUNT I18N START ====================
+// UZ / RU / EN — account, registration, login, verification,
+// password reset, profile and account navigation helper.
+const ACCOUNT_I18N = {
+  uz: {
+    account:"Shaxsiy kabinet", login:"Kirish", register:"Ro‘yxatdan o‘tish",
+    logout:"Chiqish", email:"Email", phone:"Telefon", password:"Parol",
+    confirmPassword:"Parolni tasdiqlang", fullName:"Ism va familiya",
+    forgotPassword:"Parolni unutdingizmi?", noAccount:"Akkauntingiz yo‘qmi?",
+    haveAccount:"Akkauntingiz bormi?", createAccount:"Ro‘yxatdan o‘tish",
+    signIn:"Kirish", dashboard:"Bosh sahifa", cases:"Mening ishlarim",
+    newCase:"Yangi huquqiy ish", chats:"AI suhbatlarim",
+    documents:"Hujjatlarim", notifications:"Bildirishnomalar",
+    profile:"Profil", security:"Xavfsizlik", settings:"Sozlamalar",
+    verify:"Tasdiqlash", verificationCode:"Tasdiqlash kodi",
+    resetPassword:"Parolni tiklash", newPassword:"Yangi parol",
+    save:"Saqlash", cancel:"Bekor qilish", back:"Orqaga",
+    required:"Majburiy maydon", invalidEmail:"Email manzil noto‘g‘ri",
+    wrongLogin:"Email yoki parol noto‘g‘ri",
+    passwordMismatch:"Parollar bir xil emas",
+    registered:"Ro‘yxatdan o‘tish muvaffaqiyatli yakunlandi",
+    saved:"Ma’lumotlar saqlandi"
+  },
+  ru: {
+    account:"Личный кабинет", login:"Войти", register:"Регистрация",
+    logout:"Выйти", email:"Электронная почта", phone:"Телефон", password:"Пароль",
+    confirmPassword:"Подтвердите пароль", fullName:"Имя и фамилия",
+    forgotPassword:"Забыли пароль?", noAccount:"Нет аккаунта?",
+    haveAccount:"Уже есть аккаунт?", createAccount:"Зарегистрироваться",
+    signIn:"Войти", dashboard:"Главная", cases:"Мои дела",
+    newCase:"Новое юридическое дело", chats:"Мои AI-чаты",
+    documents:"Мои документы", notifications:"Уведомления",
+    profile:"Профиль", security:"Безопасность", settings:"Настройки",
+    verify:"Подтвердить", verificationCode:"Код подтверждения",
+    resetPassword:"Восстановление пароля", newPassword:"Новый пароль",
+    save:"Сохранить", cancel:"Отмена", back:"Назад",
+    required:"Обязательное поле", invalidEmail:"Неверный адрес электронной почты",
+    wrongLogin:"Неверная электронная почта или пароль",
+    passwordMismatch:"Пароли не совпадают",
+    registered:"Регистрация успешно завершена",
+    saved:"Данные сохранены"
+  },
+  en: {
+    account:"Personal account", login:"Sign in", register:"Registration",
+    logout:"Sign out", email:"Email", phone:"Phone", password:"Password",
+    confirmPassword:"Confirm password", fullName:"Full name",
+    forgotPassword:"Forgot password?", noAccount:"Don't have an account?",
+    haveAccount:"Already have an account?", createAccount:"Create account",
+    signIn:"Sign in", dashboard:"Dashboard", cases:"My cases",
+    newCase:"New legal case", chats:"My AI chats",
+    documents:"My documents", notifications:"Notifications",
+    profile:"Profile", security:"Security", settings:"Settings",
+    verify:"Verify", verificationCode:"Verification code",
+    resetPassword:"Reset password", newPassword:"New password",
+    save:"Save", cancel:"Cancel", back:"Back",
+    required:"Required field", invalidEmail:"Invalid email address",
+    wrongLogin:"Incorrect email or password",
+    passwordMismatch:"Passwords do not match",
+    registered:"Registration completed successfully",
+    saved:"Changes saved"
+  }
+};
+
+function at(lang, key){
+  lang = getLang(lang);
+  return (ACCOUNT_I18N[lang] && ACCOUNT_I18N[lang][key])
+    || ACCOUNT_I18N.uz[key]
+    || key;
+}
+// ===================== ACCOUNT I18N END =====================
+
 function accountPublicPage(lang,title,body){
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — Huquqiy AI</title><style>${CSS}${ACCOUNT_CSS}</style></head><body>${navigation(lang)}<main class="accountWrap">${body}</main>${footer(lang)}</body></html>`;
 }
@@ -12369,8 +12443,8 @@ function accountSidebar(lang,user,active){
   const admin=user.role==="owner"||user.role==="admin";
   const item=(key,icon,label,href)=>`<a class="${active===key?"active":""}" href="${href}${href.includes("?")?"&":"?"}lang=${lang}"><span>${icon}</span>${label}</a>`;
   return `<aside class="accountSide"><div class="accountSideBrand"><span>§</span><span>Huquqiy AI</span></div>
-  ${item("dashboard","▦","Dashboard","/account")}${item("cases","⚖","Mening ishlarim","/account/cases")}${item("new","＋","Yangi huquqiy ish","/account/cases/new")}${item("chats","💬","AI suhbatlarim","/account/chats")}${item("documents","▤","Hujjatlarim","/account/documents")}${item("notifications","●","Bildirishnomalar","/account/notifications")}${item("profile","◉","Profil","/account/profile")}${item("security","⌾","Xavfsizlik","/account/security")}${item("settings","⚙","Sozlamalar","/account/settings")}${admin?item("admin","◆","ADMIN PANEL","/admin"):""}
-  <div class="accountSideBottom"><a href="/logout?lang=${lang}">↪ Chiqish</a></div></aside>`;
+  ${item("dashboard","▦","Dashboard","/account")}${item("cases","⚖",at(lang,"cases"),"/account/cases")}${item("new","＋",at(lang,"newCase"),"/account/cases/new")}${item("chats","💬",at(lang,"chats"),"/account/chats")}${item("documents","▤",at(lang,"documents"),"/account/documents")}${item("notifications","●",at(lang,"notifications"),"/account/notifications")}${item("profile","◉",at(lang,"profile"),"/account/profile")}${item("security","⌾",at(lang,"security"),"/account/security")}${item("settings","⚙",at(lang,"settings"),"/account/settings")}${admin?item("admin","◆","ADMIN PANEL","/admin"):""}
+  <div class="accountSideBottom"><a href="/logout?lang=${lang}">↪ ${at(lang,"logout")}</a></div></aside>`;
 }
 function accountAppPage(lang,user,active,title,body){
   const initials=(user.firstName?.[0]||"U")+(user.lastName?.[0]||"");
@@ -12384,10 +12458,10 @@ function accountRequire(req,res,lang,roles=null){
 }
 
 function accountLoginPage(lang,msg=""){
-  return accountPublicPage(lang,"Kirish",`<section class="accountAuth"><h1>Shaxsiy kabinetga kirish</h1><p class="accountMuted">Email va parolingiz orqali Huquqiy AI profilingizga kiring.</p>${msg?accountMessage(msg,msg.includes("xato")||msg.includes("noto")?"error":"info"):""}<form class="accountForm" method="post" action="/login?lang=${lang}"><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">Kirish</button></form><div class="accountActions" style="margin-top:16px"><a href="/register?lang=${lang}">Ro‘yxatdan o‘tish</a><a href="/forgot-password?lang=${lang}">Parolni unutdingizmi?</a></div></section>`);
+  return accountPublicPage(lang,at(lang,"login"),`<section class="accountAuth"><h1>${at(lang,"account")}ga kirish</h1><p class="accountMuted">Email va parolingiz orqali Huquqiy AI profilingizga kiring.</p>${msg?accountMessage(msg,msg.includes("xato")||msg.includes("noto")?"error":"info"):""}<form class="accountForm" method="post" action="/login?lang=${lang}"><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">${at(lang,"login")}</button></form><div class="accountActions" style="margin-top:16px"><a href="/register?lang=${lang}">${at(lang,"createAccount")}</a><a href="/forgot-password?lang=${lang}">${at(lang,"forgotPassword")}</a></div></section>`);
 }
 function accountRegisterPage(lang,msg=""){
-  return accountPublicPage(lang,"Ro‘yxatdan o‘tish",`<section class="accountAuth"><h1>Akkaunt yaratish</h1><p class="accountMuted">Huquqiy ishlaringiz, AI suhbatlari va hujjatlaringizni bitta profilga bog‘lang.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/register?lang=${lang}"><label>Ism<input name="firstName" required maxlength="60"></label><label>Familiya<input name="lastName" required maxlength="60"></label><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label>Parolni takrorlang<input name="password2" type="password" minlength="8" required></label><label style="display:flex;gap:10px;align-items:flex-start"><input style="width:auto;margin-top:4px" name="terms" value="yes" type="checkbox" required><span>Foydalanish shartlari va maxfiylik siyosatini o‘qidim.</span></label><button class="accountButton gold">Akkaunt yaratish</button></form><p class="accountMuted">Akkauntingiz bormi? <a href="/login?lang=${lang}">Kirish</a></p></section>`);
+  return accountPublicPage(lang,at(lang,"register"),`<section class="accountAuth"><h1>Akkaunt yaratish</h1><p class="accountMuted">Huquqiy ishlaringiz, AI suhbatlari va hujjatlaringizni bitta profilga bog‘lang.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/register?lang=${lang}"><label>Ism<input name="firstName" required maxlength="60"></label><label>Familiya<input name="lastName" required maxlength="60"></label><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label>Parolni takrorlang<input name="password2" type="password" minlength="8" required></label><label style="display:flex;gap:10px;align-items:flex-start"><input style="width:auto;margin-top:4px" name="terms" value="yes" type="checkbox" required><span>Foydalanish shartlari va maxfiylik siyosatini o‘qidim.</span></label><button class="accountButton gold">Akkaunt yaratish</button></form><p class="accountMuted">Akkauntingiz bormi? <a href="/login?lang=${lang}">${at(lang,"login")}</a></p></section>`);
 }
 function accountVerifyPage(lang,email,msg=""){
   return accountPublicPage(lang,"Emailni tasdiqlash",`<section class="accountAuth"><h1>Emailni tasdiqlash</h1><p class="accountMuted"><b>${esc(email)}</b> manziliga yuborilgan 6 xonali kodni kiriting.</p>${msg?accountMessage(msg,msg.includes("Tasdiqlandi")?"success":"error"):""}<form class="accountForm" method="post" action="/verify-email?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Tasdiqlash kodi<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><button class="accountButton gold">Tasdiqlash</button></form></section>`);
@@ -12395,14 +12469,14 @@ function accountVerifyPage(lang,email,msg=""){
 function accountDashboard(lang,user,db){
   const cases=db.cases.filter(x=>x.userId===user.id), docs=db.documents.filter(x=>x.userId===user.id), chats=db.conversations.filter(x=>x.userId===user.id), done=cases.filter(x=>x.status==="completed").length;
   const recent=[...cases].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,6);
-  return accountAppPage(lang,user,"dashboard","Shaxsiy kabinet",`<section class="accountHero"><h1>Xush kelibsiz, ${esc(user.firstName)}!</h1><p>Huquqiy ishlaringiz, hujjatlaringiz va AI maslahatlaringiz shu yerda boshqariladi.</p></section><section class="accountStats"><div class="accountStat"><strong>${cases.filter(x=>x.status!=="completed").length}</strong><span>Faol ishlar</span></div><div class="accountStat"><strong>${docs.length}</strong><span>Hujjatlar</span></div><div class="accountStat"><strong>${chats.length}</strong><span>AI suhbatlar</span></div><div class="accountStat"><strong>${done}</strong><span>Yakunlangan</span></div></section><section class="accountPanel"><div class="accountTop"><div><h2>Oxirgi huquqiy ishlar</h2><div class="accountMuted">Davom ettirish uchun ishni tanlang.</div></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">＋ Yangi ish</a></div>${recent.length?`<div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>Yo‘nalish</th><th>Masala</th><th>Status</th><th>Progress</th><th></th></tr></thead><tbody>${recent.map(c=>`<tr><td><b>${esc(c.caseNo)}</b></td><td>${esc(c.area)}</td><td>${esc(c.title)}</td><td><span class="accountBadge">${esc(c.status)}</span></td><td><div class="accountProgress"><i style="width:${Number(c.progress||0)}%"></i></div> ${Number(c.progress||0)}%</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">Ochish</a></td></tr>`).join("")}</tbody></table></div>`:`<p class="accountMuted">Hali huquqiy ish ochilmagan.</p>`}</section>`);
+  return accountAppPage(lang,user,"dashboard",at(lang,"account"),`<section class="accountHero"><h1>Xush kelibsiz, ${esc(user.firstName)}!</h1><p>Huquqiy ishlaringiz, hujjatlaringiz va AI maslahatlaringiz shu yerda boshqariladi.</p></section><section class="accountStats"><div class="accountStat"><strong>${cases.filter(x=>x.status!=="completed").length}</strong><span>Faol ishlar</span></div><div class="accountStat"><strong>${docs.length}</strong><span>Hujjatlar</span></div><div class="accountStat"><strong>${chats.length}</strong><span>AI suhbatlar</span></div><div class="accountStat"><strong>${done}</strong><span>Yakunlangan</span></div></section><section class="accountPanel"><div class="accountTop"><div><h2>Oxirgi huquqiy ishlar</h2><div class="accountMuted">Davom ettirish uchun ishni tanlang.</div></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">＋ Yangi ish</a></div>${recent.length?`<div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>Yo‘nalish</th><th>Masala</th><th>Status</th><th>Progress</th><th></th></tr></thead><tbody>${recent.map(c=>`<tr><td><b>${esc(c.caseNo)}</b></td><td>${esc(c.area)}</td><td>${esc(c.title)}</td><td><span class="accountBadge">${esc(c.status)}</span></td><td><div class="accountProgress"><i style="width:${Number(c.progress||0)}%"></i></div> ${Number(c.progress||0)}%</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">Ochish</a></td></tr>`).join("")}</tbody></table></div>`:`<p class="accountMuted">Hali huquqiy ish ochilmagan.</p>`}</section>`);
 }
 function accountCasesPage(lang,user,db){
   const cases=db.cases.filter(x=>x.userId===user.id);
-  return accountAppPage(lang,user,"cases","Mening ishlarim",`<section class="accountPanel"><div class="accountTop"><div><h1>Mening huquqiy ishlarim</h1><p class="accountMuted">Har bir masala alohida Case ID bilan saqlanadi.</p></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">＋ Yangi ish</a></div><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>Yo‘nalish</th><th>Nomi</th><th>Status</th><th>Progress</th><th>Sana</th><th></th></tr></thead><tbody>${cases.map(c=>`<tr><td>${esc(c.caseNo)}</td><td>${esc(c.area)}</td><td><b>${esc(c.title)}</b></td><td><span class="accountBadge">${esc(c.status)}</span></td><td>${Number(c.progress||0)}%</td><td>${esc(String(c.createdAt).slice(0,10))}</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">Ochish</a></td></tr>`).join("")||`<tr><td colspan="7">Hali ish yo‘q.</td></tr>`}</tbody></table></div></section>`);
+  return accountAppPage(lang,user,"cases",at(lang,"cases"),`<section class="accountPanel"><div class="accountTop"><div><h1>Mening huquqiy ishlarim</h1><p class="accountMuted">Har bir masala alohida Case ID bilan saqlanadi.</p></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">＋ Yangi ish</a></div><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>Yo‘nalish</th><th>Nomi</th><th>Status</th><th>Progress</th><th>Sana</th><th></th></tr></thead><tbody>${cases.map(c=>`<tr><td>${esc(c.caseNo)}</td><td>${esc(c.area)}</td><td><b>${esc(c.title)}</b></td><td><span class="accountBadge">${esc(c.status)}</span></td><td>${Number(c.progress||0)}%</td><td>${esc(String(c.createdAt).slice(0,10))}</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">Ochish</a></td></tr>`).join("")||`<tr><td colspan="7">Hali ish yo‘q.</td></tr>`}</tbody></table></div></section>`);
 }
 function accountNewCasePage(lang,user,msg=""){
-  return accountAppPage(lang,user,"new","Yangi huquqiy ish",`<section class="accountPanel"><h1>Yangi ish ochish</h1><p class="accountMuted">Muammoni tanlang. Keyin mavjud Huquqiy AI modullaridan davom etishingiz mumkin.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/account/cases/new?lang=${lang}"><label>Huquq sohasi<select name="area" required><option value="Oila huquqi">Oila huquqi</option><option value="Mehnat huquqi">Mehnat huquqi</option><option value="Biznes huquqi">Biznes huquqi</option><option value="Fuqarolik huquqi">Fuqarolik huquqi</option><option value="Boshqa">Boshqa</option></select></label><label>Masala nomi<input name="title" placeholder="Masalan: Nikohdan ajratish" required maxlength="140"></label><label>Qisqa tavsif<textarea name="description" rows="5" maxlength="1500" placeholder="Vaziyatni qisqacha yozing"></textarea></label><button class="accountButton gold">Ishni yaratish</button></form></section>`);
+  return accountAppPage(lang,user,"new",at(lang,"newCase"),`<section class="accountPanel"><h1>Yangi ish ochish</h1><p class="accountMuted">Muammoni tanlang. Keyin mavjud Huquqiy AI modullaridan davom etishingiz mumkin.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/account/cases/new?lang=${lang}"><label>Huquq sohasi<select name="area" required><option value="Oila huquqi">Oila huquqi</option><option value="Mehnat huquqi">Mehnat huquqi</option><option value="Biznes huquqi">Biznes huquqi</option><option value="Fuqarolik huquqi">Fuqarolik huquqi</option><option value="Boshqa">Boshqa</option></select></label><label>Masala nomi<input name="title" placeholder="Masalan: Nikohdan ajratish" required maxlength="140"></label><label>Qisqa tavsif<textarea name="description" rows="5" maxlength="1500" placeholder="Vaziyatni qisqacha yozing"></textarea></label><button class="accountButton gold">Ishni yaratish</button></form></section>`);
 }
 function accountCasePage(lang,user,db,id){
   const c=db.cases.find(x=>x.id===id && (x.userId===user.id || ["owner","admin"].includes(user.role))); if(!c) return accountAppPage(lang,user,"cases","Ish topilmadi",accountMessage("Bu ish topilmadi.","error"));
@@ -12412,12 +12486,12 @@ function accountCasePage(lang,user,db,id){
 }
 function accountSimpleListPage(lang,user,active,title,items,render,empty){ return accountAppPage(lang,user,active,title,`<section class="accountPanel"><h1>${esc(title)}</h1><p class="accountMuted">Shaxsiy profilingizga bog‘langan ma’lumotlar.</p>${items.length?items.map(render).join(""):`<p class="accountMuted">${esc(empty)}</p>`}</section>`); }
 function accountProfilePage(lang,user,msg=""){
-  return accountAppPage(lang,user,"profile","Profil",`<section class="accountPanel"><h1>Profil ma’lumotlari</h1>${msg?accountMessage(msg,"success"):""}<form class="accountForm" method="post" action="/account/profile?lang=${lang}"><label>Ism<input name="firstName" value="${esc(user.firstName)}" required></label><label>Familiya<input name="lastName" value="${esc(user.lastName)}" required></label><label>Email<input value="${esc(user.email)}" disabled></label><label>Rol<input value="${esc(user.role)}" disabled></label><label>Email holati<input value="${user.emailVerified?"Tasdiqlangan":"Tasdiqlanmagan"}" disabled></label><button class="accountButton gold">Profilni saqlash</button></form></section>`);
+  return accountAppPage(lang,user,"profile",at(lang,"profile"),`<section class="accountPanel"><h1>${at(lang,"profile")} ma’lumotlari</h1>${msg?accountMessage(msg,"success"):""}<form class="accountForm" method="post" action="/account/profile?lang=${lang}"><label>Ism<input name="firstName" value="${esc(user.firstName)}" required></label><label>Familiya<input name="lastName" value="${esc(user.lastName)}" required></label><label>Email<input value="${esc(user.email)}" disabled></label><label>Rol<input value="${esc(user.role)}" disabled></label><label>Email holati<input value="${user.emailVerified?"Tasdiqlangan":"Tasdiqlanmagan"}" disabled></label><button class="accountButton gold">${at(lang,"profile")}ni saqlash</button></form></section>`);
 }
 function accountSecurityPage(lang,user,msg=""){
-  return accountAppPage(lang,user,"security","Xavfsizlik",`<section class="accountPanel"><h1>Parol va sessiyalar</h1>${msg?accountMessage(msg,msg.includes("xato")?"error":"success"):""}<form class="accountForm" method="post" action="/account/security?lang=${lang}"><label>Joriy parol<input name="currentPassword" type="password" required></label><label>Yangi parol<input name="newPassword" type="password" minlength="8" required></label><label>Yangi parolni takrorlang<input name="newPassword2" type="password" minlength="8" required></label><button class="accountButton">Parolni almashtirish</button></form></section>`);
+  return accountAppPage(lang,user,"security",at(lang,"security"),`<section class="accountPanel"><h1>Parol va sessiyalar</h1>${msg?accountMessage(msg,msg.includes("xato")?"error":"success"):""}<form class="accountForm" method="post" action="/account/security?lang=${lang}"><label>Joriy parol<input name="currentPassword" type="password" required></label><label>Yangi parol<input name="newPassword" type="password" minlength="8" required></label><label>Yangi parolni takrorlang<input name="newPassword2" type="password" minlength="8" required></label><button class="accountButton">Parolni almashtirish</button></form></section>`);
 }
-function accountSettingsPage(lang,user){ return accountAppPage(lang,user,"settings","Sozlamalar",`<section class="accountPanel"><h1>Sozlamalar</h1><div class="accountCards"><div class="accountCard"><h3>Til</h3><p class="accountMuted">Interfeys tili URL orqali UZ/RU/EN ishlaydi.</p></div><div class="accountCard"><h3>Maxfiylik</h3><p class="accountMuted">Rozilik va account faoliyati audit jurnalida qayd etiladi.</p></div><div class="accountCard"><h3>Account ID</h3><span class="accountCode">${esc(user.id)}</span></div></div></section>`); }
+function accountSettingsPage(lang,user){ return accountAppPage(lang,user,"settings",at(lang,"settings"),`<section class="accountPanel"><h1>${at(lang,"settings")}</h1><div class="accountCards"><div class="accountCard"><h3>Til</h3><p class="accountMuted">Interfeys tili URL orqali UZ/RU/EN ishlaydi.</p></div><div class="accountCard"><h3>Maxfiylik</h3><p class="accountMuted">Rozilik va account faoliyati audit jurnalida qayd etiladi.</p></div><div class="accountCard"><h3>Account ID</h3><span class="accountCode">${esc(user.id)}</span></div></div></section>`); }
 
 function adminDashboardPage(lang,user,db){
   const active=db.users.filter(x=>x.status==="active").length;
@@ -12519,11 +12593,11 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     if(req.method==="POST" && pathname==="/account/case/update"){
       const f=await readForm(req),db=accountLoadDb(),c=db.cases.find(x=>x.id===f.id&&x.userId===user.id); if(c){c.status=String(f.status||c.status);c.progress=Math.max(0,Math.min(100,Number(f.progress||0)));c.updatedAt=accountNow();accountAudit(db,user.id,"case_updated",{caseId:c.id,status:c.status,progress:c.progress});accountSaveDb(db);} accountRedirect(res,`/account/case?lang=${lang}&id=${encodeURIComponent(f.id||"")}`); return true;
     }
-    if(req.method==="GET" && pathname==="/account/documents"){const db=accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"documents","Hujjatlarim",items,d=>`<div class="accountCard"><h3>${esc(d.title)}</h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
-    if(req.method==="GET" && pathname==="/account/chats"){const db=accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"chats","AI suhbatlarim",items,c=>`<div class="accountCard"><h3>${esc(c.title||"AI suhbat")}</h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
-    if(req.method==="GET" && pathname==="/account/notifications"){const db=accountLoadDb(),items=db.notifications.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"notifications","Bildirishnomalar",items,n=>`<div class="accountCard"><b>${esc(n.title)}</b><p>${esc(n.text||"")}</p></div>`,"Yangi bildirishnoma yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/documents"){const db=accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3>${esc(d.title)}</h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/chats"){const db=accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"chats",at(lang,"chats"),items,c=>`<div class="accountCard"><h3>${esc(c.title||"AI suhbat")}</h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/notifications"){const db=accountLoadDb(),items=db.notifications.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"notifications",at(lang,"notifications"),items,n=>`<div class="accountCard"><b>${esc(n.title)}</b><p>${esc(n.text||"")}</p></div>`,"Yangi bildirishnoma yo‘q."));return true;}
     if(req.method==="GET" && pathname==="/account/profile"){sendHtml(res,accountProfilePage(lang,user));return true;}
-    if(req.method==="POST" && pathname==="/account/profile"){const f=await readForm(req),db=accountLoadDb(),u=db.users.find(x=>x.id===user.id);u.firstName=String(f.firstName||u.firstName).trim();u.lastName=String(f.lastName||u.lastName).trim();u.updatedAt=accountNow();accountAudit(db,u.id,"profile_updated",{});accountSaveDb(db);sendHtml(res,accountProfilePage(lang,u,"Profil saqlandi."));return true;}
+    if(req.method==="POST" && pathname==="/account/profile"){const f=await readForm(req),db=accountLoadDb(),u=db.users.find(x=>x.id===user.id);u.firstName=String(f.firstName||u.firstName).trim();u.lastName=String(f.lastName||u.lastName).trim();u.updatedAt=accountNow();accountAudit(db,u.id,"profile_updated",{});accountSaveDb(db);sendHtml(res,accountProfilePage(lang,u,(lang==="ru"?"Профиль сохранён.":lang==="en"?"Profile saved.":"Profil saqlandi.")));return true;}
     if(req.method==="GET" && pathname==="/account/security"){sendHtml(res,accountSecurityPage(lang,user));return true;}
     if(req.method==="POST" && pathname==="/account/security"){const f=await readForm(req),db=accountLoadDb(),u=db.users.find(x=>x.id===user.id);let msg="Parol yangilandi.";if(!accountVerifyPassword(f.currentPassword,u.passwordHash)||String(f.newPassword||"").length<8||f.newPassword!==f.newPassword2){msg="Joriy parol yoki yangi parol ma’lumotlarida xato.";}else{u.passwordHash=accountHashPassword(f.newPassword);db.sessions=db.sessions.filter(s=>s.userId===u.id);accountAudit(db,u.id,"password_changed",{});accountSaveDb(db);accountSetSession(res,u.id);}sendHtml(res,accountSecurityPage(lang,u,msg));return true;}
     if(req.method==="GET" && pathname==="/account/settings"){sendHtml(res,accountSettingsPage(lang,user));return true;}
