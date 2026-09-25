@@ -5169,6 +5169,36 @@ function navigation(lang) {
 
 
 // ======================================================
+// GLOBAL FOOTER — barcha public/account sahifalari uchun
+// ======================================================
+function footer(lang = "uz") {
+  lang = getLang(lang);
+  const copy = {
+    uz: { text: "Huquqiy ma’lumot va AI yordamchi platformasi.", note: "Muhim huquqiy qarorlardan oldin amaldagi qonunchilikni rasmiy manbalardan tekshiring." },
+    ru: { text: "Платформа правовой информации и AI-помощник.", note: "Перед важными юридическими решениями проверяйте действующее законодательство по официальным источникам." },
+    en: { text: "Legal information and AI assistant platform.", note: "Before important legal decisions, verify current law using official sources." }
+  }[lang];
+
+  return `
+    <footer class="footer">
+      <div class="container" style="padding:32px 0">
+        <div class="footerBrand">
+          <strong>Huquqiy AI</strong>
+          <p>${esc(copy.text)}</p>
+          <p>${esc(copy.note)}</p>
+        </div>
+        <div class="footerLinks" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:14px">
+          <a href="/${q(lang)}">${esc(tr(lang,"home"))}</a>
+          <a href="/sources${q(lang)}">${esc(tr(lang,"sources"))}</a>
+          <a href="/court${q(lang)}">${esc(tr(lang,"court"))}</a>
+          <a href="/login${q(lang)}">${lang === "ru" ? "Войти" : lang === "en" ? "Sign in" : "Kirish"}</a>
+        </div>
+        <div class="footerBottom" style="margin-top:18px">© ${new Date().getFullYear()} Huquqiy AI</div>
+      </div>
+    </footer>`;
+}
+
+// ======================================================
 // ASOSIY HTML PAGE WRAPPER
 // ======================================================
 function page({ lang = "uz", title = "Huquqiy AI", content = "" } = {}) {
@@ -5186,6 +5216,7 @@ function page({ lang = "uz", title = "Huquqiy AI", content = "" } = {}) {
 <body>
   ${navigation(lang)}
   <main>${content || ""}</main>
+  ${footer(lang)}
 </body>
 </html>`;
 }
