@@ -6,9 +6,9 @@ try {
 
 const http = require("http");
 const querystring = require("querystring");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-const crypto = require("crypto");
 
 const PORT = process.env.PORT || 3000;
 
@@ -106,64 +106,6 @@ async function readJson(req) {
   }
 }
 
-
-// ======================================================
-// PRIVACY + SHAXSIY KABINET — MVP AUTH
-// ======================================================
-
-const DATA_DIR = path.join(__dirname, "data");
-const USERS_FILE = path.join(DATA_DIR, "users.json");
-const SESSIONS = new Map();
-
-function ensureDataStore(){
-  if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR,{recursive:true});
-  if(!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE,"[]","utf8");
-}
-function loadUsers(){
-  ensureDataStore();
-  try { return JSON.parse(fs.readFileSync(USERS_FILE,"utf8")); } catch { return []; }
-}
-function saveUsers(users){
-  ensureDataStore();
-  fs.writeFileSync(USERS_FILE,JSON.stringify(users,null,2),"utf8");
-}
-function normalizeEmail(v){ return String(v||"").trim().toLowerCase(); }
-function hashPassword(password, salt=crypto.randomBytes(16).toString("hex")){
-  const hash=crypto.scryptSync(String(password),salt,64).toString("hex");
-  return {salt,hash};
-}
-function verifyPassword(password,user){
-  try {
-    const candidate=crypto.scryptSync(String(password),user.salt,64);
-    const stored=Buffer.from(user.passwordHash,"hex");
-    return stored.length===candidate.length && crypto.timingSafeEqual(stored,candidate);
-  } catch { return false; }
-}
-function parseCookies(req){
-  const out={};
-  String(req.headers.cookie||"").split(";").forEach(part=>{
-    const i=part.indexOf("="); if(i<0) return;
-    out[part.slice(0,i).trim()]=decodeURIComponent(part.slice(i+1).trim());
-  });
-  return out;
-}
-function currentUser(req){
-  const token=parseCookies(req).huquqiy_session;
-  if(!token) return null;
-  const session=SESSIONS.get(token);
-  if(!session || session.expiresAt<Date.now()){ if(token) SESSIONS.delete(token); return null; }
-  return loadUsers().find(u=>u.id===session.userId)||null;
-}
-function createSession(res,userId){
-  const token=crypto.randomBytes(32).toString("hex");
-  SESSIONS.set(token,{userId,expiresAt:Date.now()+1000*60*60*24*7});
-  res.setHeader("Set-Cookie",`huquqiy_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=604800${process.env.NODE_ENV==="production"?"; Secure":""}`);
-}
-function clearSession(req,res){
-  const token=parseCookies(req).huquqiy_session;
-  if(token) SESSIONS.delete(token);
-  res.setHeader("Set-Cookie",`huquqiy_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0${process.env.NODE_ENV==="production"?"; Secure":""}`);
-}
 
 // ======================================================
 // TILLAR — UZ / RU / EN
@@ -4842,7 +4784,7 @@ function navigation(lang) {
             ${lang === "uz" ? "Mehnat huquqi" : lang === "ru" ? "Трудовое право" : "Employment law"}
           </a>
 
-          <a href="/account${q(lang)}">
+          <a href="/account${q(lang)}" style="border:1px solid rgba(217,192,131,.35);color:#f0dca8">
             ${lang === "uz" ? "Shaxsiy kabinet" : lang === "ru" ? "Личный кабинет" : "My account"}
           </a>
 
@@ -5266,13 +5208,6 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 @media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
 @media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
 
-/* PRIVACY GATE + ACCOUNT */
-.privacyGate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(3,14,24,.76);backdrop-filter:blur(12px)}
-.privacyGate.show{display:flex}.privacyCard{width:min(760px,100%);max-height:90vh;overflow:auto;padding:30px;border-radius:24px;background:#fff;border:1px solid rgba(201,168,106,.35);box-shadow:0 35px 100px rgba(0,0,0,.32)}
-.privacyCard h2{margin:0 0 10px;color:#071827;font-size:30px}.privacyCard p,.privacyCard li{color:#5f6e79;font-size:14px;line-height:1.7}.privacyChecks{display:grid;gap:12px;margin:20px 0}.privacyCheck{display:flex;gap:11px;align-items:flex-start;padding:13px;border:1px solid #e3e8ec;border-radius:13px;background:#fafbfb}.privacyCheck input{margin-top:4px}.privacyActions{display:flex;gap:10px;flex-wrap:wrap}.privacyLinks{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:13px}.privacyLinks a{color:#86662f;font-weight:800}
-.accountGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.accountCard{padding:22px;border:1px solid #e0e6ea;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(6,17,31,.05)}.accountCard h3{margin:0 0 8px}.authWrap{width:min(620px,92%);margin:55px auto}.authTabs{display:flex;gap:10px;margin-bottom:18px}.authForm{display:grid;gap:14px}.authForm input{width:100%;padding:13px 14px;border:1px solid #d8e0e6;border-radius:12px}.accountHero{padding:28px;border-radius:20px;color:#fff;background:linear-gradient(135deg,#071827,#103b59);margin-bottom:20px}.accountHero p{color:#c7d2da}.miniDisclaimer{position:fixed;left:16px;right:16px;bottom:14px;z-index:2000;max-width:920px;margin:auto;padding:10px 14px;border:1px solid #e6d7b7;border-radius:12px;background:rgba(255,250,239,.96);box-shadow:0 10px 30px rgba(6,17,31,.10);font-size:12px;color:#6b5a37;text-align:center}
-@media(max-width:800px){.accountGrid{grid-template-columns:1fr}.privacyCard{padding:22px}.miniDisclaimer{left:8px;right:8px}}
-
   </style>
 
 
@@ -5287,29 +5222,6 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
   ${content}
 
   ${footer(lang)}
-
-  <div id="privacyGate" class="privacyGate" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
-    <div class="privacyCard">
-      <div class="eyebrow">HUQUQIY AI · MUHIM MA’LUMOT</div>
-      <h2 id="privacyTitle">${lang === "uz" ? "Foydalanishdan oldin" : lang === "ru" ? "Перед использованием" : "Before you continue"}</h2>
-      <p>${lang === "uz" ? "Huquqiy AI huquqiy axborot va hujjat tayyorlashda yordam beruvchi sun’iy intellekt tizimidir. U advokat, notarius yoki sudning o‘rnini bosmaydi." : lang === "ru" ? "Huquqiy AI — система искусственного интеллекта для правовой информации и подготовки проектов документов. Она не заменяет адвоката, нотариуса или суд." : "Huquqiy AI is an AI system for legal information and document drafting. It does not replace a lawyer, notary or court."}</p>
-      <ul>
-        <li>${lang === "uz" ? "AI javoblarida xatolik yoki eskirgan ma’lumot bo‘lishi mumkin." : lang === "ru" ? "Ответы ИИ могут содержать ошибки или устаревшую информацию." : "AI answers may contain errors or outdated information."}</li>
-        <li>${lang === "uz" ? "Muhim huquqiy qarordan oldin rasmiy manbani tekshiring." : lang === "ru" ? "Перед важным юридическим решением проверьте официальный источник." : "Verify official sources before important legal decisions."}</li>
-        <li>${lang === "uz" ? "Zarur bo‘lmasa pasport, bank karta, parol va boshqa ortiqcha maxfiy ma’lumotlarni kiritmang." : lang === "ru" ? "Не вводите без необходимости паспортные, банковские, парольные и иные избыточные конфиденциальные данные." : "Do not enter unnecessary passport, bank-card, password or other sensitive data."}</li>
-      </ul>
-      <div class="privacyChecks">
-        <label class="privacyCheck"><input id="termsOk" type="checkbox"><span>${lang === "uz" ? "Foydalanish shartlari bilan tanishdim va qabul qilaman." : lang === "ru" ? "Я ознакомился(-ась) и принимаю условия использования." : "I have read and accept the Terms of Use."}</span></label>
-        <label class="privacyCheck"><input id="privacyOk" type="checkbox"><span>${lang === "uz" ? "Maxfiylik va shaxsiy ma’lumotlarni qayta ishlash shartlari bilan tanishdim." : lang === "ru" ? "Я ознакомился(-ась) с условиями конфиденциальности и обработки персональных данных." : "I have read the privacy and personal-data processing terms."}</span></label>
-      </div>
-      <div class="privacyActions"><button id="privacyContinue" class="btn btnPrimary" type="button" disabled>${lang === "uz" ? "Huquqiy AI’ga kirish" : lang === "ru" ? "Войти в Huquqiy AI" : "Enter Huquqiy AI"}</button></div>
-      <div class="privacyLinks"><a href="/terms${q(lang)}">${lang === "uz" ? "Foydalanish shartlari" : lang === "ru" ? "Условия использования" : "Terms of Use"}</a><a href="/privacy${q(lang)}">${lang === "uz" ? "Maxfiylik siyosati" : lang === "ru" ? "Политика конфиденциальности" : "Privacy Policy"}</a></div>
-    </div>
-  </div>
-  <div class="miniDisclaimer">${lang === "uz" ? "Huquqiy AI xato qilishi mumkin. Muhim huquqiy ma’lumotlarni rasmiy manbalardan tekshiring." : lang === "ru" ? "Huquqiy AI может ошибаться. Проверяйте важную юридическую информацию по официальным источникам." : "Huquqiy AI can make mistakes. Verify important legal information with official sources."}</div>
-  <script>
-  (()=>{const gate=document.getElementById('privacyGate'),a=document.getElementById('termsOk'),b=document.getElementById('privacyOk'),btn=document.getElementById('privacyContinue');if(!gate)return;const key='huquqiy_ai_consent_v1';if(localStorage.getItem(key)!=='accepted')gate.classList.add('show');const sync=()=>btn.disabled=!(a.checked&&b.checked);a.addEventListener('change',sync);b.addEventListener('change',sync);btn.addEventListener('click',()=>{if(!(a.checked&&b.checked))return;localStorage.setItem(key,'accepted');localStorage.setItem(key+'_at',new Date().toISOString());gate.classList.remove('show');});})();
-  </script>
 
 </body>
 
@@ -12782,6 +12694,110 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 }
 
 
+
+
+// ======================================================
+// HUQUQIY AI ACCOUNT CENTER — AUTH / CASES / DOCUMENTS
+// ======================================================
+
+const ACCOUNT_DATA_DIR = process.env.ACCOUNT_DATA_DIR || path.join(__dirname, "data");
+const ACCOUNT_DB_FILE = path.join(ACCOUNT_DATA_DIR, "huquqiy-ai-accounts.json");
+const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
+const CONSENT_VERSION = "2026-09-25-v1";
+
+function ensureAccountStore(){
+  try { fs.mkdirSync(ACCOUNT_DATA_DIR,{recursive:true}); } catch(_) {}
+  if(!fs.existsSync(ACCOUNT_DB_FILE)){
+    fs.writeFileSync(ACCOUNT_DB_FILE, JSON.stringify({users:[],cases:[],documents:[],chats:[],activities:[],sessions:[]},null,2));
+  }
+}
+function readAccountDB(){
+  ensureAccountStore();
+  try {
+    const raw=fs.readFileSync(ACCOUNT_DB_FILE,"utf8");
+    const db=JSON.parse(raw);
+    for(const key of ["users","cases","documents","chats","activities","sessions"]) if(!Array.isArray(db[key])) db[key]=[];
+    return db;
+  } catch(_) { return {users:[],cases:[],documents:[],chats:[],activities:[],sessions:[]}; }
+}
+function writeAccountDB(db){
+  ensureAccountStore();
+  const tmp=ACCOUNT_DB_FILE+".tmp";
+  fs.writeFileSync(tmp,JSON.stringify(db,null,2));
+  fs.renameSync(tmp,ACCOUNT_DB_FILE);
+}
+function uid(prefix="ID") { return prefix+"-"+Date.now().toString(36).toUpperCase()+"-"+crypto.randomBytes(4).toString("hex").toUpperCase(); }
+function normalizeEmail(v){ return String(v||"").trim().toLowerCase(); }
+function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(v)); }
+function hashPassword(password,salt=crypto.randomBytes(16).toString("hex")){
+  const hash=crypto.scryptSync(String(password),salt,64).toString("hex");
+  return `${salt}:${hash}`;
+}
+function verifyPassword(password,stored){
+  try { const [salt,hex]=String(stored).split(":"); const a=Buffer.from(hex,"hex"); const b=crypto.scryptSync(String(password),salt,64); return a.length===b.length&&crypto.timingSafeEqual(a,b); } catch(_){return false;}
+}
+function parseCookies(req){
+  const out={};
+  String(req.headers.cookie||"").split(";").forEach(part=>{ const i=part.indexOf("="); if(i>0) out[part.slice(0,i).trim()]=decodeURIComponent(part.slice(i+1).trim()); });
+  return out;
+}
+function cookieHeader(token,maxAge=604800){ return `hq_session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${process.env.NODE_ENV==="production"?"; Secure":""}`; }
+function createSession(userId,res){
+  const db=readAccountDB();
+  db.sessions=db.sessions.filter(x=>x.expiresAt>Date.now());
+  const token=crypto.randomBytes(32).toString("hex");
+  db.sessions.push({tokenHash:crypto.createHash("sha256").update(token).digest("hex"),userId,createdAt:Date.now(),expiresAt:Date.now()+SESSION_TTL_MS});
+  writeAccountDB(db); res.setHeader("Set-Cookie",cookieHeader(token)); return token;
+}
+function currentUser(req){
+  const token=parseCookies(req).hq_session; if(!token) return null;
+  const hash=crypto.createHash("sha256").update(token).digest("hex"); const db=readAccountDB();
+  const session=db.sessions.find(x=>x.tokenHash===hash&&x.expiresAt>Date.now()); if(!session) return null;
+  return db.users.find(x=>x.id===session.userId&&!x.deletedAt)||null;
+}
+function destroySession(req,res){
+  const token=parseCookies(req).hq_session; if(token){ const h=crypto.createHash("sha256").update(token).digest("hex"); const db=readAccountDB(); db.sessions=db.sessions.filter(x=>x.tokenHash!==h); writeAccountDB(db); }
+  res.setHeader("Set-Cookie",cookieHeader("",0));
+}
+function addActivity(db,userId,type,title,meta={}){ db.activities.unshift({id:uid("ACT"),userId,type,title,meta,createdAt:new Date().toISOString()}); db.activities=db.activities.slice(0,1000); }
+function accountText(lang,key){
+  const t={
+    uz:{account:"Shaxsiy kabinet",dashboard:"Boshqaruv paneli",cases:"Mening ishlarim",newCase:"Yangi huquqiy ish",documents:"Hujjatlarim",chats:"AI suhbatlarim",profile:"Profil",security:"Xavfsizlik",settings:"Sozlamalar",logout:"Chiqish",login:"Kirish",register:"Ro‘yxatdan o‘tish"},
+    ru:{account:"Личный кабинет",dashboard:"Панель управления",cases:"Мои дела",newCase:"Новое дело",documents:"Мои документы",chats:"AI-чаты",profile:"Профиль",security:"Безопасность",settings:"Настройки",logout:"Выйти",login:"Войти",register:"Регистрация"},
+    en:{account:"My account",dashboard:"Dashboard",cases:"My cases",newCase:"New legal case",documents:"My documents",chats:"AI chats",profile:"Profile",security:"Security",settings:"Settings",logout:"Log out",login:"Log in",register:"Register"}
+  }; return (t[getLang(lang)]||t.uz)[key]||key;
+}
+const ACCOUNT_CSS=`
+.accountPage{min-height:100vh;background:radial-gradient(circle at 95% 0,rgba(190,153,79,.10),transparent 30rem),#f4f6f7;color:#122331}.accountWrap{max-width:1380px;margin:0 auto;padding:28px 24px 70px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:24px}.accountSide{position:sticky;top:22px;align-self:start;background:linear-gradient(180deg,#071a2a,#0a2b40);border:1px solid rgba(217,192,131,.22);border-radius:24px;padding:22px;box-shadow:0 24px 70px rgba(5,22,35,.16);color:#fff}.accountIdentity{padding:12px 8px 22px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:15px}.avatar{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#e1ca91,#a98038);color:#0b2131;font-weight:900;font-size:21px;margin-bottom:13px}.accountIdentity strong{display:block;font-size:17px}.accountIdentity small{color:#9eb1bf}.accountMenu a{display:flex;gap:11px;align-items:center;padding:12px 13px;margin:5px 0;border-radius:13px;color:#d8e3e9;text-decoration:none;font-weight:700;font-size:14px}.accountMenu a:hover,.accountMenu a.active{background:rgba(255,255,255,.09);color:#f2dca6}.accountMain{min-width:0}.accountHero{padding:30px;border-radius:24px;background:radial-gradient(circle at 90% 20%,rgba(217,192,131,.17),transparent 18rem),linear-gradient(135deg,#071b2b,#0d3a55);color:#fff;box-shadow:0 20px 55px rgba(5,24,39,.13);margin-bottom:22px}.accountHero h1{margin:0 0 7px;font:700 36px/1.08 Georgia,serif}.accountHero p{margin:0;color:#bed0db}.accountActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.accountBtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:0;border-radius:12px;text-decoration:none;font-weight:800;cursor:pointer}.accountBtn.gold{background:linear-gradient(135deg,#e3cd96,#b58d44);color:#092033}.accountBtn.dark{background:#0b2a3f;color:#fff}.accountBtn.light{background:#fff;color:#102b3e;border:1px solid #dbe2e6}.statGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px}.statCard,.accountCard{background:#fff;border:1px solid #e1e6e9;border-radius:20px;box-shadow:0 10px 35px rgba(8,28,42,.055)}.statCard{padding:21px}.statCard small{display:block;color:#75828b;font-weight:700}.statCard strong{display:block;font-size:30px;margin-top:5px;color:#0b293e}.accountGrid{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.accountCard{padding:22px;margin-bottom:18px}.accountCard h2{margin:0 0 16px;font-size:21px}.caseRow,.docRow,.activityRow{padding:15px 0;border-bottom:1px solid #edf0f2}.caseRow:last-child,.docRow:last-child,.activityRow:last-child{border-bottom:0}.rowTop{display:flex;justify-content:space-between;gap:15px;align-items:center}.caseId{font-size:11px;letter-spacing:.08em;color:#9a7939;font-weight:900}.statusPill{display:inline-flex;padding:5px 9px;border-radius:999px;background:#eef5f7;color:#345566;font-size:11px;font-weight:850}.progressTrack{height:7px;border-radius:99px;background:#edf1f3;overflow:hidden;margin-top:10px}.progressTrack span{display:block;height:100%;background:linear-gradient(90deg,#b58d44,#e0c98e)}.emptyState{text-align:center;padding:34px 15px;color:#71808a}.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:13px;font-weight:800;color:#324b5a}.field input,.field select,.field textarea{width:100%;box-sizing:border-box;padding:12px 13px;border:1px solid #d6dee3;border-radius:12px;font:inherit;background:#fbfcfc}.field textarea{min-height:120px;resize:vertical}.alert{padding:13px 15px;border-radius:12px;margin-bottom:15px}.alert.error{background:#fff0f0;color:#8b2929;border:1px solid #f0caca}.alert.ok{background:#edf8f1;color:#22623a;border:1px solid #cce8d5}.authShell{min-height:100vh;display:grid;place-items:center;padding:30px;background:radial-gradient(circle at 80% 10%,rgba(217,192,131,.14),transparent 30rem),linear-gradient(135deg,#061521,#0d3048)}.authCard{width:min(520px,100%);background:#fff;border-radius:25px;padding:30px;box-shadow:0 30px 90px rgba(0,0,0,.25)}.authBrand{text-align:center;margin-bottom:24px}.authBrand .mark{width:58px;height:58px;margin:auto auto 10px;border-radius:18px;display:grid;place-items:center;background:#0b293e;color:#e4ce98;font:700 28px Georgia}.authCard h1{text-align:center;margin:0 0 8px;font:700 32px Georgia}.authCard>p{text-align:center;color:#73818a}.privacyBox{background:#f8f4ea;border:1px solid #eadbb8;border-radius:14px;padding:13px;font-size:13px;color:#66583b}.accountTable{width:100%;border-collapse:collapse}.accountTable th,.accountTable td{text-align:left;padding:12px 10px;border-bottom:1px solid #edf0f2;font-size:13px}.accountTable th{color:#6b7b85}.quickGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.quickItem{display:block;padding:17px;border:1px solid #e1e6e9;border-radius:15px;text-decoration:none;color:#183649;background:#fbfcfc;font-weight:800}.quickItem span{display:block;font-size:24px;margin-bottom:7px}.dangerZone{border-color:#efcece}.muted{color:#78868f;font-size:13px}.topAccountBar{display:flex;justify-content:flex-end;gap:9px;margin-bottom:12px}.consentOverlay{position:fixed;inset:0;z-index:9999;background:rgba(3,15,25,.82);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}.consentOverlay.show{display:flex}.consentCard{width:min(680px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:24px;padding:27px;box-shadow:0 30px 100px rgba(0,0,0,.4)}.consentCard h2{font:700 29px Georgia;margin:0 0 10px}.consentCheck{display:flex;gap:10px;align-items:flex-start;padding:11px 0}.consentCheck input{margin-top:4px}.caseDetailGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.timeline{border-left:2px solid #e6d7b3;margin-left:8px;padding-left:20px}.timelineItem{position:relative;padding:0 0 20px}.timelineItem:before{content:"";position:absolute;left:-26px;top:4px;width:10px;height:10px;border-radius:50%;background:#b58d44}.badge{display:inline-block;padding:4px 8px;border-radius:8px;background:#f2eee3;color:#755d2f;font-size:11px;font-weight:850}@media(max-width:1000px){.accountWrap{grid-template-columns:1fr}.accountSide{position:static}.accountMenu{display:flex;overflow:auto}.accountMenu a{white-space:nowrap}.statGrid{grid-template-columns:1fr 1fr}.accountGrid{grid-template-columns:1fr}}@media(max-width:650px){.accountWrap{padding:14px}.statGrid,.formGrid,.caseDetailGrid,.quickGrid{grid-template-columns:1fr}.accountHero{padding:22px}.accountHero h1{font-size:29px}.authCard{padding:22px}.rowTop{align-items:flex-start;flex-direction:column}}
+`;
+function accountShell(lang,user,active,body,title){
+  const initial=esc((user.name||user.email||"U").trim().slice(0,2).toUpperCase());
+  const links=[["dashboard","/account","▦",accountText(lang,"dashboard")],["cases","/account/cases","⚖",accountText(lang,"cases")],["new","/account/cases/new","＋",accountText(lang,"newCase")],["documents","/account/documents","▤",accountText(lang,"documents")],["chats","/account/chats","◉",accountText(lang,"chats")],["profile","/account/profile","●",accountText(lang,"profile")],["security","/account/security","◆",accountText(lang,"security")],["settings","/account/settings","⚙",accountText(lang,"settings")]];
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — Huquqiy AI</title><style>${CSS}${ACCOUNT_CSS}</style></head><body class="accountPage">${navigation(lang)}<div class="accountWrap"><aside class="accountSide"><div class="accountIdentity"><div class="avatar">${initial}</div><strong>${esc(user.name||"Foydalanuvchi")}</strong><small>${esc(user.email)}</small></div><nav class="accountMenu">${links.map(x=>`<a class="${active===x[0]?"active":""}" href="${x[1]}${q(lang)}"><b>${x[2]}</b>${x[3]}</a>`).join("")}<a href="/logout${q(lang)}"><b>↪</b>${accountText(lang,"logout")}</a></nav></aside><main class="accountMain">${body}</main></div></body></html>`;
+}
+function authPage(lang,mode,error=""){
+ const isLogin=mode==="login"; return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${isLogin?accountText(lang,"login"):accountText(lang,"register")} — Huquqiy AI</title><style>${CSS}${ACCOUNT_CSS}</style></head><body><div class="authShell"><div class="authCard"><div class="authBrand"><div class="mark">§</div><strong>HUQUQIY AI</strong></div><h1>${isLogin?accountText(lang,"login"):accountText(lang,"register")}</h1><p>${isLogin?"Kabinetga kirib huquqiy ishlaringizni davom ettiring.":"Huquqiy ishlaringizni xavfsizroq va tartibli boshqaring."}</p>${error?`<div class="alert error">${esc(error)}</div>`:""}<form method="post" action="/${mode}${q(lang)}"><div class="formGrid">${!isLogin?`<div class="field full"><label>Ism va familiya</label><input name="name" required maxlength="100" autocomplete="name"></div>`:""}<div class="field full"><label>Email</label><input name="email" type="email" required maxlength="160" autocomplete="email"></div><div class="field full"><label>Parol</label><input name="password" type="password" required minlength="8" maxlength="128" autocomplete="${isLogin?"current-password":"new-password"}"></div>${!isLogin?`<div class="field full"><label>Parolni takrorlang</label><input name="password2" type="password" required minlength="8" maxlength="128"></div><div class="field full privacyBox"><label><input type="checkbox" name="terms" value="yes" required> Foydalanish shartlari va Maxfiylik siyosatini o‘qidim.</label><label style="display:block;margin-top:8px"><input type="checkbox" name="dataConsent" value="yes" required> Platformaga kiritgan ma’lumotlarim xizmat ko‘rsatish uchun qayta ishlanishini tushundim.</label></div>`:""}<div class="field full"><button class="accountBtn gold" style="width:100%" type="submit">${isLogin?accountText(lang,"login"):accountText(lang,"register")}</button></div></div></form><p class="muted">${isLogin?`Akkauntingiz yo‘qmi? <a href="/register${q(lang)}">Ro‘yxatdan o‘ting</a>`:`Akkauntingiz bormi? <a href="/login${q(lang)}">Kirish</a>`}</p><p class="muted"><a href="/${q(lang)}">← Bosh sahifa</a></p></div></div></body></html>`;
+}
+function userStats(db,userId){ const cases=db.cases.filter(x=>x.userId===userId&&!x.deletedAt); const docs=db.documents.filter(x=>x.userId===userId&&!x.deletedAt); const chats=db.chats.filter(x=>x.userId===userId&&!x.deletedAt); return {cases,docs,chats,active:cases.filter(x=>x.status!=="completed").length,completed:cases.filter(x=>x.status==="completed").length}; }
+function dashboardPage(lang,user){ const db=readAccountDB(),st=userStats(db,user.id),acts=db.activities.filter(x=>x.userId===user.id).slice(0,8); const body=`<section class="accountHero"><span class="badge">LEGAL WORKSPACE</span><h1>${esc(user.name||"Foydalanuvchi")}, xush kelibsiz</h1><p>Huquqiy ishlaringiz, hujjatlaringiz va AI maslahatlaringiz bir joyda.</p><div class="accountActions"><a class="accountBtn gold" href="/account/cases/new${q(lang)}">＋ Yangi huquqiy ish</a><a class="accountBtn light" href="/ai${q(lang)}">AI yordamchi</a></div></section><div class="statGrid"><div class="statCard"><small>Faol ishlar</small><strong>${st.active}</strong></div><div class="statCard"><small>Yakunlangan</small><strong>${st.completed}</strong></div><div class="statCard"><small>Hujjatlar</small><strong>${st.docs.length}</strong></div><div class="statCard"><small>AI suhbatlar</small><strong>${st.chats.length}</strong></div></div><div class="accountGrid"><div><section class="accountCard"><div class="rowTop"><h2>So‘nggi huquqiy ishlar</h2><a href="/account/cases${q(lang)}">Barchasi →</a></div>${st.cases.length?st.cases.slice(0,5).map(c=>caseRow(c,lang)).join(""):`<div class="emptyState">Hali huquqiy ish ochilmagan.<br><a class="accountBtn dark" href="/account/cases/new${q(lang)}">Birinchi ishni ochish</a></div>`}</section><section class="accountCard"><h2>Tezkor xizmatlar</h2><div class="quickGrid"><a class="quickItem" href="/questionnaire${q(lang)}"><span>✓</span>Savolnoma</a><a class="quickItem" href="/documents${q(lang)}"><span>▤</span>Hujjat yaratish</a><a class="quickItem" href="/court${q(lang)}"><span>⌖</span>Sudni topish</a></div></section></div><aside><section class="accountCard"><h2>Oxirgi faoliyat</h2>${acts.length?acts.map(a=>`<div class="activityRow"><strong>${esc(a.title)}</strong><div class="muted">${new Date(a.createdAt).toLocaleString("uz-UZ")}</div></div>`).join(""):`<div class="emptyState">Faoliyat tarixi hozircha bo‘sh.</div>`}</section><section class="accountCard"><h2>Xavfsizlik</h2><p class="muted">Keraksiz pasport, bank karta, parol va boshqa o‘ta maxfiy ma’lumotlarni AI suhbatiga kiritmang.</p><a href="/account/security${q(lang)}">Xavfsizlik sozlamalari →</a></section></aside></div>`; return accountShell(lang,user,"dashboard",body,"Shaxsiy kabinet"); }
+function caseRow(c,lang){ return `<div class="caseRow"><div class="rowTop"><div><span class="caseId">${esc(c.caseNumber)}</span><strong style="display:block">${esc(c.title)}</strong><span class="muted">${esc(c.area)} · ${esc(c.issueType)}</span></div><span class="statusPill">${esc(c.statusLabel||c.status)}</span></div><div class="progressTrack"><span style="width:${Math.max(0,Math.min(100,Number(c.progress)||0))}%"></span></div><div class="rowTop" style="margin-top:8px"><small class="muted">${c.progress||0}% tayyor</small><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">Ochish →</a></div></div>`; }
+function casesPage(lang,user){ const db=readAccountDB(),cases=db.cases.filter(x=>x.userId===user.id&&!x.deletedAt); const body=`<section class="accountHero"><h1>Mening huquqiy ishlarim</h1><p>Har bir masalani alohida ish sifatida boshqaring va jarayonni kuzating.</p><div class="accountActions"><a class="accountBtn gold" href="/account/cases/new${q(lang)}">＋ Yangi ish</a></div></section><section class="accountCard">${cases.length?cases.map(c=>caseRow(c,lang)).join(""):`<div class="emptyState">Hali ish mavjud emas.</div>`}</section>`; return accountShell(lang,user,"cases",body,"Mening ishlarim"); }
+function newCasePage(lang,user,error=""){ const body=`<section class="accountHero"><h1>Yangi huquqiy ish</h1><p>Muammoni alohida case sifatida yarating. Keyin savolnoma, AI tahlili va hujjatlarni shu ishga biriktirasiz.</p></section><section class="accountCard">${error?`<div class="alert error">${esc(error)}</div>`:""}<form method="post" action="/account/cases/new${q(lang)}"><div class="formGrid"><div class="field"><label>Huquq sohasi</label><select name="area" required><option value="Oila huquqi">Oila huquqi</option><option value="Mehnat huquqi">Mehnat huquqi</option><option value="Biznes huquqi">Biznes huquqi</option><option value="Meros huquqi">Meros huquqi</option><option value="Uy-joy huquqi">Uy-joy huquqi</option><option value="Iste’molchi huquqi">Iste’molchi huquqi</option><option value="Boshqa">Boshqa</option></select></div><div class="field"><label>Masala turi</label><input name="issueType" required maxlength="100" placeholder="Masalan: nikohdan ajratish"></div><div class="field full"><label>Ish nomi</label><input name="title" required maxlength="140" placeholder="Masalan: Nikohdan ajratish va aliment"></div><div class="field full"><label>Qisqa tavsif</label><textarea name="description" maxlength="3000" placeholder="Vaziyatni qisqacha yozing"></textarea></div><div class="field"><label>Ustuvorlik</label><select name="priority"><option value="normal">Oddiy</option><option value="high">Muhim</option><option value="urgent">Shoshilinch</option></select></div><div class="field"><label>Maqsad</label><input name="goal" maxlength="200" placeholder="Nimaga erishmoqchisiz?"></div><div class="field full"><button class="accountBtn gold" type="submit">Ishni yaratish</button></div></div></form></section>`; return accountShell(lang,user,"new",body,"Yangi ish"); }
+function caseDetailPage(lang,user,id){ const db=readAccountDB(),c=db.cases.find(x=>x.id===id&&x.userId===user.id&&!x.deletedAt); if(!c) return accountShell(lang,user,"cases",`<section class="accountCard"><h2>Ish topilmadi</h2><a href="/account/cases${q(lang)}">← Ortga</a></section>`,"Ish topilmadi"); const docs=db.documents.filter(x=>x.userId===user.id&&x.caseId===c.id&&!x.deletedAt),acts=db.activities.filter(x=>x.userId===user.id&&x.meta&&x.meta.caseId===c.id).slice(0,15); const body=`<section class="accountHero"><span class="caseId">${esc(c.caseNumber)}</span><h1>${esc(c.title)}</h1><p>${esc(c.description||"Huquqiy ish")}</p><div class="accountActions"><a class="accountBtn gold" href="/questionnaire${q(lang)}">Savolnomani davom ettirish</a><a class="accountBtn light" href="/ai${q(lang)}">AI tahlil</a><a class="accountBtn light" href="/documents${q(lang)}">Hujjat yaratish</a></div></section><div class="caseDetailGrid"><section class="accountCard"><h2>Ish ma’lumotlari</h2><table class="accountTable"><tr><th>Soha</th><td>${esc(c.area)}</td></tr><tr><th>Masala</th><td>${esc(c.issueType)}</td></tr><tr><th>Maqsad</th><td>${esc(c.goal||"—")}</td></tr><tr><th>Ustuvorlik</th><td>${esc(c.priority)}</td></tr><tr><th>Holat</th><td>${esc(c.statusLabel)}</td></tr><tr><th>Yaratilgan</th><td>${new Date(c.createdAt).toLocaleString("uz-UZ")}</td></tr></table><div class="progressTrack"><span style="width:${c.progress}%"></span></div><p class="muted">Jarayon: ${c.progress}%</p><form method="post" action="/account/case/status?id=${encodeURIComponent(c.id)}&lang=${lang}"><div class="formGrid"><div class="field"><label>Holat</label><select name="status"><option value="intake">Ma’lumot yig‘ilmoqda</option><option value="analysis">Tahlil qilinmoqda</option><option value="documents">Hujjat tayyorlanmoqda</option><option value="review">Tekshirish</option><option value="completed">Yakunlangan</option></select></div><div class="field"><label>Jarayon %</label><input type="number" name="progress" min="0" max="100" value="${c.progress}"></div><div class="field full"><button class="accountBtn dark">Yangilash</button></div></div></form></section><section class="accountCard"><h2>Ish tarixi</h2><div class="timeline">${acts.length?acts.map(a=>`<div class="timelineItem"><strong>${esc(a.title)}</strong><div class="muted">${new Date(a.createdAt).toLocaleString("uz-UZ")}</div></div>`).join(""):`<div class="timelineItem">Ish yaratildi</div>`}</div></section></div><section class="accountCard"><div class="rowTop"><h2>Ushbu ish hujjatlari</h2><a href="/account/documents/new?caseId=${encodeURIComponent(c.id)}&lang=${lang}">＋ Hujjat qo‘shish</a></div>${docs.length?docs.map(d=>`<div class="docRow"><div class="rowTop"><div><strong>${esc(d.title)}</strong><div class="muted">${esc(d.type)} · ${new Date(d.createdAt).toLocaleDateString("uz-UZ")}</div></div><span class="statusPill">${esc(d.status)}</span></div></div>`).join(""):`<div class="emptyState">Bu ishga hujjat biriktirilmagan.</div>`}</section>`; return accountShell(lang,user,"cases",body,c.title); }
+function documentsAccountPage(lang,user){ const db=readAccountDB(),docs=db.documents.filter(x=>x.userId===user.id&&!x.deletedAt); const body=`<section class="accountHero"><h1>Hujjatlarim</h1><p>Huquqiy ishlaringizga tegishli hujjat va draftlarni boshqaring.</p><div class="accountActions"><a class="accountBtn gold" href="/account/documents/new${q(lang)}">＋ Hujjat qo‘shish</a><a class="accountBtn light" href="/documents${q(lang)}">AI hujjat generatori</a></div></section><section class="accountCard">${docs.length?docs.map(d=>`<div class="docRow"><div class="rowTop"><div><strong>${esc(d.title)}</strong><div class="muted">${esc(d.type)} · ${new Date(d.createdAt).toLocaleString("uz-UZ")}</div></div><span class="statusPill">${esc(d.status)}</span></div><p class="muted">${esc(d.note||"")}</p></div>`).join(""):`<div class="emptyState">Saqlangan hujjatlar yo‘q.</div>`}</section>`; return accountShell(lang,user,"documents",body,"Hujjatlarim"); }
+function newDocumentPage(lang,user,caseId=""){ const db=readAccountDB(),cases=db.cases.filter(x=>x.userId===user.id&&!x.deletedAt); const body=`<section class="accountHero"><h1>Hujjat qo‘shish</h1><p>Hujjatni ma’lum huquqiy ishga biriktiring.</p></section><section class="accountCard"><form method="post" action="/account/documents/new${q(lang)}"><div class="formGrid"><div class="field full"><label>Ish</label><select name="caseId"><option value="">Ishga biriktirilmagan</option>${cases.map(c=>`<option value="${esc(c.id)}" ${c.id===caseId?"selected":""}>${esc(c.caseNumber)} — ${esc(c.title)}</option>`).join("")}</select></div><div class="field"><label>Hujjat turi</label><select name="type"><option>Da’vo arizasi</option><option>Ariza</option><option>Shikoyat</option><option>Kelishuv</option><option>AI xulosasi</option><option>Dalil / ilova</option><option>Boshqa</option></select></div><div class="field"><label>Holat</label><select name="status"><option>Draft</option><option>Tekshirilmoqda</option><option>Tayyor</option><option>Topshirilgan</option></select></div><div class="field full"><label>Nomi</label><input name="title" required maxlength="160"></div><div class="field full"><label>Izoh</label><textarea name="note" maxlength="2000"></textarea></div><div class="field full"><button class="accountBtn gold">Saqlash</button></div></div></form></section>`; return accountShell(lang,user,"documents",body,"Hujjat qo‘shish"); }
+function chatsPage(lang,user){ const db=readAccountDB(),chats=db.chats.filter(x=>x.userId===user.id&&!x.deletedAt); const body=`<section class="accountHero"><h1>AI suhbatlarim</h1><p>Huquqiy AI bilan muhokamalarni ishlar bo‘yicha tartibli saqlash uchun markaz.</p><div class="accountActions"><a class="accountBtn gold" href="/ai${q(lang)}">＋ Yangi AI suhbat</a></div></section><section class="accountCard">${chats.length?chats.map(c=>`<div class="docRow"><strong>${esc(c.title)}</strong><div class="muted">${new Date(c.updatedAt||c.createdAt).toLocaleString("uz-UZ")}</div></div>`).join(""):`<div class="emptyState">Saqlangan AI suhbatlar hozircha yo‘q.<br><span class="muted">Keyingi integratsiyada /ai natijalari avtomatik shu yerga bog‘lanadi.</span></div>`}</section>`; return accountShell(lang,user,"chats",body,"AI suhbatlarim"); }
+function profilePage(lang,user,message=""){ const body=`<section class="accountHero"><h1>Profil</h1><p>Akkaunt va aloqa ma’lumotlarini boshqaring.</p></section><section class="accountCard">${message?`<div class="alert ok">${esc(message)}</div>`:""}<form method="post" action="/account/profile${q(lang)}"><div class="formGrid"><div class="field"><label>Ism va familiya</label><input name="name" value="${esc(user.name||"")}" required maxlength="100"></div><div class="field"><label>Email</label><input value="${esc(user.email)}" disabled></div><div class="field"><label>Telefon</label><input name="phone" value="${esc(user.phone||"")}" maxlength="30"></div><div class="field"><label>Til</label><select name="preferredLanguage"><option value="uz" ${user.preferredLanguage==="uz"?"selected":""}>O‘zbek</option><option value="ru" ${user.preferredLanguage==="ru"?"selected":""}>Русский</option><option value="en" ${user.preferredLanguage==="en"?"selected":""}>English</option></select></div><div class="field full"><label>Qisqa izoh</label><textarea name="bio" maxlength="800">${esc(user.bio||"")}</textarea></div><div class="field full"><button class="accountBtn gold">Profilni saqlash</button></div></div></form></section>`; return accountShell(lang,user,"profile",body,"Profil"); }
+function securityPage(lang,user,message="",error=""){ const body=`<section class="accountHero"><h1>Xavfsizlik</h1><p>Parol, sessiyalar va maxfiylik nazorati.</p></section>${message?`<div class="alert ok">${esc(message)}</div>`:""}${error?`<div class="alert error">${esc(error)}</div>`:""}<section class="accountCard"><h2>Parolni almashtirish</h2><form method="post" action="/account/security/password${q(lang)}"><div class="formGrid"><div class="field full"><label>Joriy parol</label><input type="password" name="currentPassword" required></div><div class="field"><label>Yangi parol</label><input type="password" name="newPassword" minlength="8" required></div><div class="field"><label>Takrorlang</label><input type="password" name="newPassword2" minlength="8" required></div><div class="field full"><button class="accountBtn dark">Parolni yangilash</button></div></div></form></section><section class="accountCard"><h2>Maxfiylik tavsiyasi</h2><p>AI yordamchisiga faqat huquqiy tahlil uchun zarur ma’lumotlarni kiriting. Parol, bank karta kodi va boshqa keraksiz o‘ta maxfiy ma’lumotlarni yubormang.</p><p class="muted">Rozilik versiyasi: ${esc(user.consentVersion||"—")}</p></section>`; return accountShell(lang,user,"security",body,"Xavfsizlik"); }
+function settingsPage(lang,user){ const body=`<section class="accountHero"><h1>Sozlamalar</h1><p>Kabinet va ma’lumotlar boshqaruvi.</p></section><section class="accountCard"><h2>Platforma sozlamalari</h2><p class="muted">Email bildirishnomalari va qo‘shimcha integratsiyalar keyingi bosqichda server xizmatlari bilan ulanadi.</p><div class="quickGrid"><a class="quickItem" href="/account/profile${q(lang)}"><span>●</span>Profil</a><a class="quickItem" href="/account/security${q(lang)}"><span>◆</span>Xavfsizlik</a><a class="quickItem" href="/logout${q(lang)}"><span>↪</span>Chiqish</a></div></section><section class="accountCard dangerZone"><h2>Ma’lumotlarni boshqarish</h2><p class="muted">Production versiyada foydalanuvchi ma’lumotlarini eksport qilish va akkauntni o‘chirish so‘rovi audit bilan bajarilishi kerak.</p></section>`; return accountShell(lang,user,"settings",body,"Sozlamalar"); }
+function requireAccount(req,res,lang){ const u=currentUser(req); if(!u){ redirect(res,"/login"+q(lang)); return null; } return u; }
+function statusLabel(status){ return ({intake:"Ma’lumot yig‘ilmoqda",analysis:"Tahlil qilinmoqda",documents:"Hujjat tayyorlanmoqda",review:"Tekshirish",completed:"Yakunlangan"})[status]||status; }
+
+// ======================================================
+// END ACCOUNT CENTER
+// ======================================================
+
+
 // ======================================================
 // HEALTH RESPONSE
 // ======================================================
@@ -12797,29 +12813,6 @@ function healthResponse(){
 
 }
 
-
-
-// ======================================================
-// PRIVACY / TERMS / ACCOUNT PAGES
-// ======================================================
-function legalPolicyPage(lang,type){
-  const isPrivacy=type==="privacy";
-  const title=isPrivacy?(lang==="uz"?"Maxfiylik siyosati":lang==="ru"?"Политика конфиденциальности":"Privacy Policy"):(lang==="uz"?"Foydalanish shartlari":lang==="ru"?"Условия использования":"Terms of Use");
-  const body=lang==="uz"
-    ? (isPrivacy?`<p>Huquqiy AI foydalanuvchi taqdim etgan ma’lumotlardan xizmatni ko‘rsatish, huquqiy savolni tahlil qilish va foydalanuvchi so‘ragan hujjat loyihasini tayyorlash maqsadida foydalanadi.</p><p>Zarur bo‘lmagan maxfiy ma’lumotlarni kiritmang. Akkaunt parollari ochiq ko‘rinishda saqlanmaydi. Foydalanuvchi o‘z akkaunti va saqlangan ma’lumotlari bo‘yicha boshqaruv imkoniyatlariga ega bo‘lishi kerak.</p><p>Ushbu MVP matni loyiha real hosting, analitika, uchinchi tomon servislar va ma’lumot saqlash arxitekturasi yakunlangach huquqshunos tomonidan to‘liq moslashtirilishi kerak.</p>`:`<p>Huquqiy AI huquqiy axborot beruvchi va hujjat loyihalarini tayyorlashga yordam beruvchi sun’iy intellekt tizimidir.</p><p>AI javobi yakuniy sud qarori, advokat xulosasi yoki davlat organining rasmiy qarori hisoblanmaydi. Foydalanuvchi muhim ma’lumotlarni amaldagi qonunchilik va rasmiy manbalardan tekshirishi kerak.</p><p>Platformadan qonunga xilof maqsadlarda foydalanish mumkin emas. Foydalanuvchi kiritgan ma’lumotlarning to‘g‘riligi uchun o‘zi javob beradi.</p>`)
-    : lang==="ru"?`<p>Это базовая версия ${isPrivacy?"политики конфиденциальности":"условий использования"}. Перед публичным запуском текст должен быть согласован с фактической архитектурой хранения и обработки данных.</p>`:`<p>This is the MVP ${isPrivacy?"privacy policy":"terms of use"}. Before public launch, it must be aligned with the actual data-storage and processing architecture.</p>`;
-  return page({lang,title,content:`<main class="container" style="padding:55px 0 90px"><div class="surface surfacePad"><div class="eyebrow">HUQUQIY AI</div><h1 class="sectionTitle">${title}</h1><div class="sectionText" style="max-width:900px">${body}</div><a class="btn btnOutline" href="/${q(lang)}">${tr(lang,"back")}</a></div></main>`});
-}
-function authPage(lang,mode="login",message=""){
-  const register=mode==="register";
-  const title=register?(lang==="uz"?"Ro‘yxatdan o‘tish":lang==="ru"?"Регистрация":"Create account"):(lang==="uz"?"Kabinetga kirish":lang==="ru"?"Войти в кабинет":"Sign in");
-  return page({lang,title,content:`<main class="authWrap"><div class="surface surfacePad"><div class="eyebrow">SHAXSIY KABINET</div><h1 class="sectionTitle">${title}</h1>${message?`<div class="notice noticeGold">${esc(message)}</div>`:""}<form class="authForm" method="post" action="/${register?"register":"login"}${q(lang)}">${register?`<label>Ism<input name="name" required minlength="2" maxlength="80" autocomplete="name"></label>`:""}<label>Email<input name="email" type="email" required maxlength="160" autocomplete="email"></label><label>${lang==="uz"?"Parol":lang==="ru"?"Пароль":"Password"}<input name="password" type="password" required minlength="8" maxlength="128" autocomplete="${register?"new-password":"current-password"}"></label><button class="btn btnPrimary" type="submit">${title}</button></form><div class="privacyLinks"><a href="/${register?"login":"register"}${q(lang)}">${register?(lang==="uz"?"Akkauntim bor":lang==="ru"?"У меня уже есть аккаунт":"I already have an account"):(lang==="uz"?"Yangi akkaunt yaratish":lang==="ru"?"Создать аккаунт":"Create an account")}</a></div></div></main>`});
-}
-function accountPage(lang,user){
-  if(!user) return authPage(lang,"login");
-  const t=lang==="uz"?{hello:"Xush kelibsiz",cases:"Mening ishlarim",docs:"Mening hujjatlarim",chats:"AI suhbatlarim",privacy:"Maxfiylik va xavfsizlik",newcase:"Yangi huquqiy ish",empty:"Hozircha saqlangan ma’lumot yo‘q. Keyingi bosqichda mavjud AI savolnomalari va hujjatlarni shu kabinetga bog‘laymiz.",logout:"Chiqish"}:lang==="ru"?{hello:"Добро пожаловать",cases:"Мои дела",docs:"Мои документы",chats:"Диалоги с ИИ",privacy:"Конфиденциальность и безопасность",newcase:"Новое юридическое дело",empty:"Сохранённых данных пока нет. На следующем этапе мы свяжем существующие анкеты и документы с кабинетом.",logout:"Выйти"}:{hello:"Welcome",cases:"My cases",docs:"My documents",chats:"AI conversations",privacy:"Privacy & security",newcase:"New legal matter",empty:"No saved data yet. Next we will connect the existing questionnaires and documents to this account.",logout:"Sign out"};
-  return page({lang,title:t.cases,content:`<main class="container" style="padding:45px 0 100px"><section class="accountHero"><div class="eyebrow">HUQUQIY AI ACCOUNT</div><h1>${t.hello}, ${esc(user.name)}</h1><p>${esc(user.email)}</p><a class="btn btnGold" href="/questionnaire${q(lang)}">${t.newcase}</a> <a class="btn btnOutline" href="/logout${q(lang)}">${t.logout}</a></section><div class="accountGrid"><div class="accountCard"><h3>⚖ ${t.cases}</h3><p>${t.empty}</p></div><div class="accountCard"><h3>▣ ${t.docs}</h3><p>${t.empty}</p></div><div class="accountCard"><h3>AI ${t.chats}</h3><p>${t.empty}</p></div><div class="accountCard"><h3>🔒 ${t.privacy}</h3><p>${lang==="uz"?"Parolingiz scrypt xeshi bilan saqlanadi. Sessiya HttpOnly cookie orqali boshqariladi.":lang==="ru"?"Пароль хранится как scrypt-хеш. Сессия управляется через HttpOnly cookie.":"Your password is stored as a scrypt hash. The session uses an HttpOnly cookie."}</p><a href="/privacy${q(lang)}" class="serviceLink">${t.privacy} →</a></div></div></main>`});
-}
 
 // ======================================================
 // SERVER
@@ -12851,25 +12844,90 @@ const server =
           );
 
 
+
         // ------------------------------------------------
-        // PRIVACY / TERMS / ACCOUNT
+        // ACCOUNT / AUTH
         // ------------------------------------------------
-        if(req.method==="GET" && pathname==="/privacy") return sendHtml(res,legalPolicyPage(lang,"privacy"));
-        if(req.method==="GET" && pathname==="/terms") return sendHtml(res,legalPolicyPage(lang,"terms"));
-        if(req.method==="GET" && pathname==="/login") return sendHtml(res,authPage(lang,"login"));
-        if(req.method==="GET" && pathname==="/register") return sendHtml(res,authPage(lang,"register"));
-        if(req.method==="GET" && pathname==="/account") return sendHtml(res,accountPage(lang,currentUser(req)));
-        if(req.method==="GET" && pathname==="/logout"){ clearSession(req,res); return redirect(res,"/login"+q(lang)); }
-        if(req.method==="POST" && pathname==="/register"){
-          const form=await readForm(req); const email=normalizeEmail(form.email); const name=String(form.name||"").trim(); const password=String(form.password||"");
-          if(name.length<2 || !email.includes("@") || password.length<8) return sendHtml(res,authPage(lang,"register",lang==="uz"?"Ma’lumotlarni to‘g‘ri kiriting. Parol kamida 8 belgidan iborat bo‘lsin.":"Please check the entered data."),400);
-          const users=loadUsers(); if(users.some(u=>u.email===email)) return sendHtml(res,authPage(lang,"login",lang==="uz"?"Bu email bilan akkaunt mavjud. Kabinetga kiring.":"Account already exists."),409);
-          const hp=hashPassword(password); const user={id:crypto.randomUUID(),name,email,salt:hp.salt,passwordHash:hp.hash,createdAt:new Date().toISOString()}; users.push(user); saveUsers(users); createSession(res,user.id); return redirect(res,"/account"+q(lang));
+        if(req.method === "GET" && pathname === "/login"){
+          if(currentUser(req)) return redirect(res,"/account"+q(lang));
+          return sendHtml(res,authPage(lang,"login"));
         }
-        if(req.method==="POST" && pathname==="/login"){
-          const form=await readForm(req); const email=normalizeEmail(form.email); const user=loadUsers().find(u=>u.email===email);
-          if(!user || !verifyPassword(String(form.password||""),user)) return sendHtml(res,authPage(lang,"login",lang==="uz"?"Email yoki parol noto‘g‘ri.":lang==="ru"?"Неверный email или пароль.":"Incorrect email or password."),401);
-          createSession(res,user.id); return redirect(res,"/account"+q(lang));
+        if(req.method === "POST" && pathname === "/login"){
+          const form=await readForm(req), db=readAccountDB(), email=normalizeEmail(form.email);
+          const user=db.users.find(x=>x.email===email&&!x.deletedAt);
+          if(!user || !verifyPassword(form.password,user.passwordHash)) return sendHtml(res,authPage(lang,"login","Email yoki parol noto‘g‘ri."),401);
+          createSession(user.id,res); addActivity(db,user.id,"login","Kabinetga kirildi"); user.lastLoginAt=new Date().toISOString(); writeAccountDB(db);
+          return redirect(res,"/account"+q(lang));
+        }
+        if(req.method === "GET" && pathname === "/register"){
+          if(currentUser(req)) return redirect(res,"/account"+q(lang));
+          return sendHtml(res,authPage(lang,"register"));
+        }
+        if(req.method === "POST" && pathname === "/register"){
+          const form=await readForm(req), email=normalizeEmail(form.email), db=readAccountDB();
+          if(!validEmail(email)) return sendHtml(res,authPage(lang,"register","Email manzilini tekshiring."),400);
+          if(String(form.password||"").length<8) return sendHtml(res,authPage(lang,"register","Parol kamida 8 belgidan iborat bo‘lsin."),400);
+          if(form.password!==form.password2) return sendHtml(res,authPage(lang,"register","Parollar bir xil emas."),400);
+          if(form.terms!=="yes"||form.dataConsent!=="yes") return sendHtml(res,authPage(lang,"register","Foydalanish shartlari va maxfiylik roziligini tasdiqlang."),400);
+          if(db.users.some(x=>x.email===email&&!x.deletedAt)) return sendHtml(res,authPage(lang,"register","Bu email bilan akkaunt mavjud."),409);
+          const user={id:uid("USR"),name:String(form.name||"").trim(),email,passwordHash:hashPassword(form.password),phone:"",bio:"",preferredLanguage:lang,consentVersion:CONSENT_VERSION,consentAt:new Date().toISOString(),createdAt:new Date().toISOString(),lastLoginAt:new Date().toISOString()};
+          db.users.push(user); addActivity(db,user.id,"register","Akkaunt yaratildi"); writeAccountDB(db); createSession(user.id,res); return redirect(res,"/account"+q(lang));
+        }
+        if(req.method === "GET" && pathname === "/logout"){
+          destroySession(req,res); return redirect(res,"/login"+q(lang));
+        }
+        if(req.method === "GET" && pathname === "/account"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,dashboardPage(lang,user));
+        }
+        if(req.method === "GET" && pathname === "/account/cases"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,casesPage(lang,user));
+        }
+        if(req.method === "GET" && pathname === "/account/cases/new"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,newCasePage(lang,user));
+        }
+        if(req.method === "POST" && pathname === "/account/cases/new"){
+          const user=requireAccount(req,res,lang); if(!user) return; const form=await readForm(req);
+          if(!String(form.title||"").trim()) return sendHtml(res,newCasePage(lang,user,"Ish nomini kiriting."),400);
+          const db=readAccountDB(), year=new Date().getFullYear(), count=db.cases.filter(x=>String(x.caseNumber||"").startsWith(`CASE-${year}`)).length+1;
+          const c={id:uid("CASE"),caseNumber:`CASE-${year}-${String(count).padStart(5,"0")}`,userId:user.id,area:String(form.area||"Boshqa"),issueType:String(form.issueType||""),title:String(form.title||"").trim(),description:String(form.description||"").trim(),goal:String(form.goal||"").trim(),priority:String(form.priority||"normal"),status:"intake",statusLabel:statusLabel("intake"),progress:10,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+          db.cases.unshift(c); addActivity(db,user.id,"case_created",`${c.caseNumber} yaratildi`,{caseId:c.id}); writeAccountDB(db); return redirect(res,`/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}`);
+        }
+        if(req.method === "GET" && pathname === "/account/case"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,caseDetailPage(lang,user,url.searchParams.get("id")||""));
+        }
+        if(req.method === "POST" && pathname === "/account/case/status"){
+          const user=requireAccount(req,res,lang); if(!user) return; const form=await readForm(req), id=url.searchParams.get("id")||"", db=readAccountDB(), c=db.cases.find(x=>x.id===id&&x.userId===user.id&&!x.deletedAt);
+          if(!c) return sendHtml(res,caseDetailPage(lang,user,id),404); c.status=String(form.status||c.status); c.statusLabel=statusLabel(c.status); c.progress=Math.max(0,Math.min(100,Number(form.progress)||0)); c.updatedAt=new Date().toISOString(); addActivity(db,user.id,"case_status",`${c.caseNumber}: ${c.statusLabel}`,{caseId:c.id}); writeAccountDB(db); return redirect(res,`/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}`);
+        }
+        if(req.method === "GET" && pathname === "/account/documents"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,documentsAccountPage(lang,user));
+        }
+        if(req.method === "GET" && pathname === "/account/documents/new"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,newDocumentPage(lang,user,url.searchParams.get("caseId")||""));
+        }
+        if(req.method === "POST" && pathname === "/account/documents/new"){
+          const user=requireAccount(req,res,lang); if(!user) return; const form=await readForm(req),db=readAccountDB(); const d={id:uid("DOC"),userId:user.id,caseId:String(form.caseId||""),type:String(form.type||"Boshqa"),status:String(form.status||"Draft"),title:String(form.title||"").trim(),note:String(form.note||"").trim(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}; if(!d.title) return sendHtml(res,newDocumentPage(lang,user,d.caseId),400); db.documents.unshift(d); addActivity(db,user.id,"document_created",`Hujjat: ${d.title}`,{caseId:d.caseId,documentId:d.id}); writeAccountDB(db); return redirect(res,"/account/documents"+q(lang));
+        }
+        if(req.method === "GET" && pathname === "/account/chats"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,chatsPage(lang,user));
+        }
+        if(req.method === "GET" && pathname === "/account/profile"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,profilePage(lang,user));
+        }
+        if(req.method === "POST" && pathname === "/account/profile"){
+          const user=requireAccount(req,res,lang); if(!user) return; const form=await readForm(req),db=readAccountDB(),u=db.users.find(x=>x.id===user.id); u.name=String(form.name||u.name).trim(); u.phone=String(form.phone||"").trim(); u.bio=String(form.bio||"").trim(); u.preferredLanguage=getLang(form.preferredLanguage); u.updatedAt=new Date().toISOString(); addActivity(db,u.id,"profile","Profil yangilandi"); writeAccountDB(db); return sendHtml(res,profilePage(lang,u,"Profil saqlandi."));
+        }
+        if(req.method === "GET" && pathname === "/account/security"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,securityPage(lang,user));
+        }
+        if(req.method === "POST" && pathname === "/account/security/password"){
+          const user=requireAccount(req,res,lang); if(!user) return; const form=await readForm(req),db=readAccountDB(),u=db.users.find(x=>x.id===user.id);
+          if(!verifyPassword(form.currentPassword,u.passwordHash)) return sendHtml(res,securityPage(lang,u,"","Joriy parol noto‘g‘ri."),400);
+          if(String(form.newPassword||"").length<8||form.newPassword!==form.newPassword2) return sendHtml(res,securityPage(lang,u,"","Yangi parollarni tekshiring (kamida 8 belgi)."),400);
+          u.passwordHash=hashPassword(form.newPassword); addActivity(db,u.id,"password","Parol yangilandi"); db.sessions=db.sessions.filter(x=>x.userId!==u.id); writeAccountDB(db); createSession(u.id,res); return sendHtml(res,securityPage(lang,u,"Parol muvaffaqiyatli yangilandi."));
+        }
+        if(req.method === "GET" && pathname === "/account/settings"){
+          const user=requireAccount(req,res,lang); if(!user) return; return sendHtml(res,settingsPage(lang,user));
         }
 
         // ------------------------------------------------
