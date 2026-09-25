@@ -9982,21 +9982,26 @@ function googleMapsSearch(
 }
 
 
-function googleMapsDirections(
-  name,
-  district = ""
-) {
+function googleMapsDirections(name, district = "") {
+  // Google Maps navigation uchun toza va barqaror URL.
+  // name ichida Toshkent/Uzbekistan oldindan bo‘lsa ham takrorlamaydi.
+  const parts = [name, district, "Toshkent", "Uzbekistan"]
+    .map(v => String(v || "").trim())
+    .filter(Boolean);
 
-  const destination =
-    `${name}, ${district}, Toshkent, Uzbekistan`;
+  const unique = [];
+  for (const part of parts) {
+    if (!unique.some(x => x.toLowerCase() === part.toLowerCase())) {
+      unique.push(part);
+    }
+  }
 
-
+  const destination = unique.join(", ");
   return (
     "https://www.google.com/maps/dir/?api=1&destination=" +
     encodeURIComponent(destination) +
-    "&travelmode=driving"
+    "&travelmode=driving&dir_action=navigate"
   );
-
 }
 
 
@@ -11323,8 +11328,10 @@ const STATE_ORGANIZATIONS = [
             </button>
 
             <a
-              class="courtMapButton primary"
+              class="courtMapButton primary courtNavButton"
               href="${directionUrl}"
+              data-nav="${esc(directionUrl)}"
+              onclick="return openCourtNavigation(this,event)"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -11538,8 +11545,10 @@ const internalAffairsCards =
 
 
             <a
-              class="courtMapButton primary"
+              class="courtMapButton primary courtNavButton"
               href="${directionUrl}"
+              data-nav="${esc(directionUrl)}"
+              onclick="return openCourtNavigation(this,event)"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -11600,7 +11609,7 @@ const mibCards = MIB_ORGANIZATIONS.map(name => {
       <div class="courtCardActions">
         <button type="button" class="courtMapButton" data-map="${esc(mapsUrl)}"
           data-name="${esc(name)}" onclick="showCourtMap(this)">📍 Xaritada ko‘rish</button>
-        <a class="courtMapButton primary" href="${directionUrl}" target="_blank"
+        <a class="courtMapButton primary courtNavButton" href="${directionUrl}" data-nav="${esc(directionUrl)}" onclick="return openCourtNavigation(this,event)" target="_blank"
           rel="noopener noreferrer">🧭 Yo‘nalish</a>
       </div>
     </article>
@@ -12168,6 +12177,24 @@ body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparen
 
           }
         );
+
+
+        // Sud kartalaridagi “Yo‘nalish” tugmasi uchun barqaror navigation.
+        // Popup bloklansa ham oddiy href fallback ishlaydi.
+        window.openCourtNavigation = function(link, event){
+          const url = (link && (link.dataset.nav || link.href)) || "";
+          if (!url) return true;
+
+          if (event) event.preventDefault();
+
+          try {
+            const opened = window.open(url, "_blank", "noopener,noreferrer");
+            if (!opened) window.location.href = url;
+          } catch (_) {
+            window.location.href = url;
+          }
+          return false;
+        };
 
 
         window.showCourtMap =
