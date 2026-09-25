@@ -4717,36 +4717,44 @@ function navigation(lang) {
 
   lang = getLang(lang);
 
+  const accountText =
+    lang === "uz"
+      ? "Shaxsiy kabinet"
+      : lang === "ru"
+      ? "Личный кабинет"
+      : "Personal account";
+
+  const employmentText =
+    lang === "uz"
+      ? "Mehnat huquqi"
+      : lang === "ru"
+      ? "Трудовое право"
+      : "Employment law";
+
+  const menuText =
+    lang === "uz"
+      ? "Menyu"
+      : lang === "ru"
+      ? "Меню"
+      : "Menu";
+
   return `
 
-    <header class="nav">
+    <header class="nav huquqiyMainNav">
 
-      <div class="navin">
+      <div class="navin huquqiyNavInner">
 
-        <a
-          class="brand"
-          href="/${q(lang)}"
-        >
-
-          <span class="brandMark">
-            §
-          </span>
+        <a class="brand" href="/${q(lang)}">
+          <span class="brandMark">§</span>
 
           <span class="brandText">
-
-            <strong>
-              ${tr(lang, "brand")}
-            </strong>
-
-            <small>
-              LEGAL INTELLIGENCE PLATFORM
-            </small>
-
+            <strong>${tr(lang, "brand")}</strong>
+            <small>LEGAL INTELLIGENCE PLATFORM</small>
           </span>
-
         </a>
 
 
+        <!-- DESKTOP MENU -->
         <nav class="navlinks">
 
           <a href="/${q(lang)}">
@@ -4778,26 +4786,45 @@ function navigation(lang) {
           </a>
 
           <a href="/employment${q(lang)}">
-            ${lang === "uz" ? "Mehnat huquqi" : lang === "ru" ? "Трудовое право" : "Employment law"}
+            ${employmentText}
           </a>
 
-
-          <a href="/login${q(lang)}" style="border:1px solid rgba(217,192,131,.35);color:#ead9ad">
-            ${lang === "uz" ? "Shaxsiy kabinet" : lang === "ru" ? "Личный кабинет" : "Account"}
+          <a
+            class="desktopAccountLink"
+            href="/login${q(lang)}"
+          >
+            <span>◉</span>
+            ${accountText}
           </a>
 
         </nav>
 
 
-        <div class="navRight">
+        <!-- RIGHT SIDE -->
+        <div class="navRight huquqiyNavRight">
 
-          ${languageMenu(lang, "/")}
+          <div class="desktopLanguages">
+            ${languageMenu(lang, "/")}
+          </div>
+
+          <!-- IPHONE + ANDROID:
+               SHAXSIY KABINET DOIM HEADERDA -->
+          <a
+            class="mobileAccountDirect"
+            href="/login${q(lang)}"
+            title="${accountText}"
+            aria-label="${accountText}"
+          >
+            <span class="mobileAccountDirectIcon">◉</span>
+            <span class="mobileAccountDirectText">${accountText}</span>
+          </a>
 
           <button
             class="mobileMenu"
             type="button"
+            aria-label="${menuText}"
+            title="${menuText}"
             onclick="document.getElementById('mobileNav').classList.toggle('show')"
-            aria-label="Menu"
           >
             ☰
           </button>
@@ -4807,16 +4834,37 @@ function navigation(lang) {
       </div>
 
 
-      <div
-        id="mobileNav"
-        style="
-          display:none;
-          width:92%;
-          margin:auto;
-          padding:10px 0 15px;
-          gap:7px;
-        "
-      >
+      <!-- MOBILE LANGUAGE SWITCHER: DOIM KO'RINADI -->
+      <div class="mobileTopLanguages">
+
+        <a
+          href="?lang=uz"
+          class="${lang === "uz" ? "active" : ""}"
+        >
+          UZ
+        </a>
+
+        <a
+          href="?lang=ru"
+          class="${lang === "ru" ? "active" : ""}"
+        >
+          RU
+        </a>
+
+        <a
+          href="?lang=en"
+          class="${lang === "en" ? "active" : ""}"
+        >
+          EN
+        </a>
+
+      </div>
+
+
+      <!-- MOBILE MENU:
+           SHAXSIY KABINET BU YERDA EMAS.
+           U HEADERNING O'ZIDA TURADI. -->
+      <div id="mobileNav" class="mobileNavPanel">
 
         <a href="/${q(lang)}">
           ${tr(lang, "home")}
@@ -4842,46 +4890,73 @@ function navigation(lang) {
           ${tr(lang, "court")}
         </a>
 
-              <a href="/calculators${q(lang)}">
+        <a href="/calculators${q(lang)}">
           ${tr(lang, "calculators")}
         </a>
 
         <a href="/employment${q(lang)}">
-          ${
-            lang === "uz"
-              ? "Mehnat huquqi"
-              : lang === "ru"
-              ? "Трудовое право"
-              : "Employment law"
-          }
-        </a>
-
-        <a
-          href="/login${q(lang)}"
-          class="mobileAccountLink"
-        >
-          <span>◉</span>
-
-          ${
-            lang === "uz"
-              ? "Shaxsiy kabinet"
-              : lang === "ru"
-              ? "Личный кабинет"
-              : "Personal account"
-          }
+          ${employmentText}
         </a>
 
       </div>
 
     </header>
 
+
     <style>
 
-      #mobileNav.show{
+      /* =================================================
+         DESKTOP ACCOUNT
+      ================================================= */
+
+      .desktopAccountLink{
+        display:flex !important;
+        align-items:center;
+        gap:7px;
+        padding:10px 14px !important;
+        color:#ead9ad !important;
+        background:linear-gradient(145deg,#06111f,#0b2946);
+        border:1px solid rgba(217,192,131,.45);
+        border-radius:10px;
+        font-weight:800 !important;
+        white-space:nowrap;
+        text-decoration:none;
+      }
+
+      .desktopAccountLink span{
+        color:#d9c083;
+      }
+
+      .desktopAccountLink:hover{
+        color:#fff !important;
+        border-color:rgba(217,192,131,.85);
+        transform:translateY(-1px);
+      }
+
+
+      /* =================================================
+         MOBILE ELEMENTS — DEFAULT HIDDEN
+      ================================================= */
+
+      .mobileAccountDirect,
+      .mobileTopLanguages{
+        display:none;
+      }
+
+      .mobileNavPanel{
+        display:none;
+        width:92%;
+        margin:0 auto;
+        padding:10px 0 15px;
+        gap:7px;
+      }
+
+      .mobileNavPanel.show{
         display:grid !important;
       }
 
-      #mobileNav a{
+      .mobileNavPanel a{
+        display:block;
         padding:12px 14px;
         color:#526276;
         background:#fff;
@@ -4892,808 +4967,201 @@ function navigation(lang) {
         text-decoration:none;
       }
 
-      /* SHAXSIY KABINET — IPHONE + ANDROID */
 
-      #mobileNav .mobileAccountLink{
-        display:flex !important;
-        align-items:center;
-        justify-content:center;
-        gap:9px;
+      /* =================================================
+         TABLET + IPHONE + ANDROID
+      ================================================= */
 
-        min-height:50px;
-        margin-top:6px;
+      @media(max-width:1150px){
 
-        color:#ffffff !important;
+        .huquqiyMainNav{
+          height:auto !important;
+          min-height:68px;
+        }
 
-        background:
-          linear-gradient(
-            145deg,
-            #06111f,
-            #0b2946
-          ) !important;
+        .huquqiyNavInner{
+          min-height:68px;
+        }
 
-        border:
-          1px solid rgba(201,168,106,.85) !important;
+        .navlinks{
+          display:none !important;
+        }
 
-        border-radius:11px;
+        .desktopLanguages{
+          display:none !important;
+        }
 
-        font-size:14px !important;
-        font-weight:850 !important;
+        .mobileMenu{
+          display:grid !important;
+          place-items:center;
+          flex:0 0 40px;
+          width:40px;
+          height:40px;
+        }
 
-        box-shadow:
-          0 8px 22px rgba(6,17,31,.16);
+        /* SHAXSIY KABINET HEADERNING O'ZIDA */
+        .mobileAccountDirect{
+          display:flex !important;
+          align-items:center;
+          justify-content:center;
+          gap:7px;
+          min-height:42px;
+          padding:9px 13px;
+          color:#fff !important;
+          background:linear-gradient(145deg,#06111f,#0b2946);
+          border:1px solid rgba(201,168,106,.80);
+          border-radius:10px;
+          box-shadow:0 6px 18px rgba(6,17,31,.14);
+          font-size:12px;
+          font-weight:850;
+          line-height:1.1;
+          text-decoration:none;
+          white-space:nowrap;
+          -webkit-tap-highlight-color:transparent;
+        }
 
-        -webkit-tap-highlight-color:
-          transparent;
+        .mobileAccountDirectIcon{
+          color:#d9c083;
+          font-size:16px;
+        }
+
+        /* UZ / RU / EN MOBILDA HAM DOIM KO'RINADI */
+        .mobileTopLanguages{
+          display:flex !important;
+          align-items:center;
+          justify-content:center;
+          gap:6px;
+          width:92%;
+          margin:0 auto;
+          padding:4px 0 9px;
+        }
+
+        .mobileTopLanguages a{
+          min-width:44px;
+          padding:7px 10px;
+          color:#687787;
+          background:#f7f9fa;
+          border:1px solid #e1e6ea;
+          border-radius:8px;
+          font-size:10px;
+          font-weight:900;
+          text-align:center;
+          text-decoration:none;
+        }
+
+        .mobileTopLanguages a.active{
+          color:#fff;
+          background:linear-gradient(145deg,#06111f,#0b2946);
+          border-color:#c9a86a;
+        }
+
       }
 
-      #mobileNav .mobileAccountLink span{
-        color:#d9c083;
-        font-size:18px;
+
+      /* =================================================
+         NORMAL PHONES
+      ================================================= */
+
+      @media(max-width:720px){
+
+        .brandText small{
+          display:none !important;
+        }
+
+        .huquqiyNavRight{
+          gap:7px;
+        }
+
+        .mobileAccountDirect{
+          min-height:40px;
+          padding:8px 10px;
+          border-radius:9px;
+        }
+
+        .mobileAccountDirectText{
+          font-size:11px;
+        }
+
       }
 
-      #mobileNav .mobileAccountLink:active{
-        transform:scale(.98);
+
+      /* =================================================
+         SMALL IPHONE / SMALL ANDROID
+      ================================================= */
+
+      @media(max-width:480px){
+
+        .huquqiyNavInner{
+          width:94%;
+        }
+
+        .brand{
+          gap:6px;
+        }
+
+        .brandMark{
+          width:34px;
+          height:34px;
+          font-size:17px;
+        }
+
+        .brandText strong{
+          font-size:15px;
+        }
+
+        .mobileAccountDirect{
+          padding:8px 9px;
+        }
+
+        .mobileAccountDirectText{
+          max-width:94px;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          white-space:nowrap;
+        }
+
       }
+
+
+      /* =================================================
+         VERY SMALL PHONE
+         MATN SIG'MASA IKONKA QOLADI
+      ================================================= */
+
+      @media(max-width:370px){
+
+        .mobileAccountDirectText{
+          display:none;
+        }
+
+        .mobileAccountDirect{
+          width:40px;
+          padding:8px;
+        }
+
+        .mobileAccountDirectIcon{
+          font-size:18px;
+        }
+
+      }
+
+
+      /* =================================================
+         DESKTOP
+      ================================================= */
 
       @media(min-width:1151px){
 
-        #mobileNav{
+        .mobileAccountDirect,
+        .mobileTopLanguages,
+        .mobileNavPanel{
           display:none !important;
         }
 
       }
 
-    <style>
+    </style>
 
-      #mobileNav.show{
-        display:grid !important;
-      }
-
-      #mobileNav a{
-        padding:10px 12px;
-
-        color:#526276;
-
-        background:#fff;
-
-        border:1px solid #e3e8ec;
-
-        border-radius:8px;
-
-        font-size:10px;
-
-        font-weight:750;
-      }
-
-      @media(min-width:1151px){
-
-        #mobileNav{
-          display:none !important;
-        }
-
-      }
-
-    
-/* PREMIUM LEGALTECH UI */
-body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparent 28rem),linear-gradient(180deg,#fbfaf7,#f3f5f6);color:#14232f;font-size:17px;line-height:1.68}
-.container{max-width:1240px}
-.navbar,.appTopbar{background:rgba(7,24,39,.97)!important;border-bottom:1px solid rgba(217,192,131,.18);box-shadow:0 12px 38px rgba(2,15,25,.16);backdrop-filter:blur(18px)}
-.brand strong,.appBrand strong{font-size:23px;font-weight:850;letter-spacing:-.035em}
-.navlinks a{padding:10px 13px;border-radius:12px;font-size:14px;font-weight:650}
-.navlinks a:hover{background:rgba(255,255,255,.07)}
-.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 80% 20%,rgba(217,192,131,.15),transparent 22rem),linear-gradient(135deg,#061521,#0b2538 55%,#103149)!important}
-.hero:after{content:"§";position:absolute;right:5vw;top:50%;transform:translateY(-50%);font-family:Georgia,serif;font-size:290px;color:rgba(217,192,131,.045);pointer-events:none}
-.heroInner{position:relative;z-index:1;padding-top:88px;padding-bottom:92px}
-.hero h1,.heroTitle{font-family:Georgia,"Times New Roman",serif;font-size:clamp(43px,5.4vw,72px);line-height:1.02;letter-spacing:-.045em}
-.heroDescription{max-width:720px;font-size:18px;line-height:1.75}
-.btn{min-height:48px;padding:12px 18px;border-radius:13px;font-size:14px;font-weight:780;transition:.2s ease}
-.btn:hover{transform:translateY(-2px)}
-.btnGold{color:#0b1e2e;background:linear-gradient(135deg,#e1c98d,#b9954f)!important;box-shadow:0 12px 28px rgba(185,149,79,.22)}
-.section,.servicesSection{padding-top:72px;padding-bottom:72px}
-.sectionTitle,.appHeader h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.035em}
-.sectionTitle{font-size:clamp(31px,4vw,47px);line-height:1.08}
-.serviceGrid,.documentGrid,.sourceGrid,.coreGrid{gap:18px}
-.serviceCard,.sourceCard,.coreItem,.documentCard,.calcCard,.surface{position:relative;overflow:hidden;border:1px solid rgba(12,36,56,.12);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 10px 35px rgba(7,24,39,.055)}
-.serviceCard,.sourceCard,.documentCard{padding:25px;transition:.22s ease}
-.serviceCard:before,.documentCard:before,.sourceCard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#d9c083,#b9954f);opacity:.72}
-.serviceCard:hover,.sourceCard:hover,.documentCard:hover{transform:translateY(-5px);box-shadow:0 18px 55px rgba(5,24,39,.10);border-color:rgba(185,149,79,.38)}
-.serviceIcon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:20px;border-radius:14px;color:#f1dfb2;background:linear-gradient(145deg,#0b2335,#153d59);border:1px solid rgba(217,192,131,.25);box-shadow:0 10px 25px rgba(7,24,39,.15);font-weight:850}
-.serviceCard h3,.sourceCard h3,.documentCard h3{color:#071827;font-size:20px;line-height:1.25;letter-spacing:-.025em}
-.serviceCard p,.sourceCard p,.documentCard p,.cardDescription{color:#66737d;font-size:14px;line-height:1.65}
-.serviceLink{color:#8a6b2f;font-weight:800}
-.surfacePad{padding:28px}
-.appShell{max-width:1280px;gap:24px}
-.appSidebar{border:1px solid rgba(12,36,56,.09);border-radius:20px;background:rgba(255,255,255,.84);box-shadow:0 14px 45px rgba(7,24,39,.06)}
-.sideLink{border-radius:12px;font-weight:670}.sideLink.active{box-shadow:inset 3px 0 0 #b9954f}
-.appHeader{margin-bottom:22px;padding:26px 28px;border-radius:20px;color:#fff;background:radial-gradient(circle at 90% 10%,rgba(217,192,131,.13),transparent 18rem),linear-gradient(135deg,#081b2b,#0d3048)!important;box-shadow:0 20px 55px rgba(5,24,39,.15)}
-.appHeader h1{color:#fff;font-size:34px}.appHeader p{color:rgba(255,255,255,.7);font-size:15px}
-.resultLabel{color:#98783a;font-size:11px;font-weight:850;letter-spacing:.12em}
-.formGroup label{font-size:13px;font-weight:780}
-.formGroup input,.formGroup textarea,.formGroup select{border-radius:13px!important;background:#fbfcfc;font-size:15px}
-.formGroup input:focus,.formGroup textarea:focus,.formGroup select:focus{outline:none;border-color:rgba(185,149,79,.72)!important;box-shadow:0 0 0 4px rgba(185,149,79,.10)}
-.notice{border-radius:15px}.noticeGold{background:#fbf7ed}
-.calcResult{margin-top:16px;padding:20px;border-radius:15px;color:#eaf2f6;background:linear-gradient(135deg,#0b2335,#123b57)!important}
-.footer{margin-top:70px;background:#061521!important;border-top:1px solid rgba(217,192,131,.16)}
-@media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
-@media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
-
-  
-/* CLEAN WHITE LANDING HERO — ONLY THE ENTRY SECTION */
-.homePage .hero{
-  background:radial-gradient(circle at 82% 12%,rgba(185,149,79,.08),transparent 25rem),linear-gradient(180deg,#ffffff 0%,#faf9f5 100%)!important;
-  border-bottom:1px solid rgba(12,36,56,.10)!important;
-}
-.homePage .hero h1,.homePage .hero .heroTitle{color:#071827!important;text-shadow:none!important}
-.homePage .hero .heroDescription{color:#53626d!important;font-weight:500}
-.homePage .hero .eyebrow{color:#9a7735!important}
-.homePage .hero .btnPrimary{background:linear-gradient(135deg,#071827,#123b57)!important;color:#fff!important;border-color:#071827!important;box-shadow:0 12px 28px rgba(7,24,39,.16)!important}
-.homePage .hero .btnOutline{background:#fff!important;color:#071827!important;border-color:rgba(7,24,39,.16)!important;box-shadow:0 8px 22px rgba(7,24,39,.06)!important}
-.homePage .hero:after{color:rgba(7,24,39,.035)!important}
-
-</style>
-
-  `;
-}
-
-
-// ======================================================
-// FOOTER
-// ======================================================
-
-function footer(lang) {
-
-  lang = getLang(lang);
-
-  const t = {
-
-    uz: {
-      text:
-        "O‘zbekiston huquqiy tizimida yo‘l topishga yordam beruvchi raqamli huquqiy platforma.",
-
-      platform:
-        "PLATFORMA",
-
-      official:
-        "RASMIY MANBALAR",
-
-      disclaimer:
-        "Huquqiy AI advokat yoki sudning o‘rnini bosmaydi.",
-
-      privacy:
-        "Maxfiylik va shaxsiy ma’lumotlarni himoya qilish muhim tamoyildir."
-    },
-
-    ru: {
-      text:
-        "Цифровая юридическая платформа для навигации в правовой системе Узбекистана.",
-
-      platform:
-        "ПЛАТФОРМА",
-
-      official:
-        "ОФИЦИАЛЬНЫЕ ИСТОЧНИКИ",
-
-      disclaimer:
-        "Huquqiy AI не заменяет адвоката или суд.",
-
-      privacy:
-        "Конфиденциальность и защита персональных данных являются важными принципами."
-    },
-
-    en: {
-      text:
-        "A digital legal platform designed to help navigate the legal system of Uzbekistan.",
-
-      platform:
-        "PLATFORM",
-
-      official:
-        "OFFICIAL SOURCES",
-
-      disclaimer:
-        "Huquqiy AI does not replace a lawyer or a court.",
-
-      privacy:
-        "Privacy and personal-data protection are important principles."
-    }
-
-  }[lang];
-
-
-  return `
-
-    <footer class="footer">
-
-      <div class="container">
-
-        <div class="footerGrid">
-
-          <div class="footerBrand">
-
-            <span class="brandMark">
-              §
-            </span>
-
-            <h3>
-              Huquqiy AI
-            </h3>
-
-            <p>
-              ${t.text}
-            </p>
-
-          </div>
-
-
-          <div>
-
-            <div class="footerTitle">
-              ${t.platform}
-            </div>
-
-            <div class="footerLinks">
-
-              <a href="/ai${q(lang)}">
-                ${tr(lang, "assistant")}
-              </a>
-
-              <a href="/questionnaire${q(lang)}">
-                ${tr(lang, "questionnaire")}
-              </a>
-
-              <a href="/documents${q(lang)}">
-                ${tr(lang, "documents")}
-              </a>
-
-              <a href="/court${q(lang)}">
-                ${tr(lang, "court")}
-              </a>
-
-            </div>
-
-          </div>
-
-
-          <div>
-
-            <div class="footerTitle">
-              ${t.official}
-            </div>
-
-            <div class="footerLinks">
-
-              <a
-                href="https://lex.uz"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LexUZ ↗
-              </a>
-
-              <a
-                href="https://sud.uz"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                sud.uz ↗
-              </a>
-
-              <a
-                href="https://cabinet.sud.uz/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                my.sud.uz ↗
-              </a>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="footerBottom">
-
-          <span>
-            © ${new Date().getFullYear()} Huquqiy AI
-          </span>
-
-          <span>
-            ${t.disclaimer}
-          </span>
-
-          <span>
-            ${t.privacy}
-          </span>
-
-        </div>
-
-      </div>
-
-    </footer>
-
-  `;
-}
-
-
-// ======================================================
-// STANDARD PAGE
-// ======================================================
-
-function page({
-  lang = "uz",
-  title = "Huquqiy AI",
-  content = ""
-}) {
-
-  lang = getLang(lang);
-
-  return `
-<!DOCTYPE html>
-
-<html lang="${lang}">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#06111f"
-  >
-
-  <title>
-    ${esc(title)}
-  </title>
-
-  <style>
-    ${CSS}
-    ${CSS_APP}
-  
-/* PREMIUM LEGALTECH UI */
-body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparent 28rem),linear-gradient(180deg,#fbfaf7,#f3f5f6);color:#14232f;font-size:17px;line-height:1.68}
-.container{max-width:1240px}
-.navbar,.appTopbar{background:rgba(7,24,39,.97)!important;border-bottom:1px solid rgba(217,192,131,.18);box-shadow:0 12px 38px rgba(2,15,25,.16);backdrop-filter:blur(18px)}
-.brand strong,.appBrand strong{font-size:23px;font-weight:850;letter-spacing:-.035em}
-.navlinks a{padding:10px 13px;border-radius:12px;font-size:14px;font-weight:650}
-.navlinks a:hover{background:rgba(255,255,255,.07)}
-.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 80% 20%,rgba(217,192,131,.15),transparent 22rem),linear-gradient(135deg,#061521,#0b2538 55%,#103149)!important}
-.hero:after{content:"§";position:absolute;right:5vw;top:50%;transform:translateY(-50%);font-family:Georgia,serif;font-size:290px;color:rgba(217,192,131,.045);pointer-events:none}
-.heroInner{position:relative;z-index:1;padding-top:88px;padding-bottom:92px}
-.hero h1,.heroTitle{font-family:Georgia,"Times New Roman",serif;font-size:clamp(43px,5.4vw,72px);line-height:1.02;letter-spacing:-.045em}
-.heroDescription{max-width:720px;font-size:18px;line-height:1.75}
-.btn{min-height:48px;padding:12px 18px;border-radius:13px;font-size:14px;font-weight:780;transition:.2s ease}
-.btn:hover{transform:translateY(-2px)}
-.btnGold{color:#0b1e2e;background:linear-gradient(135deg,#e1c98d,#b9954f)!important;box-shadow:0 12px 28px rgba(185,149,79,.22)}
-.section,.servicesSection{padding-top:72px;padding-bottom:72px}
-.sectionTitle,.appHeader h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.035em}
-.sectionTitle{font-size:clamp(31px,4vw,47px);line-height:1.08}
-.serviceGrid,.documentGrid,.sourceGrid,.coreGrid{gap:18px}
-.serviceCard,.sourceCard,.coreItem,.documentCard,.calcCard,.surface{position:relative;overflow:hidden;border:1px solid rgba(12,36,56,.12);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 10px 35px rgba(7,24,39,.055)}
-.serviceCard,.sourceCard,.documentCard{padding:25px;transition:.22s ease}
-.serviceCard:before,.documentCard:before,.sourceCard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#d9c083,#b9954f);opacity:.72}
-.serviceCard:hover,.sourceCard:hover,.documentCard:hover{transform:translateY(-5px);box-shadow:0 18px 55px rgba(5,24,39,.10);border-color:rgba(185,149,79,.38)}
-.serviceIcon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:20px;border-radius:14px;color:#f1dfb2;background:linear-gradient(145deg,#0b2335,#153d59);border:1px solid rgba(217,192,131,.25);box-shadow:0 10px 25px rgba(7,24,39,.15);font-weight:850}
-.serviceCard h3,.sourceCard h3,.documentCard h3{color:#071827;font-size:20px;line-height:1.25;letter-spacing:-.025em}
-.serviceCard p,.sourceCard p,.documentCard p,.cardDescription{color:#66737d;font-size:14px;line-height:1.65}
-.serviceLink{color:#8a6b2f;font-weight:800}
-.surfacePad{padding:28px}
-.appShell{max-width:1280px;gap:24px}
-.appSidebar{border:1px solid rgba(12,36,56,.09);border-radius:20px;background:rgba(255,255,255,.84);box-shadow:0 14px 45px rgba(7,24,39,.06)}
-.sideLink{border-radius:12px;font-weight:670}.sideLink.active{box-shadow:inset 3px 0 0 #b9954f}
-.appHeader{margin-bottom:22px;padding:26px 28px;border-radius:20px;color:#fff;background:radial-gradient(circle at 90% 10%,rgba(217,192,131,.13),transparent 18rem),linear-gradient(135deg,#081b2b,#0d3048)!important;box-shadow:0 20px 55px rgba(5,24,39,.15)}
-.appHeader h1{color:#fff;font-size:34px}.appHeader p{color:rgba(255,255,255,.7);font-size:15px}
-.resultLabel{color:#98783a;font-size:11px;font-weight:850;letter-spacing:.12em}
-.formGroup label{font-size:13px;font-weight:780}
-.formGroup input,.formGroup textarea,.formGroup select{border-radius:13px!important;background:#fbfcfc;font-size:15px}
-.formGroup input:focus,.formGroup textarea:focus,.formGroup select:focus{outline:none;border-color:rgba(185,149,79,.72)!important;box-shadow:0 0 0 4px rgba(185,149,79,.10)}
-.notice{border-radius:15px}.noticeGold{background:#fbf7ed}
-.calcResult{margin-top:16px;padding:20px;border-radius:15px;color:#eaf2f6;background:linear-gradient(135deg,#0b2335,#123b57)!important}
-.footer{margin-top:70px;background:#061521!important;border-top:1px solid rgba(217,192,131,.16)}
-@media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
-@media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
-
-  </style>
-
-
-
-</head>
-
-
-<body class="homePage">
-
-  ${navigation(lang)}
-
-  ${content}
-
-  ${footer(lang)}
-
-</body>
-
-</html>
-  `;
-}
-
-
-// ======================================================
-// SIDEBAR
-// ======================================================
-
-function sidebar(lang, active = "") {
-
-  lang = getLang(lang);
-
-  function link(
-    id,
-    href,
-    icon,
-    label
-  ) {
-
-    return `
-
-      <a
-        class="sideLink ${active === id ? "active" : ""}"
-        href="${href}${q(lang)}"
-      >
-
-        <span class="sideIcon">
-          ${icon}
-        </span>
-
-        <span>
-          ${label}
-        </span>
-
-      </a>
-
-    `;
-  }
-
-
-  const security = {
-
-    uz:
-      "Shaxsiy ma’lumotlaringizni ochiq maydonga kiritishda ehtiyot bo‘ling.",
-
-    ru:
-      "Будьте осторожны при вводе персональных данных.",
-
-    en:
-      "Be careful when entering personal information."
-
-  }[lang];
-
-
-  return `
-
-    <aside class="sidebar">
-
-      <div class="sidebarBrand">
-
-        <div class="sidebarBrandTop">
-
-          <span class="sidebarBrandMark">
-            §
-          </span>
-
-          <div>
-
-            <strong>
-              Huquqiy AI
-            </strong>
-
-            <small>
-              LEGAL WORKSPACE
-            </small>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <div class="sidebarMenu">
-
-        <div class="sidebarLabel">
-          WORKSPACE
-        </div>
-
-        ${link(
-          "ai",
-          "/ai",
-          "✦",
-          tr(lang, "assistant")
-        )}
-
-        ${link(
-          "questionnaire",
-          "/questionnaire",
-          "✓",
-          tr(lang, "questionnaire")
-        )}
-
-        ${link(
-          "documents",
-          "/documents",
-          "▤",
-          tr(lang, "documents")
-        )}
-
-
-        <div class="sidebarLabel">
-          LEGAL TOOLS
-        </div>
-
-        ${link(
-          "sources",
-          "/sources",
-          "§",
-          tr(lang, "sources")
-        )}
-
-        ${link(
-          "court",
-          "/court",
-          "⚖",
-          tr(lang, "court")
-        )}
-
-        ${link(
-          "calculators",
-          "/calculators",
-          "∑",
-          tr(lang, "calculators")
-        )}
-
-      </div>
-
-
-      <div class="sidebarBottom">
-
-        <div class="sidebarSecurity">
-
-          <span>
-            ◈
-          </span>
-
-          <span>
-            ${security}
-          </span>
-
-        </div>
-
-      </div>
-
-    </aside>
-
-  `;
-}
-
-
-// ======================================================
-// APP LAYOUT
-// ======================================================
-
-function appLayout(
-  lang,
-  active,
-  content,
-  title,
-  description = ""
-) {
-
-  lang = getLang(lang);
-
-  const pathMap = {
-    ai: "/ai",
-    questionnaire: "/questionnaire",
-    sources: "/sources",
-    documents: "/documents",
-    court: "/court",
-    calculators: "/calculators",
-    family: "/family",
-    employment: "/employment",
-    business: "/business"
-  };
-
-
-  const currentPath =
-    pathMap[active] ||
-    "/";
-
-
-  const workspaceText = {
-
-    uz:
-      "HUQUQIY ISH MAYDONI",
-
-    ru:
-      "ЮРИДИЧЕСКОЕ ПРОСТРАНСТВО",
-
-    en:
-      "LEGAL WORKSPACE"
-
-  }[lang];
-
-
-  return `
-<!DOCTYPE html>
-
-<html lang="${lang}">
-
-<head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#06111f"
-  >
-
-  <title>
-    ${esc(title)} — Huquqiy AI
-  </title>
-
-
-  <style>
-    ${CSS}
-    ${CSS_APP}
-  
-/* PREMIUM LEGALTECH UI */
-body{background:radial-gradient(circle at 90% 2%,rgba(185,149,79,.09),transparent 28rem),linear-gradient(180deg,#fbfaf7,#f3f5f6);color:#14232f;font-size:17px;line-height:1.68}
-.container{max-width:1240px}
-.navbar,.appTopbar{background:rgba(7,24,39,.97)!important;border-bottom:1px solid rgba(217,192,131,.18);box-shadow:0 12px 38px rgba(2,15,25,.16);backdrop-filter:blur(18px)}
-.brand strong,.appBrand strong{font-size:23px;font-weight:850;letter-spacing:-.035em}
-.navlinks a{padding:10px 13px;border-radius:12px;font-size:14px;font-weight:650}
-.navlinks a:hover{background:rgba(255,255,255,.07)}
-.hero{position:relative;overflow:hidden;background:radial-gradient(circle at 80% 20%,rgba(217,192,131,.15),transparent 22rem),linear-gradient(135deg,#061521,#0b2538 55%,#103149)!important}
-.hero:after{content:"§";position:absolute;right:5vw;top:50%;transform:translateY(-50%);font-family:Georgia,serif;font-size:290px;color:rgba(217,192,131,.045);pointer-events:none}
-.heroInner{position:relative;z-index:1;padding-top:88px;padding-bottom:92px}
-.hero h1,.heroTitle{font-family:Georgia,"Times New Roman",serif;font-size:clamp(43px,5.4vw,72px);line-height:1.02;letter-spacing:-.045em}
-.heroDescription{max-width:720px;font-size:18px;line-height:1.75}
-.btn{min-height:48px;padding:12px 18px;border-radius:13px;font-size:14px;font-weight:780;transition:.2s ease}
-.btn:hover{transform:translateY(-2px)}
-.btnGold{color:#0b1e2e;background:linear-gradient(135deg,#e1c98d,#b9954f)!important;box-shadow:0 12px 28px rgba(185,149,79,.22)}
-.section,.servicesSection{padding-top:72px;padding-bottom:72px}
-.sectionTitle,.appHeader h1{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.035em}
-.sectionTitle{font-size:clamp(31px,4vw,47px);line-height:1.08}
-.serviceGrid,.documentGrid,.sourceGrid,.coreGrid{gap:18px}
-.serviceCard,.sourceCard,.coreItem,.documentCard,.calcCard,.surface{position:relative;overflow:hidden;border:1px solid rgba(12,36,56,.12);border-radius:22px;background:rgba(255,255,255,.9);box-shadow:0 10px 35px rgba(7,24,39,.055)}
-.serviceCard,.sourceCard,.documentCard{padding:25px;transition:.22s ease}
-.serviceCard:before,.documentCard:before,.sourceCard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#d9c083,#b9954f);opacity:.72}
-.serviceCard:hover,.sourceCard:hover,.documentCard:hover{transform:translateY(-5px);box-shadow:0 18px 55px rgba(5,24,39,.10);border-color:rgba(185,149,79,.38)}
-.serviceIcon{width:48px;height:48px;display:grid;place-items:center;margin-bottom:20px;border-radius:14px;color:#f1dfb2;background:linear-gradient(145deg,#0b2335,#153d59);border:1px solid rgba(217,192,131,.25);box-shadow:0 10px 25px rgba(7,24,39,.15);font-weight:850}
-.serviceCard h3,.sourceCard h3,.documentCard h3{color:#071827;font-size:20px;line-height:1.25;letter-spacing:-.025em}
-.serviceCard p,.sourceCard p,.documentCard p,.cardDescription{color:#66737d;font-size:14px;line-height:1.65}
-.serviceLink{color:#8a6b2f;font-weight:800}
-.surfacePad{padding:28px}
-.appShell{max-width:1280px;gap:24px}
-.appSidebar{border:1px solid rgba(12,36,56,.09);border-radius:20px;background:rgba(255,255,255,.84);box-shadow:0 14px 45px rgba(7,24,39,.06)}
-.sideLink{border-radius:12px;font-weight:670}.sideLink.active{box-shadow:inset 3px 0 0 #b9954f}
-.appHeader{margin-bottom:22px;padding:26px 28px;border-radius:20px;color:#fff;background:radial-gradient(circle at 90% 10%,rgba(217,192,131,.13),transparent 18rem),linear-gradient(135deg,#081b2b,#0d3048)!important;box-shadow:0 20px 55px rgba(5,24,39,.15)}
-.appHeader h1{color:#fff;font-size:34px}.appHeader p{color:rgba(255,255,255,.7);font-size:15px}
-.resultLabel{color:#98783a;font-size:11px;font-weight:850;letter-spacing:.12em}
-.formGroup label{font-size:13px;font-weight:780}
-.formGroup input,.formGroup textarea,.formGroup select{border-radius:13px!important;background:#fbfcfc;font-size:15px}
-.formGroup input:focus,.formGroup textarea:focus,.formGroup select:focus{outline:none;border-color:rgba(185,149,79,.72)!important;box-shadow:0 0 0 4px rgba(185,149,79,.10)}
-.notice{border-radius:15px}.noticeGold{background:#fbf7ed}
-.calcResult{margin-top:16px;padding:20px;border-radius:15px;color:#eaf2f6;background:linear-gradient(135deg,#0b2335,#123b57)!important}
-.footer{margin-top:70px;background:#061521!important;border-top:1px solid rgba(217,192,131,.16)}
-@media(max-width:900px){.heroInner{padding-top:65px;padding-bottom:68px}.hero:after{font-size:190px;right:-30px}.surfacePad{padding:21px}.section,.servicesSection{padding-top:52px;padding-bottom:52px}}
-@media(max-width:640px){body{font-size:16px}.hero h1,.heroTitle{font-size:40px}.serviceCard,.sourceCard,.documentCard{padding:21px}.btn{width:100%;justify-content:center}}
-
-  </style>
-
-</head>
-
-
-<body class="appPage">
-
-  ${navigation(lang)}
-
-
-  <div class="appLayout">
-
-    ${sidebar(lang, active)}
-
-
-    <main class="appMain">
-
-
-      <div class="appTop">
-
-        <div class="appBreadcrumb">
-
-          <span>
-            Huquqiy AI
-          </span>
-
-          <span>
-            /
-          </span>
-
-          <strong>
-            ${esc(title)}
-          </strong>
-
-        </div>
-
-
-        <div class="appTopRight">
-
-          ${appLanguageMenu(
-            lang,
-            currentPath
-          )}
-
-          <a
-            class="appHomeButton"
-            href="/account${q(lang)}"
-            title="Shaxsiy kabinet"
-          >
-            ◉
-          </a>
-
-          <a
-            class="appHomeButton"
-            href="/${q(lang)}"
-            title="${tr(lang, "home")}"
-          >
-            ⌂
-          </a>
-
-        </div>
-
-      </div>
-
-
-      <section class="appHeader">
-
-        <div class="appHeaderSmall">
-          ${workspaceText}
-        </div>
-
-        <h1>
-          ${esc(title)}
-        </h1>
-
-        ${
-          description
-            ? `
-              <p>
-                ${esc(description)}
-              </p>
-            `
-            : ""
-        }
-
-      </section>
-
-
-      ${content}
-
-
-    </main>
-
-  </div>
-
-</body>
-
-</html>
   `;
 }
 
