@@ -5169,6 +5169,29 @@ function navigation(lang) {
 
 
 // ======================================================
+// ASOSIY HTML PAGE WRAPPER
+// ======================================================
+function page({ lang = "uz", title = "Huquqiy AI", content = "" } = {}) {
+  lang = getLang(lang);
+
+  return `<!DOCTYPE html>
+<html lang="${esc(lang)}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#06111f">
+  <title>${esc(title)}</title>
+  <style>${CSS}</style>
+</head>
+<body>
+  ${navigation(lang)}
+  <main>${content || ""}</main>
+</body>
+</html>`;
+}
+
+
+// ======================================================
 // HOME PAGE
 // ======================================================
 
