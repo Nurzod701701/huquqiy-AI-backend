@@ -12716,7 +12716,7 @@ const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const VERIFY_TTL_MS = 1000 * 60 * 15;
 const RESET_TTL_MS = 1000 * 60 * 20;
 const OWNER_EMAIL = String(process.env.OWNER_EMAIL || "nurzodziyodullayev799@gmail.com").trim().toLowerCase();
-const OWNER_SETUP_KEY = String(process.env.OWNER_SETUP_KEY || "").trim();
+const OWNER_PASSWORD = String(process.env.OWNER_PASSWORD || "").trim();
 
 function accountEmptyDb(){
   return { users:[], sessions:[], cases:[], documents:[], conversations:[], notifications:[], consents:[], auditLogs:[], settings:{ createdAt:new Date().toISOString() } };
@@ -12872,33 +12872,34 @@ function adminAuditPage(lang,user,db){
 }
 
 function ownerSetupPage(lang,msg=""){
-  const db=accountLoadDb();
-  const exists=db.users.some(u=>u.role==="owner" || u.email===OWNER_EMAIL);
-  return accountPublicPage(lang,"Owner sozlash",`<section class="accountAuth"><h1>Huquqiy AI — Owner sozlash</h1><p class="accountMuted">Bu sahifa faqat platforma egasining birinchi akkauntini yaratish uchun. Owner email o‘zgarmaydi.</p>${msg?accountMessage(msg,"error"):""}${exists?accountMessage("Owner akkaunti allaqachon yaratilgan.","info"):`<form class="accountForm" method="post" action="/admin/setup?lang=${lang}"><label>Owner email<input value="${esc(OWNER_EMAIL)}" disabled></label><label>OWNER_SETUP_KEY<input name="setupKey" type="password" required autocomplete="off"></label><label>Yangi Owner paroli<input name="password" type="password" minlength="10" required autocomplete="new-password"></label><label>Parolni takrorlang<input name="password2" type="password" minlength="10" required></label><button class="accountButton gold">OWNER AKKAUNTINI YARATISH</button></form>`}<p class="accountMuted" style="margin-top:16px"><a href="/admin/login?lang=${lang}">Admin kirish →</a></p></section>`);
+  return accountPublicPage(lang,"Admin sozlash",`<section class="accountAuth"><h1>Huquqiy AI — Admin kirish</h1><p class="accountMuted">Alohida setup kerak emas. Render Environment ichida OWNER_EMAIL va OWNER_PASSWORD o‘rnatilgach, to‘g‘ridan-to‘g‘ri admin login orqali kirasiz.</p>${msg?accountMessage(msg,"error"):""}<a class="accountButton gold" href="/admin/login?lang=${lang}">ADMIN LOGIN →</a></section>`);
 }
 function ownerLoginPage(lang,msg=""){
-  return accountPublicPage(lang,"Admin kirish",`<section class="accountAuth"><h1>Owner / Admin kirish</h1><p class="accountMuted">Bu kirish Huquqiy AI boshqaruv paneli uchun. Oddiy foydalanuvchilar <a href="/login?lang=${lang}">foydalanuvchi kirishi</a> orqali kiradi.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/admin/login?lang=${lang}"><label>Owner email<input name="email" type="email" value="${esc(OWNER_EMAIL)}" readonly></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">ADMIN PANELGA KIRISH</button></form></section>`);
+  return accountPublicPage(lang,"Admin kirish",`<section class="accountAuth"><h1>Owner / Admin kirish</h1><p class="accountMuted">Owner email oldindan belgilangan. Render’dagi OWNER_PASSWORD bilan kiring.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/admin/login?lang=${lang}"><label>Owner email<input name="email" type="email" value="${esc(OWNER_EMAIL)}" readonly></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">ADMIN PANELGA KIRISH</button></form></section>`);
 }
 
 async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="GET" && pathname==="/admin/setup"){
-    sendHtml(res,ownerSetupPage(lang)); return true;
+    accountRedirect(res,`/admin/login?lang=${lang}`); return true;
   }
   if(req.method==="POST" && pathname==="/admin/setup"){
-    const f=await readForm(req), db=accountLoadDb();
-    if(db.users.some(u=>u.role==="owner" || u.email===OWNER_EMAIL)){ accountRedirect(res,`/admin/login?lang=${lang}`); return true; }
-    if(!OWNER_SETUP_KEY || String(f.setupKey||"")!==OWNER_SETUP_KEY){ sendHtml(res,ownerSetupPage(lang,"OWNER_SETUP_KEY noto‘g‘ri yoki Render Environment’da o‘rnatilmagan."),403); return true; }
-    if(String(f.password||"").length<10 || f.password!==f.password2){ sendHtml(res,ownerSetupPage(lang,"Parol kamida 10 belgi bo‘lsin va ikkala parol bir xil bo‘lsin."),400); return true; }
-    const owner={id:accountId("OWN"),firstName:"Nurzod",lastName:"Ziyodullayev",email:OWNER_EMAIL,passwordHash:accountHashPassword(f.password),role:"owner",status:"active",emailVerified:true,createdAt:accountNow(),updatedAt:accountNow(),ownerCreated:true};
-    db.users.push(owner); accountAudit(db,owner.id,"owner_bootstrapped",{email:OWNER_EMAIL}); accountSaveDb(db); accountSetSession(res,owner.id); accountRedirect(res,`/admin?lang=${lang}`); return true;
+    accountRedirect(res,`/admin/login?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/admin/login"){
     const auth=accountSession(req); if(auth && ["owner","admin"].includes(auth.user.role)){ accountRedirect(res,`/admin?lang=${lang}`); return true; }
     sendHtml(res,ownerLoginPage(lang)); return true;
   }
   if(req.method==="POST" && pathname==="/admin/login"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email && ["owner","admin"].includes(u.role));
-    if(!user || email!==OWNER_EMAIL || !accountVerifyPassword(f.password,user.passwordHash) || user.status!=="active"){ sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
+    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb();
+    if(!OWNER_EMAIL || !OWNER_PASSWORD){ sendHtml(res,ownerLoginPage(lang,"Render Environment’da OWNER_EMAIL va OWNER_PASSWORD o‘rnatilmagan."),500); return true; }
+    if(email!==OWNER_EMAIL || String(f.password||"")!==OWNER_PASSWORD){ sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
+    let user=db.users.find(u=>u.email===OWNER_EMAIL);
+    if(!user){
+      user={id:accountId("OWN"),firstName:"Nurzod",lastName:"Ziyodullayev",email:OWNER_EMAIL,passwordHash:accountHashPassword(OWNER_PASSWORD),role:"owner",status:"active",emailVerified:true,createdAt:accountNow(),updatedAt:accountNow(),ownerCreated:true};
+      db.users.push(user);
+    } else {
+      user.role="owner"; user.status="active"; user.emailVerified=true; user.passwordHash=accountHashPassword(OWNER_PASSWORD); user.updatedAt=accountNow();
+    }
     user.lastLoginAt=accountNow(); accountAudit(db,user.id,"admin_login",{}); accountSaveDb(db); accountSetSession(res,user.id); accountRedirect(res,`/admin?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/login"){ sendHtml(res,accountLoginPage(lang)); return true; }
