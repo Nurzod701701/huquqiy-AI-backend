@@ -5305,7 +5305,7 @@ function page({ lang = "uz", title = "Huquqiy AI", content = "" } = {}) {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#06111f">
   <title>${esc(title)}</title>
-  <style>${CSS}</style>
+  <style>${CSS}${CSS_APP}</style>
 </head>
 <body>
   ${navigation(lang)}
