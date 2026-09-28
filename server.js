@@ -12580,12 +12580,38 @@ function accountRedirect(res,to){ res.writeHead(302,{Location:to}); return res.e
 function accountMessage(text,type="info"){ return `<div class="accountAlert ${type}">${esc(text)}</div>`; }
 
 async function accountSendEmail(to,subject,text){
+  // 1) RESEND API — tavsiya etiladi. Nodemailer paketi shart emas.
+  if(process.env.RESEND_API_KEY){
+    const from = process.env.EMAIL_FROM || "Huquqiy AI <onboarding@resend.dev>";
+    const response = await fetch("https://api.resend.com/emails", {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + process.env.RESEND_API_KEY,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({from,to:[to],subject,text})
+    });
+    if(!response.ok){
+      const detail = await response.text();
+      console.error("RESEND EMAIL ERROR", response.status, detail);
+      throw new Error("Tasdiqlash emailini yuborib bo‘lmadi.");
+    }
+    return true;
+  }
+
+  // 2) SMTP fallback — Gmail/Brevo va boshqa SMTP xizmatlari uchun.
   if(nodemailer && process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS){
-    const transport=nodemailer.createTransport({host:process.env.SMTP_HOST,port:Number(process.env.SMTP_PORT||587),secure:String(process.env.SMTP_SECURE||"")==="true",auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}});
+    const transport=nodemailer.createTransport({
+      host:process.env.SMTP_HOST,
+      port:Number(process.env.SMTP_PORT||587),
+      secure:String(process.env.SMTP_SECURE||"")==="true",
+      auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}
+    });
     await transport.sendMail({from:process.env.SMTP_FROM||process.env.SMTP_USER,to,subject,text});
     return true;
   }
-  console.log(`[HUQUQIY AI EMAIL DEV] TO=${to} SUBJECT=${subject}\n${text}`);
+
+  console.error("EMAIL CONFIG MISSING: RESEND_API_KEY yoki SMTP sozlamalari kerak.");
   return false;
 }
 
