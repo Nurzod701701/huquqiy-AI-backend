@@ -5875,6 +5875,18 @@ function homePage(lang) {
                 ✓ ${t.questionnaire}
               </a>
 
+              <a class="btn btnGold" href="/documents${q(lang)}">
+                ▤ ${lang === "uz" ? "Da’vo arizasi tayyorlash" : lang === "ru" ? "Подготовить иск" : "Prepare a claim"}
+              </a>
+
+              <a class="btn btnOutline" href="/calculators${q(lang)}">
+                ∑ ${lang === "uz" ? "Hisob-kitob" : lang === "ru" ? "Расчёты" : "Calculators"}
+              </a>
+
+              <a class="btn btnOutline" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">
+                ⚖ ${lang === "uz" ? "Sudga elektron murojaat" : lang === "ru" ? "Обратиться в суд" : "Electronic court filing"}
+              </a>
+
             </div>
 
 
@@ -6841,7 +6853,7 @@ async function aiResultPage(
 
     `
 
-      <div class="resultBox">
+      <div class="resultBox" id="claimPrintable">
 
         <div class="resultLabel">
           ${t.label}
@@ -7203,8 +7215,7 @@ Sud natijasini kafolatlamang va mavjud bo‘lmagan qonun moddalarini uydirmang.`
 
       prompt:
         `Проанализируйте следующую семейно-правовую ситуацию.
-
-Структура ответа:
+        Структура ответа:
 
 1. Установленные факты.
 2. Недостающая важная информация.
@@ -7632,6 +7643,19 @@ function documentsPage(lang) {
             ? "Выберите нужный иск по семейному или трудовому праву. На следующем шаге указываются суд, стороны, факты, требования и доказательства."
             : "Choose the required family-law or employment-law claim. On the next step, enter the court, parties, facts, requests and evidence."}
         </p>
+      </div>
+
+      <div class="surface surfacePad" style="margin-bottom:18px;">
+        <div class="resultLabel">${lang === "uz" ? "4 QADAM" : lang === "ru" ? "4 ШАГА" : "4 STEPS"}</div>
+        <div class="coreGrid" style="margin-top:14px;">
+          <div class="coreItem"><span>01</span><strong>${lang === "uz" ? "Da’vo turini tanlang" : lang === "ru" ? "Выберите иск" : "Choose claim"}</strong><p>${lang === "uz" ? "Kerakli hujjat turini oching." : lang === "ru" ? "Откройте нужный тип документа." : "Open the required document type."}</p></div>
+          <div class="coreItem"><span>02</span><strong>${lang === "uz" ? "Ma’lumotlarni kiriting" : lang === "ru" ? "Введите данные" : "Enter details"}</strong><p>${lang === "uz" ? "Sud, taraflar, faktlar va talablarni yozing." : lang === "ru" ? "Укажите суд, стороны, факты и требования." : "Enter court, parties, facts and requests."}</p></div>
+          <div class="coreItem"><span>03</span><strong>${lang === "uz" ? "PDF saqlang" : lang === "ru" ? "Сохраните PDF" : "Save PDF"}</strong><p>${lang === "uz" ? "Tayyor arizani PDF ko‘rinishida saqlang." : lang === "ru" ? "Сохраните готовый иск в PDF." : "Save the completed claim as PDF."}</p></div>
+          <div class="coreItem"><span>04</span><strong>${lang === "uz" ? "Sudga yuboring" : lang === "ru" ? "Подайте в суд" : "File with court"}</strong><p>${lang === "uz" ? "Rasmiy elektron sud kabinetiga o‘ting." : lang === "ru" ? "Перейдите в официальный судебный кабинет." : "Continue to the official court cabinet."}</p></div>
+        </div>
+        <div class="formActions" style="margin-top:16px;">
+          <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${lang === "uz" ? "Sudga elektron murojaat" : lang === "ru" ? "Подать в суд" : "Electronic court filing"}</a>
+        </div>
       </div>
 
       <div class="documentGrid">
@@ -8278,6 +8302,10 @@ ${String(form.evidence || "")}
 
       <div class="formActions">
 
+        <button type="button" class="btn btnPrimary" onclick="saveClaimPdf()">
+          📄 ${lang === "uz" ? "PDF qilib saqlash" : lang === "ru" ? "Сохранить как PDF" : "Save as PDF"}
+        </button>
+
         <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">
           ⚖ ${lang === "uz" ? "Da’vo arizasini sudga topshirish" : lang === "ru" ? "Подать иск в суд" : "Submit claim to court"}
         </a>
@@ -8298,6 +8326,21 @@ ${String(form.evidence || "")}
         </a>
 
       </div>
+
+      <script>
+        function saveClaimPdf(){
+          document.body.classList.add("claimPrintMode");
+          window.print();
+          setTimeout(function(){ document.body.classList.remove("claimPrintMode"); }, 800);
+        }
+      </script>
+      <style>
+        @media print{
+          body.claimPrintMode *{visibility:hidden !important;}
+          body.claimPrintMode #claimPrintable, body.claimPrintMode #claimPrintable *{visibility:visible !important;}
+          body.claimPrintMode #claimPrintable{position:absolute;left:0;top:0;width:100%;border:0;box-shadow:none;background:#fff;color:#000;white-space:pre-wrap;}
+        }
+      </style>
 
     `,
 
@@ -12817,7 +12860,13 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     const code=String(Math.floor(100000+Math.random()*900000)); const role="user";
     const user={id:accountId("USR"),firstName:String(f.firstName).trim(),lastName:String(f.lastName).trim(),email,passwordHash:accountHashPassword(f.password),role,status:"active",emailVerified:false,verificationCodeHash:accountHashPassword(code),verificationExpiresAt:new Date(Date.now()+VERIFY_TTL_MS).toISOString(),createdAt:accountNow(),updatedAt:accountNow()};
     db.users.push(user); db.consents.push({id:accountId("CNS"),userId:user.id,type:"terms_privacy",version:"2026-09-25-v1",acceptedAt:accountNow()}); accountAudit(db,user.id,"register",{email}); accountSaveDb(db);
-    await accountSendEmail(email,"Huquqiy AI — emailni tasdiqlash",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
+    try {
+      const sent = await accountSendEmail(email,"Huquqiy AI — emailni tasdiqlash",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
+      if(!sent){ sendHtml(res,accountVerifyPage(lang,email,"Email yuborish xizmati sozlanmagan. Render Environment’da RESEND_API_KEY va EMAIL_FROM ni tekshiring."),503); return true; }
+    } catch(error){
+      console.error("VERIFY EMAIL SEND ERROR", error);
+      sendHtml(res,accountVerifyPage(lang,email,"Tasdiqlash kodi emailga yuborilmadi. RESEND_API_KEY, EMAIL_FROM va Resend domen sozlamalarini tekshiring."),502); return true;
+    }
     accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
   }
   if(req.method==="GET" && pathname==="/verify-email"){ sendHtml(res,accountVerifyPage(lang,accountEmail(url.searchParams.get("email")))); return true; }
@@ -12830,7 +12879,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
   }
   if(req.method==="POST" && pathname==="/forgot-password"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user){const code=String(Math.floor(100000+Math.random()*900000));user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);await accountSendEmail(email,"Huquqiy AI — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
+    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user){const code=String(Math.floor(100000+Math.random()*900000));user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);try{const sent=await accountSendEmail(email,"Huquqiy AI — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true;}} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
   }
   if(req.method==="GET" && pathname==="/reset-password"){
     const email=accountEmail(url.searchParams.get("email")); sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" required maxlength="6"></label><label>Yangi parol<input name="password" type="password" minlength="8" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" required></label><button class="accountButton">Parolni yangilash</button></form></section>`)); return true;
@@ -14384,3 +14433,4 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
+
