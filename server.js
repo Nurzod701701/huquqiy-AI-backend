@@ -2821,6 +2821,40 @@ body{
   font-size:11px;
 }
 
+
+/* 2026 SIMPLE UI — tushunarli, mobilga qulay */
+.nav{height:auto;min-height:68px}
+.navin{width:min(1180px,94%);gap:14px}
+.navlinks{gap:2px}
+.navlinks a{font-size:14px;padding:9px 10px}
+.container{width:min(1120px,94%)}
+.heroInner{min-height:auto;grid-template-columns:1fr .78fr;gap:42px;padding:48px 0 56px}
+.hero h1{font-size:clamp(38px,5vw,58px)}
+.heroDescription{font-size:17px;line-height:1.65}
+.serviceGrid,.coreGrid{grid-template-columns:repeat(3,1fr)}
+.serviceCard{min-height:190px;padding:20px}
+.surface,.resultBox,.notice,.documentCard{border-radius:12px}
+.formGrid{gap:16px}
+.formGroup label{font-size:14px;font-weight:800}
+.formGroup input,.formGroup textarea,.formGroup select{font-size:16px;min-height:50px}
+.formGroup textarea{min-height:120px}
+.formActions{gap:10px;flex-wrap:wrap}
+.btn{font-size:15px;min-height:50px;padding:12px 18px}
+@media(max-width:900px){
+  .heroInner{grid-template-columns:1fr;padding:34px 0}
+  .roadmap{display:none}
+  .serviceGrid,.coreGrid,.sourcesGrid,.documentGrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .container,.navin{width:94%}
+  .hero h1{font-size:36px}
+  .heroDescription{font-size:16px}
+  .serviceGrid,.coreGrid,.sourcesGrid,.documentGrid,.formGrid{grid-template-columns:1fr}
+  .formGroup.full{grid-column:auto}
+  .btn,.formActions .btn{width:100%}
+  .surfacePad{padding:18px}
+}
+
 `;
 // ======================================================
 // PART 2/4
@@ -7241,7 +7275,6 @@ Sud natijasini kafolatlamang va mavjud bo‘lmagan qonun moddalarini uydirmang.`
 
       label:
         "HUQUQIY AI • FAMILY LAW ANALYSIS",
-
       back:
         "Return to questionnaire",
 
@@ -7679,6 +7712,89 @@ function documentsPage(lang) {
 // CLAIM / DOCUMENT FORM
 // ======================================================
 
+
+function claimSpecificFields(type, lang) {
+  const L = (uz, ru, en) => lang === "ru" ? ru : lang === "en" ? en : uz;
+  const input = (name, label, placeholder="", kind="text") => `
+    <div class="formGroup">
+      <label>${esc(label)}</label>
+      <input type="${kind}" name="${esc(name)}" placeholder="${esc(placeholder)}">
+    </div>`;
+  const full = (name, label, placeholder="") => `
+    <div class="formGroup full">
+      <label>${esc(label)}</label>
+      <textarea name="${esc(name)}" rows="4" placeholder="${esc(placeholder)}"></textarea>
+    </div>`;
+  const select = (name, label, options) => `
+    <div class="formGroup">
+      <label>${esc(label)}</label>
+      <select name="${esc(name)}">
+        <option value="">${esc(L("Tanlang","Выберите","Select"))}</option>
+        ${options.map(x=>`<option value="${esc(x[0])}">${esc(x[1])}</option>`).join("")}
+      </select>
+    </div>`;
+
+  if (type === "divorce_claim") return `
+    ${input("marriage_date",L("Nikoh qayd etilgan sana","Дата регистрации брака","Marriage registration date"),"","date")}
+    ${input("marriage_place",L("Nikoh qayd etilgan FHDYO va joy","ЗАГС и место регистрации","Registry office and place"))}
+    ${select("mutual_consent",L("Ikkinchi taraf ajrashishga rozimi?","Согласна ли другая сторона?","Does the other party consent?"),[["yes",L("Ha","Да","Yes")],["no",L("Yo‘q","Нет","No")]])}
+    ${input("children_count",L("Voyaga yetmagan farzandlar soni","Количество несовершеннолетних детей","Number of minor children"),"","number")}
+    ${full("children_details",L("Farzandlar: F.I.Sh., tug‘ilgan sana va kim bilan yashaydi","Дети: Ф.И.О., дата рождения и с кем проживают","Children: names, dates of birth and residence"))}
+    ${full("divorce_reason",L("Nikohdan ajratish sabablari va birga yashash qachondan to‘xtagan","Причины развода и с какого времени прекращено совместное проживание","Reasons for divorce and when cohabitation ended"))}
+    ${full("related_requests",L("Aliment, bola, mol-mulk yoki boshqa qo‘shimcha talablar","Алименты, дети, имущество и другие требования","Child support, children, property or other related requests"))}
+  `;
+
+  if (type === "aliment_claim") return `
+    ${full("children_details",L("Har bir bola: F.I.Sh. va tug‘ilgan sana","Каждый ребёнок: Ф.И.О. и дата рождения","Each child: name and date of birth"))}
+    ${input("payer_employer",L("Javobgarning ish joyi (ma’lum bo‘lsa)","Место работы ответчика","Defendant's employer, if known"))}
+    ${input("payer_income",L("Taxminiy oylik daromadi","Примерный месячный доход","Approximate monthly income"),L("so‘m","сум","UZS"))}
+    ${select("income_status",L("Daromad holati","Характер дохода","Income status"),[["stable",L("Rasmiy/barqaror","Официальный/стабильный","Official/stable")],["variable",L("O‘zgaruvchan/norasmiy","Переменный/неофициальный","Variable/informal")],["unknown",L("Noma’lum","Неизвестно","Unknown")]])}
+    ${select("support_agreement",L("Aliment bo‘yicha kelishuv bormi?","Есть соглашение об алиментах?","Is there a child-support agreement?"),[["yes",L("Ha","Да","Yes")],["no",L("Yo‘q","Нет","No")]])}
+    ${full("child_expenses",L("Bolaning muhim xarajatlari va alohida ehtiyojlari","Существенные расходы и особые потребности ребёнка","Important expenses and special needs of the child"))}
+  `;
+
+  if (type === "property_claim") return `
+    <div class="formGroup full"><div class="notice noticeGold"><span class="noticeIcon">i</span><span>${esc(L(
+      "Har bir mol-mulkni alohida va aniq kiriting. Qiymatlar da’vo bahosi va ulush hisobiga yordam beradi.",
+      "Укажите каждый объект имущества отдельно и точно. Стоимость нужна для расчёта цены иска и долей.",
+      "Enter each asset separately and precisely. Values help calculate the claim amount and shares."
+    ))}</span></div></div>
+    ${select("property_kind",L("Asosiy mol-mulk turi","Основной вид имущества","Main property type"),[["real_estate",L("Uy/kvartira/yer","Дом/квартира/земля","House/apartment/land")],["vehicle",L("Avtomobil","Автомобиль","Vehicle")],["business",L("Biznes/ulush","Бизнес/доля","Business/share")],["money",L("Pul/omonat","Деньги/вклад","Money/deposit")],["other",L("Boshqa","Другое","Other")]])}
+    ${input("property_address",L("Uy/kvartira/yer manzili","Адрес недвижимости","Property address"))}
+    ${input("cadastral_number",L("Kadastr raqami (ma’lum bo‘lsa)","Кадастровый номер","Cadastral number, if known"))}
+    ${input("property_area",L("Umumiy maydoni (kv.m)","Общая площадь (кв.м)","Total area (sq.m)"),"","number")}
+    ${input("rooms",L("Xonalar soni","Количество комнат","Number of rooms"),"","number")}
+    ${input("vehicle_make_model",L("Avtomobil marka/modeli","Марка/модель автомобиля","Vehicle make/model"))}
+    ${input("vehicle_year",L("Avtomobil ishlab chiqarilgan yili","Год выпуска автомобиля","Vehicle year"),"","number")}
+    ${input("vehicle_plate_vin",L("Davlat raqami / VIN / texpasport ma’lumoti","Госномер / VIN / техпаспорт","Plate / VIN / registration details"))}
+    ${input("acquisition_date",L("Mol-mulk qachon olingan?","Когда приобретено имущество?","When was the property acquired?"),"","date")}
+    ${full("acquisition_source",L("Qanday mablag‘ hisobidan olingan: umumiy daromad, kredit, shaxsiy mablag‘ va h.k.","Источник средств: общие доходы, кредит, личные средства и т.д.","Source of funds: joint income, loan, personal funds, etc."))}
+    ${input("registered_owner",L("Kimning nomiga rasmiylashtirilgan?","На чьё имя оформлено?","Registered owner"))}
+    ${input("purchase_value",L("Sotib olingandagi qiymati","Стоимость при приобретении","Purchase value"),L("so‘m","сум","UZS"))}
+    ${input("market_value",L("Hozirgi taxminiy bozor qiymati","Текущая примерная рыночная стоимость","Current estimated market value"),L("so‘m","сум","UZS"))}
+    ${full("valuation_basis",L("Bozor qiymati nimaga asoslangan? (baholash hisoboti, e’lonlar, kelishuv va h.k.)","Основание рыночной стоимости","Basis for market value (valuation report, listings, etc.)"))}
+    ${full("other_property",L("Boshqa barcha mol-mulklarni ham xuddi shu tartibda yozing","Перечислите остальное имущество с такими же данными","List all other property with the same details"))}
+    ${select("gift_inheritance",L("Mulk hadya/meros yoki nikohdan oldingi mulkmi?","Дарение/наследство или добрачное имущество?","Gift/inheritance or pre-marital property?"),[["no",L("Yo‘q","Нет","No")],["yes",L("Ha","Да","Yes")],["partly",L("Qisman","Частично","Partly")]])}
+    ${full("renovation_investment",L("Ta’mir, rekonstruksiya yoki katta qo‘shimcha mablag‘ sarflanganmi?","Были ремонт, реконструкция или значительные вложения?","Renovation, reconstruction or major investment?"))}
+    ${full("debts_loans",L("Mol-mulk bilan bog‘liq kredit, ipoteka yoki boshqa qarzlar","Кредиты, ипотека или иные долги по имуществу","Loans, mortgage or other property-related debts"))}
+    ${input("requested_share",L("Talab qilinayotgan ulush (%)","Требуемая доля (%)","Requested share (%)"),"50","number")}
+  `;
+
+  if (type.startsWith("employment_")) return `
+    ${input("employer_name",L("Ish beruvchining to‘liq nomi","Полное наименование работодателя","Full employer name"))}
+    ${input("position",L("Lavozim/kasb","Должность/профессия","Position/profession"))}
+    ${input("employment_start",L("Ish boshlagan sana","Дата начала работы","Employment start"),"","date")}
+    ${input("employment_end",L("Bo‘shatilgan sana (bo‘lsa)","Дата увольнения (если есть)","Dismissal date, if any"),"","date")}
+    ${input("contract_number_date",L("Mehnat shartnomasi raqami va sanasi","Номер и дата трудового договора","Employment contract number/date"))}
+    ${input("order_number_date",L("Buyruq raqami va sanasi","Номер и дата приказа","Order number/date"))}
+    ${input("monthly_salary",L("Oylik ish haqi","Месячная зарплата","Monthly salary"),L("so‘m","сум","UZS"))}
+    ${full("unpaid_calculation",L("Undiriladigan ish haqi/kompensatsiya hisob-kitobi","Расчёт взыскиваемой зарплаты/компенсации","Calculation of wages/compensation claimed"))}
+    ${full("employer_violation",L("Ish beruvchining qaysi harakati yoki qarori nizolashilmoqda?","Какое действие или решение работодателя оспаривается?","Which employer action/decision is disputed?"))}
+  `;
+
+  return "";
+}
+
 function claimPage(
   lang,
   type = "divorce_claim"
@@ -8021,6 +8137,8 @@ function claimPage(
             </div>
 
 
+            ${claimSpecificFields(selectedType.id, lang)}
+
             <div class="formGroup full">
 
               <label>
@@ -8138,14 +8256,20 @@ async function claimResultPage(
       instruction:
         `Quyidagi ma’lumotlar asosida professional huquqiy hujjat loyihasini tayyorlang.
 
-Muhim:
+MAJBURIY PROFESSIONAL STANDART:
 - mavjud bo‘lmagan faktlarni uydirmang;
-- mavjud bo‘lmagan qonun moddalarini uydirmang;
-- yetishmayotgan rekvizitlar uchun [TO‘LDIRING] belgisi qo‘ying;
-- rasmiy va professional uslubdan foydalaning;
-- hujjat tuzilishini saqlang;
-- ilovalar bo‘limini kiriting;
-- zarur bo‘lsa, topshirishdan oldin amaldagi qonunchilikni tekshirish kerakligini qayd eting.`
+- foydalanuvchi kiritgan barcha fakt, sana, summa, mol-mulk, shartnoma, buyruq va dalillarni e’tiborsiz qoldirmang;
+- da’vo arizasini sudga taqdim etishga mo‘ljallangan rasmiy tuzilishda yozing;
+- alohida "HUQUQIY ASOSLAR" bo‘limi MAJBURIY bo‘lsin;
+- nizoga bevosita tegishli O‘zbekiston Respublikasi kodeksi/qonuni va ANIQ moddalarini keltiring; moddaning mazmunini ushbu faktlarga bog‘lab tushuntiring;
+- protsessual talablar, sudlovga taalluqlilik, da’vo bahosi, hisob-kitob, sudgacha tartib yoki muddat masalasi ish turida ahamiyatli bo‘lsa, ularni ham yoritib bering;
+- aniq modda raqamiga ishonch bo‘lmasa uni uydirmang: [LEXUZDA AMALDAGI TAHRIR TEKSHIRILSIN] deb belgilang;
+- yetishmayotgan MUHIM ma’lumotlarni yashirmang: hujjat boshida "YETISHMAYOTGAN MUHIM MA’LUMOTLAR" deb ko‘rsating va tegishli joyda [TO‘LDIRILADI] qoldiring;
+- pul talabi bo‘lsa, foydalanuvchi bergan raqamlardan tushunarli HISOB-KITOB bo‘limini tuzing;
+- mol-mulk nizosida har bir obyektning tavsifi, huquqni tasdiqlovchi ma’lumot, olish vaqti/manbai, bozor qiymati, talab qilinayotgan ulush va zarur kompensatsiya hisobini ko‘rsating;
+- "SUDDAN SO‘RAYMAN" qismidagi har bir talab aniq va raqamlangan bo‘lsin;
+- "ILOVALAR" bo‘limida mavjud dalillarni sanang va ish turi uchun zarur, ammo kiritilmagan hujjatlarni [TAQDIM ETISH KERAK] deb belgilang;
+- yakunda imzo va sana uchun joy qoldiring.`
     },
 
 
@@ -8211,32 +8335,17 @@ Important:
   }[lang];
 
 
-  const context = `
+  const extraFields = Object.entries(form || {})
+    .filter(([key]) => !["lang"].includes(key))
+    .map(([key, value]) => `${key.toUpperCase()}: ${String(value || "").trim()}`)
+    .join("\n");
 
+  const context = `
 DOCUMENT TYPE:
 ${localized(documentType.title, lang)}
 
-COURT:
-${String(form.court || "")}
-
-CLAIMANT:
-${String(form.claimant || "")}
-
-DEFENDANT:
-${String(form.defendant || "")}
-
-ADDRESS / CONTACT:
-${String(form.address || "")}
-
-FACTS:
-${String(form.facts || "")}
-
-REQUEST:
-${String(form.request || "")}
-
-EVIDENCE / ATTACHMENTS:
-${String(form.evidence || "")}
-
+ALL COLLECTED CASE INFORMATION:
+${extraFields}
   `.trim();
 
 
@@ -8851,7 +8960,13 @@ CORE RULES:
 - Use only facts supplied by the user. Never invent a company name, STIR, address, bank details, dates, sums, contract numbers, evidence, court name, procedural deadline, state duty, statutory article, government decision or case law.
 - For every missing factual field in a draft write [TO‘LDIRILADI].
 - Clearly distinguish USER FACTS, MISSING INFORMATION, LEGAL ISSUES, LEGAL BASIS, EVIDENCE, OPTIONS/RISKS, NEXT STEPS and DRAFT DOCUMENT when relevant.
-- Uzbekistan law changes. Cite an exact article only when confident it is current; otherwise say the current official LexUZ text must be verified.
+- For every claim/application/objection/contract, legal basis is a core requirement, not optional decoration.
+- For court documents, include a clearly titled LEGAL BASIS section with the applicable Uzbekistan code/law and exact articles when verified/confident; explain how each cited rule connects to the supplied facts.
+- Also identify applicable procedural requirements: jurisdiction, pre-action procedure, claim amount/calculation, deadlines/limitation issues to verify, state duty/cost items to verify, evidence and attachments.
+- For monetary business claims, show a transparent calculation from the supplied principal debt, payments, contractual penalty/interest and other supplied figures. Never invent a rate or amount.
+- For contract disputes collect/use: parties and registration details, contract number/date/type, subject, price, payment schedule, performance/acceptance acts, invoices, payments, breach date, notices/claims, correspondence, security, penalty clause, evidence and requested relief.
+- For contracts, include the legally and commercially important terms appropriate to that contract type, identify missing essential terms, and connect clauses to applicable Uzbekistan law where useful.
+- Uzbekistan law changes. Cite an exact article only when confident it is current; otherwise mark [VERIFY CURRENT LEXUZ ARTICLE] rather than inventing it.
 - Do not guarantee an outcome.
 - Do not automatically send every dispute to court. Consider negotiation, pre-action demand, mediation, Chamber mechanisms, arbitration/hakamlik if contractually applicable, competent state body, Business Ombudsman, and economic court depending on the facts.
 - Before an economic-court claim, identify questions of jurisdiction, pre-action procedure, claim calculation and evidence that need verification.
@@ -9220,8 +9335,12 @@ Yetishmayotgan faktlarni taxmin qilmang.`,
 Rasmiy uslubdan foydalaning.
 Sud, taraflar yoki boshqa rekvizitlar yetishmasa [TO‘LDIRILADI] deb belgilang.
 Faktlarni o‘ylab topmang.
-Talablar, ish holatlari, huquqiy asos va ilovalar bo‘limlarini ajrating.
-Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang va amaldagi LexUZ matnini tekshirish kerakligini ko‘rsating.`
+Talablar, ish holatlari, dalillar, hisob-kitob, HUQUQIY ASOSLAR va ilovalar bo‘limlarini ajrating.
+HUQUQIY ASOSLAR bo‘limida aynan ushbu mehnat nizosiga tegishli amaldagi Mehnat kodeksi va boshqa qonun hujjatlarining aniq moddalarini keltiring va ularni faktlar bilan bog‘lang.
+Ishga tiklashda mehnat shartnomasi/buyruq, bo‘shatish sanasi va asosi; ish haqi nizosida davr, oylik, to‘langan va to‘lanmagan summalar hamda hisob-kitob; boshqa nizolarda tegishli majburiyat va buzilishni ko‘rsating.
+Protsessual talablar va murojaat muddati ahamiyatli bo‘lsa, alohida tekshiring.
+Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang, [LEXUZDA AMALDAGI TAHRIR TEKSHIRILSIN] deb belgilang.
+Yetishmayotgan muhim ma’lumotlarni [TO‘LDIRILADI] deb aniq ko‘rsating.`
     },
     ru: {
       title: wantsContract ? "Проект трудового договора" : (wantsClaim ? "Проект иска по трудовому спору" : "Правовое заключение по трудовому спору"),
@@ -9240,7 +9359,7 @@ Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang va amaldagi Le
   }[lang];
 
   const contractInstruction = lang === "uz"
-    ? `O‘zbekiston mehnat qonunchiligiga mos mehnat shartnomasi loyihasini tayyorlang. Tanlangan shartnoma turiga mos bo‘limlarni kiriting: taraflar, ish joyi va mehnat vazifasi, ish boshlanishi va muddat, ish haqi, ish vaqti va dam olish, huquq va majburiyatlar, mehnatni muhofaza qilish, javobgarlik, shartnomani o‘zgartirish va bekor qilish, yakuniy qoidalar, rekvizit va imzolar. Yetishmayotgan har qanday shaxsiy yoki faktik ma’lumotni [TO‘LDIRILADI] deb belgilang. Fakt, modda, summa yoki rekvizitni o‘ylab topmang.`
+    ? `O‘zbekiston mehnat qonunchiligiga mos mehnat shartnomasi loyihasini tayyorlang. Tanlangan shartnoma turiga mos bo‘limlarni kiriting: taraflar, ish joyi va mehnat vazifasi, ish boshlanishi va muddat, ish haqi, ish vaqti va dam olish, huquq va majburiyatlar, mehnatni muhofaza qilish, javobgarlik, shartnomani o‘zgartirish va bekor qilish, yakuniy qoidalar, rekvizit va imzolar. Har bir band shartnoma turiga mos va amaliy bo‘lsin. Zarur bo‘lsa, tegishli Mehnat kodeksi normalariga huquqiy tayanch ko‘rsating. Majburiy/zarur shartlar yetishmasa ularni alohida ko‘rsating. Yetishmayotgan har qanday shaxsiy yoki faktik ma’lumotni [TO‘LDIRILADI] deb belgilang. Fakt, modda, summa yoki rekvizitni o‘ylab topmang.`
     : lang === "ru"
     ? `Подготовьте проект трудового договора по законодательству Узбекистана с необходимыми разделами. Все отсутствующие фактические данные обозначьте [ЗАПОЛНИТЬ]. Не придумывайте факты, суммы, реквизиты или статьи.`
     : `Prepare an Uzbekistan employment contract draft with the necessary sections. Mark every missing factual detail [TO BE COMPLETED]. Do not invent facts, amounts, identifiers or statutory provisions.`;
@@ -14433,4 +14552,5 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
+
 
