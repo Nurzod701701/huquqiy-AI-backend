@@ -2821,40 +2821,6 @@ body{
   font-size:11px;
 }
 
-
-/* 2026 SIMPLE UI — tushunarli, mobilga qulay */
-.nav{height:auto;min-height:68px}
-.navin{width:min(1180px,94%);gap:14px}
-.navlinks{gap:2px}
-.navlinks a{font-size:14px;padding:9px 10px}
-.container{width:min(1120px,94%)}
-.heroInner{min-height:auto;grid-template-columns:1fr .78fr;gap:42px;padding:48px 0 56px}
-.hero h1{font-size:clamp(38px,5vw,58px)}
-.heroDescription{font-size:17px;line-height:1.65}
-.serviceGrid,.coreGrid{grid-template-columns:repeat(3,1fr)}
-.serviceCard{min-height:190px;padding:20px}
-.surface,.resultBox,.notice,.documentCard{border-radius:12px}
-.formGrid{gap:16px}
-.formGroup label{font-size:14px;font-weight:800}
-.formGroup input,.formGroup textarea,.formGroup select{font-size:16px;min-height:50px}
-.formGroup textarea{min-height:120px}
-.formActions{gap:10px;flex-wrap:wrap}
-.btn{font-size:15px;min-height:50px;padding:12px 18px}
-@media(max-width:900px){
-  .heroInner{grid-template-columns:1fr;padding:34px 0}
-  .roadmap{display:none}
-  .serviceGrid,.coreGrid,.sourcesGrid,.documentGrid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:640px){
-  .container,.navin{width:94%}
-  .hero h1{font-size:36px}
-  .heroDescription{font-size:16px}
-  .serviceGrid,.coreGrid,.sourcesGrid,.documentGrid,.formGrid{grid-template-columns:1fr}
-  .formGroup.full{grid-column:auto}
-  .btn,.formActions .btn{width:100%}
-  .surfacePad{padding:18px}
-}
-
 `;
 // ======================================================
 // PART 2/4
@@ -6990,27 +6956,7 @@ function renderQuestionField(
 
       <textarea
         name="${esc(question.id)}"
-        placeholder="${esc(label)}"
-      ></textarea>
-
-    `;
-
-  } else {
-
-    field = `
-
-      <input
-        type="${esc(question.type || "text")}"
-        name="${esc(question.id)}"
-        placeholder="${esc(label)}"
-      >
-
-    `;
-
-  }
-
-
-  return `
+        placeholder="${esc(label)}"  return `
 
     <div class="questionCard">
 
@@ -7275,6 +7221,7 @@ Sud natijasini kafolatlamang va mavjud bo‘lmagan qonun moddalarini uydirmang.`
 
       label:
         "HUQUQIY AI • FAMILY LAW ANALYSIS",
+
       back:
         "Return to questionnaire",
 
@@ -7714,754 +7661,198 @@ function documentsPage(lang) {
 
 
 function claimSpecificFields(type, lang) {
-  const L = (uz, ru, en) => lang === "ru" ? ru : lang === "en" ? en : uz;
-  const input = (name, label, placeholder="", kind="text") => `
-    <div class="formGroup">
-      <label>${esc(label)}</label>
-      <input type="${kind}" name="${esc(name)}" placeholder="${esc(placeholder)}">
-    </div>`;
-  const full = (name, label, placeholder="") => `
-    <div class="formGroup full">
-      <label>${esc(label)}</label>
-      <textarea name="${esc(name)}" rows="4" placeholder="${esc(placeholder)}"></textarea>
-    </div>`;
-  const select = (name, label, options) => `
-    <div class="formGroup">
-      <label>${esc(label)}</label>
-      <select name="${esc(name)}">
-        <option value="">${esc(L("Tanlang","Выберите","Select"))}</option>
-        ${options.map(x=>`<option value="${esc(x[0])}">${esc(x[1])}</option>`).join("")}
-      </select>
-    </div>`;
+  const L=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+  const input=(name,label,ph="",required=false)=>`<div class="formGroup"><label>${esc(label)}${required?" *":""}</label><input name="${esc(name)}" placeholder="${esc(ph)}" ${required?"required":""}></div>`;
+  const area=(name,label,ph="",required=false)=>`<div class="formGroup full"><label>${esc(label)}${required?" *":""}</label><textarea name="${esc(name)}" placeholder="${esc(ph)}" ${required?"required":""}></textarea></div>`;
+  const select=(name,label,opts,required=false)=>`<div class="formGroup"><label>${esc(label)}${required?" *":""}</label><select name="${esc(name)}" ${required?"required":""}><option value="">${esc(L("Tanlang","Выберите","Select"))}</option>${opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join("")}</select></div>`;
 
-  if (type === "divorce_claim") return `
-    ${input("marriage_date",L("Nikoh qayd etilgan sana","Дата регистрации брака","Marriage registration date"),"","date")}
-    ${input("marriage_place",L("Nikoh qayd etilgan FHDYO va joy","ЗАГС и место регистрации","Registry office and place"))}
-    ${select("mutual_consent",L("Ikkinchi taraf ajrashishga rozimi?","Согласна ли другая сторона?","Does the other party consent?"),[["yes",L("Ha","Да","Yes")],["no",L("Yo‘q","Нет","No")]])}
-    ${input("children_count",L("Voyaga yetmagan farzandlar soni","Количество несовершеннолетних детей","Number of minor children"),"","number")}
-    ${full("children_details",L("Farzandlar: F.I.Sh., tug‘ilgan sana va kim bilan yashaydi","Дети: Ф.И.О., дата рождения и с кем проживают","Children: names, dates of birth and residence"))}
-    ${full("divorce_reason",L("Nikohdan ajratish sabablari va birga yashash qachondan to‘xtagan","Причины развода и с какого времени прекращено совместное проживание","Reasons for divorce and when cohabitation ended"))}
-    ${full("related_requests",L("Aliment, bola, mol-mulk yoki boshqa qo‘shimcha talablar","Алименты, дети, имущество и другие требования","Child support, children, property or other related requests"))}
+  if(type==="divorce_claim") return `
+    ${input("marriage_date",L("Nikoh qayd etilgan sana","Дата регистрации брака","Marriage registration date"),"",true)}
+    ${input("marriage_registry",L("Nikoh qayd etilgan FHDYO organi","Орган ЗАГС","Registry office"),"",true)}
+    ${select("minor_children",L("Umumiy voyaga yetmagan farzand bormi?","Есть общие несовершеннолетние дети?","Any common minor children?"),[["yes",L("Ha","Да","Yes")],["no",L("Yo‘q","Нет","No")]],true)}
+    ${area("children_details",L("Agar bo‘lsa: har bir bolaning F.I.Sh., tug‘ilgan sanasi va hozir kim bilan yashashi","Если есть: Ф.И.О., дата рождения и с кем проживает каждый ребёнок","If yes: each child's name, date of birth and current residence"))}
+    ${area("divorce_reason",L("Nikohni bekor qilish sabablari va birga yashash qachondan to‘xtagan","Причины развода и с какого времени прекращено совместное проживание","Reasons for divorce and when cohabitation ended"),"",true)}
+    ${select("other_party_consent",L("Javobgar nikohdan ajralishga rozimi?","Согласен ли ответчик на развод?","Does defendant consent to divorce?"),[["yes",L("Ha","Да","Yes")],["no",L("Yo‘q","Нет","No")],["unknown",L("Noma’lum","Неизвестно","Unknown")]])}
+    ${select("ask_child_residence",L("Shu da’voda bolaning yashash joyini belgilashni ham so‘raysizmi?","Просите определить место жительства ребёнка в этом иске?","Also request determination of child's residence?"),[["no",L("Yo‘q","Нет","No")],["yes",L("Ha","Да","Yes")]])}
+    ${select("ask_alimony",L("Shu da’voda aliment undirishni ham so‘raysizmi?","Просите взыскать алименты в этом иске?","Also request child support?"),[["no",L("Yo‘q","Нет","No")],["yes",L("Ha","Да","Yes")]])}
+    ${select("ask_property",L("Shu da’voda mol-mulkni bo‘lishni ham so‘raysizmi?","Просите разделить имущество в этом иске?","Also request property division?"),[["no",L("Yo‘q","Нет","No")],["yes",L("Ha","Да","Yes")]])}
   `;
-
-  if (type === "aliment_claim") return `
-    ${full("children_details",L("Har bir bola: F.I.Sh. va tug‘ilgan sana","Каждый ребёнок: Ф.И.О. и дата рождения","Each child: name and date of birth"))}
-    ${input("payer_employer",L("Javobgarning ish joyi (ma’lum bo‘lsa)","Место работы ответчика","Defendant's employer, if known"))}
-    ${input("payer_income",L("Taxminiy oylik daromadi","Примерный месячный доход","Approximate monthly income"),L("so‘m","сум","UZS"))}
-    ${select("income_status",L("Daromad holati","Характер дохода","Income status"),[["stable",L("Rasmiy/barqaror","Официальный/стабильный","Official/stable")],["variable",L("O‘zgaruvchan/norasmiy","Переменный/неофициальный","Variable/informal")],["unknown",L("Noma’lum","Неизвестно","Unknown")]])}
-    ${select("support_agreement",L("Aliment bo‘yicha kelishuv bormi?","Есть соглашение об алиментах?","Is there a child-support agreement?"),[["yes",L("Ha","Да","Yes")],["no",L("Yo‘q","Нет","No")]])}
-    ${full("child_expenses",L("Bolaning muhim xarajatlari va alohida ehtiyojlari","Существенные расходы и особые потребности ребёнка","Important expenses and special needs of the child"))}
+  if(type==="aliment_claim") return `
+    ${area("children_details",L("Har bir bola: F.I.Sh., tug‘ilgan sana va kim bilan yashaydi","Каждый ребёнок: Ф.И.О., дата рождения и с кем проживает","Each child: name, birth date and residence"),"",true)}
+    ${input("payer_work",L("Javobgarning ish joyi (ma’lum bo‘lsa)","Место работы ответчика","Defendant employer, if known"))}
+    ${input("payer_income",L("Javobgarning oylik daromadi (ma’lum bo‘lsa)","Месячный доход ответчика","Defendant monthly income, if known"))}
+    ${select("income_type",L("Daromad turi","Характер дохода","Income type"),[["stable",L("Barqaror/rasmiy","Стабильный/официальный","Stable/official")],["variable",L("O‘zgaruvchan/norasmiy","Переменный/неофициальный","Variable/informal")],["unknown",L("Noma’lum","Неизвестно","Unknown")]])}
+    ${area("child_expenses",L("Bola xarajatlari va alohida ehtiyojlari","Расходы и особые потребности ребёнка","Child expenses and special needs"))}
   `;
-
-  if (type === "property_claim") return `
-    <div class="formGroup full"><div class="notice noticeGold"><span class="noticeIcon">i</span><span>${esc(L(
-      "Har bir mol-mulkni alohida va aniq kiriting. Qiymatlar da’vo bahosi va ulush hisobiga yordam beradi.",
-      "Укажите каждый объект имущества отдельно и точно. Стоимость нужна для расчёта цены иска и долей.",
-      "Enter each asset separately and precisely. Values help calculate the claim amount and shares."
-    ))}</span></div></div>
-    ${select("property_kind",L("Asosiy mol-mulk turi","Основной вид имущества","Main property type"),[["real_estate",L("Uy/kvartira/yer","Дом/квартира/земля","House/apartment/land")],["vehicle",L("Avtomobil","Автомобиль","Vehicle")],["business",L("Biznes/ulush","Бизнес/доля","Business/share")],["money",L("Pul/omonat","Деньги/вклад","Money/deposit")],["other",L("Boshqa","Другое","Other")]])}
-    ${input("property_address",L("Uy/kvartira/yer manzili","Адрес недвижимости","Property address"))}
-    ${input("cadastral_number",L("Kadastr raqami (ma’lum bo‘lsa)","Кадастровый номер","Cadastral number, if known"))}
-    ${input("property_area",L("Umumiy maydoni (kv.m)","Общая площадь (кв.м)","Total area (sq.m)"),"","number")}
-    ${input("rooms",L("Xonalar soni","Количество комнат","Number of rooms"),"","number")}
-    ${input("vehicle_make_model",L("Avtomobil marka/modeli","Марка/модель автомобиля","Vehicle make/model"))}
-    ${input("vehicle_year",L("Avtomobil ishlab chiqarilgan yili","Год выпуска автомобиля","Vehicle year"),"","number")}
-    ${input("vehicle_plate_vin",L("Davlat raqami / VIN / texpasport ma’lumoti","Госномер / VIN / техпаспорт","Plate / VIN / registration details"))}
-    ${input("acquisition_date",L("Mol-mulk qachon olingan?","Когда приобретено имущество?","When was the property acquired?"),"","date")}
-    ${full("acquisition_source",L("Qanday mablag‘ hisobidan olingan: umumiy daromad, kredit, shaxsiy mablag‘ va h.k.","Источник средств: общие доходы, кредит, личные средства и т.д.","Source of funds: joint income, loan, personal funds, etc."))}
-    ${input("registered_owner",L("Kimning nomiga rasmiylashtirilgan?","На чьё имя оформлено?","Registered owner"))}
-    ${input("purchase_value",L("Sotib olingandagi qiymati","Стоимость при приобретении","Purchase value"),L("so‘m","сум","UZS"))}
-    ${input("market_value",L("Hozirgi taxminiy bozor qiymati","Текущая примерная рыночная стоимость","Current estimated market value"),L("so‘m","сум","UZS"))}
-    ${full("valuation_basis",L("Bozor qiymati nimaga asoslangan? (baholash hisoboti, e’lonlar, kelishuv va h.k.)","Основание рыночной стоимости","Basis for market value (valuation report, listings, etc.)"))}
-    ${full("other_property",L("Boshqa barcha mol-mulklarni ham xuddi shu tartibda yozing","Перечислите остальное имущество с такими же данными","List all other property with the same details"))}
-    ${select("gift_inheritance",L("Mulk hadya/meros yoki nikohdan oldingi mulkmi?","Дарение/наследство или добрачное имущество?","Gift/inheritance or pre-marital property?"),[["no",L("Yo‘q","Нет","No")],["yes",L("Ha","Да","Yes")],["partly",L("Qisman","Частично","Partly")]])}
-    ${full("renovation_investment",L("Ta’mir, rekonstruksiya yoki katta qo‘shimcha mablag‘ sarflanganmi?","Были ремонт, реконструкция или значительные вложения?","Renovation, reconstruction or major investment?"))}
-    ${full("debts_loans",L("Mol-mulk bilan bog‘liq kredit, ipoteka yoki boshqa qarzlar","Кредиты, ипотека или иные долги по имуществу","Loans, mortgage or other property-related debts"))}
-    ${input("requested_share",L("Talab qilinayotgan ulush (%)","Требуемая доля (%)","Requested share (%)"),"50","number")}
+  if(type==="property_claim") return `
+    ${area("property_list",L("Har bir mol-mulkni alohida yozing: turi, manzili/markasi, kadastr/VIN, olish sanasi, kim nomida, olish qiymati va hozirgi bozor qiymati","Каждый объект: вид, адрес/марка, кадастр/VIN, дата приобретения, владелец, цена приобретения и текущая рыночная стоимость","Each asset: type, address/make, cadastral/VIN, acquisition date, registered owner, purchase and current market value"),"",true)}
+    ${area("funding_source",L("Mol-mulk qaysi mablag‘ hisobidan olingan? Kredit/ipoteka/qarz bormi?","Источник средств; кредит/ипотека/долг?","Source of funds; any loan/mortgage/debt?"),"",true)}
+    ${area("separate_property",L("Nikohdan oldingi, hadya yoki meros mulki bormi?","Есть добрачное, подаренное или наследственное имущество?","Any pre-marital, gifted or inherited property?"))}
+    ${area("major_improvements",L("Ta’mir, rekonstruksiya yoki katta qo‘shimcha mablag‘ sarflanganmi?","Были существенные улучшения/вложения?","Any major improvements/investments?"))}
+    ${input("requested_share",L("Talab qilinayotgan ulush (%)","Требуемая доля (%)","Requested share (%)"),"50")}
   `;
-
-  if (type.startsWith("employment_")) return `
-    ${input("employer_name",L("Ish beruvchining to‘liq nomi","Полное наименование работодателя","Full employer name"))}
-    ${input("position",L("Lavozim/kasb","Должность/профессия","Position/profession"))}
-    ${input("employment_start",L("Ish boshlagan sana","Дата начала работы","Employment start"),"","date")}
-    ${input("employment_end",L("Bo‘shatilgan sana (bo‘lsa)","Дата увольнения (если есть)","Dismissal date, if any"),"","date")}
-    ${input("contract_number_date",L("Mehnat shartnomasi raqami va sanasi","Номер и дата трудового договора","Employment contract number/date"))}
-    ${input("order_number_date",L("Buyruq raqami va sanasi","Номер и дата приказа","Order number/date"))}
-    ${input("monthly_salary",L("Oylik ish haqi","Месячная зарплата","Monthly salary"),L("so‘m","сум","UZS"))}
-    ${full("unpaid_calculation",L("Undiriladigan ish haqi/kompensatsiya hisob-kitobi","Расчёт взыскиваемой зарплаты/компенсации","Calculation of wages/compensation claimed"))}
-    ${full("employer_violation",L("Ish beruvchining qaysi harakati yoki qarori nizolashilmoqda?","Какое действие или решение работодателя оспаривается?","Which employer action/decision is disputed?"))}
+  if(type.startsWith("employment_")) return `
+    ${input("employer_name",L("Ish beruvchining to‘liq nomi","Полное наименование работодателя","Full employer name"),"",true)}
+    ${input("position",L("Lavozim/kasb","Должность/профессия","Position/profession"),"",true)}
+    ${input("employment_start",L("Ish boshlagan sana","Дата начала работы","Employment start date"))}
+    ${input("contract_details",L("Mehnat shartnomasi raqami va sanasi","Номер и дата трудового договора","Employment contract number/date"))}
+    ${input("dismissal_details",L("Bo‘shatish buyruği: sana, raqam va asos (bo‘lsa)","Приказ об увольнении: дата, номер, основание","Dismissal order: date, number, basis"))}
+    ${input("salary",L("Oylik ish haqi","Месячная зарплата","Monthly salary"))}
+    ${area("employment_calculation",L("Undiriladigan ish haqi/kompensatsiya davri va hisob-kitobi","Период и расчёт зарплаты/компенсации","Period and calculation of wages/compensation"))}
+    ${area("employment_violation",L("Qaysi harakat yoki qaror noqonuniy deb hisoblanmoqda?","Какое действие/решение оспаривается?","Which action/decision is disputed?"),"",true)}
   `;
-
   return "";
 }
 
-function claimPage(
-  lang,
-  type = "divorce_claim"
-) {
-
-  lang = getLang(lang);
-
-
-  const selectedType =
-    DOCUMENT_TYPES.find(
-      item => item.id === type
-    ) ||
-    DOCUMENT_TYPES[0];
-
-
-  const t = {
-
-    uz: {
-      title:
-        "Hujjat loyihasini tayyorlash",
-
-      description:
-        "Quyidagi ma’lumotlarni kiriting. AI ularni huquqiy hujjat loyihasiga aylantiradi.",
-
-      documentType:
-        "Hujjat turi",
-
-      court:
-        "Sud nomi",
-
-      courtPlaceholder:
-        "Masalan: Fuqarolik ishlari bo‘yicha ... sudi",
-
-      claimant:
-        "Arizachi / da’vogar",
-
-      claimantPlaceholder:
-        "F.I.Sh. yoki keyin to‘ldirish uchun belgi",
-
-      defendant:
-        "Ikkinchi taraf / javobgar",
-
-      defendantPlaceholder:
-        "F.I.Sh. yoki keyin to‘ldirish uchun belgi",
-
-      address:
-        "Manzil va aloqa ma’lumotlari",
-
-      facts:
-        "Ish holatlari",
-
-      factsPlaceholder:
-        "Vaziyatni xronologik va aniq bayon qiling...",
-
-      request:
-        "Suddan yoki organdan nima so‘ralmoqda?",
-
-      requestPlaceholder:
-        "Talablaringizni yozing...",
-
-      evidence:
-        "Mavjud dalillar va ilovalar",
-
-      evidencePlaceholder:
-        "Guvohnoma, shartnoma, to‘lov hujjati va boshqalar...",
-
-      create:
-        "Hujjat loyihasini yaratish",
-
-      warning:
-        "Maxfiy ma’lumotlarni zarurat bo‘lmasa kiritmang."
-    },
-
-
-    ru: {
-      title:
-        "Подготовка проекта документа",
-
-      description:
-        "Введите данные ниже. AI сформирует первичный проект юридического документа.",
-
-      documentType:
-        "Тип документа",
-
-      court:
-        "Наименование суда",
-
-      courtPlaceholder:
-        "Например: Межрайонный суд по гражданским делам...",
-
-      claimant:
-        "Заявитель / истец",
-
-      claimantPlaceholder:
-        "Ф.И.О. или отметка для последующего заполнения",
-
-      defendant:
-        "Вторая сторона / ответчик",
-
-      defendantPlaceholder:
-        "Ф.И.О. или отметка для последующего заполнения",
-
-      address:
-        "Адрес и контактные данные",
-
-      facts:
-        "Обстоятельства дела",
-
-      factsPlaceholder:
-        "Изложите ситуацию последовательно и точно...",
-
-      request:
-        "Что вы просите у суда или органа?",
-
-      requestPlaceholder:
-        "Укажите требования...",
-
-      evidence:
-        "Имеющиеся доказательства и приложения",
-
-      evidencePlaceholder:
-        "Свидетельство, договор, платежные документы и т.д.",
-
-      create:
-        "Создать проект документа",
-
-      warning:
-        "Не указывайте конфиденциальные сведения без необходимости."
-    },
-
-
-    en: {
-      title:
-        "Prepare document draft",
-
-      description:
-        "Enter the information below. AI will turn it into an initial legal-document draft.",
-
-      documentType:
-        "Document type",
-
-      court:
-        "Court name",
-
-      courtPlaceholder:
-        "Example: Interdistrict Civil Court...",
-
-      claimant:
-        "Applicant / claimant",
-
-      claimantPlaceholder:
-        "Full name or placeholder",
-
-      defendant:
-        "Other party / defendant",
-
-      defendantPlaceholder:
-        "Full name or placeholder",
-
-      address:
-        "Address and contact information",
-
-      facts:
-        "Facts of the case",
-
-      factsPlaceholder:
-        "Describe the situation chronologically and accurately...",
-
-      request:
-        "What are you asking the court or authority to do?",
-
-      requestPlaceholder:
-        "State the requested relief...",
-
-      evidence:
-        "Available evidence and attachments",
-
-      evidencePlaceholder:
-        "Certificate, agreement, payment records, etc.",
-
-      create:
-        "Create document draft",
-
-      warning:
-        "Do not provide confidential information unless necessary."
-    }
-
-  }[lang];
-
-
-  return appLayout(
-
-    lang,
-
-    "documents",
-
-    `
-
-      <div class="notice noticeGold">
-
-        <span class="noticeIcon">
-          ◈
-        </span>
-
-        <span>
-          ${t.warning}
-        </span>
-
-      </div>
-
-
-      <div class="surface surfacePad">
-
-        <h2 class="cardTitle">
-          ${esc(
-            localized(
-              selectedType.title,
-              lang
-            )
-          )}
-        </h2>
-
-
-        <p class="cardDescription">
-          ${esc(
-            localized(
-              selectedType.description,
-              lang
-            )
-          )}
-        </p>
-
-
-        <form
-          method="POST"
-          action="/claim-result${q(lang)}"
-        >
-
-          <input
-            type="hidden"
-            name="type"
-            value="${esc(selectedType.id)}"
-          >
-
-
-          <div class="formGrid">
-
-
-            <div class="formGroup full">
-
-              <label>
-                ${t.documentType}
-              </label>
-
-              <select
-                name="document_type"
-              >
-
-                ${DOCUMENT_TYPES
-                  .map(
-                    item => `
-
-                      <option
-                        value="${esc(item.id)}"
-                        ${
-                          item.id === selectedType.id
-                            ? "selected"
-                            : ""
-                        }
-                      >
-                        ${esc(
-                          localized(
-                            item.title,
-                            lang
-                          )
-                        )}
-                      </option>
-
-                    `
-                  )
-                  .join("")}
-
-              </select>
-
-            </div>
-
-
-            <div class="formGroup full">
-
-              <label>
-                ${t.court}
-              </label>
-
-              <input
-                name="court"
-                placeholder="${esc(t.courtPlaceholder)}"
-              >
-
-            </div>
-
-
-            <div class="formGroup">
-
-              <label>
-                ${t.claimant}
-              </label>
-
-              <input
-                name="claimant"
-                placeholder="${esc(t.claimantPlaceholder)}"
-              >
-
-            </div>
-
-
-            <div class="formGroup">
-
-              <label>
-                ${t.defendant}
-              </label>
-
-              <input
-                name="defendant"
-                placeholder="${esc(t.defendantPlaceholder)}"
-              >
-
-            </div>
-
-
-            <div class="formGroup full">
-
-              <label>
-                ${t.address}
-              </label>
-
-              <input
-                name="address"
-              >
-
-            </div>
-
-
-            ${claimSpecificFields(selectedType.id, lang)}
-
-            <div class="formGroup full">
-
-              <label>
-                ${t.facts}
-              </label>
-
-              <textarea
-                name="facts"
-                required
-                placeholder="${esc(t.factsPlaceholder)}"
-              ></textarea>
-
-            </div>
-
-
-            <div class="formGroup full">
-
-              <label>
-                ${t.request}
-              </label>
-
-              <textarea
-                name="request"
-                placeholder="${esc(t.requestPlaceholder)}"
-              ></textarea>
-
-            </div>
-
-
-            <div class="formGroup full">
-
-              <label>
-                ${t.evidence}
-              </label>
-
-              <textarea
-                name="evidence"
-                placeholder="${esc(t.evidencePlaceholder)}"
-              ></textarea>
-
-            </div>
-
-          </div>
-
-
-          <div class="formActions">
-
-            <button
-              type="submit"
-              class="btn btnGold"
-            >
-              ✦ ${t.create}
-            </button>
-
-          </div>
-
-        </form>
-
-      </div>
-
-    `,
-
-    t.title,
-
-    t.description
-
+function claimLegalBasis(type, lang){
+  const L=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+  const common=L(
+`O‘zbekiston Respublikasi Fuqarolik protsessual kodeksi:
+- 188-modda — sudda ish ariza berish orqali qo‘zg‘atiladi.
+- 189-modda — da’vo arizasining mazmuniga qo‘yiladigan talablar.
+- 190-modda — ariza va unga ilova qilingan hujjatlarning ko‘chirma nusxalari masalasi.
+- 191-modda — arizaga ilova qilinadigan hujjatlar.`,
+`Гражданский процессуальный кодекс Республики Узбекистан: статьи 188, 189 и 191.`,
+`Civil Procedure Code of Uzbekistan: Articles 188, 189 and 191.`
   );
-
-}
-
-
-// ======================================================
-// CLAIM RESULT
-// ======================================================
-
-async function claimResultPage(
-  lang,
-  form
-) {
-
-  lang = getLang(lang);
-
-
-  const documentType =
-    DOCUMENT_TYPES.find(
-      item =>
-        item.id ===
-        String(
-          form.document_type ||
-          form.type ||
-          ""
-        )
-    ) ||
-    DOCUMENT_TYPES[0];
-
-
-  const t = {
-
-    uz: {
-      title:
-        "Hujjat loyihasi",
-
-      description:
-        "Taqdim etilgan ma’lumotlar asosida yaratilgan dastlabki huquqiy hujjat.",
-
-      label:
-        "HUQUQIY AI • HUJJAT LOYIHASI",
-
-      edit:
-        "Qayta tayyorlash",
-
-      documents:
-        "Hujjatlar",
-
-      instruction:
-        `Quyidagi ma’lumotlar asosida professional huquqiy hujjat loyihasini tayyorlang.
-
-MAJBURIY PROFESSIONAL STANDART:
-- mavjud bo‘lmagan faktlarni uydirmang;
-- foydalanuvchi kiritgan barcha fakt, sana, summa, mol-mulk, shartnoma, buyruq va dalillarni e’tiborsiz qoldirmang;
-- da’vo arizasini sudga taqdim etishga mo‘ljallangan rasmiy tuzilishda yozing;
-- alohida "HUQUQIY ASOSLAR" bo‘limi MAJBURIY bo‘lsin;
-- nizoga bevosita tegishli O‘zbekiston Respublikasi kodeksi/qonuni va ANIQ moddalarini keltiring; moddaning mazmunini ushbu faktlarga bog‘lab tushuntiring;
-- protsessual talablar, sudlovga taalluqlilik, da’vo bahosi, hisob-kitob, sudgacha tartib yoki muddat masalasi ish turida ahamiyatli bo‘lsa, ularni ham yoritib bering;
-- aniq modda raqamiga ishonch bo‘lmasa uni uydirmang: [LEXUZDA AMALDAGI TAHRIR TEKSHIRILSIN] deb belgilang;
-- yetishmayotgan MUHIM ma’lumotlarni yashirmang: hujjat boshida "YETISHMAYOTGAN MUHIM MA’LUMOTLAR" deb ko‘rsating va tegishli joyda [TO‘LDIRILADI] qoldiring;
-- pul talabi bo‘lsa, foydalanuvchi bergan raqamlardan tushunarli HISOB-KITOB bo‘limini tuzing;
-- mol-mulk nizosida har bir obyektning tavsifi, huquqni tasdiqlovchi ma’lumot, olish vaqti/manbai, bozor qiymati, talab qilinayotgan ulush va zarur kompensatsiya hisobini ko‘rsating;
-- "SUDDAN SO‘RAYMAN" qismidagi har bir talab aniq va raqamlangan bo‘lsin;
-- "ILOVALAR" bo‘limida mavjud dalillarni sanang va ish turi uchun zarur, ammo kiritilmagan hujjatlarni [TAQDIM ETISH KERAK] deb belgilang;
-- yakunda imzo va sana uchun joy qoldiring.`
-    },
-
-
-    ru: {
-      title:
-        "Проект документа",
-
-      description:
-        "Первичный юридический документ, сформированный на основе предоставленных данных.",
-
-      label:
-        "HUQUQIY AI • ПРОЕКТ ДОКУМЕНТА",
-
-      edit:
-        "Подготовить заново",
-
-      documents:
-        "Документы",
-
-      instruction:
-        `Подготовьте профессиональный проект юридического документа на основе предоставленной информации.
-
-Важно:
-- не придумывайте отсутствующие факты;
-- не придумывайте статьи законодательства;
-- для недостающих реквизитов используйте [ЗАПОЛНИТЬ];
-- используйте официальный профессиональный стиль;
-- соблюдайте структуру документа;
-- добавьте раздел приложений;
-- при необходимости укажите, что перед подачей следует проверить действующее законодательство.`
-    },
-
-
-    en: {
-      title:
-        "Document draft",
-
-      description:
-        "Initial legal document generated from the information provided.",
-
-      label:
-        "HUQUQIY AI • DOCUMENT DRAFT",
-
-      edit:
-        "Prepare again",
-
-      documents:
-        "Documents",
-
-      instruction:
-        `Prepare a professional legal-document draft using the information provided.
-
-Important:
-- do not invent missing facts;
-- do not invent statutory provisions;
-- use [TO BE COMPLETED] for missing details;
-- use a formal professional style;
-- preserve appropriate document structure;
-- include an attachments section;
-- where necessary, state that current law should be verified before filing.`
-    }
-
-  }[lang];
-
-
-  const extraFields = Object.entries(form || {})
-    .filter(([key]) => !["lang"].includes(key))
-    .map(([key, value]) => `${key.toUpperCase()}: ${String(value || "").trim()}`)
-    .join("\n");
-
-  const context = `
-DOCUMENT TYPE:
-${localized(documentType.title, lang)}
-
-ALL COLLECTED CASE INFORMATION:
-${extraFields}
-  `.trim();
-
-
-  let answer = "";
-
-
-  try {
-
-    answer =
-      await callAI(
-        t.instruction,
-        lang,
-        context
-      );
-
-  } catch (error) {
-
-    console.error(
-      "DOCUMENT AI ERROR:",
-      error
+  if(type==="divorce_claim") return common+"\n"+L(
+`O‘zbekiston Respublikasi Oila kodeksi:
+- 40-modda — nikohdan ajratish to‘g‘risidagi ishlarni sudda ko‘rish va yarashish masalasi.
+- 41-modda — agar bundan buyon birgalikda yashash va oilani saqlab qolish imkoni yo‘q deb topilsa, sud nikohdan ajratadi.
+- 65-modda — bolaning oilada yashash va tarbiyalanish huquqi.
+- 66-modda — ota-ona alohida yashaganda bolaning ota-onasi bilan ko‘rishish huquqi.
+Bola bo‘yicha alohida talab faqat foydalanuvchi buni aniq so‘ragan bo‘lsa qo‘shilsin.`,
+`Семейный кодекс: статьи 40, 41, 65 и 66. Требование о ребёнке включать только если пользователь прямо его заявил.`,
+`Family Code: Articles 40, 41, 65 and 66. Include child-related relief only if expressly requested.`
     );
-
-
-    answer =
-      lang === "uz"
-        ? "Hujjat loyihasini yaratishda xatolik yuz berdi. OPENROUTER_API_KEY sozlamasini tekshiring."
-        : lang === "ru"
-        ? "Не удалось создать проект документа. Проверьте OPENROUTER_API_KEY."
-        : "The document draft could not be generated. Check OPENROUTER_API_KEY.";
-
-  }
-
-
-  return appLayout(
-
-    lang,
-
-    "documents",
-
-    `
-
-      <div class="resultBox">
-
-        <div class="resultLabel">
-          ${t.label}
-        </div>
-
-        ${esc(answer)}
-
-      </div>
-
-
-      <div class="notice noticeGold" style="margin-top:18px;">
-        <span class="noticeIcon">⚖</span>
-        <span>
-          ${lang === "uz"
-            ? "Arizani tekshirgach, rasmiy elektron sud xizmatiga o‘tib topshirishingiz mumkin. Platforma hozircha sud tizimiga arizani avtomatik yubormaydi."
-            : lang === "ru"
-            ? "После проверки заявления вы можете перейти в официальный электронный судебный сервис для подачи. Платформа пока не отправляет заявление в судебную систему автоматически."
-            : "After reviewing the claim, you can continue to the official electronic court service for filing. The platform does not yet submit it automatically to the court system."}
-        </span>
-      </div>
-
-      <div class="formActions">
-
-        <button type="button" class="btn btnPrimary" onclick="saveClaimPdf()">
-          📄 ${lang === "uz" ? "PDF qilib saqlash" : lang === "ru" ? "Сохранить как PDF" : "Save as PDF"}
-        </button>
-
-        <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">
-          ⚖ ${lang === "uz" ? "Da’vo arizasini sudga topshirish" : lang === "ru" ? "Подать иск в суд" : "Submit claim to court"}
-        </a>
-
-        <a
-          class="btn btnOutline"
-          href="/claim${q(lang)}&type=${encodeURIComponent(documentType.id)}"
-        >
-          ← ${t.edit}
-        </a>
-
-
-        <a
-          class="btn btnPrimary"
-          href="/documents${q(lang)}"
-        >
-          ▤ ${t.documents}
-        </a>
-
-      </div>
-
-      <script>
-        function saveClaimPdf(){
-          document.body.classList.add("claimPrintMode");
-          window.print();
-          setTimeout(function(){ document.body.classList.remove("claimPrintMode"); }, 800);
-        }
-      </script>
-      <style>
-        @media print{
-          body.claimPrintMode *{visibility:hidden !important;}
-          body.claimPrintMode #claimPrintable, body.claimPrintMode #claimPrintable *{visibility:visible !important;}
-          body.claimPrintMode #claimPrintable{position:absolute;left:0;top:0;width:100%;border:0;box-shadow:none;background:#fff;color:#000;white-space:pre-wrap;}
-        }
-      </style>
-
-    `,
-
-    t.title,
-
-    t.description
-
-  );
-
+  if(type==="aliment_claim") return common+"\n"+L(
+`O‘zbekiston Respublikasi Oila kodeksi:
+- 96-modda — ota-ona voyaga yetmagan bolalariga ta’minot berishi shart; majburiyat ixtiyoriy bajarilmasa aliment sud tartibida undiriladi.
+- 97-modda — bolalarga ta’minot berishda ota-onaning majburiyatlari teng.
+- 98-modda — ota-ona voyaga yetmagan bolalariga aliment to‘lash tartibini kelishuv bilan belgilashi mumkin.
+- 99-modda — kelishuv bo‘lmaganda voyaga yetmagan bolalar uchun aliment miqdorini belgilash qoidalari.`,
+`Семейный кодекс Республики Узбекистан: статьи 96, 97, 98 и 99 об обязанности родителей содержать несовершеннолетних детей и размере алиментов.`,
+`Family Code of Uzbekistan: Articles 96, 97, 98 and 99 on parental support duties and child-support amount.`
+    );
+  if(type==="property_claim") return common+"\n"+L(
+`O‘zbekiston Respublikasi Oila kodeksi:
+- 23-modda — nikoh davomida orttirilgan mol-mulk, qonun yoki nikoh shartnomasida boshqacha qoida bo‘lmasa, er-xotinning birgalikdagi umumiy mulki hisoblanadi.
+- 25-modda — nikohgacha tegishli, hadya, meros yoki boshqa bepul bitim asosida olingan mol-mulkning alohida mulk bo‘lishi hamda qiymati sezilarli oshirilgan mulk masalasi.
+- 27-modda — umumiy mol-mulkni bo‘lish, sud tartibida ulushlarni va zarur kompensatsiyani aniqlash qoidalari; nikohdan ajralgan er-xotinning bunday talablariga uch yillik da’vo muddati qo‘llanadi.
+- 28-modda — umumiy mol-mulkni bo‘lishda, nikoh shartnomasida boshqacha hol bo‘lmasa, ulushlar tengligi va umumiy qarzlarni ulushlarga mutanosib taqsimlash qoidalari.
+Da’vo bahosi va har bir obyektning qiymatini foydalanuvchi bergan ma’lumot asosida alohida ko‘rsating.`,
+`Семейный кодекс Республики Узбекистан: статьи 23, 25, 27 и 28 об общем и личном имуществе супругов, разделе, долях и общих долгах.`,
+`Family Code of Uzbekistan: Articles 23, 25, 27 and 28 on marital/separate property, division, shares and common debts.`
+    );
+  return common;
 }
 
+function claimPage(lang,type="divorce_claim"){
+  lang=getLang(lang);
+  const selectedType=DOCUMENT_TYPES.find(x=>x.id===type)||DOCUMENT_TYPES[0];
+  const L=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+  return appLayout(lang,"documents",`
+    <div class="notice noticeGold"><span class="noticeIcon">i</span><span>${esc(L("Yulduzcha (*) qo‘yilgan ma’lumotlarni to‘liq kiriting. Platforma siz so‘ramagan talabni da’voga avtomatik qo‘shmaydi.","Заполните обязательные поля. Платформа не добавляет незаявленные требования.","Complete required fields. The platform will not add relief you did not request."))}</span></div>
+    <div class="surface surfacePad">
+      <h2 class="cardTitle">${esc(localized(selectedType.title,lang))}</h2>
+      <p class="cardDescription">${esc(localized(selectedType.description,lang))}</p>
+      <form method="POST" action="/claim-result${q(lang)}">
+        <input type="hidden" name="type" value="${esc(selectedType.id)}">
+        <input type="hidden" name="document_type" value="${esc(selectedType.id)}">
+        <div class="formGrid">
+          <div class="formGroup full"><label>${esc(L("Sudning to‘liq nomi *","Полное наименование суда *","Full court name *"))}</label><input name="court" required placeholder="${esc(L("Masalan: Fuqarolik ishlari bo‘yicha ... tumanlararo sudi","Например: Межрайонный суд по гражданским делам ...","Example: ... Interdistrict Civil Court"))}"></div>
+          <div class="formGroup"><label>${esc(L("Da’vogar F.I.Sh. *","Ф.И.О. истца *","Claimant full name *"))}</label><input name="claimant" required></div>
+          <div class="formGroup"><label>${esc(L("Javobgar F.I.Sh. *","Ф.И.О. ответчика *","Defendant full name *"))}</label><input name="defendant" required></div>
+          <div class="formGroup full"><label>${esc(L("Da’vogar manzili, telefon va e-pochta","Адрес, телефон и e-mail истца","Claimant address, phone and email"))}</label><input name="claimant_contact"></div>
+          <div class="formGroup full"><label>${esc(L("Javobgar manzili va ma’lum aloqa ma’lumotlari","Адрес и известные контакты ответчика","Defendant address and known contacts"))}</label><input name="defendant_contact"></div>
+          ${claimSpecificFields(selectedType.id,lang)}
+          <div class="formGroup full"><label>${esc(L("Ish holatlari — faqat aniq faktlar *","Обстоятельства дела — только точные факты *","Case facts — exact facts only *"))}</label><textarea name="facts" required placeholder="${esc(L("Voqealarni sana va ketma-ketlik bilan yozing.","Изложите события по датам и последовательно.","Describe events chronologically with dates."))}"></textarea></div>
+          <div class="formGroup full"><label>${esc(L("Suddan aynan nima so‘raysiz? *","Что именно вы просите у суда? *","Exactly what relief do you request? *"))}</label><textarea name="request" required></textarea></div>
+          <div class="formGroup full"><label>${esc(L("Mavjud dalillar va hujjatlar *","Имеющиеся доказательства и документы *","Available evidence and documents *"))}</label><textarea name="evidence" required></textarea></div>
+        </div>
+        <div class="formActions"><button class="btn btnGold" type="submit">✦ ${esc(L("Professional da’vo arizasini tayyorlash","Подготовить профессиональный иск","Prepare professional claim"))}</button></div>
+      </form>
+    </div>`,
+    L("Da’vo arizasini tayyorlash","Подготовка искового заявления","Claim preparation"),
+    L("Kerakli ma’lumotlarni bosqichma-bosqich kiriting.","Введите необходимые сведения по шагам.","Enter the required information step by step.")
+  );
+}
 
+function cleanClaimText(value){
+  let x=String(value||"").replace(/\r/g,"");
+  x=x.replace(/```[\s\S]*?```/g,m=>m.replace(/```[a-z]*/gi,"").replace(/```/g,""));
+  x=x.replace(/^#{1,6}\s*/gm,"").replace(/\*\*(.*?)\*\*/g,"$1").replace(/__(.*?)__/g,"$1");
+  x=x.replace(/^\s*---+\s*$/gm,"").replace(/^\s*MAJBURIY PROFESSIONAL STANDART.*$/gmi,"");
+  x=x.replace(/\[LEXUZDA AMALDAGI TAHRIR TEKSHIRILSIN\]/gi,"");
+  x=x.replace(/\[TO[‘'ʻ]?LDIRILADI\]/gi,"");
+  x=x.replace(/\n{3,}/g,"\n\n").trim();
+  return x;
+}
+
+async function claimResultPage(lang,form){
+  lang=getLang(lang);
+  const documentType=DOCUMENT_TYPES.find(x=>x.id===String(form.document_type||form.type||""))||DOCUMENT_TYPES[0];
+  const L=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+  const supplied=Object.entries(form||{}).filter(([k,v])=>k!=="lang"&&String(v||"").trim()).map(([k,v])=>`${k}: ${String(v).trim()}`).join("\n");
+  const legal=claimLegalBasis(documentType.id,lang);
+  const instruction=L(
+`Siz O‘zbekiston sud amaliyotiga mo‘ljallangan professional da’vo arizasi tuzuvchisiz.
+
+FAQAT YAKUNIY DA’VO ARIZASI MATNINI BERING. Ichki ko‘rsatma, izoh, tahlil, "professional standart", Markdown (#, **, ---), ogohlantirish yoki tekshiruv belgilarini chiqarmang.
+
+QAT’IY QOIDALAR:
+1. Foydalanuvchi so‘ramagan talabni qo‘shmang. Nikohdan ajratish da’vosida bola yashash joyi, aliment yoki mol-mulk faqat tegishli ask_* maydoni "yes" bo‘lsa va requestda talab qilingan bo‘lsa kiritiladi.
+2. Hech qanday fakt, sana, summa, bola, mol-mulk, daromad, dalil yoki talabni uydirmang.
+3. Huquqiy asos sifatida quyida berilgan TASDIQLANGAN HUQUQIY BAZAdan foydalaning. Unda yo‘q modda raqamini o‘ylab topmang.
+4. Hujjat tuzilishi: sud nomi; da’vogar rekvizitlari; javobgar rekvizitlari; markazda DA’VO ARIZASI va turi; ish holatlari; HUQUQIY ASOSLAR; zarur bo‘lsa HISOB-KITOB; SUDDAN SO‘RAYMAN; ILOVALAR; sana; imzo.
+5. HUQUQIY ASOSLAR qismida modda raqamini shunchaki sanamang — normaning aynan ushbu faktlarga qanday tatbiq etilishini rasmiy yuridik tilda tushuntiring.
+6. Yetishmagan ma’lumotni o‘zingiz to‘ldirmang. Muhim ma’lumot bo‘lmasa, yakuniy hujjatda noto‘g‘ri talab yaratmang; mavjud ma’lumot bilan hujjatni tuzing.
+7. "Faktik hosil", "Huquqiy talqin", "Yetishmayotgan muhim ma’lumotlar", "Xulosa" kabi AI-tahlil sarlavhalarini ishlatmang.
+8. Sud hujjatiga xos ravon, rasmiy va professional o‘zbek yuridik uslubidan foydalaning.
+9. [TO‘LDIRILADI], [TO‘LDIRING], "tekshirilsin" kabi texnik placeholderlarni yakuniy hujjatga chiqarmang. Yetishmagan rekvizitni shunchaki tashlab keting yoki mavjud ma’lumot bilan grammatik to‘liq jumla tuzing.
+10. Da’vo nomi va SUDDAN SO‘RAYMAN qismi foydalanuvchining request maydoniga qat’iy mos bo‘lsin.`,
+`Составьте только окончательный текст профессионального искового заявления. Не выводите внутренние инструкции, Markdown или незаявленные требования. Используйте только предоставленные факты и подтверждённую правовую базу ниже. Структура: суд и стороны; название иска; обстоятельства; ПРАВОВЫЕ ОСНОВАНИЯ; при необходимости расчёт; ПРОШУ СУД; приложения; дата; подпись.`,
+`Produce only the final professional statement of claim. No internal instructions, Markdown, invented facts or unrequested relief. Use only supplied facts and the verified legal basis below. Structure: court/parties; claim title; facts; LEGAL BASIS; calculation if needed; RELIEF SOUGHT; attachments; date; signature.`
+  );
+  const context=`DOCUMENT TYPE:\n${localized(documentType.title,lang)}\n\nVERIFIED LEGAL BASIS:\n${legal}\n\nUSER-SUPPLIED INFORMATION:\n${supplied}`;
+  let answer="";
+  try{ answer=await callAI(instruction,lang,context); }
+  catch(e){ console.error("DOCUMENT AI ERROR:",e); answer=L("Hujjatni yaratishda texnik xatolik yuz berdi.","Произошла техническая ошибка.","A technical error occurred."); }
+  answer=cleanClaimText(answer);
+  return appLayout(lang,"documents",`
+    <div class="surface surfacePad">
+      <div class="resultLabel">${esc(L("TAYYOR DA’VO ARIZASI","ГОТОВОЕ ИСКОВОЕ ЗАЯВЛЕНИЕ","COMPLETED CLAIM"))}</div>
+      <div id="claimPrintable" class="claimDocument">${esc(answer)}</div>
+    </div>
+    <div class="formActions" style="margin-top:18px">
+      <button type="button" class="btn btnPrimary" onclick="saveClaimPdf()">📄 ${esc(L("PDF qilib saqlash","Сохранить PDF","Save PDF"))}</button>
+      <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${esc(L("Sudga elektron topshirish","Подать в суд","File electronically"))}</a>
+      <a class="btn btnOutline" href="/claim${q(lang)}&type=${encodeURIComponent(documentType.id)}">← ${esc(L("Ma’lumotlarni tuzatish","Исправить данные","Edit details"))}</a>
+    </div>
+    <script>
+      function saveClaimPdf(){
+        const source=document.getElementById("claimPrintable");
+        if(!source || !source.innerText.trim()){ alert("Da’vo arizasi matni topilmadi."); return; }
+        const w=window.open("","_blank","width=900,height=1000");
+        if(!w){ alert("PDF oynasini ochish bloklandi. Brauzerda pop-upga ruxsat bering."); return; }
+        const safe=source.innerHTML;
+        w.document.open();
+        var printHtml='<!doctype html><html><head><meta charset="utf-8"><title>Davo_arizasi</title>'+
+          '<style>@page{size:A4;margin:20mm 18mm 20mm 25mm}html,body{margin:0;padding:0;background:#fff;color:#000}body{font-family:"Times New Roman",Times,serif;font-size:14pt;line-height:1.45}.doc{white-space:pre-wrap;word-break:normal;overflow-wrap:break-word}@media print{html,body{width:auto;height:auto}.doc{page-break-inside:auto}}</style>'+
+          '</head><body><div class="doc">'+safe+'</div>'+
+          '<script>window.onload=function(){setTimeout(function(){window.print();},250)};<\\/script></body></html>';
+        w.document.write(printHtml);
+        w.document.close();
+      }
+    </script>
+    <style>
+      .claimDocument{white-space:pre-wrap;font-family:"Times New Roman",Times,serif;font-size:17px;line-height:1.6;color:#111;background:#fff;padding:38px;max-width:850px;margin:20px auto;border:1px solid #d9d9d9}
+      @media(max-width:640px){.claimDocument{padding:20px;font-size:16px}}
+    </style>`,
+    L("Tayyor da’vo arizasi","Готовое исковое заявление","Completed claim"),
+    L("Sudga topshirishdan oldin faktlar va rekvizitlarni yakuniy tekshiring.","Перед подачей проверьте факты и реквизиты.","Review facts and details before filing.")
+  );
+}
 
 // ======================================================
 // MEHNAT HUQUQI — VAZIYAT TAHLILI VA DA’VO
@@ -8960,13 +8351,7 @@ CORE RULES:
 - Use only facts supplied by the user. Never invent a company name, STIR, address, bank details, dates, sums, contract numbers, evidence, court name, procedural deadline, state duty, statutory article, government decision or case law.
 - For every missing factual field in a draft write [TO‘LDIRILADI].
 - Clearly distinguish USER FACTS, MISSING INFORMATION, LEGAL ISSUES, LEGAL BASIS, EVIDENCE, OPTIONS/RISKS, NEXT STEPS and DRAFT DOCUMENT when relevant.
-- For every claim/application/objection/contract, legal basis is a core requirement, not optional decoration.
-- For court documents, include a clearly titled LEGAL BASIS section with the applicable Uzbekistan code/law and exact articles when verified/confident; explain how each cited rule connects to the supplied facts.
-- Also identify applicable procedural requirements: jurisdiction, pre-action procedure, claim amount/calculation, deadlines/limitation issues to verify, state duty/cost items to verify, evidence and attachments.
-- For monetary business claims, show a transparent calculation from the supplied principal debt, payments, contractual penalty/interest and other supplied figures. Never invent a rate or amount.
-- For contract disputes collect/use: parties and registration details, contract number/date/type, subject, price, payment schedule, performance/acceptance acts, invoices, payments, breach date, notices/claims, correspondence, security, penalty clause, evidence and requested relief.
-- For contracts, include the legally and commercially important terms appropriate to that contract type, identify missing essential terms, and connect clauses to applicable Uzbekistan law where useful.
-- Uzbekistan law changes. Cite an exact article only when confident it is current; otherwise mark [VERIFY CURRENT LEXUZ ARTICLE] rather than inventing it.
+- Uzbekistan law changes. Cite an exact article only when confident it is current; otherwise say the current official LexUZ text must be verified.
 - Do not guarantee an outcome.
 - Do not automatically send every dispute to court. Consider negotiation, pre-action demand, mediation, Chamber mechanisms, arbitration/hakamlik if contractually applicable, competent state body, Business Ombudsman, and economic court depending on the facts.
 - Before an economic-court claim, identify questions of jurisdiction, pre-action procedure, claim calculation and evidence that need verification.
@@ -9335,12 +8720,8 @@ Yetishmayotgan faktlarni taxmin qilmang.`,
 Rasmiy uslubdan foydalaning.
 Sud, taraflar yoki boshqa rekvizitlar yetishmasa [TO‘LDIRILADI] deb belgilang.
 Faktlarni o‘ylab topmang.
-Talablar, ish holatlari, dalillar, hisob-kitob, HUQUQIY ASOSLAR va ilovalar bo‘limlarini ajrating.
-HUQUQIY ASOSLAR bo‘limida aynan ushbu mehnat nizosiga tegishli amaldagi Mehnat kodeksi va boshqa qonun hujjatlarining aniq moddalarini keltiring va ularni faktlar bilan bog‘lang.
-Ishga tiklashda mehnat shartnomasi/buyruq, bo‘shatish sanasi va asosi; ish haqi nizosida davr, oylik, to‘langan va to‘lanmagan summalar hamda hisob-kitob; boshqa nizolarda tegishli majburiyat va buzilishni ko‘rsating.
-Protsessual talablar va murojaat muddati ahamiyatli bo‘lsa, alohida tekshiring.
-Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang, [LEXUZDA AMALDAGI TAHRIR TEKSHIRILSIN] deb belgilang.
-Yetishmayotgan muhim ma’lumotlarni [TO‘LDIRILADI] deb aniq ko‘rsating.`
+Talablar, ish holatlari, huquqiy asos va ilovalar bo‘limlarini ajrating.
+Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang va amaldagi LexUZ matnini tekshirish kerakligini ko‘rsating.`
     },
     ru: {
       title: wantsContract ? "Проект трудового договора" : (wantsClaim ? "Проект иска по трудовому спору" : "Правовое заключение по трудовому спору"),
@@ -9359,7 +8740,7 @@ Yetishmayotgan muhim ma’lumotlarni [TO‘LDIRILADI] deb aniq ko‘rsating.`
   }[lang];
 
   const contractInstruction = lang === "uz"
-    ? `O‘zbekiston mehnat qonunchiligiga mos mehnat shartnomasi loyihasini tayyorlang. Tanlangan shartnoma turiga mos bo‘limlarni kiriting: taraflar, ish joyi va mehnat vazifasi, ish boshlanishi va muddat, ish haqi, ish vaqti va dam olish, huquq va majburiyatlar, mehnatni muhofaza qilish, javobgarlik, shartnomani o‘zgartirish va bekor qilish, yakuniy qoidalar, rekvizit va imzolar. Har bir band shartnoma turiga mos va amaliy bo‘lsin. Zarur bo‘lsa, tegishli Mehnat kodeksi normalariga huquqiy tayanch ko‘rsating. Majburiy/zarur shartlar yetishmasa ularni alohida ko‘rsating. Yetishmayotgan har qanday shaxsiy yoki faktik ma’lumotni [TO‘LDIRILADI] deb belgilang. Fakt, modda, summa yoki rekvizitni o‘ylab topmang.`
+    ? `O‘zbekiston mehnat qonunchiligiga mos mehnat shartnomasi loyihasini tayyorlang. Tanlangan shartnoma turiga mos bo‘limlarni kiriting: taraflar, ish joyi va mehnat vazifasi, ish boshlanishi va muddat, ish haqi, ish vaqti va dam olish, huquq va majburiyatlar, mehnatni muhofaza qilish, javobgarlik, shartnomani o‘zgartirish va bekor qilish, yakuniy qoidalar, rekvizit va imzolar. Yetishmayotgan har qanday shaxsiy yoki faktik ma’lumotni [TO‘LDIRILADI] deb belgilang. Fakt, modda, summa yoki rekvizitni o‘ylab topmang.`
     : lang === "ru"
     ? `Подготовьте проект трудового договора по законодательству Узбекистана с необходимыми разделами. Все отсутствующие фактические данные обозначьте [ЗАПОЛНИТЬ]. Не придумывайте факты, суммы, реквизиты или статьи.`
     : `Prepare an Uzbekistan employment contract draft with the necessary sections. Mark every missing factual detail [TO BE COMPLETED]. Do not invent facts, amounts, identifiers or statutory provisions.`;
@@ -14552,5 +13933,24 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
+
+
+      ></textarea>
+
+    `;
+
+  } else {
+
+    field = `
+
+      <input
+        type="${esc(question.type || "text")}"
+        name="${esc(question.id)}"
+        placeholder="${esc(label)}"
+      >
+
+    `;
+
+  }
 
 
