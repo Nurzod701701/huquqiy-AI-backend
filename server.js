@@ -6956,7 +6956,27 @@ function renderQuestionField(
 
       <textarea
         name="${esc(question.id)}"
-        placeholder="${esc(label)}"  return `
+        placeholder="${esc(label)}"
+      ></textarea>
+
+    `;
+
+  } else {
+
+    field = `
+
+      <input
+        type="${esc(question.type || "text")}"
+        name="${esc(question.id)}"
+        placeholder="${esc(label)}"
+      >
+
+    `;
+
+  }
+
+
+  return `
 
     <div class="questionCard">
 
@@ -13933,24 +13953,4 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
-
-
-      ></textarea>
-
-    `;
-
-  } else {
-
-    field = `
-
-      <input
-        type="${esc(question.type || "text")}"
-        name="${esc(question.id)}"
-        placeholder="${esc(label)}"
-      >
-
-    `;
-
-  }
-
 
