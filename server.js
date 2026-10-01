@@ -7508,6 +7508,54 @@ function sourcesPage(lang) {
 
 
 // ======================================================
+// LEGAL DOCUMENT REVIEW / HUQUQIY TEKSHIRUV
+// ======================================================
+
+function legalReviewPage(lang){
+  lang=getLang(lang);
+  const tx={
+    uz:{title:"Hujjatni huquqiy tekshirish",desc:"Da’vo arizasi, ariza, shartnoma yoki boshqa huquqiy hujjat matnini kiriting. Tizim faktlar, rekvizitlar, dalillar, talablar va huquqiy asoslarni tekshiradi.",type:"Hujjat turi",text:"Hujjat matni",context:"Qo‘shimcha holatlar (ixtiyoriy)",go:"Huquqiy tekshiruvni boshlash",note:"Muhim: tizim ishonchsiz modda raqamini to‘qib chiqarmaydi. Amaldagi tahrir rasmiy LexUZ manbasi bilan tekshirilishi kerak."},
+    ru:{title:"Правовая проверка документа",desc:"Вставьте текст иска, заявления, договора или другого юридического документа. Система проверит факты, реквизиты, доказательства, требования и правовые основания.",type:"Тип документа",text:"Текст документа",context:"Дополнительные обстоятельства (необязательно)",go:"Начать правовую проверку",note:"Важно: система не должна придумывать номера статей. Действующая редакция проверяется по официальному источнику LexUZ."},
+    en:{title:"Legal document review",desc:"Paste a claim, application, contract or other legal document. The system checks facts, required details, evidence, relief and legal grounds.",type:"Document type",text:"Document text",context:"Additional facts (optional)",go:"Start legal review",note:"Important: the system must not invent article numbers. Current law should be verified against the official LexUZ source."}
+  }[lang];
+  return appLayout(lang,"documents",`
+    <section class="hero"><div class="eyebrow">✓ HUQUQIY AI CHECK</div><h1>${tx.title}</h1><p>${tx.desc}</p></section>
+    <section class="panel" style="max-width:980px;margin:0 auto 28px">
+      <form method="post" action="/legal-review-result?lang=${lang}">
+        <label>${tx.type}<select name="documentType" required>
+          <option value="claim">Da’vo arizasi / Иск / Claim</option><option value="contract">Shartnoma / Договор / Contract</option><option value="application">Ariza / Заявление / Application</option><option value="complaint">Shikoyat / Жалоба / Complaint</option><option value="other">Boshqa / Другое / Other</option>
+        </select></label>
+        <label>${tx.text}<textarea name="documentText" rows="18" required minlength="80" placeholder="Hujjat matnini shu yerga kiriting..."></textarea></label>
+        <label>${tx.context}<textarea name="extraContext" rows="5"></textarea></label>
+        <div class="notice noticeGold"><span class="noticeIcon">§</span><span>${tx.note}</span></div>
+        <button class="btn btnGold" type="submit">${tx.go}</button>
+      </form>
+    </section>
+    <section class="panel" style="max-width:980px;margin:0 auto"><h2>Rasmiy huquqiy manbalar</h2><p>Tekshiruv O‘zbekiston qonunchiligiga yo‘naltiriladi. Yakuniy norma va amaldagi tahrirni rasmiy manbada ochib tekshirish mumkin.</p><div class="accountActions"><a class="accountButton" target="_blank" rel="noopener" href="https://lex.uz/uz/">LexUZ</a><a class="accountButton light" target="_blank" rel="noopener" href="https://sud.uz/">Sud.uz</a><a class="accountButton light" target="_blank" rel="noopener" href="https://cabinet.sud.uz/">E-SUD kabineti</a></div></section>
+  `,tx.title,tx.desc);
+}
+
+function cleanLegalReviewText(v){
+  return String(v||"").replace(/```[a-z]*|```/gi,"").replace(/\*\*/g,"").replace(/^#{1,6}\s*/gm,"").trim();
+}
+
+async function legalReviewResultPage(lang,form){
+  lang=getLang(lang);
+  const documentText=String(form.documentText||"").trim().slice(0,45000);
+  const documentType=String(form.documentType||"other").trim();
+  const extraContext=String(form.extraContext||"").trim().slice(0,10000);
+  if(documentText.length<80) return appLayout(lang,"documents",`<section class="panel"><h1>Hujjat matni yetarli emas</h1><a class="btn btnGold" href="/legal-review?lang=${lang}">Orqaga</a></section>`,`Huquqiy tekshiruv`,``);
+  const prompt=`Siz O‘zbekiston huquqi bo‘yicha professional hujjat tekshiruvchisisiz. Foydalanuvchi bergan hujjatni tahlil qiling.\n\nQAT’IY QOIDALAR:\n1) Hech qachon mavjud bo‘lmagan qonun, modda, sud qarori yoki faktni o‘ylab topmang.\n2) Modda raqamiga ishonchingiz komil bo‘lmasa, raqam bermang; aynan qaysi qonun/kodeks va qaysi masala LexUZda tekshirilishi kerakligini yozing.\n3) Foydalanuvchi aytmagan faktni fakt sifatida qo‘shmang.\n4) Hujjat turiga mos majburiy rekvizitlar, taraflar, yurisdiksiya/sudlovlilik, faktlar, dalillar, hisob-kitoblar, talablar va ilovalarni tekshiring.\n5) Da’vo bo‘lsa, talab bilan fakt va dalil o‘rtasidagi bog‘liqlikni tekshiring. Shartnoma bo‘lsa, muhim shartlar, taraflar majburiyatlari, javobgarlik, muddat, hisob-kitob va nizolarni hal etish bandlarini tekshiring.\n6) Natijani quyidagi bo‘limlarda bering:\nHUJJAT TURI VA QISQA XULOSA\n1. ANIQLANGAN KAMCHILIKLAR\n2. YETISHMAYOTGAN MA’LUMOTLAR\n3. DALILLAR VA ILOVALAR\n4. HUQUQIY ASOSLAR\n5. HISOB-KITOB TEKSHIRUVI (tegishli bo‘lsa)\n6. TALABLAR TEKSHIRUVI\n7. TUZATISH BO‘YICHA ANIQ TAVSIYALAR\n8. LEXUZDA TEKSHIRILADIGAN MANBALAR — kodeks/qonun nomi, mavzu va qidiruv iborasini yozing.\n9. TEKSHIRUV HOLATI — qaysi xulosalar hujjat matniga asoslangan, qaysilari rasmiy manbada qo‘shimcha tekshiruv talab qiladi.\n\nHujjat turi: ${documentType}\nQo‘shimcha holatlar: ${extraContext||"berilmagan"}\n\nTEKSHIRILADIGAN HUJJAT:\n${documentText}`;
+  let answer="";
+  try{answer=cleanLegalReviewText(await callAI(prompt,lang));}catch(e){answer=lang==="ru"?"Не удалось выполнить проверку. Проверьте настройку AI на сервере.":lang==="en"?"The review could not be completed. Check the server AI configuration.":"Tekshiruvni bajarib bo‘lmadi. Serverdagi AI sozlamasini tekshiring.";}
+  return appLayout(lang,"documents",`
+    <section class="hero"><div class="eyebrow">✓ LEGAL REVIEW</div><h1>${lang==="ru"?"Результат правовой проверки":lang==="en"?"Legal review result":"Huquqiy tekshiruv natijasi"}</h1><p>${lang==="uz"?"Natijadagi huquqiy norma va tahrirlarni LexUZdagi amaldagi matn bilan yakuniy tekshiring.":lang==="ru"?"Окончательно сверяйте нормы и редакции с действующим текстом LexUZ.":"Finally verify legal provisions and versions against the current LexUZ text."}</p></section>
+    <section class="panel" style="max-width:1050px;margin:0 auto 24px"><div class="claimDocument" style="white-space:pre-wrap">${esc(answer)}</div></section>
+    <section class="panel" style="max-width:1050px;margin:0 auto"><div class="accountActions"><a class="accountButton gold" href="/legal-review?lang=${lang}">Yana hujjat tekshirish</a><a class="accountButton" target="_blank" rel="noopener" href="https://lex.uz/uz/">LexUZda tekshirish</a><a class="accountButton light" href="/documents?lang=${lang}">Hujjatlar</a></div></section>
+  `,"Huquqiy tekshiruv natijasi","");
+}
+
+// ======================================================
 // DOCUMENTS PAGE
 // ======================================================
 
@@ -7657,6 +7705,8 @@ function documentsPage(lang) {
           <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${lang === "uz" ? "Sudga elektron murojaat" : lang === "ru" ? "Подать в суд" : "Electronic court filing"}</a>
         </div>
       </div>
+
+      <a class="documentCard" href="/legal-review${q(lang)}" style="display:block;margin:0 0 22px;border-width:2px"><div class="documentCardIcon">✓</div><h3>${lang==="ru"?"Проверить готовый документ":lang==="en"?"Review an existing document":"Tayyor hujjatni huquqiy tekshirish"}</h3><p>${lang==="uz"?"Kamchiliklar, dalillar, talablar va huquqiy asoslarni AI yordamida tekshiring.":lang==="ru"?"Проверьте недостатки, доказательства, требования и правовые основания.":"Check defects, evidence, relief and legal grounds."}</p><span class="serviceArrow">→</span></a>
 
       <div class="documentGrid">
 
@@ -12617,6 +12667,19 @@ const server =
 
         }
 
+
+        // ------------------------------------------------
+        // LEGAL DOCUMENT REVIEW
+        // ------------------------------------------------
+
+        if(req.method === "GET" && pathname === "/legal-review") {
+          return sendHtml(res, legalReviewPage(lang));
+        }
+
+        if(req.method === "POST" && pathname === "/legal-review-result") {
+          const form = await readForm(req);
+          return sendHtml(res, await legalReviewResultPage(lang, form));
+        }
 
         // ------------------------------------------------
         // DOCUMENTS
