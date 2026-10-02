@@ -6121,7 +6121,7 @@ function homePage(lang) {
           .homeLongCopy{position:relative;z-index:2}.homeLongCopy h3{font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1.1;color:#071f36;margin:0 0 10px}
           .homeLongCopy p{font-size:15px;line-height:1.6;color:#536676;margin:0;max-width:790px}
           .homeLongEnter{position:relative;z-index:2;min-width:205px;padding:15px 19px;border-radius:12px;background:#092942;color:#fff;font-size:14px;font-weight:900;text-align:center}
-          .family .homeLongEnter,.employment .homeLongEnter,.business .homeLongEnter{
+          .family .homeLongEnter,.employment .homeLongEnter,.business .homeLongEnter,.review .homeLongEnter{
             background:#d4aa5e;color:#0b2235;
           }
           @media(max-width:760px){
@@ -6163,6 +6163,17 @@ function homePage(lang) {
                 <p>${lang==="uz"?"Tadbirkor uchun: muammoni aniqlash, xavfni ko‘rish, sudgacha yechim, hujjat va zarur bo‘lsa iqtisodiy sud.":lang==="ru"?"Договоры, задолженность, бизнес-споры, корпоративные документы и экономический суд.":"Contracts, debt, business disputes, corporate documents and economic court."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
               </div>
               <span class="homeLongEnter">${lang==="uz"?"Biznes huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open business law →"}</span>
+            </a>
+
+            <!-- FOURTH INDEPENDENT MAIN SECTION: DOCUMENT REVIEW -->
+            <a class="homeLongCard review" href="/legal-review${q(lang)}" aria-label="${lang==='uz'?'Hujjatlarni tekshirish':lang==='ru'?'Проверка документов':'Document review'}">
+              <div class="homeLongIcon">✓</div>
+              <div class="homeLongCopy">
+                <h3>${lang==='uz'?'Hujjatlarni tekshirish':lang==='ru'?'Проверка документов':'Document review'}</h3>
+                <p>${lang==='uz'?'Tayyor da’vo arizalari, shartnomalar va boshqa hujjatlarni alohida bo‘limda tekshiring. Kamchiliklar, dalillar, talablar va huquqiy asoslar bo‘yicha tahlil oling.':lang==='ru'?'Отдельная проверка исков, договоров и других документов: недостатки, доказательства, требования и правовые основания.':'Review claims, contracts and other documents in a dedicated section for omissions, evidence, requests and legal grounds.'}</p>
+                <div class="homeLongQuick"><em>${lang==='uz'?'Da’vo arizalari':'Claims'}</em><em>${lang==='uz'?'Shartnomalar':'Contracts'}</em><em>${lang==='uz'?'Huquqiy tahlil':'Legal review'}</em></div>
+              </div>
+              <span class="homeLongEnter">${lang==='uz'?'Tekshirish bo‘limiga kirish →':lang==='ru'?'Открыть проверку →':'Open document review →'}</span>
             </a>
           </div>
         </div>
