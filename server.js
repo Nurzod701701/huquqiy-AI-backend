@@ -8285,6 +8285,9 @@ function businessPanel(title, text, href, icon="§"){
 
 
 
+// Rasmiy tasdiqlangan BHM: PF-115 (23.06.2026), 01.09.2026 dan.
+// Keyingi o‘zgarishlarda bu konfiguratsiyani yangilash zarur.
+const COURT_FEE_BHM = Object.freeze({ amount: 440000, effectiveFrom: "2026-09-01", source: "https://advice.adliya.uz/oz/document/2934" });
 function courtCostsPage(lang="uz") {
  const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
  return appLayout(lang,"court-costs",`
@@ -8300,10 +8303,16 @@ function courtCostsPage(lang="uz") {
  <p class="feeHelp">${t("Bu dastlabki yo‘naltirish. Ishning aniq mazmuni va qonuniy sudlovga tegishliligi tekshiriladi.","Это предварительная подсказка; подсудность требует проверки.","Preliminary guidance only; jurisdiction must be checked.")}</p>
  <div id="feeAmountWrap" style="display:none"><label>${t("Da’vo summasi (so‘m)","Цена иска (сум)","Claim amount (UZS)")}</label><input name="amount" inputmode="decimal" type="number" min="0" step="1" placeholder="0"><p class="feeHelp">${t("Mulk qiymati yoki undiriladigan summani kiriting. Bu avtomatik tarif emas.","Введите сумму требования.","Enter the claim value.")}</p></div>
  <div id="feeDivorceWrap" style="display:none"><label>Bu takroriy nikohni bekor qilish da’vosimi?</label><select name="repeat_divorce"><option value="no">Yo‘q</option><option value="yes">Ha</option></select></div>
- <label>Amaldagi BHM miqdori (so‘m)</label><input name="bhm" type="number" min="1" step="1" placeholder="Rasmiy BHM miqdorini kiriting"><p class="feeHelp">BHM miqdorini rasmiy manbadan tekshirib kiriting. BHM talab qilinmaydigan imtiyozli da’volarda bu maydonni bo‘sh qoldirish mumkin.</p>
+ <div class="feeWarn"><strong>BHM avtomatik: ${COURT_FEE_BHM.amount.toLocaleString("uz-UZ")} so‘m</strong> (2026-yil 1-sentabrdan). <a href="${COURT_FEE_BHM.source}" target="_blank" rel="noopener" style="text-decoration:underline">Rasmiy manba ↗</a><br>Fuqarodan BHM kiritish talab qilinmaydi.</div>
  <h2>${t("2. Imtiyoz va xarajatlar","2. Льготы и расходы","2. Exemptions and costs")}</h2>
  <label>${t("Davlat boji bo‘yicha imtiyozingiz bormi?","Есть ли льгота?","Do you have an exemption?")}</label><select name="exemption" required><option value="unknown">${t("Aniq bilmayman","Не знаю","Not sure")}</option><option value="yes">${t("Ha, hujjatim bor","Да, есть подтверждение","Yes, documented")}</option><option value="no">${t("Yo‘q","Нет","No")}</option></select>
- <label>${t("Kutilayotgan boshqa xarajatlar (ixtiyoriy, so‘m)","Другие расходы (сум)","Other expected costs (UZS)")}</label><input name="extra" type="number" min="0" step="1" placeholder="0">
+ <h3>${t("3. Qo‘shimcha sud xarajatlarini aniqlash","3. Дополнительные судебные расходы","3. Identify other court costs")}</h3>
+ <p class="feeHelp">${t("Summalarni o‘zingiz hisoblamaysiz. Qaysi xizmatlar kerak bo‘lishini belgilang; narxi oldindan aniq bo‘lmagan xizmatlar alohida ko‘rsatiladi.","Выберите необходимые услуги; неизвестные цены будут показаны отдельно.","Select applicable services; costs without confirmed rates will be listed separately.")}</p>
+ <label>${t("Sud hujjatlarini pochta orqali jo‘natish zarurmi?","Нужна почтовая отправка?","Is postal delivery needed?")}</label><select name="postal"><option value="unknown">Aniq emas</option><option value="no">Yo‘q</option><option value="yes">Ha</option></select>
+ <label>${t("Ish bo‘yicha ekspertiza kerakmi?","Нужна экспертиза?","Is expert examination needed?")}</label><select name="expert"><option value="unknown">Aniq emas</option><option value="no">Yo‘q</option><option value="yes">Ha</option></select>
+ <label>${t("Tarjimon kerakmi?","Нужен переводчик?","Is an interpreter needed?")}</label><select name="translator"><option value="unknown">Aniq emas</option><option value="no">Yo‘q</option><option value="yes">Ha</option></select>
+ <label>${t("Advokat yoki boshqa vakil jalb qilasizmi?","Нужен представитель?","Will you hire a representative?")}</label><select name="representative"><option value="unknown">Aniq emas</option><option value="no">Yo‘q</option><option value="yes">Ha</option></select>
+ <p class="feeHelp">${t("Vakilga haq to‘lash shartnoma asosida belgilanadi. Ayrim xarajatlarni keyinchalik undirish masalasi sud tomonidan hal qilinishi mumkin.","Стоимость представителя определяется соглашением.","Representation costs depend on the agreement.")}</p>
  <div class="feeWarn">${t("Hisoblash faqat tekshirilgan asosiy toifalar uchun bajariladi. Murakkab talablar va imtiyozlar alohida tekshiriladi.","Ставки требуют проверки по действующему закону.","Official rates must be verified before an amount is shown.")}</div>
  <div class="feeActions"><button class="btn btnGold" type="submit">${t("Natijani ko‘rish","Показать результат","Show result")}</button><a class="btn btnOutline" href="https://lex.uz/uz/acts/-4680944" target="_blank" rel="noopener">${t("Davlat boji qonuni ↗","Закон ↗","Law ↗")}</a></div></form></div>
  <script>function feeToggle(){var x=document.getElementById('feeClaim').value;var bp=document.getElementById('feeBusinessParties').value;var c=document.getElementById('feeCourt');var n=document.getElementById('feeCourtNotice');document.getElementById('feeAmountWrap').style.display=['property','business','other'].includes(x)?'block':'none';document.getElementById('feeBusinessWrap').style.display=x==='business'?'block':'none';document.getElementById('feeDivorceWrap').style.display=x==='divorce'?'block':'none';if(['divorce','alimony','property','labor'].includes(x)){c.value='civil';n.textContent="Fuqarolik ishlari bo‘yicha sud (dastlabki yo‘naltirish).";}else if(x==='business'&&bp==='entrepreneurs'){c.value='economic';n.textContent="Iqtisodiy sud (dastlabki yo‘naltirish; nizo mazmuni tekshiriladi).";}else if(x==='business'){c.value='unknown';n.textContent="Tomonlar va nizo mazmuniga qarab sud yo‘nalishi aniqlashtiriladi.";}else{c.value='unknown';n.textContent="Sud yo‘nalishini aniqlash uchun nizo mazmuni tekshirilishi kerak.";}}feeToggle()</script>`);
@@ -8312,21 +8321,24 @@ function courtCostsResultPage(lang,form){
  const t=(uz,ru,en)=>lang==='ru'?ru:lang==='en'?en:uz;
  const selected=String(form.claim||'');
  const types={divorce:'Nikohdan ajratish',alimony:'Aliment undirish',property:'Mol-mulkni bo‘lish',labor:'Mehnat nizosi',business:'Biznes nizosi',other:'Boshqa da’vo'};
- const amount=Number(form.amount||0),extra=Number(form.extra||0),bhm=Number(form.bhm||0);
+ const amount=Number(form.amount||0),bhm=COURT_FEE_BHM.amount;
  const valid=n=>Number.isFinite(n)&&n>=0&&n<=1e15;
  const fmt=n=>valid(n)?n.toLocaleString('uz-UZ',{maximumFractionDigits:0})+' so‘m':'—';
  const parties=String(form.business_parties||'unknown');
  const court=['divorce','alimony','property','labor'].includes(selected)?'Fuqarolik ishlari bo‘yicha sud':selected==='business'&&parties==='entrepreneurs'?'Iqtisodiy sud':'Sud yo‘nalishini aniqlashtirish kerak';
  let fee=null,formula='',note='',source='https://lex.uz/uz/acts/-4680944';
- if(!valid(amount)||!valid(extra)||!valid(bhm)){note='Kiritilgan summalarni tekshiring.';}
+ if(!valid(amount)||!valid(bhm)){note='Kiritilgan summalarni tekshiring.';}
  else if(selected==='alimony') {fee=0;formula='Aliment undirish bo‘yicha da’vogar davlat bojidan ozod etiladi.';note='Qonunning 8-moddasi. Boshqa talablar birga qo‘yilgan bo‘lsa, alohida tekshiriladi.';}
  else if(selected==='labor') {fee=0;formula='Mehnat huquqiy munosabatlaridan kelib chiqadigan talablar bo‘yicha da’vogar ozod etiladi.';note='Qonunning 8-moddasi. Da’vogarning maqomi va talab turini tekshiring.';}
  else if(form.exemption==='yes'||form.exemption==='unknown') {note='Imtiyoz mavjudligi noma’lum yoki ko‘rsatilgan. Imtiyozning huquqiy asosi tasdiqlanmaguncha to‘lanadigan summa chiqarilmaydi.';}
- else if(selected==='divorce') {if(bhm>0){const repeat=String(form.repeat_divorce||'no')==='yes';fee=bhm*(repeat?4:2);formula='BHM × '+(repeat?4:2);note='Faqat nikohdan ajratish talabi uchun. Mol-mulk talabi qo‘shilsa, uning boji alohida hisoblanadi.';}else note='Hisoblash uchun amaldagi BHM miqdorini kiriting.';}
- else if(selected==='property') {if(bhm>0&&amount>0){fee=Math.max(amount*.04,bhm);formula='max(da’vo qiymati × 4%, 1 BHM)';note='Fuqarolik sudidagi mulkiy da’vo uchun dastlabki hisob. Mol-mulkning tegishli ulushi va qo‘shimcha talablar tekshiriladi.';}else note='Hisoblash uchun da’vo qiymati va amaldagi BHM miqdorini kiriting.';}
+ else if(selected==='divorce') {if(bhm>0){const repeat=String(form.repeat_divorce||'no')==='yes';fee=bhm*(repeat?4:2);formula='BHM × '+(repeat?4:2);note='Faqat nikohdan ajratish talabi uchun. Mol-mulk talabi qo‘shilsa, uning boji alohida hisoblanadi.';}else note='BHM konfiguratsiyasi tekshirilishi kerak.';}
+ else if(selected==='property') {if(bhm>0&&amount>0){fee=Math.max(amount*.04,bhm);formula='max(da’vo qiymati × 4%, 1 BHM)';note='Fuqarolik sudidagi mulkiy da’vo uchun dastlabki hisob. Mol-mulkning tegishli ulushi va qo‘shimcha talablar tekshiriladi.';}else note='Hisoblash uchun da’vo qiymatini kiriting.';}
  else note='Ushbu da’vo turining amaldagi stavkasi va imtiyozlari alohida tekshirilishi kerak. Tasdiqlanmagan raqam chiqarilmaydi.';
  const show=fee!==null&&valid(fee);
- return appLayout(lang,'court-costs',`<section class="panel" style="max-width:920px;margin:auto;padding:32px"><h1>${t('Davlat boji hisob-kitobi','Расчёт госпошлины','Court fee calculation')}</h1><p><b>Nizo turi:</b> ${esc(types[selected]||'Aniqlanmagan')}</p><p><b>Sud yo‘nalishi:</b> ${esc(court)} (dastlabki)</p><p><b>Da’vo qiymati:</b> ${amount>0?fmt(amount):'Kiritilmagan'}</p><div style="background:#f4f8fc;border:1px solid #cad7e4;padding:25px;border-radius:15px"><h2>Davlat boji: ${show?fmt(fee):'Aniqlashtirish talab etiladi'}</h2>${formula?`<p><b>Hisoblash asosi:</b> ${esc(formula)}</p>`:''}<p>${esc(note)}</p>${show?`<p><b>Boshqa kiritilgan xarajatlar:</b> ${fmt(extra)}</p><h3>Jami: ${fmt(fee+extra)}</h3>`:''}</div><p style="font-size:15px">Bu dastlabki hisob-kitob. BHM, imtiyoz, da’vo qiymati va qo‘shimcha talablarni sudga murojaat qilishdan oldin tekshiring. Boshqa xarajatlar faqat foydalanuvchi kiritgan summadan iborat.</p><a class="btn btnGold" href="${source}" target="_blank" rel="noopener">Davlat boji to‘g‘risidagi qonun ↗</a> <a class="btn btnOutline" href="/court-costs${q(lang)}">Qayta hisoblash</a> <button class="btn btnOutline" onclick="window.print()">PDF / Print</button></section>`);
+ const extraTypes=[['postal','Pochta orqali jo‘natish'],['expert','Ekspertiza'],['translator','Tarjimon'],['representative','Advokat yoki boshqa vakil']];
+ const outstanding=extraTypes.filter(([key])=>form[key]!=='no').map(([key,label])=>label+(form[key]==='yes'?' — zarur, narx aniqlanadi':' — zarurligi aniqlanadi'));
+ const outstandingHtml=outstanding.length?'<ul>'+outstanding.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p>Belgilangan qo‘shimcha xizmatlar yo‘q. Ishning xususiyatiga qarab boshqa sud chiqimlari paydo bo‘lishi mumkin.</p>';
+ return appLayout(lang,'court-costs',`<section class="panel" style="max-width:920px;margin:auto;padding:32px"><h1>${t('Davlat boji hisob-kitobi','Расчёт госпошлины','Court fee calculation')}</h1><p><b>Nizo turi:</b> ${esc(types[selected]||'Aniqlanmagan')}</p><p><b>Sud yo‘nalishi:</b> ${esc(court)} (dastlabki)</p><p><b>Da’vo qiymati:</b> ${amount>0?fmt(amount):'Kiritilmagan'}</p><p><b>Hisobda qo‘llangan BHM:</b> ${fmt(bhm)} (2026-09-01 dan, <a href="${COURT_FEE_BHM.source}" target="_blank" rel="noopener">manba</a>)</p><div style="background:#f4f8fc;border:1px solid #cad7e4;padding:25px;border-radius:15px"><h2>Davlat boji: ${show?fmt(fee):'Aniqlashtirish talab etiladi'}</h2>${formula?`<p><b>Hisoblash asosi:</b> ${esc(formula)}</p>`:''}<p>${esc(note)}</p>${show?`<h3>Hozircha hisoblangan summa: ${fmt(fee)}</h3>`:''}<h3>Qo‘shimcha xarajatlar</h3>${outstandingHtml}${outstanding.length?'<p><b>To‘liq jami hozircha aniqlanmaydi:</b> yuqoridagi xizmatlarning haqiqiy narxi ma’lum bo‘lgach qo‘shiladi.</p>':'<p>Yuqoridagi davlat boji qo‘shimcha xizmatlar uchun to‘lovlarni o‘z ichiga olmaydi.</p>'}</div><p style="font-size:15px">Bu dastlabki hisob-kitob. BHM avtomatik olinadi, lekin qonun o‘zgarsa platforma konfiguratsiyasi yangilanishi kerak. Imtiyoz, da’vo qiymati va qo‘shimcha talablarni sudga murojaat qilishdan oldin tekshiring. Qo‘shimcha xizmatlar narxi tegishli tashkilot yoki shartnomaga qarab aniqlanadi; tasdiqlanmagan summa taxmin qilib kiritilmaydi.</p><a class="btn btnGold" href="${source}" target="_blank" rel="noopener">Davlat boji to‘g‘risidagi qonun ↗</a> <a class="btn btnOutline" href="/court-costs${q(lang)}">Qayta hisoblash</a> <button class="btn btnOutline" onclick="window.print()">PDF / Print</button></section>`);
 }
 function businessContractCostsPage(lang="uz"){
  const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
@@ -8962,7 +8974,8 @@ ISSUE TYPE: ${String(form.issue_type || "")}
 EMPLOYER: ${String(form.employer || "")}
 POSITION: ${String(form.position || "")}
 EMPLOYMENT START: ${String(form.employment_start || "")}
-EMPLOYMENT END: ${String(form.employment_end || "")}
+EMPLOYMENT END: ${String(form.employment_end || 
+ "")}
 ORDER / CONTRACT INFO: ${String(form.order_info || "")}
 FACTS: ${String(form.facts || "")}
 EVIDENCE: ${String(form.evidence || "")}
@@ -14181,3 +14194,4 @@ server.listen(
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
 
+                        
