@@ -7552,6 +7552,43 @@ function sourcesPage(lang) {
 
 
 // ======================================================
+// Uploaded legal documents: parse in memory; never persist the original file.
+async function readLegalUpload(req) {
+  let Busboy, mammoth, pdfParse;
+  try { Busboy=require('busboy'); mammoth=require('mammoth'); pdfParse=require('pdf-parse'); }
+  catch (_) { throw new Error('UPLOAD_DEPENDENCIES_MISSING'); }
+  return new Promise((resolve,reject)=>{
+    const fields={}; let upload=null; let fileError=null;
+    let bb;
+    try {bb=Busboy({headers:req.headers,limits:{files:1,fileSize:8*1024*1024,fields:12,fieldSize:12000}});}
+    catch(e){return reject(e);}
+    bb.on('field',(name,value)=>{if(['legalArea','documentType','extraContext','documentText'].includes(name))fields[name]=value;});
+    bb.on('file',(name,stream,info)=>{
+      if(name!=='documentFile'){stream.resume();return;}
+      const filename=String(info.filename||'');const ext=filename.toLowerCase().split('.').pop();
+      if(!['pdf','docx'].includes(ext)){fileError=new Error('UNSUPPORTED_FORMAT');stream.resume();return;}
+      const chunks=[];stream.on('data',chunk=>chunks.push(chunk));
+      stream.on('limit',()=>{fileError=new Error('FILE_TOO_LARGE');});
+      stream.on('end',()=>{if(!fileError)upload={buffer:Buffer.concat(chunks),ext};});
+    });
+    bb.on('error',reject);
+    bb.on('close',async()=>{
+      if(fileError)return reject(fileError);
+      try{
+        if(upload){
+          let result;
+          if(upload.ext==='pdf')result=(await pdfParse(upload.buffer)).text;
+          else result=(await mammoth.extractRawText({buffer:upload.buffer})).value;
+          fields.documentText=String(result||'').slice(0,45000);
+          if(fields.documentText.trim().length<80)throw new Error('NO_EXTRACTABLE_TEXT');
+        }
+        resolve(fields);
+      }catch(e){reject(e);}
+    });
+    req.pipe(bb);
+  });
+}
+
 // LEGAL DOCUMENT REVIEW / HUQUQIY TEKSHIRUV
 // ======================================================
 
@@ -7570,13 +7607,16 @@ function legalReviewPage(lang){
       <div class="notice noticeGold"><strong>02</strong> · ${lang==="uz"?"Hujjat matnini kiriting":lang==="ru"?"Введите текст":"Enter document"}</div>
       <div class="notice noticeGold"><strong>03</strong> · ${lang==="uz"?"Kamchiliklarni tahlil qiling":lang==="ru"?"Проверьте недостатки":"Review issues"}</div>
     </div>
-      <form method="post" action="/legal-review-result?lang=${lang}">
+      <form method="post" enctype="multipart/form-data" action="/legal-review-result?lang=${lang}">
       <label>${lang==="uz"?"Huquq sohasi":lang==="ru"?"Отрасль права":"Legal area"}
       <select name="legalArea" required><option value="family">${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</option><option value="employment">${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</option><option value="business">${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</option><option value="other">${lang==="uz"?"Boshqa huquq sohasi":lang==="ru"?"Другая отрасль":"Other"}</option></select></label>
         <label>${tx.type}<select name="documentType" required>
           <option value="claim">Da’vo arizasi / Иск / Claim</option><option value="contract">Shartnoma / Договор / Contract</option><option value="application">Ariza / Заявление / Application</option><option value="complaint">Shikoyat / Жалоба / Complaint</option><option value="other">Boshqa / Другое / Other</option>
         </select></label>
-        <label>${tx.text}<textarea name="documentText" rows="18" required minlength="80" placeholder="Hujjat matnini shu yerga kiriting..."></textarea></label>
+        <label style="display:block;font-size:19px;font-weight:800;margin:18px 0 8px">${lang==='uz'?'PDF yoki Word (.docx) faylini yuklang':lang==='ru'?'Загрузите PDF или Word (.docx)':'Upload PDF or Word (.docx)'}</label>
+        <input type="file" name="documentFile" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="font-size:17px;padding:16px;width:100%;border:2px dashed #c9a86a;border-radius:14px" />
+        <p style="font-size:15px">${lang==='uz'?'8 MB gacha. Matnli PDF va DOCX qo‘llab-quvvatlanadi. Skanerlangan PDF uchun matnni tanib olish hali mavjud emas.':lang==='ru'?'До 8 МБ. Поддерживаются текстовые PDF и DOCX; сканы без распознавания.':'Up to 8 MB. Text PDFs and DOCX; scanned PDFs need OCR.'}</p>
+        <label>${tx.text} (${lang==='uz'?'fayl yuklanmasa':lang==='ru'?'если нет файла':'if no file'})<textarea name="documentText" rows="12" placeholder="Hujjat matnini shu yerga kiriting..."></textarea></label>
         <label>${tx.context}<textarea name="extraContext" rows="5"></textarea></label>
         <div class="notice noticeGold"><span class="noticeIcon">§</span><span>${tx.note}</span></div>
         <button class="btn btnGold" type="submit">${tx.go}</button>
@@ -8312,6 +8352,10 @@ function courtCostsPage(lang="uz") {
  <label>${t("Ish bo‘yicha ekspertiza kerakmi?","Нужна экспертиза?","Is expert examination needed?")}</label><select name="expert"><option value="unknown">Aniq emas</option><option value="no">Yo‘q</option><option value="yes">Ha</option></select>
  <label>${t("Tarjimon kerakmi?","Нужен переводчик?","Is an interpreter needed?")}</label><select name="translator"><option value="unknown">Aniq emas</option><option value="no">Yo‘q</option><option value="yes">Ha</option></select>
  <label>${t("Advokat yoki boshqa vakil jalb qilasizmi?","Нужен представитель?","Will you hire a representative?")}</label><select name="representative"><option value="unknown">Aniq emas</option><option value="no">Yo‘q</option><option value="yes">Ha</option></select>
+ <h3>${t("Davlat hisobidan yuridik yordamni dastlabki tekshirish","Проверка права на юридическую помощь","Check state-funded legal aid")}</h3>
+ <label>${t("Kam ta’minlangan shaxs sifatida e’tirof etilganmisiz?","Имеете статус малообеспеченного?","Recognized as low-income?")}</label><select name="legal_aid_low_income"><option value="unknown">Bilmayman</option><option value="yes">Ha</option><option value="no">Yo‘q</option></select>
+ <label>${t("Ishdagi maqomingiz","Статус в деле","Your role")}</label><select name="legal_aid_role"><option value="unknown">Tanlang</option><option value="civil">Fuqarolik ishi bo‘yicha da’vogar yoki javobgar</option><option value="admin">Ma’muriy ish bo‘yicha arizachi</option><option value="criminal">Jinoyat ishi ishtirokchisi</option><option value="other">Boshqa</option></select>
+ <p class="feeHelp">Dastlabki tekshiruv davlat hisobidan yordam olishni kafolatlamaydi. <a href="https://lex.uz/uz/docs/-6502543" target="_blank" rel="noopener">O‘RQ-848 qonuni ↗</a></p>
  <p class="feeHelp">${t("Vakilga haq to‘lash shartnoma asosida belgilanadi. Ayrim xarajatlarni keyinchalik undirish masalasi sud tomonidan hal qilinishi mumkin.","Стоимость представителя определяется соглашением.","Representation costs depend on the agreement.")}</p>
  <div class="feeWarn">${t("Hisoblash faqat tekshirilgan asosiy toifalar uchun bajariladi. Murakkab talablar va imtiyozlar alohida tekshiriladi.","Ставки требуют проверки по действующему закону.","Official rates must be verified before an amount is shown.")}</div>
  <div class="feeActions"><button class="btn btnGold" type="submit">${t("Natijani ko‘rish","Показать результат","Show result")}</button><a class="btn btnOutline" href="https://lex.uz/uz/acts/-4680944" target="_blank" rel="noopener">${t("Davlat boji qonuni ↗","Закон ↗","Law ↗")}</a></div></form></div>
@@ -8337,8 +8381,10 @@ function courtCostsResultPage(lang,form){
  const show=fee!==null&&valid(fee);
  const extraTypes=[['postal','Pochta orqali jo‘natish'],['expert','Ekspertiza'],['translator','Tarjimon'],['representative','Advokat yoki boshqa vakil']];
  const outstanding=extraTypes.filter(([key])=>form[key]!=='no').map(([key,label])=>label+(form[key]==='yes'?' — zarur, narx aniqlanadi':' — zarurligi aniqlanadi'));
+ const aidPotential=String(form.legal_aid_low_income)==='yes'&&['civil','admin','criminal'].includes(String(form.legal_aid_role));
+ const aidText=aidPotential?'Javoblaringiz davlat hisobidan yuridik yordam olish huquqini tekshirish uchun asos bo‘lishi mumkin. Vakolatli organ maqomingiz va ish turini tekshiradi.': 'Davlat hisobidan yuridik yordam olish huquqi boshqa qonuniy asoslar bo‘yicha ham yuzaga kelishi mumkin. Dastlabki savollar yakuniy xulosa emas.';
  const outstandingHtml=outstanding.length?'<ul>'+outstanding.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p>Belgilangan qo‘shimcha xizmatlar yo‘q. Ishning xususiyatiga qarab boshqa sud chiqimlari paydo bo‘lishi mumkin.</p>';
- return appLayout(lang,'court-costs',`<section class="panel" style="max-width:920px;margin:auto;padding:32px"><h1>${t('Davlat boji hisob-kitobi','Расчёт госпошлины','Court fee calculation')}</h1><p><b>Nizo turi:</b> ${esc(types[selected]||'Aniqlanmagan')}</p><p><b>Sud yo‘nalishi:</b> ${esc(court)} (dastlabki)</p><p><b>Da’vo qiymati:</b> ${amount>0?fmt(amount):'Kiritilmagan'}</p><p><b>Hisobda qo‘llangan BHM:</b> ${fmt(bhm)} (2026-09-01 dan, <a href="${COURT_FEE_BHM.source}" target="_blank" rel="noopener">manba</a>)</p><div style="background:#f4f8fc;border:1px solid #cad7e4;padding:25px;border-radius:15px"><h2>Davlat boji: ${show?fmt(fee):'Aniqlashtirish talab etiladi'}</h2>${formula?`<p><b>Hisoblash asosi:</b> ${esc(formula)}</p>`:''}<p>${esc(note)}</p>${show?`<h3>Hozircha hisoblangan summa: ${fmt(fee)}</h3>`:''}<h3>Qo‘shimcha xarajatlar</h3>${outstandingHtml}${outstanding.length?'<p><b>To‘liq jami hozircha aniqlanmaydi:</b> yuqoridagi xizmatlarning haqiqiy narxi ma’lum bo‘lgach qo‘shiladi.</p>':'<p>Yuqoridagi davlat boji qo‘shimcha xizmatlar uchun to‘lovlarni o‘z ichiga olmaydi.</p>'}</div><p style="font-size:15px">Bu dastlabki hisob-kitob. BHM avtomatik olinadi, lekin qonun o‘zgarsa platforma konfiguratsiyasi yangilanishi kerak. Imtiyoz, da’vo qiymati va qo‘shimcha talablarni sudga murojaat qilishdan oldin tekshiring. Qo‘shimcha xizmatlar narxi tegishli tashkilot yoki shartnomaga qarab aniqlanadi; tasdiqlanmagan summa taxmin qilib kiritilmaydi.</p><a class="btn btnGold" href="${source}" target="_blank" rel="noopener">Davlat boji to‘g‘risidagi qonun ↗</a> <a class="btn btnOutline" href="/court-costs${q(lang)}">Qayta hisoblash</a> <button class="btn btnOutline" onclick="window.print()">PDF / Print</button></section>`);
+ return appLayout(lang,'court-costs',`<section class="panel" style="max-width:920px;margin:auto;padding:32px"><h1>${t('Davlat boji hisob-kitobi','Расчёт госпошлины','Court fee calculation')}</h1><p><b>Nizo turi:</b> ${esc(types[selected]||'Aniqlanmagan')}</p><p><b>Sud yo‘nalishi:</b> ${esc(court)} (dastlabki)</p><p><b>Da’vo qiymati:</b> ${amount>0?fmt(amount):'Kiritilmagan'}</p><p><b>Hisobda qo‘llangan BHM:</b> ${fmt(bhm)} (2026-09-01 dan, <a href="${COURT_FEE_BHM.source}" target="_blank" rel="noopener">manba</a>)</p><div style="background:#f4f8fc;border:1px solid #cad7e4;padding:25px;border-radius:15px"><h2>Davlat boji: ${show?fmt(fee):'Aniqlashtirish talab etiladi'}</h2>${formula?`<p><b>Hisoblash asosi:</b> ${esc(formula)}</p>`:''}<p>${esc(note)}</p>${show?`<h3>Hozircha hisoblangan summa: ${fmt(fee)}</h3>`:''}<h3>Qo‘shimcha xarajatlar</h3>${outstandingHtml}<h3>Davlat hisobidan yuridik yordam</h3><p>${esc(aidText)} <a href="https://lex.uz/uz/docs/-6502543" target="_blank" rel="noopener">Qonun ↗</a></p>${outstanding.length?'<p><b>To‘liq jami hozircha aniqlanmaydi:</b> yuqoridagi xizmatlarning haqiqiy narxi ma’lum bo‘lgach qo‘shiladi.</p>':'<p>Yuqoridagi davlat boji qo‘shimcha xizmatlar uchun to‘lovlarni o‘z ichiga olmaydi.</p>'}</div><p style="font-size:15px">Bu dastlabki hisob-kitob. BHM avtomatik olinadi, lekin qonun o‘zgarsa platforma konfiguratsiyasi yangilanishi kerak. Imtiyoz, da’vo qiymati va qo‘shimcha talablarni sudga murojaat qilishdan oldin tekshiring. Qo‘shimcha xizmatlar narxi tegishli tashkilot yoki shartnomaga qarab aniqlanadi; tasdiqlanmagan summa taxmin qilib kiritilmaydi.</p><a class="btn btnGold" href="${source}" target="_blank" rel="noopener">Davlat boji to‘g‘risidagi qonun ↗</a> <a class="btn btnOutline" href="/court-costs${q(lang)}">Qayta hisoblash</a> <button class="btn btnOutline" onclick="window.print()">PDF / Print</button></section>`);
 }
 function businessContractCostsPage(lang="uz"){
  const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
@@ -8883,7 +8929,8 @@ function employmentPage(lang) {
             </div>
             <div class="formGroup"><label>${lang==="uz"?"Ish beruvchi":lang==="ru"?"Работодатель":"Employer"}</label><input name="employer"></div>
           </div>
-          <div class="formGroup"><label>${lang==="uz"?"Nizo holatlari":lang==="ru"?"Обстоятельства":"Dispute facts"}</label><textarea name="facts" rows="7" required></textarea></div>
+          <div class="formGroup"><label>${lang==="uz"?"Nizo holatlari":lang==="ru"?"Обстоятельства":"Dispute facts
+                                          "}</label><textarea name="facts" rows="7" required></textarea></div>
           <div class="formGroup"><label>${lang==="uz"?"Dalillar":lang==="ru"?"Доказательства":"Evidence"}</label><textarea name="evidence" rows="4"></textarea></div>
           <button class="btn btnPrimary" type="submit">${lang==="uz"?"Da’vo arizasini tayyorlash":lang==="ru"?"Подготовить иск":"Prepare claim"}</button>
         </form>
@@ -8974,8 +9021,7 @@ ISSUE TYPE: ${String(form.issue_type || "")}
 EMPLOYER: ${String(form.employer || "")}
 POSITION: ${String(form.position || "")}
 EMPLOYMENT START: ${String(form.employment_start || "")}
-EMPLOYMENT END: ${String(form.employment_end || 
- "")}
+EMPLOYMENT END: ${String(form.employment_end || "")}
 ORDER / CONTRACT INFO: ${String(form.order_info || "")}
 FACTS: ${String(form.facts || "")}
 EVIDENCE: ${String(form.evidence || "")}
@@ -12849,7 +12895,9 @@ const server =
         }
 
         if(req.method === "POST" && pathname === "/legal-review-result") {
-          const form = await readForm(req);
+          let form;
+          try {form=String(req.headers['content-type']||'').includes('multipart/form-data')?await readLegalUpload(req):await readForm(req);}
+          catch(e){const messages={UPLOAD_DEPENDENCIES_MISSING:'Fayl yuklash kutubxonalari o‘rnatilmagan. npm install bajaring.',UNSUPPORTED_FORMAT:'Faqat PDF yoki DOCX yuklang.',FILE_TOO_LARGE:'Fayl 8 MB dan oshmasligi kerak.',NO_EXTRACTABLE_TEXT:'Hujjatdan matn ajratilmadi. Skanerlangan PDF bo‘lsa, matnni qo‘lda kiriting.'};return sendHtml(res,appLayout(lang,'legal-review',`<section class="panel"><h2>${esc(messages[e.message]||'Faylni o‘qishda xatolik yuz berdi.')}</h2><a href="/legal-review${q(lang)}" class="btn btnGold">Orqaga</a></section>`,'Hujjat yuklash xatosi',''),400);}
           return sendHtml(res, await legalReviewResultPage(lang, form));
         }
 
@@ -14194,4 +14242,3 @@ server.listen(
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
 
-                        
