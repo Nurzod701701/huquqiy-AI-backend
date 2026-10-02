@@ -4745,6 +4745,20 @@ body{
 }
 
 
+
+/* LARGE CLASSIC CARDS */
+.appHeader h1{font-size:clamp(32px,3vw,43px)!important}.appHeader p{font-size:17px!important;line-height:1.7!important}
+.sidebarMenu a,.sideLink{font-size:16px!important;min-height:52px;padding:13px 15px!important}
+.serviceGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important}
+.serviceCard{min-height:245px!important;padding:30px!important;border-radius:20px!important;border-top:5px solid #c9a86a!important;box-shadow:0 12px 35px rgba(8,29,50,.07)!important}
+.serviceCard h3{font-size:24px!important}.serviceCard p{font-size:16px!important;line-height:1.75!important}
+.serviceIcon{width:60px!important;height:60px!important;font-size:27px!important}
+.sourceCard,.calcCard,.documentCard{padding:28px!important;border-radius:18px!important;border-top:4px solid #c9a86a!important}
+.sourceCard h3,.calcCard h3,.documentCard h3{font-size:23px!important}
+.sourceCard p,.calcCard p,.documentCard p{font-size:16px!important;line-height:1.7!important}
+.btn{font-size:16px!important;min-height:54px!important;padding:14px 23px!important}
+@media(max-width:850px){.serviceGrid{grid-template-columns:1fr!important}.serviceCard{min-height:205px!important;padding:24px!important}}
+
 /* CONSISTENT INTERIOR SECTIONS — NAVY / GOLD */
 .appShell,.appLayout,.appMain,.mainContent{color:#172b3c}
 .appTopbar,.appHeader,.appSidebar,.sidebar{border-color:rgba(201,168,106,.20)}
@@ -5473,6 +5487,21 @@ function homePage(lang) {
     </section>
     <style>
       .simpleHome{max-width:1100px;margin:0 auto;padding:8px 0 48px}.simpleSearchBox{background:#fff;border:1px solid rgba(15,23,42,.10);border-radius:24px;padding:38px;box-shadow:0 16px 45px rgba(15,23,42,.06)}.simpleBadge{font-size:12px;font-weight:800;letter-spacing:.12em;color:#8b6a24;margin-bottom:12px}.simpleSearchBox h1{font-size:clamp(30px,4vw,48px);line-height:1.08;margin:0 0 12px}.simpleSearchBox>p{font-size:17px;max-width:760px;color:#64748b;margin-bottom:24px}.simpleSearchForm{display:flex;gap:12px;align-items:stretch}.simpleSearchForm textarea{flex:1;min-height:112px;border:1px solid #cbd5e1;border-radius:16px;padding:16px;font:inherit;resize:vertical}.simpleSearchForm button{min-width:170px;border-radius:16px}.simpleExamples{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.simpleExamples a{font-size:13px;padding:7px 11px;border-radius:999px;background:#f1f5f9;color:#334155;text-decoration:none}.simpleActions{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}.simpleActions a{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:22px;text-decoration:none;color:inherit;display:flex;align-items:center;gap:12px}.simpleActions b{font-size:22px}.simpleActions strong{flex:1}.simpleActions span{font-size:20px}.simpleSection{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:22px;margin-top:14px}.simpleSection h2{font-size:18px;margin:0 0 14px}.simpleLinks{display:flex;gap:10px;flex-wrap:wrap}.simpleLinks a{padding:12px 15px;border-radius:12px;background:#f8fafc;text-decoration:none;color:inherit;font-weight:700}@media(max-width:800px){.simpleSearchBox{padding:22px}.simpleSearchForm{display:block}.simpleSearchForm button{width:100%;margin-top:10px;min-height:50px}.simpleActions{grid-template-columns:1fr 1fr}}@media(max-width:480px){.simpleActions{grid-template-columns:1fr}.simpleSearchBox h1{font-size:30px}}
+
+/* LARGE HOME SECTION CARDS */
+.simpleHome{max-width:1280px!important;padding:20px 0 70px!important}
+.simpleSearchBox{padding:46px!important;border-top:6px solid #c9a86a!important}
+.simpleSearchBox h1{font-size:clamp(36px,4.5vw,60px)!important}
+.simpleSearchBox>p{font-size:19px!important;line-height:1.7!important}
+.simpleActions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important;margin:32px 0!important}
+.simpleActions a{min-height:165px!important;padding:30px!important;border-radius:20px!important;border:1px solid #dce4eb!important;border-top:6px solid #c9a86a!important;box-shadow:0 14px 35px rgba(8,29,50,.07)!important}
+.simpleActions b{font-size:35px!important;width:58px;height:58px;display:grid;place-items:center;background:#f6efe1;color:#795b28;border-radius:15px}
+.simpleActions strong{font-size:24px!important;line-height:1.3}.simpleActions span{font-size:26px!important;color:#a78343}
+.simpleSection{padding:32px!important;border-radius:20px!important;margin-top:25px!important}
+.simpleSection h2{font-size:26px!important;color:#081d32}
+.simpleLinks{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px!important}
+.simpleLinks a{display:flex;align-items:center;min-height:105px;padding:24px!important;font-size:20px!important;background:#f8fafc!important;border:1px solid #dce4eb;border-left:5px solid #c9a86a;border-radius:15px!important}
+@media(max-width:700px){.simpleActions,.simpleLinks{grid-template-columns:1fr!important}.simpleSearchBox{padding:24px!important}.simpleActions a{min-height:130px!important;padding:22px!important}.simpleActions strong{font-size:21px!important}.simpleLinks a{min-height:86px!important;font-size:18px!important}}
     </style>
   `,"","");
 }
