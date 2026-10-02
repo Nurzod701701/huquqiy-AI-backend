@@ -2821,30 +2821,6 @@ body{
   font-size:11px;
 }
 
-
-/* HUQUQIY AI — CLASSIC NAVY / GOLD RESTORATION */
-:root{--navy:#071827;--navy2:#0c2942;--navy3:#163e5c;--gold:#c9a86a;--gold2:#e7cc91;--gold3:#a77c3d;--goldSoft:#fff8e9;--ink:#172b3c;--muted:#647588;--bg:#f5f7fa;--surface:#fff;--line:#e2e8ee;--shadow:0 12px 36px rgba(7,24,39,.07)}
-body{background:#f5f7fa;color:var(--ink);font-size:16px;line-height:1.65}
-.nav{background:rgba(255,255,255,.97);border-bottom:1px solid #e6e9ef;box-shadow:0 5px 22px rgba(7,24,39,.045)}
-.navlinks a{color:#34495d;font-size:14px;font-weight:700}.navlinks a:hover{background:#f3f5f8;color:#071827}
-.brandText strong{color:#071827}.brandMark{background:linear-gradient(140deg,#071827,#173c5a);color:#e7cc91}
-.languages{background:#f3f6f8}.languages a.active{background:#071827;color:#fff}
-.hero{background:radial-gradient(circle at 85% 15%,rgba(201,168,106,.10),transparent 28%),linear-gradient(180deg,#fff,#f4f7fa)!important}
-.hero h1,.heroTitle{color:#071827;font-family:Georgia,'Times New Roman',serif;font-weight:600;letter-spacing:-.035em}
-.hero h1 span{color:#315d8b}.heroDescription{color:#60748a}
-.sectionTitle,.serviceCard h3,.quickBox h2{font-family:Georgia,'Times New Roman',serif;color:#071827}
-.sectionText{color:#65778b}.eyebrow{color:#8d682f;background:#fff8e9;border-color:#e8d5af}
-.quickBox{background:radial-gradient(circle at 90% 0%,rgba(201,168,106,.14),transparent 30%),linear-gradient(135deg,#071827,#123650)}
-.quickBox h2{color:#fff}
-.btnPrimary{background:linear-gradient(145deg,#071827,#143b59);color:#fff}.btnGold{background:linear-gradient(135deg,#edd49a,#c39a54);color:#071827}
-.serviceCard,.sourceCard,.documentCard,.calcCard,.surface{background:#fff;border:1px solid #e1e7ed;border-radius:16px;box-shadow:0 10px 32px rgba(7,24,39,.05)}
-.serviceCard:hover,.sourceCard:hover,.documentCard:hover{border-color:rgba(201,168,106,.65);box-shadow:0 18px 40px rgba(7,24,39,.10)}
-.serviceIcon{color:#173b60;background:linear-gradient(145deg,#fff8ea,#f2f5f8);border:1px solid #e8e2d7}
-.coreSection{background:#eff3f6}.coreItem{background:#fff}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #c9a86a;outline-offset:3px}
-@media(max-width:760px){.heroInner{min-height:auto;padding:52px 0;gap:28px}.hero h1{font-size:clamp(36px,8vw,50px)}.serviceGrid,.coreGrid,.sourcesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.nav{height:auto;min-height:68px}}
-@media(max-width:480px){.serviceGrid,.coreGrid,.sourcesGrid{grid-template-columns:1fr}.heroActions .btn{width:100%}}
-
 `;
 // ======================================================
 // PART 2/4
@@ -4745,31 +4721,16 @@ body{
 }
 
 
-
-/* LARGE CLASSIC CARDS */
-.appHeader h1{font-size:clamp(32px,3vw,43px)!important}.appHeader p{font-size:17px!important;line-height:1.7!important}
-.sidebarMenu a,.sideLink{font-size:16px!important;min-height:52px;padding:13px 15px!important}
-.serviceGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important}
-.serviceCard{min-height:245px!important;padding:30px!important;border-radius:20px!important;border-top:5px solid #c9a86a!important;box-shadow:0 12px 35px rgba(8,29,50,.07)!important}
-.serviceCard h3{font-size:24px!important}.serviceCard p{font-size:16px!important;line-height:1.75!important}
-.serviceIcon{width:60px!important;height:60px!important;font-size:27px!important}
-.sourceCard,.calcCard,.documentCard{padding:28px!important;border-radius:18px!important;border-top:4px solid #c9a86a!important}
-.sourceCard h3,.calcCard h3,.documentCard h3{font-size:23px!important}
-.sourceCard p,.calcCard p,.documentCard p{font-size:16px!important;line-height:1.7!important}
-.btn{font-size:16px!important;min-height:54px!important;padding:14px 23px!important}
-@media(max-width:850px){.serviceGrid{grid-template-columns:1fr!important}.serviceCard{min-height:205px!important;padding:24px!important}}
-
-/* CONSISTENT INTERIOR SECTIONS — NAVY / GOLD */
-.appShell,.appLayout,.appMain,.mainContent{color:#172b3c}
-.appTopbar,.appHeader,.appSidebar,.sidebar{border-color:rgba(201,168,106,.20)}
-.appSidebar,.sidebar{background:linear-gradient(180deg,#071827,#10334c);color:#f4f7fa}
-.appSidebar a:hover,.appSidebar a.active,.sidebar a:hover,.sidebar a.active{background:rgba(201,168,106,.14);color:#f2dca9}
-.appHeader h1{font-family:Georgia,'Times New Roman',serif;letter-spacing:-.025em}
-.appMain .card,.appMain .panel,.appMain .surface,.appMain .documentCard,.appMain .calcCard{border:1px solid #e1e7ed;border-radius:16px;background:#fff;box-shadow:0 10px 30px rgba(7,24,39,.05)}
-.appMain button,.appMain .btn{border-radius:10px}
-.appMain input,.appMain select,.appMain textarea{max-width:100%;border-radius:10px}
-@media(max-width:760px){.appMain{min-width:0}.appMain .card,.appMain .panel{padding:18px}}
-
+/* LARGE ACCESSIBLE NAVIGATION - ORIGINAL DESIGN */
+.appPage .sideLink{font-size:16px!important;min-height:55px!important;padding:14px 16px!important}
+.appPage .pageTitle{font-size:clamp(29px,3vw,42px)!important}
+.appPage .serviceGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important}
+.appPage .serviceCard{min-height:215px!important;padding:29px!important;border-radius:18px!important}
+.appPage .serviceCard h3{font-size:23px!important;line-height:1.4!important}
+.appPage .serviceCard p{font-size:16px!important;line-height:1.7!important}
+.appPage .documentCard,.appPage .sourceCard,.appPage .calcCard{padding:27px!important;border-radius:18px!important}
+.appPage .btn{font-size:16px!important;min-height:50px!important}
+@media(max-width:760px){.appPage .serviceGrid{grid-template-columns:1fr!important}.appPage .serviceCard{min-height:175px!important;padding:23px!important}}
 `;
 
 
@@ -5459,52 +5420,930 @@ function page({ lang = "uz", title = "Huquqiy AI", content = "" } = {}) {
 // ======================================================
 
 function homePage(lang) {
-  lang = getLang(lang);
-  const t = {
-    uz:{title:"Huquqiy masalangizni oddiy tilda yozing",sub:"Qonun nomi yoki modda raqamini bilishingiz shart emas. Muammoingizni yozing — Huquqiy AI tahlilni boshlaydi.",ph:"Masalan: meni ishdan noqonuniy bo‘shatishdi...",go:"Tahlil qilish",ai:"AI yurist",docs:"Hujjat tayyorlash",review:"Hujjatni tekshirish",calc:"Hisob-kitob",areas:"Huquq yo‘nalishlari",family:"Oila huquqi",labor:"Mehnat huquqi",business:"Biznes huquqi",more:"Manbalar va xizmatlar",sources:"Rasmiy manbalar",court:"Sudlar"},
-    ru:{title:"Опишите правовую проблему простыми словами",sub:"Не нужно знать название закона или номер статьи. Опишите ситуацию — Huquqiy AI начнет анализ.",ph:"Например: меня незаконно уволили с работы...",go:"Анализировать",ai:"AI-юрист",docs:"Подготовить документ",review:"Проверить документ",calc:"Расчёты",areas:"Отрасли права",family:"Семейное право",labor:"Трудовое право",business:"Бизнес-право",more:"Источники и сервисы",sources:"Официальные источники",court:"Суды"},
-    en:{title:"Describe your legal issue in plain language",sub:"You do not need to know the law or article number. Describe the situation and Huquqiy AI will start the analysis.",ph:"Example: I was unlawfully dismissed from work...",go:"Analyze",ai:"AI lawyer",docs:"Prepare a document",review:"Review a document",calc:"Calculators",areas:"Legal areas",family:"Family law",labor:"Employment law",business:"Business law",more:"Sources and services",sources:"Official sources",court:"Courts"}
-  }[lang];
-  return appLayout(lang,"",`
-    <section class="simpleHome">
-      <div class="simpleSearchBox">
-        <div class="simpleBadge">HUQUQIY AI</div>
-        <h1>${t.title}</h1><p>${t.sub}</p>
-        <form class="simpleSearchForm" method="POST" action="/ai-result${q(lang)}">
-          <textarea name="question" required maxlength="12000" rows="4" placeholder="${esc(t.ph)}"></textarea>
-          <button class="btn btnGold" type="submit">${t.go} →</button>
-        </form>
-        <div class="simpleExamples"><a href="/ai${q(lang)}">Nikohdan ajratish</a><a href="/ai${q(lang)}">Aliment</a><a href="/ai${q(lang)}">Ishdan bo‘shatish</a><a href="/ai${q(lang)}">Qarzdorlik</a></div>
-      </div>
-      <div class="simpleActions">
-        <a href="/ai${q(lang)}"><b>✦</b><strong>${t.ai}</strong><span>→</span></a>
-        <a href="/documents${q(lang)}"><b>▣</b><strong>${t.docs}</strong><span>→</span></a>
-        <a href="/legal-review${q(lang)}"><b>✓</b><strong>${t.review}</strong><span>→</span></a>
-        <a href="/calculators${q(lang)}"><b>=</b><strong>${t.calc}</strong><span>→</span></a>
-      </div>
-      <div class="simpleSection"><h2>${t.areas}</h2><div class="simpleLinks"><a href="/family${q(lang)}">⚖ ${t.family}</a><a href="/employment${q(lang)}">▤ ${t.labor}</a><a href="/business${q(lang)}">◇ ${t.business}</a></div></div>
-      <div class="simpleSection"><h2>${t.more}</h2><div class="simpleLinks"><a href="/sources${q(lang)}">§ ${t.sources}</a><a href="/court${q(lang)}">⌖ ${t.court}</a><a target="_blank" rel="noopener" href="https://cabinet.sud.uz/">E-SUD ↗</a></div></div>
-    </section>
-    <style>
-      .simpleHome{max-width:1100px;margin:0 auto;padding:8px 0 48px}.simpleSearchBox{background:#fff;border:1px solid rgba(15,23,42,.10);border-radius:24px;padding:38px;box-shadow:0 16px 45px rgba(15,23,42,.06)}.simpleBadge{font-size:12px;font-weight:800;letter-spacing:.12em;color:#8b6a24;margin-bottom:12px}.simpleSearchBox h1{font-size:clamp(30px,4vw,48px);line-height:1.08;margin:0 0 12px}.simpleSearchBox>p{font-size:17px;max-width:760px;color:#64748b;margin-bottom:24px}.simpleSearchForm{display:flex;gap:12px;align-items:stretch}.simpleSearchForm textarea{flex:1;min-height:112px;border:1px solid #cbd5e1;border-radius:16px;padding:16px;font:inherit;resize:vertical}.simpleSearchForm button{min-width:170px;border-radius:16px}.simpleExamples{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.simpleExamples a{font-size:13px;padding:7px 11px;border-radius:999px;background:#f1f5f9;color:#334155;text-decoration:none}.simpleActions{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}.simpleActions a{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:22px;text-decoration:none;color:inherit;display:flex;align-items:center;gap:12px}.simpleActions b{font-size:22px}.simpleActions strong{flex:1}.simpleActions span{font-size:20px}.simpleSection{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:22px;margin-top:14px}.simpleSection h2{font-size:18px;margin:0 0 14px}.simpleLinks{display:flex;gap:10px;flex-wrap:wrap}.simpleLinks a{padding:12px 15px;border-radius:12px;background:#f8fafc;text-decoration:none;color:inherit;font-weight:700}@media(max-width:800px){.simpleSearchBox{padding:22px}.simpleSearchForm{display:block}.simpleSearchForm button{width:100%;margin-top:10px;min-height:50px}.simpleActions{grid-template-columns:1fr 1fr}}@media(max-width:480px){.simpleActions{grid-template-columns:1fr}.simpleSearchBox h1{font-size:30px}}
 
-/* LARGE HOME SECTION CARDS */
-.simpleHome{max-width:1280px!important;padding:20px 0 70px!important}
-.simpleSearchBox{padding:46px!important;border-top:6px solid #c9a86a!important}
-.simpleSearchBox h1{font-size:clamp(36px,4.5vw,60px)!important}
-.simpleSearchBox>p{font-size:19px!important;line-height:1.7!important}
-.simpleActions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important;margin:32px 0!important}
-.simpleActions a{min-height:165px!important;padding:30px!important;border-radius:20px!important;border:1px solid #dce4eb!important;border-top:6px solid #c9a86a!important;box-shadow:0 14px 35px rgba(8,29,50,.07)!important}
-.simpleActions b{font-size:35px!important;width:58px;height:58px;display:grid;place-items:center;background:#f6efe1;color:#795b28;border-radius:15px}
-.simpleActions strong{font-size:24px!important;line-height:1.3}.simpleActions span{font-size:26px!important;color:#a78343}
-.simpleSection{padding:32px!important;border-radius:20px!important;margin-top:25px!important}
-.simpleSection h2{font-size:26px!important;color:#081d32}
-.simpleLinks{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px!important}
-.simpleLinks a{display:flex;align-items:center;min-height:105px;padding:24px!important;font-size:20px!important;background:#f8fafc!important;border:1px solid #dce4eb;border-left:5px solid #c9a86a;border-radius:15px!important}
-@media(max-width:700px){.simpleActions,.simpleLinks{grid-template-columns:1fr!important}.simpleSearchBox{padding:24px!important}.simpleActions a{min-height:130px!important;padding:22px!important}.simpleActions strong{font-size:21px!important}.simpleLinks a{min-height:86px!important;font-size:18px!important}}
-    </style>
-  `,"","");
+  lang = getLang(lang);
+
+
+  const t = {
+
+    uz: {
+
+      eyebrow:
+        "O‘ZBEKISTON UCHUN RAQAMLI HUQUQIY YORDAMCHI",
+
+      hero1:
+        "Huquqiy muammoingizni",
+
+      hero2:
+        "tushunishdan boshlang.",
+
+      heroText:
+        "Huquqiy AI vaziyatingizni bosqichma-bosqich tahlil qilish, muhim faktlarni aniqlash, rasmiy manbalarni tekshirish va keyingi huquqiy qadamlarni tushunishga yordam beradi.",
+
+      ai:
+        "AI yordamchini ochish",
+
+      questionnaire:
+        "Savolnomani boshlash",
+
+      trust1:
+        "O‘zbekiston huquq tizimiga yo‘naltirilgan",
+
+      trust2:
+        "Rasmiy manbalar bilan ishlash",
+
+      trust3:
+        "3 tilda ishlaydi",
+
+      roadmapSmall:
+        "HUQUQIY TAHLIL TIZIMI",
+
+      roadmap:
+        "Vaziyatdan yechimgacha",
+
+      active:
+        "FAOL",
+
+      r1:
+        "Muammo",
+
+      r1t:
+        "Foydalanuvchining asosiy huquqiy muammosini aniqlash.",
+
+      r2:
+        "Muhim savollar",
+
+      r2t:
+        "Huquqiy ahamiyatga ega faktlarni aniqlashtirish.",
+
+      r3:
+        "Huquqiy tahlil",
+
+      r3t:
+        "Vaziyatni huquqiy yo‘nalishlar va manbalar asosida tahlil qilish.",
+
+      r4:
+        "Keyingi qadam",
+
+      r4t:
+        "Hujjat, rasmiy manba yoki sudga murojaat yo‘lini ko‘rsatish.",
+
+      quickSmall:
+        "TEZKOR BOSHLASH",
+
+      quickTitle:
+        "Muammoingizni oddiy tilda yozing.",
+
+      quickText:
+        "Murakkab yuridik terminlardan foydalanishingiz shart emas. Vaziyatni qanday bo‘lgan bo‘lsa, shunday tushuntiring.",
+
+      quickButton:
+        "Tahlilni boshlash",
+
+      areasSmall:
+        "HUQUQIY YO‘NALISHLAR",
+
+      areasTitle:
+        "Asosiy huquqiy masalalar",
+
+      areasText:
+        "Platforma bir nechta huquqiy yo‘nalish bo‘yicha dastlabki tahlil va yo‘naltirish imkonini beradi.",
+
+      coreSmall:
+        "HUQUQIY AI METODI",
+
+      coreTitle:
+        "Tizimli huquqiy tahlil",
+
+      coreText:
+        "Javob faqat bitta umumiy matndan iborat emas. Vaziyat faktlardan keyingi amaliy qadamgacha tizimli ravishda ko‘rib chiqiladi.",
+
+      sourceSmall:
+        "RASMIY MANBALAR",
+
+      sourceTitle:
+        "Ishonchli huquqiy manbalar",
+
+      sourceText:
+        "Muhim huquqiy ma’lumotlarni rasmiy manbalardan tekshirish tavsiya etiladi."
+
+    },
+
+
+    ru: {
+
+      eyebrow:
+        "ЦИФРОВОЙ ЮРИДИЧЕСКИЙ ПОМОЩНИК ДЛЯ УЗБЕКИСТАНА",
+
+      hero1:
+        "Начните с понимания",
+
+      hero2:
+        "вашей правовой ситуации.",
+
+      heroText:
+        "Huquqiy AI помогает поэтапно анализировать ситуацию, выявлять важные факты, проверять официальные источники и понимать дальнейшие юридические действия.",
+
+      ai:
+        "Открыть AI-помощника",
+
+      questionnaire:
+        "Начать опрос",
+
+      trust1:
+        "Ориентирован на право Узбекистана",
+
+      trust2:
+        "Работа с официальными источниками",
+
+      trust3:
+        "Работает на 3 языках",
+
+      roadmapSmall:
+        "СИСТЕМА ПРАВОВОГО АНАЛИЗА",
+
+      roadmap:
+        "От ситуации к решению",
+
+      active:
+        "АКТИВНО",
+
+      r1:
+        "Проблема",
+
+      r1t:
+        "Определение основной правовой проблемы пользователя.",
+
+      r2:
+        "Важные вопросы",
+
+      r2t:
+        "Уточнение юридически значимых фактов.",
+
+      r3:
+        "Правовой анализ",
+
+      r3t:
+        "Анализ ситуации с учётом правовых направлений и источников.",
+
+      r4:
+        "Следующий шаг",
+
+      r4t:
+        "Переход к документу, официальному источнику или суду.",
+
+      quickSmall:
+        "БЫСТРЫЙ СТАРТ",
+
+      quickTitle:
+        "Опишите проблему простыми словами.",
+
+      quickText:
+        "Вам не обязательно использовать сложные юридические термины. Просто расскажите, что произошло.",
+
+      quickButton:
+        "Начать анализ",
+
+      areasSmall:
+        "НАПРАВЛЕНИЯ ПРАВА",
+
+      areasTitle:
+        "Основные правовые вопросы",
+
+      areasText:
+        "Платформа предоставляет первичный анализ и навигацию по нескольким правовым направлениям.",
+
+      coreSmall:
+        "МЕТОД HUQUQIY AI",
+
+      coreTitle:
+        "Системный правовой анализ",
+
+      coreText:
+        "Ответ строится от фактов и правового вопроса до возможных дальнейших действий.",
+
+      sourceSmall:
+        "ОФИЦИАЛЬНЫЕ ИСТОЧНИКИ",
+
+      sourceTitle:
+        "Надёжные правовые источники",
+
+      sourceText:
+        "Важную юридическую информацию рекомендуется проверять по официальным источникам."
+
+    },
+
+
+    en: {
+
+      eyebrow:
+        "DIGITAL LEGAL ASSISTANT FOR UZBEKISTAN",
+
+      hero1:
+        "Start by understanding",
+
+      hero2:
+        "your legal situation.",
+
+      heroText:
+        "Huquqiy AI helps analyze your situation step by step, identify important facts, check official sources and understand possible next legal steps.",
+
+      ai:
+        "Open AI assistant",
+
+      questionnaire:
+        "Start questionnaire",
+
+      trust1:
+        "Focused on Uzbekistan law",
+
+      trust2:
+        "Official-source oriented",
+
+      trust3:
+        "Available in 3 languages",
+
+      roadmapSmall:
+        "LEGAL ANALYSIS SYSTEM",
+
+      roadmap:
+        "From situation to next step",
+
+      active:
+        "ACTIVE",
+
+      r1:
+        "Problem",
+
+      r1t:
+        "Identify the user's central legal issue.",
+
+      r2:
+        "Key questions",
+
+      r2t:
+        "Clarify legally important facts.",
+
+      r3:
+        "Legal analysis",
+
+      r3t:
+        "Analyze the situation using relevant legal areas and sources.",
+
+      r4:
+        "Next step",
+
+      r4t:
+        "Move toward a document, official source or court process.",
+
+      quickSmall:
+        "QUICK START",
+
+      quickTitle:
+        "Describe your problem in plain language.",
+
+      quickText:
+        "You do not need complicated legal terminology. Simply explain what happened.",
+
+      quickButton:
+        "Start analysis",
+
+      areasSmall:
+        "LEGAL AREAS",
+
+      areasTitle:
+        "Key legal matters",
+
+      areasText:
+        "The platform provides initial analysis and navigation across several legal areas.",
+
+      coreSmall:
+        "HUQUQIY AI METHOD",
+
+      coreTitle:
+        "Structured legal analysis",
+
+      coreText:
+        "The response is structured from facts and legal issues through possible next steps.",
+
+      sourceSmall:
+        "OFFICIAL SOURCES",
+
+      sourceTitle:
+        "Reliable legal sources",
+
+      sourceText:
+        "Important legal information should be verified through official sources."
+
+    }
+
+  }[lang];
+
+
+  const areaCards =
+    LEGAL_AREAS
+      .map(
+        (area, index) => `
+
+          <a
+            class="serviceCard"
+            href="${area.id === "employment" ? "/employment" + q(lang) : "/ai" + q(lang) + "&area=" + encodeURIComponent(area.id)}"
+          >
+
+            <span class="serviceNo">
+              ${String(index + 1).padStart(2, "0")}
+            </span>
+
+            <div class="serviceIcon">
+              ${area.icon}
+            </div>
+
+            <h3>
+              ${esc(
+                localized(
+                  area.title,
+                  lang
+                )
+              )}
+            </h3>
+
+            <p>
+              ${esc(
+                localized(
+                  area.description,
+                  lang
+                )
+              )}
+            </p>
+
+            <span class="serviceArrow">
+              →
+            </span>
+
+          </a>
+
+        `
+      )
+      .join("");
+
+
+  const sourceCards =
+    LEGAL_SOURCES
+      .map(
+        source => `
+
+          <a
+            class="sourceCard"
+            href="${source.url}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+
+            <div class="sourceTop">
+
+              <span class="sourceIcon">
+                §
+              </span>
+
+              <span class="sourceExternal">
+                ↗
+              </span>
+
+            </div>
+
+            <h3>
+              ${esc(source.name)}
+            </h3>
+
+            <p>
+              ${esc(
+                localized(
+                  source.description,
+                  lang
+                )
+              )}
+            </p>
+
+          </a>
+
+        `
+      )
+      .join("");
+
+
+  return page({
+
+    lang,
+
+    title:
+      "Huquqiy AI",
+
+    content: `
+
+      <!-- HERO -->
+
+      <section class="hero">
+
+        <div class="container heroInner">
+
+
+          <div class="heroCopy">
+
+            <span class="eyebrow">
+              § ${t.eyebrow}
+            </span>
+
+
+            <h1>
+
+              ${t.hero1}
+
+              <span>
+                ${t.hero2}
+              </span>
+
+            </h1>
+
+
+            <p class="heroDescription">
+              ${t.heroText}
+            </p>
+
+
+            <div class="heroActions">
+
+              <a
+                class="btn btnPrimary"
+                href="/ai${q(lang)}"
+              >
+                ✦ ${t.ai}
+              </a>
+
+              <a
+                class="btn btnOutline"
+                href="/questionnaire${q(lang)}"
+              >
+                ✓ ${t.questionnaire}
+              </a>
+
+              <a class="btn btnGold" href="/documents${q(lang)}">
+                ▤ ${lang === "uz" ? "Da’vo arizasi tayyorlash" : lang === "ru" ? "Подготовить иск" : "Prepare a claim"}
+              </a>
+
+              <a class="btn btnOutline" href="/calculators${q(lang)}">
+                ∑ ${lang === "uz" ? "Hisob-kitob" : lang === "ru" ? "Расчёты" : "Calculators"}
+              </a>
+
+              <a class="btn btnOutline" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">
+                ⚖ ${lang === "uz" ? "Sudga elektron murojaat" : lang === "ru" ? "Обратиться в суд" : "Electronic court filing"}
+              </a>
+
+            </div>
+
+
+            <div class="heroTrust">
+
+              <span>
+                <i>✓</i>
+                ${t.trust1}
+              </span>
+
+              <span>
+                <i>✓</i>
+                ${t.trust2}
+              </span>
+
+              <span>
+                <i>✓</i>
+                ${t.trust3}
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="roadmap">
+
+            <div class="roadmapHeader">
+
+              <div>
+
+                <small>
+                  ${t.roadmapSmall}
+                </small>
+
+                <strong>
+                  ${t.roadmap}
+                </strong>
+
+              </div>
+
+              <span class="roadmapBadge">
+                ● ${t.active}
+              </span>
+
+            </div>
+
+
+            <div class="roadStep">
+
+              <span class="roadNumber">
+                01
+              </span>
+
+              <div>
+
+                <strong>
+                  ${t.r1}
+                </strong>
+
+                <p>
+                  ${t.r1t}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="roadStep">
+
+              <span class="roadNumber">
+                02
+              </span>
+
+              <div>
+
+                <strong>
+                  ${t.r2}
+                </strong>
+
+                <p>
+                  ${t.r2t}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="roadStep">
+
+              <span class="roadNumber">
+                03
+              </span>
+
+              <div>
+
+                <strong>
+                  ${t.r3}
+                </strong>
+
+                <p>
+                  ${t.r3t}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="roadStep">
+
+              <span class="roadNumber">
+                04
+              </span>
+
+              <div>
+
+                <strong>
+                  ${t.r4}
+                </strong>
+
+                <p>
+                  ${t.r4t}
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+
+      <!-- QUICK START -->
+
+      <section class="quickSection">
+
+        <div class="container">
+
+          <div class="quickBox">
+
+            <div>
+
+              <small>
+                ${t.quickSmall}
+              </small>
+
+              <h2>
+                ${t.quickTitle}
+              </h2>
+
+              <p>
+                ${t.quickText}
+              </p>
+
+            </div>
+
+
+            <a
+              class="btn btnGold"
+              href="/ai${q(lang)}"
+            >
+              ${t.quickButton} →
+            </a>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- THREE MAIN LEGAL DIVISIONS — LONG PREMIUM ROWS -->
+      <section class="services homeLegalAreas">
+        <style>
+          .homeLegalAreas{padding-top:34px}
+          .homeLegalAreas .sectionHead{display:block;margin-bottom:22px}
+          .homeLegalAreas .sectionText{display:none}
+          .homeLegalAreas .sectionTitle{font-size:46px;line-height:1.08;margin-top:10px}
+          .homeLongGrid{display:grid;grid-template-columns:1fr;gap:18px}
+          .homeLongCard{
+            min-height:205px;border-radius:22px;padding:30px 34px;text-decoration:none;
+            display:grid;grid-template-columns:86px minmax(0,1fr) auto;align-items:center;gap:25px;
+            position:relative;overflow:hidden;border:1px solid rgba(10,36,57,.11);
+            box-shadow:0 12px 34px rgba(6,27,44,.055);transition:.22s ease
+          }
+          .homeLongCard:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(6,27,44,.10)}
+          .homeLongCard:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-90px;top:-145px;border:1px solid rgba(255,255,255,.50)}
+          .homeLongCard.family,.homeLongCard.employment,.homeLongCard.business{
+            background:linear-gradient(105deg,#fffdf9 0%,#fbf8f1 100%);
+            border-color:#ded8cc;
+          }
+          .homeLongIcon{width:78px;height:78px;border-radius:18px;display:grid;place-items:center;font-size:29px;font-weight:900;box-shadow:0 8px 20px rgba(7,30,49,.10)}
+          .family .homeLongIcon,.employment .homeLongIcon,.business .homeLongIcon{
+            background:#0b2235;color:#d6ad63;
+          }
+          .homeLongCopy{position:relative;z-index:2}.homeLongCopy h3{font-family:Georgia,"Times New Roman",serif;font-size:34px;line-height:1.1;color:#071f36;margin:0 0 10px}
+          .homeLongCopy p{font-size:15px;line-height:1.6;color:#536676;margin:0;max-width:790px}
+          .homeLongEnter{position:relative;z-index:2;min-width:205px;padding:15px 19px;border-radius:12px;background:#092942;color:#fff;font-size:14px;font-weight:900;text-align:center}
+          .family .homeLongEnter,.employment .homeLongEnter,.business .homeLongEnter{
+            background:#d4aa5e;color:#0b2235;
+          }
+          @media(max-width:760px){
+            .homeLegalAreas .sectionTitle{font-size:34px}.homeLongCard{grid-template-columns:62px 1fr;padding:23px;gap:17px}
+            .homeLongIcon{width:58px;height:58px;font-size:22px}.homeLongCopy h3{font-size:27px}.homeLongEnter{grid-column:1/-1;width:100%;min-width:0}
+          }
+        </style>
+        <div class="container">
+          <div class="sectionHead">
+            <div>
+              <span class="eyebrow">${lang==="uz"?"ASOSIY YO‘NALISHLAR":lang==="ru"?"ОСНОВНЫЕ НАПРАВЛЕНИЯ":"MAIN PRACTICE AREAS"}</span>
+              <h2 class="sectionTitle">${lang==="uz"?"Huquqiy yo‘nalishni tanlang":lang==="ru"?"Выберите направление":"Choose a legal area"}</h2>
+            </div>
+          </div>
+
+          <div class="homeLongGrid">
+            <a class="homeLongCard family" href="/family${q(lang)}">
+              <div class="homeLongIcon">O</div>
+              <div class="homeLongCopy">
+                <h3>${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</h3>
+                <p>${lang==="uz"?"Ajrashishdan oldin oqibatlarni tushuning: farzandlar, aliment, mol-mulk, kelishuv va faqat zarur bo‘lsa sud.":lang==="ru"?"Развод, алименты, дети, имущество, брачный договор и семейные иски.":"Divorce, alimony, children, property, marriage contracts and family claims."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
+              </div>
+              <span class="homeLongEnter">${lang==="uz"?"Oila huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open family law →"}</span>
+            </a>
+
+            <a class="homeLongCard employment" href="/employment${q(lang)}">
+              <div class="homeLongIcon">M</div>
+              <div class="homeLongCopy">
+                <h3>${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</h3>
+                <p>${lang==="uz"?"Huquqingiz buzilgan bo‘lsa, vaziyatni aniqlang, dalillarni tartiblang va bugun nima qilish kerakligini biling.":lang==="ru"?"Увольнение, зарплата, трудовой договор, отпуск и трудовые споры.":"Dismissal, wages, employment contracts, leave and employment disputes."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
+              </div>
+              <span class="homeLongEnter">${lang==="uz"?"Mehnat huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open employment law →"}</span>
+            </a>
+
+            <a class="homeLongCard business" href="/business${q(lang)}">
+              <div class="homeLongIcon">B</div>
+              <div class="homeLongCopy">
+                <h3>${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</h3>
+                <p>${lang==="uz"?"Tadbirkor uchun: muammoni aniqlash, xavfni ko‘rish, sudgacha yechim, hujjat va zarur bo‘lsa iqtisodiy sud.":lang==="ru"?"Договоры, задолженность, бизнес-споры, корпоративные документы и экономический суд.":"Contracts, debt, business disputes, corporate documents and economic court."}</p><div class="homeLongQuick"><em>AI yurist</em><em>Hujjatlar</em><em>Manbalar</em></div>
+              </div>
+              <span class="homeLongEnter">${lang==="uz"?"Biznes huquqiga kirish →":lang==="ru"?"Открыть раздел →":"Open business law →"}</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+
+
+      <!-- HUQUQIY AI SMART ENTRY + POPULAR SERVICES -->
+      <section class="smartLegalHub">
+        <style>
+          .smartLegalHub{padding:12px 0 34px}.smartHubBox{background:#071f36;border-radius:24px;padding:30px 34px;color:#fff;position:relative;overflow:hidden}
+          .smartHubBox:after{content:"AI";position:absolute;right:25px;top:-35px;font-size:170px;font-weight:900;color:rgba(255,255,255,.035)}
+          .smartHubGrid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center;position:relative;z-index:2}
+          .smartHubBox h2{font-size:29px;margin:7px 0 8px}.smartHubBox p{color:#c8d3dc;margin:0;line-height:1.55;font-size:13px}
+          .smartHubLabel{color:#d9b46e;font-size:10px;font-weight:900;letter-spacing:1.5px}
+          .smartAsk{display:flex;gap:9px}.smartAsk input{flex:1;border:1px solid rgba(255,255,255,.15);background:#fff;color:#102b42;border-radius:12px;padding:14px 15px;font-size:13px;outline:none}.smartAsk button{border:0;border-radius:12px;padding:13px 18px;background:#d5aa5e;color:#09233b;font-weight:900;cursor:pointer}
+          .smartHint{font-size:10px;color:#8fa3b3;margin-top:8px}
+          .popularWrap{padding:4px 0 34px}.popularTitle{font-size:19px;color:#0b2944;margin:0 0 13px}.popularGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}
+          .popularLink{background:#fff;border:1px solid #e2e8ed;border-radius:13px;padding:14px 12px;text-decoration:none;color:#12324c;font-size:11px;font-weight:850;min-height:70px;display:flex;align-items:center;gap:9px}.popularLink:hover{border-color:#d2b16e;transform:translateY(-1px)}
+          .popularIcon{width:30px;height:30px;flex:0 0 30px;border-radius:8px;background:#f6f0e5;color:#a17631;display:grid;place-items:center;font-size:10px;font-weight:900}
+          .trustStrip{margin:0 0 34px;border:1px solid #e4e9ed;background:#fbfcfd;border-radius:15px;padding:15px 18px;display:flex;gap:12px;align-items:center}.trustMark{width:38px;height:38px;border-radius:10px;background:#e9f5ef;color:#126246;display:grid;place-items:center;font-weight:900}.trustStrip strong{font-size:12px;color:#0b2944;display:block}.trustStrip span{font-size:10px;color:#758492;display:block;margin-top:3px}
+          .homeLongQuick{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.homeLongQuick em{font-style:normal;font-size:10px;font-weight:850;padding:6px 9px;border:1px solid #ddd6ca;border-radius:20px;color:#4f6070;background:#fffdf9}
+          @media(max-width:950px){.popularGrid{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.smartHubGrid{grid-template-columns:1fr}.smartAsk{flex-direction:column}.popularGrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:430px){.popularGrid{grid-template-columns:1fr}}
+        </style>
+        <div class="container">
+          <div class="smartHubBox">
+            <div class="smartHubGrid">
+              <div><div class="smartHubLabel">${lang==="uz"?"AI YO‘NALISH TANLASH":lang==="ru"?"AI ВЫБОР НАПРАВЛЕНИЯ":"AI LEGAL ROUTING"}</div>
+                <h2>${lang==="uz"?"Qaysi bo‘lim kerakligini bilmaysizmi?":lang==="ru"?"Не знаете, какой раздел выбрать?":"Not sure which legal area you need?"}</h2>
+                <p>${lang==="uz"?"Muammoingizni bir jumlada yozing. HUQUQIY AI matndagi kalit huquqiy mavzuga qarab sizni Oila, Mehnat yoki Biznes bo‘limiga yo‘naltiradi.":lang==="ru"?"Опишите проблему одним предложением — система предложит подходящий раздел.":"Describe the problem in one sentence and the system will suggest the relevant area."}</p>
+              </div>
+              <div><div class="smartAsk"><input id="smartLegalInput" placeholder="${lang==="uz"?"Masalan: ish haqimni 3 oydan beri bermayapti...":lang==="ru"?"Например: зарплату не платят 3 месяца...":"Example: my salary has not been paid for 3 months..."}"><button type="button" onclick="smartLegalRoute()">${lang==="uz"?"Yo‘nalishni aniqlash →":lang==="ru"?"Определить →":"Find area →"}</button></div><div id="smartLegalHint" class="smartHint"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- QAYERGA MUROJAAT QILAMAN — PRIVACY-FIRST LOCATION -->
+      <section class="legalLocationHub">
+        <style>
+          .legalLocationHub{padding:0 0 34px}.locShell{background:#fffdf9;border:1px solid #ded8cc;border-radius:22px;padding:28px 30px;box-shadow:0 12px 34px rgba(6,27,44,.05)}
+          .locTop{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}.locEyebrow{font-size:10px;font-weight:900;letter-spacing:1.4px;color:#aa7d36}.locTitle{font-family:Georgia,"Times New Roman",serif;font-size:29px;color:#0b2235;margin:7px 0 7px}.locText{font-size:12px;line-height:1.6;color:#657582;max-width:780px}
+          .locBadge{padding:9px 12px;border-radius:999px;background:#f6f0e5;color:#795a2c;font-size:9px;font-weight:900;white-space:nowrap}.locControls{display:grid;grid-template-columns:1.15fr .85fr auto;gap:10px;margin-top:20px}
+          .locControls select,.locControls input{min-height:48px;border:1px solid #ddd6ca;border-radius:11px;background:#fff;color:#17334a;padding:0 13px;font-size:12px;outline:none}.locControls button{border:0;border-radius:11px;background:#d4aa5e;color:#0b2235;padding:0 18px;font-size:11px;font-weight:900;cursor:pointer}
+          .locActions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.locAction{border:1px solid #ddd6ca;background:#fffdf9;color:#17334a;border-radius:10px;padding:11px 13px;font-size:10px;font-weight:850;cursor:pointer;text-decoration:none}.locAction.primary{background:#0b2235;color:#fff;border-color:#0b2235}.locStatus{margin-top:12px;font-size:10px;color:#6e7d89;line-height:1.5}.locPrivacy{margin-top:9px;font-size:9px;color:#8b969e}
+          @media(max-width:760px){.locTop{grid-template-columns:1fr}.locBadge{width:max-content}.locControls{grid-template-columns:1fr}.locControls button{min-height:48px}}
+        </style>
+        <div class="container">
+          <div class="locShell">
+            <div class="locTop">
+              <div>
+                <div class="locEyebrow">${lang==="uz"?"AMALIY YO‘NALTIRISH":lang==="ru"?"ПРАКТИЧЕСКОЕ НАПРАВЛЕНИЕ":"PRACTICAL ROUTING"}</div>
+                <h2 class="locTitle">${lang==="uz"?"Qayerga murojaat qilaman?":lang==="ru"?"Куда мне обратиться?":"Where should I apply?"}</h2>
+                <div class="locText">${lang==="uz"?"Muammo turini tanlang. Joylashuvga ruxsat bersangiz, xarita siz turgan joydan kerakli sud yoki davlat organini topishga yordam beradi. Joylashuvni bermasangiz, tuman/shaharni qo‘lda yozishingiz mumkin.":lang==="ru"?"Выберите тип вопроса. Можно разрешить геолокацию или указать район вручную.":"Choose the issue type. You may allow location access or enter your district/city manually."}</div>
+              </div>
+              <div class="locBadge">${lang==="uz"?"JOYlashuv MAJBURIY EMAS":lang==="ru"?"ГЕОЛОКАЦИЯ НЕ ОБЯЗАТЕЛЬНА":"LOCATION IS OPTIONAL"}</div>
+            </div>
+
+            <div class="locControls">
+              <select id="legalPlaceType">
+                <option value="court">${lang==="uz"?"Sud":lang==="ru"?"Суд":"Court"}</option>
+                <option value="civil court">${lang==="uz"?"Fuqarolik ishlari bo‘yicha sud":lang==="ru"?"Суд по гражданским делам":"Civil court"}</option>
+                <option value="economic court">${lang==="uz"?"Iqtisodiy sud":lang==="ru"?"Экономический суд":"Economic court"}</option>
+                <option value="administrative court">${lang==="uz"?"Ma’muriy sud":lang==="ru"?"Административный суд":"Administrative court"}</option>
+                <option value="internal affairs department">${lang==="uz"?"Ichki ishlar organi":lang==="ru"?"Орган внутренних дел":"Internal affairs"}</option>
+                <option value="notary">${lang==="uz"?"Notarius":lang==="ru"?"Нотариус":"Notary"}</option>
+                <option value="public service center">${lang==="uz"?"Davlat xizmatlari markazi":lang==="ru"?"Центр госуслуг":"Public service center"}</option>
+              </select>
+              <input id="legalManualPlace" placeholder="${lang==="uz"?"Tuman yoki shahar (ixtiyoriy)":lang==="ru"?"Район или город (необязательно)":"District or city (optional)"}">
+              <button type="button" onclick="legalFindPlace(false)">${lang==="uz"?"Xaritada topish →":lang==="ru"?"Найти на карте →":"Find on map →"}</button>
+            </div>
+
+            <div class="locActions">
+              <button class="locAction primary" type="button" onclick="legalUseMyLocation()">${lang==="uz"?"⌖ Mening joylashuvimdan foydalanish":lang==="ru"?"⌖ Использовать моё местоположение":"⌖ Use my location"}</button>
+              <a class="locAction" href="/court${q(lang)}">${lang==="uz"?"⚖ Sudlar va xarita":lang==="ru"?"⚖ Суды и карта":"⚖ Courts & map"}</a>
+              <a class="locAction" href="https://cabinet.sud.uz/" target="_blank" rel="noopener">${lang==="uz"?"Sud kabineti ↗":lang==="ru"?"Судебный кабинет ↗":"Court cabinet ↗"}</a>
+            </div>
+            <div id="legalLocationStatus" class="locStatus">${lang==="uz"?"Avval muammo turini tanlang. Tizim sizni darhol sudga yubormaydi — sudgacha mavjud yo‘llarni ham ko‘rib chiqish kerak.":lang==="ru"?"Сначала выберите тип вопроса. Суд не всегда является первым шагом.":"Choose the issue type first. Court is not always the first step."}</div>
+            <div class="locPrivacy">${lang==="uz"?"Maxfiylik: ushbu tugma orqali olingan koordinata serverga yuborilmaydi; u faqat brauzerda Google Maps yo‘nalishini ochish uchun ishlatiladi.":lang==="ru"?"Конфиденциальность: координаты не отправляются на сервер и используются в браузере только для открытия маршрута Google Maps.":"Privacy: coordinates are not sent to the server; they are used in the browser only to open Google Maps."}</div>
+          </div>
+        </div>
+      </section>
+
+      <script>
+        let huquqiyUserCoords=null;
+        function legalPlaceQuery(){
+          const type=(document.getElementById("legalPlaceType")||{}).value||"court";
+          const manual=((document.getElementById("legalManualPlace")||{}).value||"").trim();
+          return [type,manual,"Uzbekistan"].filter(Boolean).join(", ");
+        }
+        function legalFindPlace(fromLocation){
+          const status=document.getElementById("legalLocationStatus");
+          const query=legalPlaceQuery();
+          let url="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(query);
+          if(fromLocation && huquqiyUserCoords){
+            const destination=query;
+            url="https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(huquqiyUserCoords.lat+","+huquqiyUserCoords.lng)+"&destination="+encodeURIComponent(destination)+"&travelmode=driving";
+          }
+          if(status) status.textContent=${JSON.stringify("Xarita yangi oynada ochiladi. Borishdan oldin organ nomi, vakolati va manzilini rasmiy manbadan tekshiring.")};
+          window.open(url,"_blank","noopener");
+        }
+        function legalUseMyLocation(){
+          const status=document.getElementById("legalLocationStatus");
+          if(!navigator.geolocation){
+            if(status) status.textContent=${JSON.stringify("Brauzeringiz joylashuv funksiyasini qo‘llab-quvvatlamaydi. Tuman yoki shaharni qo‘lda yozing.")};
+            return;
+          }
+          if(status) status.textContent=${JSON.stringify("Joylashuv uchun brauzer ruxsatini kutyapman...")};
+          navigator.geolocation.getCurrentPosition(
+            function(pos){
+              huquqiyUserCoords={lat:pos.coords.latitude,lng:pos.coords.longitude};
+              if(status) status.textContent=${JSON.stringify("Joylashuv olindi. Koordinata serverga yuborilmadi. Endi tanlangan organga yo‘l xaritasini ochaman.")};
+              legalFindPlace(true);
+            },
+            function(){
+              if(status) status.textContent=${JSON.stringify("Joylashuvga ruxsat berilmadi. Muammo emas — tuman yoki shaharni qo‘lda yozib xaritada qidiring.")};
+            },
+            {enableHighAccuracy:false,timeout:10000,maximumAge:300000}
+          );
+        }
+      </script>
+
+      <section class="popularWrap"><div class="container">
+        <h2 class="popularTitle">${lang==="uz"?"Eng ko‘p ishlatiladigan xizmatlar":lang==="ru"?"Популярные услуги":"Popular services"}</h2>
+        <div class="popularGrid">
+          <a class="popularLink" href="/family${q(lang)}"><span class="popularIcon">O</span>${lang==="uz"?"Ajrashish oqibatlarini ko‘rish":lang==="ru"?"Понять последствия развода":"Understand divorce consequences"}</a>
+          <a class="popularLink" href="/family${q(lang)}"><span class="popularIcon">A</span>${lang==="uz"?"Aliment hisoblash":lang==="ru"?"Расчет алиментов":"Alimony analysis"}</a>
+          <a class="popularLink" href="/employment${q(lang)}"><span class="popularIcon">M</span>${lang==="uz"?"Ishga tiklash":lang==="ru"?"Восстановление на работе":"Reinstatement"}</a>
+          <a class="popularLink" href="/employment${q(lang)}"><span class="popularIcon">I</span>${lang==="uz"?"Ish haqi undirish":lang==="ru"?"Взыскание зарплаты":"Wage recovery"}</a>
+          <a class="popularLink" href="/business${q(lang)}"><span class="popularIcon">Q</span>${lang==="uz"?"Qarzdorlik undirish":lang==="ru"?"Взыскание долга":"Debt recovery"}</a>
+          <a class="popularLink" href="/business${q(lang)}"><span class="popularIcon">S</span>${lang==="uz"?"Shartnoma tayyorlash":lang==="ru"?"Подготовка договора":"Draft contract"}</a>
+        </div>
+        <div class="trustStrip"><div class="trustMark">✓</div><div><strong>${lang==="uz"?"HUQUQIY AI: tushuning → oqibatini biling → yechimni tanlang":lang==="ru"?"HUQUQIY AI не выдумывает отсутствующие факты":"HUQUQIY AI does not invent missing facts"}</strong><span>${lang==="uz"?"Tizim darhol sudga yuborishga emas, avval vaziyatni aniqlash, oqibatlarni ko‘rsatish, sudgacha yechimlarni tekshirish va keyingi amaliy qadamni berishga qaratilgan.":lang==="ru"?"Отсутствующие имена, даты, суммы, суды и доказательства не выдумываются.":"Missing names, dates, amounts, courts and evidence are not fabricated."}</span></div></div>
+      </div></section>
+
+      <script>
+        function smartLegalRoute(){
+          const el=document.getElementById("smartLegalInput"), hint=document.getElementById("smartLegalHint");
+          const s=(el.value||"").toLowerCase().replace(/[‘’ʻ']/g,"");
+          if(!s.trim()){hint.textContent="${lang==="uz"?"Muammoingizni qisqacha yozing.":lang==="ru"?"Кратко опишите проблему.":"Briefly describe your issue."}";return;}
+          const family=["aliment","ajrim","nikoh","bola","farzand","erim","xotin","turmush","mol-mulk","otalik","onali"];
+          const labor=["ish haqi","oylik","ishdan","ish beruvchi","mehnat","ta'til","tatil","xodim","ishga tik","bo'shat","boshat"];
+          const business=["mchj","korxona","qarzdor","shartnoma","kontragent","tadbirkor","biznes","soliq","litsenzi","iqtisodiy sud","ta'sischi","tasischi"];
+          const score=a=>a.reduce((n,k)=>n+(s.includes(k)?1:0),0);
+          const f=score(family),l=score(labor),b=score(business);
+          if(f===0&&l===0&&b===0){hint.textContent="${lang==="uz"?"Aniq yo‘nalish topilmadi. Umumiy Huquqiy yordamchidan boshlashingiz mumkin.":lang==="ru"?"Направление не определено. Начните с юридического помощника.":"No clear area detected. Start with the legal assistant."}";return;}
+          const path=f>=l&&f>=b?"/family":l>=f&&l>=b?"/employment":"/business";
+          const name=path==="/family"?"${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}":path==="/employment"?"${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}":"${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}";
+          hint.innerHTML="${lang==="uz"?"Mos yo‘nalish: ":lang==="ru"?"Подходящее направление: ":"Suggested area: "} <b>"+name+"</b> · <a style='color:#e0ba73' href='"+path+"${q(lang)}'>${lang==="uz"?"bo‘limga kirish →":lang==="ru"?"открыть →":"open →"}</a>";
+        }
+      </script>
+
+      <!-- SOURCES -->
+
+      <section class="sourcesSection">
+
+        <div class="container">
+
+          <div class="sectionHead">
+
+            <div>
+
+              <span class="eyebrow">
+                ${t.sourceSmall}
+              </span>
+
+              <h2 class="sectionTitle">
+                ${t.sourceTitle}
+              </h2>
+
+            </div>
+
+            <p class="sectionText">
+              ${t.sourceText}
+            </p>
+
+          </div>
+
+
+          <div class="sourcesGrid">
+
+            ${sourceCards}
+
+          </div>
+
+        </div>
+
+      </section>
+
+    `
+
+  });
+
 }
+
 
 // ======================================================
 // END OF PART 2/4
