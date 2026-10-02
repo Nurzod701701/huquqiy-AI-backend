@@ -5840,20 +5840,6 @@ function homePage(lang) {
 
     content: `
 
-      <!-- ALOHIDA YIRIK HUJJATLARNI TEKSHIRISH BLOKI -->
-      <section class="container" style="padding-top:26px;padding-bottom:12px">
-        <a href="/legal-review${q(lang)}" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px;min-height:190px;padding:32px clamp(22px,4vw,52px);border:2px solid #b48b48;border-radius:23px;background:linear-gradient(115deg,#091e36,#173d61);color:#fff;text-decoration:none;box-shadow:0 16px 38px rgba(4,20,39,.18)">
-          <span style="display:flex;align-items:center;gap:24px;flex:1 1 340px">
-            <span aria-hidden="true" style="display:grid;place-items:center;flex-shrink:0;width:86px;height:86px;border-radius:20px;background:#e8c98c;color:#122b47;font-size:43px;font-weight:900">✓</span>
-            <span style="display:grid;gap:12px">
-              <strong style="font-size:clamp(27px,3.2vw,43px);line-height:1.17;color:#fff">${lang === "ru" ? "ПРОВЕРКА ДОКУМЕНТОВ" : lang === "en" ? "DOCUMENT REVIEW" : "HUJJATLARNI TEKSHIRISH"}</strong>
-              <span style="font-size:clamp(15px,1.5vw,19px);line-height:1.55;color:#edf1f6">${lang === "ru" ? "Проверка исков, договоров и заявлений: реквизиты, доказательства и правовые основания." : lang === "en" ? "Review claims, contracts and applications: details, evidence and legal grounds." : "Da’vo arizalari, shartnomalar va boshqa hujjatlarning kamchiliklari, dalillari va huquqiy asoslarini tekshiring."}</span>
-            </span>
-          </span>
-          <span style="display:inline-flex;align-items:center;justify-content:center;min-height:58px;padding:14px 27px;background:#e8c98c;color:#122b47;border-radius:13px;font-size:19px;font-weight:850">${lang === "ru" ? "Проверить →" : lang === "en" ? "Start review →" : "Tekshirish →"}</span>
-        </a>
-      </section>
-
       <!-- HERO -->
 
       <section class="hero">
@@ -5900,7 +5886,7 @@ function homePage(lang) {
                 ✓ ${t.questionnaire}
               </a>
 
-              <a class="btn btnGold" href="/legal-review${q(lang)}">✓ ${lang === "uz" ? "Hujjatni tekshirish" : lang === "ru" ? "Проверить документ" : "Review document"}</a>
+
               <a class="btn btnGold" href="/documents${q(lang)}">
                 ▤ ${lang === "uz" ? "Da’vo arizasi tayyorlash" : lang === "ru" ? "Подготовить иск" : "Prepare a claim"}
               </a>
@@ -7558,7 +7544,14 @@ function legalReviewPage(lang){
   return appLayout(lang,"legal-review",`
     <section class="hero"><div class="eyebrow">✓ HUQUQIY AI CHECK</div><h1>${tx.title}</h1><p>${tx.desc}</p></section>
     <section class="panel" style="max-width:1160px;margin:0 auto 28px;padding:clamp(24px,4vw,52px);border:2px solid #b48b48;border-radius:22px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:0 0 24px">
+      <div class="notice noticeGold"><strong>01</strong> · ${lang==="uz"?"Yo‘nalishni tanlang":lang==="ru"?"Выберите направление":"Choose area"}</div>
+      <div class="notice noticeGold"><strong>02</strong> · ${lang==="uz"?"Hujjat matnini kiriting":lang==="ru"?"Введите текст":"Enter document"}</div>
+      <div class="notice noticeGold"><strong>03</strong> · ${lang==="uz"?"Kamchiliklarni tahlil qiling":lang==="ru"?"Проверьте недостатки":"Review issues"}</div>
+    </div>
       <form method="post" action="/legal-review-result?lang=${lang}">
+      <label>${lang==="uz"?"Huquq sohasi":lang==="ru"?"Отрасль права":"Legal area"}
+      <select name="legalArea" required><option value="family">${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</option><option value="employment">${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</option><option value="business">${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</option><option value="other">${lang==="uz"?"Boshqa huquq sohasi":lang==="ru"?"Другая отрасль":"Other"}</option></select></label>
         <label>${tx.type}<select name="documentType" required>
           <option value="claim">Da’vo arizasi / Иск / Claim</option><option value="contract">Shartnoma / Договор / Contract</option><option value="application">Ariza / Заявление / Application</option><option value="complaint">Shikoyat / Жалоба / Complaint</option><option value="other">Boshqa / Другое / Other</option>
         </select></label>
@@ -7580,14 +7573,15 @@ async function legalReviewResultPage(lang,form){
   lang=getLang(lang);
   const documentText=String(form.documentText||"").trim().slice(0,45000);
   const documentType=String(form.documentType||"other").trim();
+  const legalArea=({family:"Oila huquqi",employment:"Mehnat huquqi",business:"Biznes huquqi",other:"Boshqa"})[String(form.legalArea||"other")]||"Boshqa";
   const extraContext=String(form.extraContext||"").trim().slice(0,10000);
   if(documentText.length<80) return appLayout(lang,"legal-review",`<section class="panel"><h1>Hujjat matni yetarli emas</h1><a class="btn btnGold" href="/legal-review?lang=${lang}">Orqaga</a></section>`,`Huquqiy tekshiruv`,``);
-  const prompt=`Siz O‘zbekiston huquqi bo‘yicha professional hujjat tekshiruvchisisiz. Foydalanuvchi bergan hujjatni tahlil qiling.\n\nQAT’IY QOIDALAR:\n1) Hech qachon mavjud bo‘lmagan qonun, modda, sud qarori yoki faktni o‘ylab topmang.\n2) Modda raqamiga ishonchingiz komil bo‘lmasa, raqam bermang; aynan qaysi qonun/kodeks va qaysi masala LexUZda tekshirilishi kerakligini yozing.\n3) Foydalanuvchi aytmagan faktni fakt sifatida qo‘shmang.\n4) Hujjat turiga mos majburiy rekvizitlar, taraflar, yurisdiksiya/sudlovlilik, faktlar, dalillar, hisob-kitoblar, talablar va ilovalarni tekshiring.\n5) Da’vo bo‘lsa, talab bilan fakt va dalil o‘rtasidagi bog‘liqlikni tekshiring. Shartnoma bo‘lsa, muhim shartlar, taraflar majburiyatlari, javobgarlik, muddat, hisob-kitob va nizolarni hal etish bandlarini tekshiring.\n6) Natijani quyidagi bo‘limlarda bering:\nHUJJAT TURI VA QISQA XULOSA\n1. ANIQLANGAN KAMCHILIKLAR\n2. YETISHMAYOTGAN MA’LUMOTLAR\n3. DALILLAR VA ILOVALAR\n4. HUQUQIY ASOSLAR\n5. HISOB-KITOB TEKSHIRUVI (tegishli bo‘lsa)\n6. TALABLAR TEKSHIRUVI\n7. TUZATISH BO‘YICHA ANIQ TAVSIYALAR\n8. LEXUZDA TEKSHIRILADIGAN MANBALAR — kodeks/qonun nomi, mavzu va qidiruv iborasini yozing.\n9. TEKSHIRUV HOLATI — qaysi xulosalar hujjat matniga asoslangan, qaysilari rasmiy manbada qo‘shimcha tekshiruv talab qiladi.\n\nHujjat turi: ${documentType}\nQo‘shimcha holatlar: ${extraContext||"berilmagan"}\n\nTEKSHIRILADIGAN HUJJAT:\n${documentText}`;
+  const prompt=`Siz O‘zbekiston huquqi bo‘yicha professional hujjat tekshiruvchisisiz. Foydalanuvchi bergan hujjatni tahlil qiling.\n\nQAT’IY QOIDALAR:\n1) Hech qachon mavjud bo‘lmagan qonun, modda, sud qarori yoki faktni o‘ylab topmang.\n2) Modda raqamiga ishonchingiz komil bo‘lmasa, raqam bermang; aynan qaysi qonun/kodeks va qaysi masala LexUZda tekshirilishi kerakligini yozing.\n3) Foydalanuvchi aytmagan faktni fakt sifatida qo‘shmang.\n4) Hujjat turiga mos majburiy rekvizitlar, taraflar, yurisdiksiya/sudlovlilik, faktlar, dalillar, hisob-kitoblar, talablar va ilovalarni tekshiring.\n5) Da’vo bo‘lsa, talab bilan fakt va dalil o‘rtasidagi bog‘liqlikni tekshiring. Shartnoma bo‘lsa, muhim shartlar, taraflar majburiyatlari, javobgarlik, muddat, hisob-kitob va nizolarni hal etish bandlarini tekshiring.\n6) Natijani quyidagi bo‘limlarda bering:\nHUJJAT TURI VA QISQA XULOSA\n1. ANIQLANGAN KAMCHILIKLAR\n2. YETISHMAYOTGAN MA’LUMOTLAR\n3. DALILLAR VA ILOVALAR\n4. HUQUQIY ASOSLAR\n5. HISOB-KITOB TEKSHIRUVI (tegishli bo‘lsa)\n6. TALABLAR TEKSHIRUVI\n7. TUZATISH BO‘YICHA ANIQ TAVSIYALAR\n8. LEXUZDA TEKSHIRILADIGAN MANBALAR — kodeks/qonun nomi, mavzu va qidiruv iborasini yozing.\n9. TEKSHIRUV HOLATI — qaysi xulosalar hujjat matniga asoslangan, qaysilari rasmiy manbada qo‘shimcha tekshiruv talab qiladi.\n\nHuquq sohasi: ${legalArea}\nHujjat turi: ${documentType}\nQo‘shimcha holatlar: ${extraContext||"berilmagan"}\n\nTEKSHIRILADIGAN HUJJAT:\n${documentText}`;
   let answer="";
-  try{answer=cleanLegalReviewText(await callAI(prompt,lang));}catch(e){answer=lang==="ru"?"Не удалось выполнить проверку. Проверьте настройку AI на сервере.":lang==="en"?"The review could not be completed. Check the server AI configuration.":"Tekshiruvni bajarib bo‘lmadi. Serverdagi AI sozlamasini tekshiring.";}
-  return appLayout(lang,"documents",`
+  try{answer=cleanLegalReviewText(await callAI(prompt,lang));}catch(e){console.error("LEGAL REVIEW ERROR",e);answer=lang==="ru"?"Не удалось выполнить проверку. Проверьте настройку AI на сервере.":lang==="en"?"The review could not be completed. Check the server AI configuration.":"Tekshiruvni bajarib bo‘lmadi. Serverdagi AI sozlamasini tekshiring.";}
+  return appLayout(lang,"legal-review",`
     <section class="hero"><div class="eyebrow">✓ LEGAL REVIEW</div><h1>${lang==="ru"?"Результат правовой проверки":lang==="en"?"Legal review result":"Huquqiy tekshiruv natijasi"}</h1><p>${lang==="uz"?"Natijadagi huquqiy norma va tahrirlarni LexUZdagi amaldagi matn bilan yakuniy tekshiring.":lang==="ru"?"Окончательно сверяйте нормы и редакции с действующим текстом LexUZ.":"Finally verify legal provisions and versions against the current LexUZ text."}</p></section>
-    <section class="panel" style="max-width:1050px;margin:0 auto 24px"><div class="claimDocument" style="white-space:pre-wrap">${esc(answer)}</div></section>
+    <section class="panel" style="max-width:1050px;margin:0 auto 24px"><div class="claimDocument" style="white-space:pre-wrap">${esc(answer)}</div><button class="btn btnGold" type="button" onclick="window.print()" style="margin-top:20px">${lang==="uz"?"Natijani PDF qilib saqlash":lang==="ru"?"Сохранить PDF":"Save as PDF"}</button></section>
     <section class="panel" style="max-width:1050px;margin:0 auto"><div class="accountActions"><a class="accountButton gold" href="/legal-review?lang=${lang}">Yana hujjat tekshirish</a><a class="accountButton" target="_blank" rel="noopener" href="https://lex.uz/uz/">LexUZda tekshirish</a><a class="accountButton light" href="/documents?lang=${lang}">Hujjatlar</a></div></section>
   `,"Huquqiy tekshiruv natijasi","");
 }
