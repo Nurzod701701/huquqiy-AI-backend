@@ -2821,6 +2821,30 @@ body{
   font-size:11px;
 }
 
+
+/* HUQUQIY AI — CLASSIC NAVY / GOLD RESTORATION */
+:root{--navy:#071827;--navy2:#0c2942;--navy3:#163e5c;--gold:#c9a86a;--gold2:#e7cc91;--gold3:#a77c3d;--goldSoft:#fff8e9;--ink:#172b3c;--muted:#647588;--bg:#f5f7fa;--surface:#fff;--line:#e2e8ee;--shadow:0 12px 36px rgba(7,24,39,.07)}
+body{background:#f5f7fa;color:var(--ink);font-size:16px;line-height:1.65}
+.nav{background:rgba(255,255,255,.97);border-bottom:1px solid #e6e9ef;box-shadow:0 5px 22px rgba(7,24,39,.045)}
+.navlinks a{color:#34495d;font-size:14px;font-weight:700}.navlinks a:hover{background:#f3f5f8;color:#071827}
+.brandText strong{color:#071827}.brandMark{background:linear-gradient(140deg,#071827,#173c5a);color:#e7cc91}
+.languages{background:#f3f6f8}.languages a.active{background:#071827;color:#fff}
+.hero{background:radial-gradient(circle at 85% 15%,rgba(201,168,106,.10),transparent 28%),linear-gradient(180deg,#fff,#f4f7fa)!important}
+.hero h1,.heroTitle{color:#071827;font-family:Georgia,'Times New Roman',serif;font-weight:600;letter-spacing:-.035em}
+.hero h1 span{color:#315d8b}.heroDescription{color:#60748a}
+.sectionTitle,.serviceCard h3,.quickBox h2{font-family:Georgia,'Times New Roman',serif;color:#071827}
+.sectionText{color:#65778b}.eyebrow{color:#8d682f;background:#fff8e9;border-color:#e8d5af}
+.quickBox{background:radial-gradient(circle at 90% 0%,rgba(201,168,106,.14),transparent 30%),linear-gradient(135deg,#071827,#123650)}
+.quickBox h2{color:#fff}
+.btnPrimary{background:linear-gradient(145deg,#071827,#143b59);color:#fff}.btnGold{background:linear-gradient(135deg,#edd49a,#c39a54);color:#071827}
+.serviceCard,.sourceCard,.documentCard,.calcCard,.surface{background:#fff;border:1px solid #e1e7ed;border-radius:16px;box-shadow:0 10px 32px rgba(7,24,39,.05)}
+.serviceCard:hover,.sourceCard:hover,.documentCard:hover{border-color:rgba(201,168,106,.65);box-shadow:0 18px 40px rgba(7,24,39,.10)}
+.serviceIcon{color:#173b60;background:linear-gradient(145deg,#fff8ea,#f2f5f8);border:1px solid #e8e2d7}
+.coreSection{background:#eff3f6}.coreItem{background:#fff}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #c9a86a;outline-offset:3px}
+@media(max-width:760px){.heroInner{min-height:auto;padding:52px 0;gap:28px}.hero h1{font-size:clamp(36px,8vw,50px)}.serviceGrid,.coreGrid,.sourcesGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.nav{height:auto;min-height:68px}}
+@media(max-width:480px){.serviceGrid,.coreGrid,.sourcesGrid{grid-template-columns:1fr}.heroActions .btn{width:100%}}
+
 `;
 // ======================================================
 // PART 2/4
@@ -4719,6 +4743,18 @@ body{
   .appHeader p{font-size:15px !important;}
   .calcCard h3{font-size:21px !important;}
 }
+
+
+/* CONSISTENT INTERIOR SECTIONS — NAVY / GOLD */
+.appShell,.appLayout,.appMain,.mainContent{color:#172b3c}
+.appTopbar,.appHeader,.appSidebar,.sidebar{border-color:rgba(201,168,106,.20)}
+.appSidebar,.sidebar{background:linear-gradient(180deg,#071827,#10334c);color:#f4f7fa}
+.appSidebar a:hover,.appSidebar a.active,.sidebar a:hover,.sidebar a.active{background:rgba(201,168,106,.14);color:#f2dca9}
+.appHeader h1{font-family:Georgia,'Times New Roman',serif;letter-spacing:-.025em}
+.appMain .card,.appMain .panel,.appMain .surface,.appMain .documentCard,.appMain .calcCard{border:1px solid #e1e7ed;border-radius:16px;background:#fff;box-shadow:0 10px 30px rgba(7,24,39,.05)}
+.appMain button,.appMain .btn{border-radius:10px}
+.appMain input,.appMain select,.appMain textarea{max-width:100%;border-radius:10px}
+@media(max-width:760px){.appMain{min-width:0}.appMain .card,.appMain .panel{padding:18px}}
 
 `;
 
@@ -11344,6 +11380,17 @@ const ACCOUNT_CSS = `
 .accountShell{display:grid;grid-template-columns:260px 1fr;min-height:100vh;background:#f3f5f6}.accountSide{background:#071827;color:#dce6eb;padding:25px 16px;position:sticky;top:0;height:100vh;box-sizing:border-box}.accountSideBrand{display:flex;gap:10px;align-items:center;font-weight:900;font-size:20px;padding:8px 10px 24px}.accountSide a{display:flex;gap:10px;align-items:center;color:#bfcbd2;text-decoration:none;padding:11px 12px;border-radius:11px;margin:4px 0;font-size:14px;font-weight:700}.accountSide a:hover,.accountSide a.active{background:#123249;color:#fff}.accountSide .accountSideBottom{position:absolute;left:16px;right:16px;bottom:22px}.accountMain{padding:28px;min-width:0}.accountTop{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:22px}.accountIdentity{display:flex;align-items:center;gap:10px}.accountAvatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#d8bf7f,#a8813e);color:#071827;font-weight:900}.accountPanel{background:#fff;border:1px solid #dde5e8;border-radius:20px;padding:22px;box-shadow:0 8px 30px rgba(7,24,39,.045);margin-bottom:18px}.accountStats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.accountStat{background:#fff;border:1px solid #dde5e8;border-radius:18px;padding:18px}.accountStat strong{display:block;font-size:30px;color:#071827}.accountStat span{font-size:12px;color:#71808a;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.accountGrid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}.accountTableWrap{overflow:auto}.accountTable{width:100%;border-collapse:collapse;min-width:680px}.accountTable th,.accountTable td{text-align:left;padding:12px;border-bottom:1px solid #edf0f2;font-size:13px}.accountTable th{font-size:11px;text-transform:uppercase;color:#71808a;letter-spacing:.06em}.accountBadge{display:inline-flex;padding:5px 9px;border-radius:999px;background:#edf4f8;color:#31576e;font-size:11px;font-weight:850}.accountBadge.good{background:#eaf7ef;color:#28603e}.accountBadge.warn{background:#fff6df;color:#805e17}.accountBadge.bad{background:#fff0f0;color:#8a3036}.accountActions{display:flex;gap:8px;flex-wrap:wrap}.accountProgress{height:8px;background:#e8edef;border-radius:999px;overflow:hidden}.accountProgress i{display:block;height:100%;background:linear-gradient(90deg,#b9954f,#d8bf7f)}.accountHero{padding:24px;border-radius:20px;background:radial-gradient(circle at 90% 10%,rgba(217,192,131,.16),transparent 18rem),linear-gradient(135deg,#081b2b,#0d3048);color:#fff;margin-bottom:18px}.accountHero h1{color:#fff;margin:0 0 8px}.accountHero p{color:#b9c8d1;margin:0}.accountCards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.accountCard{padding:18px;border:1px solid #dde5e8;border-radius:16px;background:#fff}.accountCard h3{margin:0 0 8px}.accountCode{font-family:ui-monospace,monospace;background:#f3f6f7;padding:2px 6px;border-radius:6px}
 @media(max-width:980px){.accountShell{grid-template-columns:1fr}.accountSide{position:relative;height:auto}.accountSideBottom{position:static!important;margin-top:18px}.accountStats{grid-template-columns:repeat(2,1fr)}.accountGrid{grid-template-columns:1fr}.accountCards{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.accountMain{padding:16px}.accountStats{grid-template-columns:1fr 1fr}.accountCards{grid-template-columns:1fr}.accountAuth{padding:22px}.accountTop{align-items:flex-start;flex-direction:column}}
+
+/* MATCH PERSONAL CABINET TO CLASSIC SITE */
+.accountWrap,.accountShell{background:#f5f7fa}
+.accountSide{background:linear-gradient(180deg,#071827,#10334c);border-right:1px solid rgba(201,168,106,.25)}
+.accountSide a.active,.accountSide a:hover{background:rgba(201,168,106,.16);color:#f0d79f}
+.accountAuth,.accountPanel,.accountStat,.accountCard{border-color:#e0e7ed;border-radius:16px;box-shadow:0 10px 32px rgba(7,24,39,.05)}
+.accountHero{background:radial-gradient(circle at 90% 10%,rgba(201,168,106,.16),transparent 18rem),linear-gradient(135deg,#071827,#123650)}
+.accountButton{background:#0d2b43}.accountButton.gold{background:linear-gradient(135deg,#e7cc91,#c39a54)}
+.accountAuth h1,.accountPanel h1{font-family:Georgia,'Times New Roman',serif}
+@media(max-width:980px){.accountSide{height:auto;position:relative}.accountSide a{min-height:42px}}
+
 `;
 
 
