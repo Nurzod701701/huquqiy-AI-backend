@@ -5287,7 +5287,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "Huquqiy AI",
   ];
 
   const sideLinks = items.map(([key, href, icon, label]) => `
-    <a class="sideLink ${active === key ? "active" : ""}" href="${href}${q(lang)}">
+    <a class="sideLink ${active === key ? "active" : ""}" href="${href}${q(lang)}" ${key === "legal-review" ? 'style="min-height:66px;background:#e8c98c;color:#142c47;border:2px solid #ae823c;font-size:18px;font-weight:900"' : ""}>
       <span class="sideIcon">${icon}</span>
       <span>${esc(label)}</span>
     </a>
@@ -5839,6 +5839,20 @@ function homePage(lang) {
       "Huquqiy AI",
 
     content: `
+
+      <!-- ALOHIDA YIRIK HUJJATLARNI TEKSHIRISH BLOKI -->
+      <section class="container" style="padding-top:26px;padding-bottom:12px">
+        <a href="/legal-review${q(lang)}" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px;min-height:190px;padding:32px clamp(22px,4vw,52px);border:2px solid #b48b48;border-radius:23px;background:linear-gradient(115deg,#091e36,#173d61);color:#fff;text-decoration:none;box-shadow:0 16px 38px rgba(4,20,39,.18)">
+          <span style="display:flex;align-items:center;gap:24px;flex:1 1 340px">
+            <span aria-hidden="true" style="display:grid;place-items:center;flex-shrink:0;width:86px;height:86px;border-radius:20px;background:#e8c98c;color:#122b47;font-size:43px;font-weight:900">✓</span>
+            <span style="display:grid;gap:12px">
+              <strong style="font-size:clamp(27px,3.2vw,43px);line-height:1.17;color:#fff">${lang === "ru" ? "ПРОВЕРКА ДОКУМЕНТОВ" : lang === "en" ? "DOCUMENT REVIEW" : "HUJJATLARNI TEKSHIRISH"}</strong>
+              <span style="font-size:clamp(15px,1.5vw,19px);line-height:1.55;color:#edf1f6">${lang === "ru" ? "Проверка исков, договоров и заявлений: реквизиты, доказательства и правовые основания." : lang === "en" ? "Review claims, contracts and applications: details, evidence and legal grounds." : "Da’vo arizalari, shartnomalar va boshqa hujjatlarning kamchiliklari, dalillari va huquqiy asoslarini tekshiring."}</span>
+            </span>
+          </span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;min-height:58px;padding:14px 27px;background:#e8c98c;color:#122b47;border-radius:13px;font-size:19px;font-weight:850">${lang === "ru" ? "Проверить →" : lang === "en" ? "Start review →" : "Tekshirish →"}</span>
+        </a>
+      </section>
 
       <!-- HERO -->
 
@@ -7532,7 +7546,7 @@ function legalReviewPage(lang){
   }[lang];
   return appLayout(lang,"legal-review",`
     <section class="hero"><div class="eyebrow">✓ HUQUQIY AI CHECK</div><h1>${tx.title}</h1><p>${tx.desc}</p></section>
-    <section class="panel" style="max-width:980px;margin:0 auto 28px">
+    <section class="panel" style="max-width:1160px;margin:0 auto 28px;padding:clamp(24px,4vw,52px);border:2px solid #b48b48;border-radius:22px">
       <form method="post" action="/legal-review-result?lang=${lang}">
         <label>${tx.type}<select name="documentType" required>
           <option value="claim">Da’vo arizasi / Иск / Claim</option><option value="contract">Shartnoma / Договор / Contract</option><option value="application">Ariza / Заявление / Application</option><option value="complaint">Shikoyat / Жалоба / Complaint</option><option value="other">Boshqa / Другое / Other</option>
