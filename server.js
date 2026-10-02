@@ -6096,6 +6096,18 @@ function homePage(lang) {
           }
           .homeLongCard:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(6,27,44,.10)}
           .homeLongCard:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-90px;top:-145px;border:1px solid rgba(255,255,255,.50)}
+          /* Document review: distinctive navy and gold main-section card */
+          .homeLongCard.review{
+            background:linear-gradient(115deg,#09263e 0%,#123d5d 68%,#1c4d68 100%);
+            border:2px solid #d5ac63;
+            box-shadow:0 14px 38px rgba(9,38,62,.22);
+          }
+          .homeLongCard.review .homeLongIcon{background:#d5ac63;color:#09263e}
+          .homeLongCard.review .homeLongCopy h3{color:#fff}
+          .homeLongCard.review .homeLongCopy p{color:#e4edf3}
+          .homeLongCard.review .homeLongQuick em{background:rgba(255,255,255,.12);border-color:#d5ac63;color:#fff}
+          .homeLongCard.review .homeLongEnter{background:#d5ac63;color:#09263e}
+          .homeLongCard.review:hover{box-shadow:0 22px 48px rgba(9,38,62,.3)}
           .homeLongCard.family,.homeLongCard.employment,.homeLongCard.business{
             background:linear-gradient(105deg,#fffdf9 0%,#fbf8f1 100%);
             border-color:#ded8cc;
@@ -8310,7 +8322,34 @@ function businessPage(lang="uz"){
     .bOfficial{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.bOfficial a{border:1px solid #e4e9ed;border-radius:13px;padding:15px;text-decoration:none;color:#0d2e49;background:#fff}.bOfficial strong{font-size:12px;display:block}.bOfficial small{display:block;color:#7b8996;margin-top:5px;font-size:10px}
     .bModal{position:fixed;inset:0;background:rgba(3,19,32,.62);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}.bModal.open{display:flex}.bModalCard{background:#fff;width:min(820px,96vw);max-height:90vh;overflow:auto;border-radius:20px;padding:25px}.bModalTop{display:flex;justify-content:space-between;align-items:center}.bModalTop h2{margin:0}.bClose{border:0;width:38px;height:38px;border-radius:50%;font-size:20px;cursor:pointer}
     @media(max-width:980px){.bLayout{grid-template-columns:1fr}.bStats,.bActionGrid,.bOfficial{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.bStats,.bTools,.bActionGrid,.bOfficial,.bLawGrid{grid-template-columns:1fr}.bTop{padding:26px 22px}.bTop h1{font-size:30px}}
-  </style>
+  
+    /* BUSINESS LAW READABILITY AND RESPONSIVE LAYOUT */
+    .bWrap{font-size:17px;line-height:1.6}
+    .bTop{padding:42px 44px}
+    .bKicker{font-size:13px;letter-spacing:1px}
+    .bTop h1{font-size:clamp(32px,4vw,46px);line-height:1.2}
+    .bTop p{font-size:18px;line-height:1.7}
+    .bTopBtn{font-size:16px;padding:14px 19px;min-height:50px;display:inline-flex;align-items:center}
+    .bStat{padding:22px}.bStat small{font-size:13px;letter-spacing:0}.bStat strong{font-size:20px;line-height:1.35}
+    .bLayout{grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:22px}
+    .bPanel{padding:29px}.bHead{align-items:flex-start;flex-wrap:wrap}.bHead h2{font-size:27px;line-height:1.3}.bHead p{font-size:16px;line-height:1.6}
+    .bTag{font-size:12px;padding:8px 12px;letter-spacing:0}
+    .bTools{gap:17px}.bTool{min-height:172px;padding:24px}.bToolIcon{width:52px;height:52px;font-size:19px}
+    .bTool h3{font-size:21px;line-height:1.35}.bTool p{font-size:16px;line-height:1.6}
+    .bSideTitle{font-size:20px}.bSideLink{font-size:16px;line-height:1.45;padding:15px 0}
+    .bSection{margin-top:24px}.bActionGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .bAction{padding:19px;min-height:76px;gap:13px}.bAction b{font-size:17px;line-height:1.4}.bAction i{font-size:19px}
+    .bDot{width:42px;height:42px;min-width:42px;font-size:15px}
+    .bLawGrid{gap:15px}.bLaw{grid-template-columns:60px minmax(0,1fr) 18px;padding:20px;gap:15px}
+    .bLawCode{height:54px;font-size:13px}.bLaw strong{font-size:18px;line-height:1.4}.bLaw p{font-size:15px;line-height:1.6}
+    .bOfficial{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.bOfficial a{padding:20px}
+    .bOfficial strong{font-size:18px;line-height:1.4}.bOfficial small{font-size:15px;line-height:1.5}
+    .bModalCard{width:min(900px,96vw);padding:32px}.bModalTop h2{font-size:25px}
+    .bModalCard label{font-size:16px}.bModalCard input,.bModalCard select,.bModalCard textarea{font-size:17px;min-height:48px}
+    .bModalCard button{font-size:16px;min-height:46px}
+    @media(max-width:1050px){.bLayout{grid-template-columns:1fr}.bStats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:650px){.bTop{padding:27px 23px}.bTop p{font-size:16px}.bPanel{padding:20px}.bStats,.bTools,.bActionGrid,.bOfficial,.bLawGrid{grid-template-columns:1fr}.bHead h2{font-size:23px}.bLaw strong{font-size:17px}.bModalCard{padding:20px}}
+</style>
 
   <div class="bWrap">
     <section class="bTop">
