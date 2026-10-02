@@ -1433,6 +1433,8 @@ const DOCUMENT_TYPES = [
 // ======================================================
 
 const CSS = `
+.homeLongCard.courtcost{background:linear-gradient(135deg,#092943,#16466a)!important;color:#fff!important;border:2px solid #cba45c!important}.homeLongCard.courtcost h3,.homeLongCard.courtcost p,.homeLongCard.courtcost .homeLongEnter{color:#fff!important}.homeLongCard.courtcost .homeLongIcon{background:#d4ac64!important;color:#102a42!important}
+
 
 :root{
   --navy:#06111f;
@@ -6173,6 +6175,13 @@ function homePage(lang) {
               </div>
               <span class="homeLongEnter">${lang==='uz'?'Tekshirish bo‘limiga kirish →':lang==='ru'?'Открыть проверку →':'Open document review →'}</span>
             </a>
+            <a class="homeLongCard courtcost" href="/court-costs${q(lang)}">
+              <div class="homeLongIcon">₴</div><div class="homeLongCopy">
+                <h3>${lang==='uz'?'Davlat boji va sud xarajatlarini hisoblash':lang==='ru'?'Расчёт госпошлины и судебных расходов':'Court fees and costs'}</h3>
+                <p>${lang==='uz'?'Sudga murojaat qilishdan avval savol-javob asosida to‘lovlar, ehtimoliy xarajatlar va imtiyozlarni aniqlang.':lang==='ru'?'Узнайте о платежах и льготах до подачи иска.':'Explore fees, costs and exemptions before filing.'}</p>
+                <div class="homeLongQuick"><em>${lang==='uz'?'Savol-javob':'Questions'}</em><em>${lang==='uz'?'Imtiyozlar':'Exemptions'}</em><em>${lang==='uz'?'Rasmiy manbalar':'Sources'}</em></div>
+              </div><span class="homeLongEnter">${lang==='uz'?'Hisoblashni boshlash →':lang==='ru'?'Начать →':'Start →'}</span>
+            </a>
           </div>
         </div>
       </section>
@@ -8276,6 +8285,42 @@ function businessPanel(title, text, href, icon="§"){
 
 
 
+function courtCostsPage(lang="uz") {
+ const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+ return appLayout(lang,"court-costs",`
+ <style>.feeShell{max-width:950px;margin:auto}.feeHero{background:linear-gradient(135deg,#071f36,#123e60);padding:35px;border-radius:22px;color:white}.feeHero h1{font-size:clamp(27px,4vw,39px);margin:5px 0}.feeHero p{color:#dbe5ee;font-size:17px}.feeBox{background:white;border:1px solid #e1e7ed;border-radius:18px;padding:28px;margin-top:19px}.feeBox label{display:block;font-size:18px;font-weight:750;margin:15px 0 8px}.feeBox select,.feeBox input{width:100%;font-size:18px;min-height:52px;border:1px solid #bbc9d5;border-radius:11px;padding:10px}.feeHelp{font-size:15px;color:#526779}.feeWarn{border-left:4px solid #bb8e3c;background:#fff8e9;padding:15px;border-radius:8px;font-size:15px}.feeActions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}@media(max-width:650px){.feeBox,.feeHero{padding:22px}}</style>
+ <div class="feeShell"><div class="feeHero"><div style="color:#e5c17a;font-weight:800">HUQUQIY AI</div><h1>${t("Davlat boji va sud xarajatlarini hisoblash","Расчёт госпошлины и судебных расходов","Court fees and costs")}</h1><p>${t("Ariza topshirishdan oldin muhim holatlarni aniqlang.","Уточните сведения до подачи заявления.","Check the facts before filing.")}</p></div>
+ <form class="feeBox" method="POST" action="/court-costs-result${q(lang)}">
+ <h2>${t("1. Sudga murojaat turi","1. Вид обращения","1. Type of claim")}</h2>
+ <label>${t("Qanday masala?","Какой вопрос?","Which matter?")}</label><select name="claim" id="feeClaim" required onchange="feeToggle()"><option value="">${t("Tanlang","Выберите","Choose")}</option><option value="divorce">${t("Nikohdan ajratish","Развод","Divorce")}</option><option value="alimony">${t("Aliment undirish","Алименты","Child support")}</option><option value="property">${t("Mol-mulkni bo‘lish","Раздел имущества","Property division")}</option><option value="labor">${t("Mehnat nizosi","Трудовой спор","Employment dispute")}</option><option value="business">${t("Iqtisodiy / biznes nizosi","Экономический спор","Business dispute")}</option><option value="other">${t("Boshqa da’vo","Другой иск","Other claim")}</option></select>
+ <label>${t("Qaysi sudga murojaat qilmoqchisiz?","В какой суд?","Which court?")}</label><select name="court" required><option value="">${t("Tanlang","Выберите","Choose")}</option><option value="civil">${t("Fuqarolik sudi","Гражданский суд","Civil court")}</option><option value="economic">${t("Iqtisodiy sud","Экономический суд","Economic court")}</option><option value="administrative">${t("Ma’muriy sud","Административный суд","Administrative court")}</option><option value="unknown">${t("Bilmayman","Не знаю","Not sure")}</option></select>
+ <div id="feeAmountWrap" style="display:none"><label>${t("Da’vo summasi (so‘m)","Цена иска (сум)","Claim amount (UZS)")}</label><input name="amount" inputmode="decimal" type="number" min="0" step="1" placeholder="0"><p class="feeHelp">${t("Mulk qiymati yoki undiriladigan summani kiriting. Bu avtomatik tarif emas.","Введите сумму требования.","Enter the claim value.")}</p></div>
+ <h2>${t("2. Imtiyoz va xarajatlar","2. Льготы и расходы","2. Exemptions and costs")}</h2>
+ <label>${t("Davlat boji bo‘yicha imtiyozingiz bormi?","Есть ли льгота?","Do you have an exemption?")}</label><select name="exemption" required><option value="unknown">${t("Aniq bilmayman","Не знаю","Not sure")}</option><option value="yes">${t("Ha, hujjatim bor","Да, есть подтверждение","Yes, documented")}</option><option value="no">${t("Yo‘q","Нет","No")}</option></select>
+ <label>${t("Kutilayotgan boshqa xarajatlar (ixtiyoriy, so‘m)","Другие расходы (сум)","Other expected costs (UZS)")}</label><input name="extra" type="number" min="0" step="1" placeholder="0">
+ <div class="feeWarn">${t("Aniq davlat boji stavkalari amaldagi qonunchilik bo‘yicha tasdiqlanmaguncha taxminiy yoki uydirma summa chiqarilmaydi.","Ставки требуют проверки по действующему закону.","Official rates must be verified before an amount is shown.")}</div>
+ <div class="feeActions"><button class="btn btnGold" type="submit">${t("Natijani ko‘rish","Показать результат","Show result")}</button><a class="btn btnOutline" href="https://lex.uz/uz/acts/-4680944" target="_blank" rel="noopener">${t("Davlat boji qonuni ↗","Закон ↗","Law ↗")}</a></div></form></div>
+ <script>function feeToggle(){var x=document.getElementById('feeClaim').value;document.getElementById('feeAmountWrap').style.display=['property','business','other'].includes(x)?'block':'none'}feeToggle()</script>`);
+}
+function courtCostsResultPage(lang,form){
+ const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+ const types={divorce:'Nikohdan ajratish',alimony:'Aliment undirish',property:'Mol-mulkni bo‘lish',labor:'Mehnat nizosi',business:'Biznes nizosi',other:'Boshqa da’vo'};
+ const claim=types[String(form.claim||'')]||'Aniqlanmagan';const amount=Number(form.amount||0);const extra=Number(form.extra||0);
+ const fmt=n=>Number.isFinite(n)&&n>=0?n.toLocaleString('uz-UZ')+' so‘m':'—';
+ return appLayout(lang,'court-costs',`<section class="panel" style="max-width:920px;margin:auto;padding:30px"><h1>${t('Dastlabki xarajatlar tahlili','Предварительный анализ','Preliminary cost review')}</h1><p><strong>${t('Murojaat turi','Вид обращения','Claim')}:</strong> ${esc(claim)}</p><p><strong>${t('Da’vo summasi','Цена иска','Claim amount')}:</strong> ${amount>0?fmt(amount):t('Kiritilmagan','Не указана','Not provided')}</p><p><strong>${t('Siz kiritgan boshqa xarajatlar','Прочие расходы','Other costs')}:</strong> ${fmt(extra)}</p><div style="padding:19px;background:#fff4da;border-left:5px solid #bb8e3c;border-radius:9px;font-size:17px"><strong>${t('Davlat boji: rasmiy stavka tekshirilishi kerak','Госпошлина: требуется проверка','Court fee: verification required')}</strong><p>${t('Da’vo turi, sud turi, imtiyoz va amaldagi hisoblash ko‘rsatkichiga qarab belgilanadi. Noto‘g‘ri raqam ko‘rsatmaslik uchun tasdiqlanmagan tarif bilan hisoblamaymiz.','Ставку необходимо проверить по действующему закону.','The rate requires verification against current law.')}</p></div><p>${t('Imtiyoz haqidagi javob','Ответ о льготе','Exemption response')}: ${esc(String(form.exemption||'unknown'))}</p><p>${t('Bu natija rasmiy to‘lov hujjati emas. Sudga murojaat qilishdan oldin stavka va imtiyozni tekshiring.','Это не платёжный документ.','This is not an official payment document.')}</p><a class="btn btnGold" href="https://lex.uz/uz/acts/-4680944" target="_blank" rel="noopener">${t('Amaldagi qonunni tekshirish ↗','Проверить закон ↗','Verify law ↗')}</a> <a class="btn btnOutline" href="/court-costs${q(lang)}">${t('Qayta hisoblash','Назад','Back')}</a> <button class="btn btnOutline" onclick="window.print()">PDF / Print</button></section>`);
+}
+function businessContractCostsPage(lang="uz"){
+ const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+ return appLayout(lang,'business',`<section class="panel" style="max-width:940px;margin:auto;padding:30px"><h1>${t('Shartnomalar va rasmiylashtirish xarajatlari','Договоры и оформление','Contract formalization costs')}</h1><p>${t('Savollarga javob bering. Shartnoma turiga qarab talab qilinishi mumkin bo‘lgan rasmiylashtirish ishlarini aniqlang.','Ответьте на вопросы.','Answer the questions.')}</p><form method="POST" action="/business-contract-costs-result${q(lang)}" class="formGroup"><label>${t('Shartnoma turi','Вид договора','Contract type')}</label><select name="type" required><option value="">Tanlang</option><option value="sale">Oldi-sotdi</option><option value="lease">Ijara</option><option value="services">Xizmat ko‘rsatish</option><option value="works">Pudrat</option><option value="loan">Qarz</option><option value="supply">Tovar yetkazib berish</option><option value="other">Boshqa</option></select><label>${t('Shartnoma predmeti','Предмет договора','Subject')}</label><select name="subject" required><option value="">Tanlang</option><option value="real_estate">Ko‘chmas mulk</option><option value="vehicle">Transport vositasi</option><option value="goods">Tovar yoki xizmat</option><option value="money">Pul mablag‘i</option><option value="other">Boshqa</option></select><label>${t('Tomonlar','Стороны','Parties')}</label><select name="parties"><option value="business">Yuridik shaxslar / tadbirkorlar</option><option value="mixed">Tadbirkor va jismoniy shaxs</option><option value="individuals">Jismoniy shaxslar</option></select><label>${t('Qiymati (ixtiyoriy, so‘m)','Стоимость','Value')}</label><input type="number" min="0" name="value"><label>${t('Notarial tasdiq haqida ma’lumot','Нотариат','Notarization')}</label><select name="notary"><option value="unknown">Bilmayman</option><option value="yes">Kerak deb hisoblayman</option><option value="no">Kerak emas deb hisoblayman</option></select><label>${t('Davlat ro‘yxatidan o‘tkazish haqida ma’lumot','Регистрация','Registration')}</label><select name="registration"><option value="unknown">Bilmayman</option><option value="yes">Kerak deb hisoblayman</option><option value="no">Kerak emas deb hisoblayman</option></select><button class="btn btnGold" type="submit">${t('Natijani ko‘rish','Результат','Results')}</button></form></section>`);
+}
+function businessContractCostsResultPage(lang,form){
+ const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+ const names={sale:'Oldi-sotdi',lease:'Ijara',services:'Xizmat ko‘rsatish',works:'Pudrat',loan:'Qarz',supply:'Tovar yetkazib berish',other:'Boshqa'};
+ const subject={real_estate:'Ko‘chmas mulk',vehicle:'Transport',goods:'Tovar/xizmat',money:'Pul',other:'Boshqa'};
+ const high=['real_estate','vehicle'].includes(String(form.subject||''));
+ return appLayout(lang,'business',`<section class="panel" style="max-width:950px;margin:auto;padding:30px"><h1>${t('Shartnomani rasmiylashtirish bo‘yicha dastlabki tahlil','Предварительный анализ','Preliminary review')}</h1><p><strong>Shartnoma:</strong> ${esc(names[form.type]||'Boshqa')}</p><p><strong>Predmet:</strong> ${esc(subject[form.subject]||'Boshqa')}</p><h2>${t('Tekshirish kerak bo‘lgan masalalar','Что проверить','What to verify')}</h2><ul style="font-size:17px;line-height:1.9"><li>Tomonlarning shaxsi, vakolati va rekvizitlari</li><li>Predmet, narx, to‘lov tartibi, muddatlar va javobgarlik</li><li>${high?'Predmet turiga ko‘ra notarial tasdiq va davlat ro‘yxatidan o‘tkazish talablarini alohida tekshiring.':'Shartnoma turiga ko‘ra notarial tasdiq yoki ro‘yxatdan o‘tkazish zarurligini tekshiring.'}</li><li>Majburiy yig‘im, notarial tarif va ixtiyoriy xizmat haqlarini alohida aniqlang</li></ul><p style="background:#fff5e3;padding:18px;border-radius:10px">${t('Barcha shartnomalarga yagona to‘lov qo‘llanmaydi. Amaldagi tarif va rasmiylashtirish talablari tasdiqlanmaguncha summa chiqarilmaydi. Bu sud davlat boji kalkulyatori emas.','Тарифы зависят от сделки.','Rates depend on the transaction.')}</p><a class="btn btnGold" href="https://lex.uz/" target="_blank" rel="noopener">LexUZ ↗</a> <a class="btn btnOutline" href="/business-contract-costs${q(lang)}">${t('Orqaga','Назад','Back')}</a> <a class="btn btnOutline" href="/business${q(lang)}">${t('Biznes huquqi','Бизнес-право','Business law')}</a></section>`);
+}
+
 function businessPage(lang="uz"){
   const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
 
@@ -8307,6 +8352,7 @@ function businessPage(lang="uz"){
   return appLayout(lang,"business",`
   <style>
     .bWrap{max-width:1280px;margin:0 auto}
+    .bWrap{font-size:17px;line-height:1.65}.bKicker,.bStat small,.bTag{font-size:13px!important}.bTop p,.bHead p,.bTool p,.bLaw p{font-size:16px!important;line-height:1.65}.bTool h3,.bAction b{font-size:18px!important}.bHead h2{font-size:25px!important}.bSideTitle,.bSideLink{font-size:16px!important}.bTool{min-height:155px}.bAction{min-height:67px}.bTopBtn{font-size:16px!important}
     .bTop{position:relative;overflow:hidden;border-radius:24px;padding:34px 38px;background:#071f36;color:#fff;box-shadow:0 18px 48px rgba(5,31,54,.14)}
     .bTop:before{content:"";position:absolute;width:360px;height:360px;border:1px solid rgba(213,174,101,.20);border-radius:50%;right:-100px;top:-210px}
     .bTop:after{content:"";position:absolute;width:260px;height:260px;border:1px solid rgba(213,174,101,.14);border-radius:50%;right:35px;top:-160px}
@@ -8390,6 +8436,13 @@ function businessPage(lang="uz"){
         <a class="bSideLink" href="https://biznesvakil.uz/" target="_blank" rel="noopener noreferrer">${t("Biznes-ombudsman","Бизнес-омбудсман","Business Ombudsman")}<span>↗</span></a>
       </aside>
     </div>
+
+    <section class="bPanel bSection" id="b-contract-costs" style="border:2px solid #d7b46d;background:linear-gradient(135deg,#fff,#fff9ed)">
+      <div class="bHead"><div><h2>${t("Shartnomalar va rasmiylashtirish xarajatlari","Договоры и расходы на оформление","Contract formalization costs")}</h2>
+      <p style="font-size:16px">${t("Shartnoma turini tanlang: kerakli hujjatlar, notarial tasdiq va ro‘yxatdan o‘tkazish ehtiyojini savol-javob orqali aniqlang.","Выберите договор и уточните необходимые процедуры.","Choose a contract and identify required procedures.")}</p></div></div>
+      <a class="btn btnGold" href="/business-contract-costs${q(lang)}">${t("Savol-javobni boshlash →","Начать →","Start questions →")}</a>
+      <p style="font-size:14px;margin-top:12px">${t("Bu xizmat sud davlat boji hisobidan alohida ishlaydi.","Отдельно от судебных пошлин.","Separate from court fees.")}</p>
+    </section>
 
     <section class="bPanel bSection">
       <div class="bHead"><div><h2>${t("Shartnomalar","Договоры","Contracts")}</h2><p>${t("Turini tanlang va AI bilan individual loyiha tayyorlang.","Выберите тип и создайте индивидуальный проект.","Choose a type and create a tailored draft.")}</p></div><span class="bTag">${t("NAMUNA + GENERATOR","ШАБЛОН + ГЕНЕРАТОР","TEMPLATE + GENERATOR")}</span></div>
@@ -12634,6 +12687,12 @@ const server =
 
 
         // ------------------------------------------------
+        // NEW INDEPENDENT COURT COSTS AND BUSINESS CONTRACT COSTS
+        if(req.method==="GET" && pathname==="/court-costs") return sendHtml(res,courtCostsPage(lang));
+        if(req.method==="POST" && pathname==="/court-costs-result") return sendHtml(res,courtCostsResultPage(lang,await readForm(req)));
+        if(req.method==="GET" && pathname==="/business-contract-costs") return sendHtml(res,businessContractCostsPage(lang));
+        if(req.method==="POST" && pathname==="/business-contract-costs-result") return sendHtml(res,businessContractCostsResultPage(lang,await readForm(req)));
+
         // HOME
         // ------------------------------------------------
 
