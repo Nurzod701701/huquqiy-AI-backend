@@ -7594,36 +7594,32 @@ async function readLegalUpload(req) {
 
 function legalReviewPage(lang){
   lang=getLang(lang);
-  const tx={
-    uz:{title:"Hujjatni huquqiy tekshirish",desc:"Da’vo arizasi, ariza, shartnoma yoki boshqa huquqiy hujjat matnini kiriting. Tizim faktlar, rekvizitlar, dalillar, talablar va huquqiy asoslarni tekshiradi.",type:"Hujjat turi",text:"Hujjat matni",context:"Qo‘shimcha holatlar (ixtiyoriy)",go:"Huquqiy tekshiruvni boshlash",note:"Muhim: tizim ishonchsiz modda raqamini to‘qib chiqarmaydi. Amaldagi tahrir rasmiy LexUZ manbasi bilan tekshirilishi kerak."},
-    ru:{title:"Правовая проверка документа",desc:"Вставьте текст иска, заявления, договора или другого юридического документа. Система проверит факты, реквизиты, доказательства, требования и правовые основания.",type:"Тип документа",text:"Текст документа",context:"Дополнительные обстоятельства (необязательно)",go:"Начать правовую проверку",note:"Важно: система не должна придумывать номера статей. Действующая редакция проверяется по официальному источнику LexUZ."},
-    en:{title:"Legal document review",desc:"Paste a claim, application, contract or other legal document. The system checks facts, required details, evidence, relief and legal grounds.",type:"Document type",text:"Document text",context:"Additional facts (optional)",go:"Start legal review",note:"Important: the system must not invent article numbers. Current law should be verified against the official LexUZ source."}
+  const t={
+    uz:{title:'Hujjatni tekshirish',sub:'PDF yoki Word hujjatingizni yuklang. Tizim kamchiliklarni aniqlab, tuzatish bo‘yicha tavsiyalar beradi.',step:'Hujjatni yuklang',file:'PDF yoki Word faylini tanlang',or:'Yoki hujjat matnini shu yerga joylang',type:'Hujjat turi',area:'Huquq sohasi',extra:'Qo‘shimcha izoh (ixtiyoriy)',go:'Hujjatni tekshirish',note:'PDF yoki DOCX, 8 MB gacha. Skanerlangan PDF matni hozircha avtomatik o‘qilmaydi.',privacy:'Shaxsiy ma’lumotlarni yuborishdan oldin keraksiz maxfiy ma’lumotlarni olib tashlang.'},
+    ru:{title:'Проверка документа',sub:'Загрузите PDF или Word. Система покажет недостатки и предложит исправления.',step:'Загрузите документ',file:'Выберите PDF или Word',or:'Или вставьте текст документа',type:'Тип документа',area:'Отрасль права',extra:'Дополнительный комментарий (необязательно)',go:'Проверить документ',note:'PDF или DOCX до 8 МБ. Сканированные PDF пока не распознаются.',privacy:'Перед отправкой удалите ненужные конфиденциальные данные.'},
+    en:{title:'Check your document',sub:'Upload a PDF or Word document to identify issues and suggested corrections.',step:'Upload your document',file:'Choose PDF or Word',or:'Or paste the document text',type:'Document type',area:'Legal area',extra:'Additional notes (optional)',go:'Check document',note:'PDF or DOCX, up to 8 MB. Scanned PDFs cannot yet be read.',privacy:'Remove unnecessary confidential information before uploading.'}
   }[lang];
-  return appLayout(lang,"legal-review",`
-    <section class="hero"><div class="eyebrow">✓ HUQUQIY AI CHECK</div><h1>${tx.title}</h1><p>${tx.desc}</p></section>
-    <section class="panel" style="max-width:1160px;margin:0 auto 28px;padding:clamp(24px,4vw,52px);border:2px solid #b48b48;border-radius:22px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:0 0 24px">
-      <div class="notice noticeGold"><strong>01</strong> · ${lang==="uz"?"Yo‘nalishni tanlang":lang==="ru"?"Выберите направление":"Choose area"}</div>
-      <div class="notice noticeGold"><strong>02</strong> · ${lang==="uz"?"Hujjat matnini kiriting":lang==="ru"?"Введите текст":"Enter document"}</div>
-      <div class="notice noticeGold"><strong>03</strong> · ${lang==="uz"?"Kamchiliklarni tahlil qiling":lang==="ru"?"Проверьте недостатки":"Review issues"}</div>
-    </div>
-      <form method="post" enctype="multipart/form-data" action="/legal-review-result?lang=${lang}">
-      <label>${lang==="uz"?"Huquq sohasi":lang==="ru"?"Отрасль права":"Legal area"}
-      <select name="legalArea" required><option value="family">${lang==="uz"?"Oila huquqi":lang==="ru"?"Семейное право":"Family law"}</option><option value="employment">${lang==="uz"?"Mehnat huquqi":lang==="ru"?"Трудовое право":"Employment law"}</option><option value="business">${lang==="uz"?"Biznes huquqi":lang==="ru"?"Бизнес-право":"Business law"}</option><option value="other">${lang==="uz"?"Boshqa huquq sohasi":lang==="ru"?"Другая отрасль":"Other"}</option></select></label>
-        <label>${tx.type}<select name="documentType" required>
-          <option value="claim">Da’vo arizasi / Иск / Claim</option><option value="contract">Shartnoma / Договор / Contract</option><option value="application">Ariza / Заявление / Application</option><option value="complaint">Shikoyat / Жалоба / Complaint</option><option value="other">Boshqa / Другое / Other</option>
-        </select></label>
-        <label style="display:block;font-size:19px;font-weight:800;margin:18px 0 8px">${lang==='uz'?'PDF yoki Word (.docx) faylini yuklang':lang==='ru'?'Загрузите PDF или Word (.docx)':'Upload PDF or Word (.docx)'}</label>
-        <input type="file" name="documentFile" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="font-size:17px;padding:16px;width:100%;border:2px dashed #c9a86a;border-radius:14px" />
-        <p style="font-size:15px">${lang==='uz'?'8 MB gacha. Matnli PDF va DOCX qo‘llab-quvvatlanadi. Skanerlangan PDF uchun matnni tanib olish hali mavjud emas.':lang==='ru'?'До 8 МБ. Поддерживаются текстовые PDF и DOCX; сканы без распознавания.':'Up to 8 MB. Text PDFs and DOCX; scanned PDFs need OCR.'}</p>
-        <label>${tx.text} (${lang==='uz'?'fayl yuklanmasa':lang==='ru'?'если нет файла':'if no file'})<textarea name="documentText" rows="12" placeholder="Hujjat matnini shu yerga kiriting..."></textarea></label>
-        <label>${tx.context}<textarea name="extraContext" rows="5"></textarea></label>
-        <div class="notice noticeGold"><span class="noticeIcon">§</span><span>${tx.note}</span></div>
-        <button class="btn btnGold" type="submit">${tx.go}</button>
-      </form>
-    </section>
-    <section class="panel" style="max-width:980px;margin:0 auto"><h2>Rasmiy huquqiy manbalar</h2><p>Tekshiruv O‘zbekiston qonunchiligiga yo‘naltiriladi. Yakuniy norma va amaldagi tahrirni rasmiy manbada ochib tekshirish mumkin.</p><div class="accountActions"><a class="accountButton" target="_blank" rel="noopener" href="https://lex.uz/uz/">LexUZ</a><a class="accountButton light" target="_blank" rel="noopener" href="https://sud.uz/">Sud.uz</a><a class="accountButton light" target="_blank" rel="noopener" href="https://cabinet.sud.uz/">E-SUD kabineti</a></div></section>
-  `,tx.title,tx.desc);
+  const types={uz:['Da’vo arizasi','Shartnoma','Ariza','Shikoyat','Boshqa'],ru:['Иск','Договор','Заявление','Жалоба','Другое'],en:['Claim','Contract','Application','Complaint','Other']}[lang];
+  const areas={uz:['Oila huquqi','Mehnat huquqi','Biznes huquqi','Boshqa'],ru:['Семейное право','Трудовое право','Бизнес-право','Другое'],en:['Family law','Employment law','Business law','Other']}[lang];
+  return appLayout(lang,'legal-review',`
+  <section class="hero" style="max-width:900px;margin:0 auto 20px"><h1>${t.title}</h1><p>${t.sub}</p></section>
+  <section class="panel" style="max-width:850px;margin:0 auto 22px;padding:clamp(20px,4vw,40px);border:1px solid #bd9858;border-radius:18px">
+    <form method="post" enctype="multipart/form-data" action="/legal-review-result?lang=${lang}" id="simpleReviewForm">
+      <h2 style="margin:0 0 14px;font-size:23px">${t.step}</h2>
+      <label for="reviewFile" style="display:block;font-weight:700;margin-bottom:9px">${t.file}</label>
+      <input id="reviewFile" type="file" name="documentFile" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:block;width:100%;padding:17px;border:2px dashed #bd9858;border-radius:12px;margin-bottom:9px" />
+      <p style="font-size:14px;margin:0 0 18px">${t.note}</p>
+      <details style="margin:0 0 18px"><summary style="cursor:pointer;font-weight:700">${t.or}</summary><textarea name="documentText" rows="7" style="width:100%;margin-top:10px" placeholder="${t.or}"></textarea></details>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;margin:0 0 15px">
+        <label style="display:block">${t.type}<select name="documentType" style="width:100%;margin-top:7px"><option value="claim">${types[0]}</option><option value="contract">${types[1]}</option><option value="application">${types[2]}</option><option value="complaint">${types[3]}</option><option value="other">${types[4]}</option></select></label>
+        <label style="display:block">${t.area}<select name="legalArea" style="width:100%;margin-top:7px"><option value="family">${areas[0]}</option><option value="employment">${areas[1]}</option><option value="business">${areas[2]}</option><option value="other">${areas[3]}</option></select></label>
+      </div>
+      <details style="margin-bottom:17px"><summary style="cursor:pointer">${t.extra}</summary><textarea name="extraContext" rows="3" style="width:100%;margin-top:10px"></textarea></details>
+      <p style="font-size:13px;opacity:.8">${t.privacy}</p>
+      <button class="btn btnGold" type="submit" style="width:100%;font-size:19px;padding:16px">${t.go}</button>
+    </form>
+  </section>
+  `,t.title,t.sub);
 }
 
 function cleanLegalReviewText(v){
@@ -8929,8 +8925,7 @@ function employmentPage(lang) {
             </div>
             <div class="formGroup"><label>${lang==="uz"?"Ish beruvchi":lang==="ru"?"Работодатель":"Employer"}</label><input name="employer"></div>
           </div>
-          <div class="formGroup"><label>${lang==="uz"?"Nizo holatlari":lang==="ru"?"Обстоятельства":"Dispute facts
-                                          "}</label><textarea name="facts" rows="7" required></textarea></div>
+          <div class="formGroup"><label>${lang==="uz"?"Nizo holatlari":lang==="ru"?"Обстоятельства":"Dispute facts"}</label><textarea name="facts" rows="7" required></textarea></div>
           <div class="formGroup"><label>${lang==="uz"?"Dalillar":lang==="ru"?"Доказательства":"Evidence"}</label><textarea name="evidence" rows="4"></textarea></div>
           <button class="btn btnPrimary" type="submit">${lang==="uz"?"Da’vo arizasini tayyorlash":lang==="ru"?"Подготовить иск":"Prepare claim"}</button>
         </form>
@@ -9008,7 +9003,8 @@ Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang va amaldagi Le
       instructionConclusion: `Prepare a professional legal conclusion under Uzbekistan employment law. Separate facts from legal issues, explain possible legal options and next steps. Do not invent statutory article numbers or missing facts; where needed, state that the current LexUZ text should be verified.`,
       instructionClaim: `Prepare an initial court claim draft for an employment dispute in Uzbekistan. Use formal style. Mark missing filing details as [TO BE COMPLETED]. Do not invent facts or statutory provisions. Separate facts, requests, legal basis and attachments.`
     }
-  }[lang];
+  }
+  [lang];
 
   const contractInstruction = lang === "uz"
     ? `O‘zbekiston mehnat qonunchiligiga mos mehnat shartnomasi loyihasini tayyorlang. Tanlangan shartnoma turiga mos bo‘limlarni kiriting: taraflar, ish joyi va mehnat vazifasi, ish boshlanishi va muddat, ish haqi, ish vaqti va dam olish, huquq va majburiyatlar, mehnatni muhofaza qilish, javobgarlik, shartnomani o‘zgartirish va bekor qilish, yakuniy qoidalar, rekvizit va imzolar. Yetishmayotgan har qanday shaxsiy yoki faktik ma’lumotni [TO‘LDIRILADI] deb belgilang. Fakt, modda, summa yoki rekvizitni o‘ylab topmang.`
