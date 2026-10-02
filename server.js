@@ -5886,6 +5886,7 @@ function homePage(lang) {
                 ✓ ${t.questionnaire}
               </a>
 
+              <a class="btn btnGold" href="/legal-review${q(lang)}">✓ ${lang === "uz" ? "Hujjatni tekshirish" : lang === "ru" ? "Проверить документ" : "Review document"}</a>
               <a class="btn btnGold" href="/documents${q(lang)}">
                 ▤ ${lang === "uz" ? "Da’vo arizasi tayyorlash" : lang === "ru" ? "Подготовить иск" : "Prepare a claim"}
               </a>
@@ -7555,7 +7556,7 @@ async function legalReviewResultPage(lang,form){
   const documentText=String(form.documentText||"").trim().slice(0,45000);
   const documentType=String(form.documentType||"other").trim();
   const extraContext=String(form.extraContext||"").trim().slice(0,10000);
-  if(documentText.length<80) return appLayout(lang,"documents",`<section class="panel"><h1>Hujjat matni yetarli emas</h1><a class="btn btnGold" href="/legal-review?lang=${lang}">Orqaga</a></section>`,`Huquqiy tekshiruv`,``);
+  if(documentText.length<80) return appLayout(lang,"legal-review",`<section class="panel"><h1>Hujjat matni yetarli emas</h1><a class="btn btnGold" href="/legal-review?lang=${lang}">Orqaga</a></section>`,`Huquqiy tekshiruv`,``);
   const prompt=`Siz O‘zbekiston huquqi bo‘yicha professional hujjat tekshiruvchisisiz. Foydalanuvchi bergan hujjatni tahlil qiling.\n\nQAT’IY QOIDALAR:\n1) Hech qachon mavjud bo‘lmagan qonun, modda, sud qarori yoki faktni o‘ylab topmang.\n2) Modda raqamiga ishonchingiz komil bo‘lmasa, raqam bermang; aynan qaysi qonun/kodeks va qaysi masala LexUZda tekshirilishi kerakligini yozing.\n3) Foydalanuvchi aytmagan faktni fakt sifatida qo‘shmang.\n4) Hujjat turiga mos majburiy rekvizitlar, taraflar, yurisdiksiya/sudlovlilik, faktlar, dalillar, hisob-kitoblar, talablar va ilovalarni tekshiring.\n5) Da’vo bo‘lsa, talab bilan fakt va dalil o‘rtasidagi bog‘liqlikni tekshiring. Shartnoma bo‘lsa, muhim shartlar, taraflar majburiyatlari, javobgarlik, muddat, hisob-kitob va nizolarni hal etish bandlarini tekshiring.\n6) Natijani quyidagi bo‘limlarda bering:\nHUJJAT TURI VA QISQA XULOSA\n1. ANIQLANGAN KAMCHILIKLAR\n2. YETISHMAYOTGAN MA’LUMOTLAR\n3. DALILLAR VA ILOVALAR\n4. HUQUQIY ASOSLAR\n5. HISOB-KITOB TEKSHIRUVI (tegishli bo‘lsa)\n6. TALABLAR TEKSHIRUVI\n7. TUZATISH BO‘YICHA ANIQ TAVSIYALAR\n8. LEXUZDA TEKSHIRILADIGAN MANBALAR — kodeks/qonun nomi, mavzu va qidiruv iborasini yozing.\n9. TEKSHIRUV HOLATI — qaysi xulosalar hujjat matniga asoslangan, qaysilari rasmiy manbada qo‘shimcha tekshiruv talab qiladi.\n\nHujjat turi: ${documentType}\nQo‘shimcha holatlar: ${extraContext||"berilmagan"}\n\nTEKSHIRILADIGAN HUJJAT:\n${documentText}`;
   let answer="";
   try{answer=cleanLegalReviewText(await callAI(prompt,lang));}catch(e){answer=lang==="ru"?"Не удалось выполнить проверку. Проверьте настройку AI на сервере.":lang==="en"?"The review could not be completed. Check the server AI configuration.":"Tekshiruvni bajarib bo‘lmadi. Serverdagi AI sozlamasini tekshiring.";}
