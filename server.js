@@ -12704,6 +12704,11 @@ const server =
           return sendHtml(res, await legalReviewResultPage(lang, form));
         }
 
+        // Compatibility with older Labor Law navigation links.
+        if(req.method === "GET" && pathname === "/labor") {
+          return redirect(res, "/employment" + q(lang));
+        }
+
         // ------------------------------------------------
         // DOCUMENTS
         // ------------------------------------------------
