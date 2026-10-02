@@ -7947,6 +7947,26 @@ function cleanClaimText(value){
   return x;
 }
 
+// Word output uses a real DOCX file and the same claim text shown in the preview.
+async function claimDocxBuffer(rawText){
+  const {Document, Packer, Paragraph, TextRun, AlignmentType}=require("docx");
+  const lines=String(rawText||"").replace(/\r/g,"").split("\n");
+  const paragraphs=lines.map((line,index)=>{
+    const t=line.trim();
+    const title=/^(DA[’'ʻ]?VO ARIZASI|ИСКОВОЕ ЗАЯВЛЕНИЕ|STATEMENT OF CLAIM)$/i.test(t);
+    const heading=/^(?:[IVX]+\.\s+)?(?:ISHNING|MULK TARKIBI|HUQUQIY ASOS|SUDDAN|ILOVALAR|HISOB-KITOB|ОБСТОЯТЕЛЬСТВА|ПРАВОВЫЕ ОСНОВАНИЯ|ПРОШУ СУД|ПРИЛОЖЕНИЯ)/i.test(t);
+    const isMeta=index<7 && /^(?:Da[’'ʻ]?vogar|Javobgar|Manzil|Da[’'ʻ]?vo bahosi|Истец|Ответчик|Адрес)/i.test(t);
+    return new Paragraph({
+      alignment:title?AlignmentType.CENTER:(index===0?AlignmentType.RIGHT:AlignmentType.JUSTIFIED),
+      spacing:{after: t? (title?160:heading?120:80):30,line:360},
+      indent:{firstLine: (!title&&!heading&&!isMeta&&index>7)?560:0},
+      children:[new TextRun({text:line,bold:title||heading,size:title?30:28,font:"Times New Roman"})]
+    });
+  });
+  const doc=new Document({sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1134,right:1021,bottom:1134,left:1418}}},children:paragraphs}]});
+  return Packer.toBuffer(doc);
+}
+
 async function claimResultPage(lang,form){
   lang=getLang(lang);
   const documentType=DOCUMENT_TYPES.find(x=>x.id===String(form.document_type||form.type||""))||DOCUMENT_TYPES[0];
@@ -7962,7 +7982,7 @@ QAT’IY QOIDALAR:
 1. Foydalanuvchi so‘ramagan talabni qo‘shmang. Nikohdan ajratish da’vosida bola yashash joyi, aliment yoki mol-mulk faqat tegishli ask_* maydoni "yes" bo‘lsa va requestda talab qilingan bo‘lsa kiritiladi.
 2. Hech qanday fakt, sana, summa, bola, mol-mulk, daromad, dalil yoki talabni uydirmang.
 3. Huquqiy asos sifatida quyida berilgan TASDIQLANGAN HUQUQIY BAZAdan foydalaning. Unda yo‘q modda raqamini o‘ylab topmang.
-4. Hujjat tuzilishi: sud nomi; da’vogar rekvizitlari; javobgar rekvizitlari; markazda DA’VO ARIZASI va turi; ish holatlari; HUQUQIY ASOSLAR; zarur bo‘lsa HISOB-KITOB; SUDDAN SO‘RAYMAN; ILOVALAR; sana; imzo.
+4. FOYDALANUVCHI NAMUNASI BO‘YICHA QAT’IY TUZILISH: sudning to‘liq nomi; da’vogar F.I.Sh. va manzili; javobgar F.I.Sh. va manzili; tegishli bo‘lsa da’vo bahosi; alohida satrda DA’VO ARIZASI; keyingi satrda da’vo predmeti; I. ISHNING HOLATLARI; zarur bo‘lsa II. MULK TARKIBI VA HISOB-KITOB (boshqa da’voda mos nom); III. HUQUQIY ASOS VA DALILLAR; IV. SUDDAN SO‘RALADI (raqamlangan, foydalanuvchi so‘ragan talablar); V. ILOVALAR (faqat haqiqatda mavjudligi bildirilgan hujjatlar); Sana va Imzo. Bo‘lim raqamlari mavjud bo‘limlarga mos ketma-ket bo‘lsin. Namuna shakli saqlansin, mazmun faqat foydalanuvchi faktlaridan tuzilsin.
 5. HUQUQIY ASOSLAR qismida modda raqamini shunchaki sanamang — normaning aynan ushbu faktlarga qanday tatbiq etilishini rasmiy yuridik tilda tushuntiring.
 6. Yetishmagan ma’lumotni o‘zingiz to‘ldirmang. Muhim ma’lumot bo‘lmasa, yakuniy hujjatda noto‘g‘ri talab yaratmang; mavjud ma’lumot bilan hujjatni tuzing.
 7. "Faktik hosil", "Huquqiy talqin", "Yetishmayotgan muhim ma’lumotlar", "Xulosa" kabi AI-tahlil sarlavhalarini ishlatmang.
@@ -7983,6 +8003,7 @@ QAT’IY QOIDALAR:
       <div id="claimPrintable" class="claimDocument">${esc(answer)}</div>
     </div>
     <div class="formActions" style="margin-top:18px">
+      <form method="POST" action="/claim-download${q(lang)}" style="display:inline"><textarea name="claim_text" hidden>${esc(answer)}</textarea><button class="btn btnGold" type="submit">⬇ ${esc(L("Word (.docx) yuklash","Скачать Word (.docx)","Download Word (.docx)"))}</button></form>
       <button type="button" class="btn btnPrimary" onclick="saveClaimPdf()">📄 ${esc(L("PDF qilib saqlash","Сохранить PDF","Save PDF"))}</button>
       <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${esc(L("Sudga elektron topshirish","Подать в суд","File electronically"))}</a>
       <a class="btn btnOutline" href="/claim${q(lang)}&type=${encodeURIComponent(documentType.id)}">← ${esc(L("Ma’lumotlarni tuzatish","Исправить данные","Edit details"))}</a>
@@ -8925,7 +8946,8 @@ function employmentPage(lang) {
             </div>
             <div class="formGroup"><label>${lang==="uz"?"Ish beruvchi":lang==="ru"?"Работодатель":"Employer"}</label><input name="employer"></div>
           </div>
-          <div class="formGroup"><label>${lang==="uz"?"Nizo holatlari":lang==="ru"?"Обстоятельства":"Dispute facts"}</label><textarea name="facts" rows="7" required></textarea></div>
+          <div class="formGroup"><label>${lang==="uz"?"Nizo holatlari":lang==="ru"?"Обстоятельства":"Dispute facts"}</label><textarea name="facts" rows="7" requi
+          red></textarea></div>
           <div class="formGroup"><label>${lang==="uz"?"Dalillar":lang==="ru"?"Доказательства":"Evidence"}</label><textarea name="evidence" rows="4"></textarea></div>
           <button class="btn btnPrimary" type="submit">${lang==="uz"?"Da’vo arizasini tayyorlash":lang==="ru"?"Подготовить иск":"Prepare claim"}</button>
         </form>
@@ -9003,8 +9025,7 @@ Modda raqamiga ishonchingiz komil bo‘lmasa uni o‘ylab topmang va amaldagi Le
       instructionConclusion: `Prepare a professional legal conclusion under Uzbekistan employment law. Separate facts from legal issues, explain possible legal options and next steps. Do not invent statutory article numbers or missing facts; where needed, state that the current LexUZ text should be verified.`,
       instructionClaim: `Prepare an initial court claim draft for an employment dispute in Uzbekistan. Use formal style. Mark missing filing details as [TO BE COMPLETED]. Do not invent facts or statutory provisions. Separate facts, requests, legal basis and attachments.`
     }
-  }
-  [lang];
+  }[lang];
 
   const contractInstruction = lang === "uz"
     ? `O‘zbekiston mehnat qonunchiligiga mos mehnat shartnomasi loyihasini tayyorlang. Tanlangan shartnoma turiga mos bo‘limlarni kiriting: taraflar, ish joyi va mehnat vazifasi, ish boshlanishi va muddat, ish haqi, ish vaqti va dam olish, huquq va majburiyatlar, mehnatni muhofaza qilish, javobgarlik, shartnomani o‘zgartirish va bekor qilish, yakuniy qoidalar, rekvizit va imzolar. Yetishmayotgan har qanday shaxsiy yoki faktik ma’lumotni [TO‘LDIRILADI] deb belgilang. Fakt, modda, summa yoki rekvizitni o‘ylab topmang.`
@@ -12973,6 +12994,18 @@ const server =
 
         }
 
+
+        // Professional claim DOCX download
+        if(req.method === "POST" && pathname === "/claim-download"){
+          const form=await readForm(req);
+          const claimText=String(form.claim_text||"").trim();
+          if(!claimText || claimText.length>150000){res.writeHead(400,{"Content-Type":"text/plain; charset=utf-8"});return res.end("Da’vo arizasi matni topilmadi yoki juda katta.");}
+          try{
+            const buffer=await claimDocxBuffer(claimText);
+            res.writeHead(200,{"Content-Type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document","Content-Disposition":"attachment; filename=da_vo_arizasi.docx","Content-Length":buffer.length,"Cache-Control":"no-store"});
+            return res.end(buffer);
+          }catch(err){console.error("DOCX EXPORT ERROR",err);res.writeHead(500,{"Content-Type":"text/plain; charset=utf-8"});return res.end("Word hujjat yaratishda xatolik. docx kutubxonasini o‘rnating.");}
+        }
 
         // ------------------------------------------------
         // FAMILY LAW
