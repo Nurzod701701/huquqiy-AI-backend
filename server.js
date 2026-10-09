@@ -38,13 +38,92 @@ function getUrl(req) {
   return new URL(req.url, "http://localhost");
 }
 
+// Barcha HTML sahifalar va keyinroq JavaScript bilan qo'shilgan javoblar uchun.
+// LexUZning ichki modda fragmentlari tasdiqlanmaguncha faqat hujjat sahifasiga havola.
+const GLOBAL_LEXUZ_SCRIPT = String.raw`<script id="global-lexuz-links">
+(function () {
+  'use strict';
+  const laws = [
+    { id:'oila', names:/oila kodeks|семейн(?:ого|ый) кодекс|family code/i, url:'https://lex.uz/docs/-104720' },
+    { id:'mehnat', names:/mehnat kodeks|трудов(?:ого|ой) кодекс|labou?r code/i, url:'https://lex.uz/docs/-6257288' },
+    { id:'fuqarolik', names:/fuqarolik kodeks|гражданск(?:ого|ий) кодекс|civil code/i, url:'https://lex.uz/docs/-111189' },
+    { id:'iqtisodiy', names:/iqtisodiy protsessual kodeks|экономическ.{0,30}процессуальн.{0,15}кодекс|economic procedural code/i, url:'https://lex.uz/docs/-3523891' },
+    { id:'jinoyat', names:/jinoyat kodeks|уголовн(?:ого|ый) кодекс|criminal code/i, url:'https://lex.uz/docs/-111453' },
+    { id:'fpk', names:/fuqarolik protsessual kodeks|гражданск.{0,25}процессуальн.{0,15}кодекс|civil procedure code/i, url:'https://lex.uz/docs/-3517337' }
+  ];
+  // Aniq LexUZ modda ichki havolalari mustaqil tekshirilgandan keyin shu yerga yoziladi.
+  const verifiedArticleUrls = Object.freeze({});
+  const article = /\b\d{1,4}(?:\s*[-–]\s*\d{1,3})?\s*[-–]?\s*(?:modda(?:si|siga|sining|ning|da|dan)?|стать(?:я|и|е|ю)|article(?:s)?)\b/gi;
+  const skip = 'a,script,style,textarea,button,select,option,code,pre,svg,[contenteditable],input';
+  function findLaw(node) {
+    let element = node.parentElement;
+    for (let depth=0; element && depth<4; depth++, element=element.parentElement) {
+      const context = (element.textContent || '').slice(0, 3000);
+      const matches = laws.filter(l => l.names.test(context));
+      if (matches.length === 1) return matches[0];
+      if (matches.length > 1) return null; // qonun noaniq: noto'g'ri havola qo'ymaymiz
+    }
+    return null;
+  }
+  function linkNode(node) {
+    if (!node.parentElement || node.parentElement.closest(skip)) return;
+    const source = node.nodeValue;
+    if (!source || !/\d/.test(source) || !/modda|стать|article/i.test(source)) return;
+    const law = findLaw(node);
+    if (!law) return;
+    article.lastIndex = 0;
+    if (!article.test(source)) return;
+    article.lastIndex = 0;
+    const fragment = document.createDocumentFragment();
+    let cursor=0, match;
+    while ((match=article.exec(source))) {
+      fragment.appendChild(document.createTextNode(source.slice(cursor, match.index)));
+      const number = (match[0].match(/^\d+/) || [])[0];
+      const exact = verifiedArticleUrls[law.id+':'+number];
+      const a = document.createElement('a');
+      a.href = exact || law.url;
+      a.target='_blank'; a.rel='noopener noreferrer';
+      a.title=exact ? 'LexUZ: aynan modda' : 'LexUZ: qonun matni (moddaning ichki havolasi tasdiqlanmagan)';
+      a.style.cssText='color:#1763aa;text-decoration:underline;font-weight:700';
+      a.textContent=match[0];
+      fragment.appendChild(a);
+      cursor=article.lastIndex;
+    }
+    fragment.appendChild(document.createTextNode(source.slice(cursor)));
+    node.replaceWith(fragment);
+  }
+  function scan(root) {
+    if (!root || !document.createTreeWalker) return;
+    const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(linkNode);
+  }
+  function start() {
+    scan(document.body);
+    const observer=new MutationObserver(changes=>{
+      for (const change of changes) {
+        for (const added of change.addedNodes) {
+          if (added.nodeType===3) linkNode(added);
+          else if (added.nodeType===1 && !added.closest(skip)) scan(added);
+        }
+      }
+    });
+    observer.observe(document.body,{childList:true,subtree:true});
+  }
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+${"</" + "script>"}`;
+
 function sendHtml(res, html, status = 200) {
   res.writeHead(status, {
     "Content-Type": "text/html; charset=utf-8",
     "Cache-Control": "no-store"
   });
 
-  res.end(html);
+  const pageHtml = String(html || '');
+  res.end(pageHtml.includes('id="global-lexuz-links"') ? pageHtml : pageHtml.replace(/<\/body>/i, GLOBAL_LEXUZ_SCRIPT + '</body>'));
 }
 
 function sendJson(res, data, status = 200) {
@@ -238,7 +317,7 @@ function renderLegalAnswer(text) {
       output += `<a href="${esc(label)}" target="_blank" rel="noopener noreferrer" style="color:#1763aa;text-decoration:underline">${esc(label)}</a>`;
     } else {
       // Qonun nomini modda yaqinidagi jumladan aniqlaymiz. Taxmin qilib boshqa kodeksga havola bermaymiz.
-      const nearby = source.slice(Math.max(0, match.index - 200), match.index);
+      const nearby = source.slice(Math.max(0, match.index - 240), match.index);
       const law = ARTICLE_LAWS.filter(x => x.regex.test(nearby)).pop();
       if (law) {
         const number = (label.match(/^\d+/) || [])[0];
@@ -7191,6 +7270,7 @@ function questionnairePage(lang) {
     lang,
 
     "questionnaire",
+
     `
 
       <div class="notice noticeInfo">
@@ -9327,7 +9407,7 @@ function calculatorsPage(lang) {
 
           <div class="notice noticeGold" style="margin-top:16px;">
             <span class="noticeIcon">§</span>
-            <span><strong>${esc(t.legal)}.</strong> ${esc(t.legalText)} ${esc(t.minText)}</span>
+            <span><strong>${esc(t.legal)}.</strong> ${renderLegalAnswer(t.legalText)} ${esc(t.minText)}</span>
           </div>
         </section>
 
@@ -9407,7 +9487,7 @@ function calculatorsPage(lang) {
             <span class="noticeIcon">§</span>
             <span>
               ${lang === "uz"
-                ? "Huquqiy asos: Oila kodeksi 23-modda — umumiy mulk; 25-modda — har bir er-xotinning alohida mulki va qiymat sezilarli oshirilgan holatlar; 27-modda — umumiy mol-mulkni bo‘lish; 28-modda — ulushlar, odatda teng, lekin qonunda nazarda tutilgan holatlarda sud tenglikdan chekinishi mumkin."
+                ? renderLegalAnswer("Huquqiy asos: Oila kodeksi 23-modda — umumiy mulk; 25-modda — har bir er-xotinning alohida mulki va qiymat sezilarli oshirilgan holatlar; 27-modda — umumiy mol-mulkni bo‘lish; 28-modda — ulushlar, odatda teng, lekin qonunda nazarda tutilgan holatlarda sud tenglikdan chekinishi mumkin.")
                 : lang === "ru"
                 ? "Правовая основа: статьи 23, 25, 27 и 28 Семейного кодекса — общее имущество, личное имущество, раздел и определение долей."
                 : "Legal basis: Family Code Articles 23, 25, 27 and 28 on common property, separate property, division and determination of shares."}
@@ -9426,6 +9506,11 @@ function calculatorsPage(lang) {
           ).format(value);
         }
 
+        function linkFamilyArticles(text) {
+          const safe = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+          return safe.replace(/(\d{1,3}\s*[-–]?\s*modda(?:si|siga|ning|da|dan)?)/gi,
+            '<a href="https://lex.uz/docs/-104720" target="_blank" rel="noopener noreferrer" title="Oila kodeksi (hujjat sahifasi)" style="color:#1763aa;text-decoration:underline;font-weight:700">$1</a>');
+        }
         function calculateAliment(){
           const children = Math.max(1, Number(document.getElementById("childrenCount").value || 1));
           const income = Math.max(0, Number(document.getElementById("alimentIncome").value || 0));
@@ -9490,9 +9575,9 @@ function calculatorsPage(lang) {
             shareText += "\\n${lang === "uz" ? "Ulushlar, odatda, teng deb hisoblanadi, ammo 28-modda bo‘yicha sud ayrim e’tiborga loyiq holatlarda tenglikdan chekinishi mumkin." : lang === "ru" ? "Доли, как правило, признаются равными, однако по статье 28 суд в предусмотренных случаях может отступить от равенства." : "Shares are generally presumed equal, but Article 28 permits a court to depart from equality in specified circumstances."}";
           }
 
-          document.getElementById("propertyResult").textContent =
+          document.getElementById("propertyResult").innerHTML =
             "${lang === "uz" ? "Dastlabki huquqiy baho:" : lang === "ru" ? "Предварительная правовая оценка:" : "Preliminary legal assessment:"} " +
-            status + "\\n" + article + shareText;
+            linkFamilyArticles(status + "\\n" + article + shareText).replace(/\n/g, '<br>');
         }
       </script>
     `,
@@ -14384,5 +14469,4 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
-
 
