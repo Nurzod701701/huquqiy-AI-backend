@@ -215,12 +215,40 @@ function legalLinksFor(text) {
   return AI_LEGAL_LINKS.filter(item => item.keys.test(String(text))).slice(0, 5);
 }
 
-// Matn avval HTML-escape qilinadi; faqat lex.uz manzillari kliklanadigan bo‘ladi.
+// Modda havolalari: faqat tekshirilgan ichki LexUZ fragmentlari ro'yxatga olinadi.
+// Yangi fragmentni tasdiqlamasdan qo'shmang. Qolgan moddalarda kodeks sahifasi ochiladi.
+const VERIFIED_LEXUZ_ARTICLES = Object.freeze({
+  // "oila:99": "https://lex.uz/docs/-104720#-TASDIQLANGAN_ID"
+});
+const ARTICLE_LAWS = [
+  { id: 'oila', regex: /(?:Oila kodeksi|Семейного кодекса|Family Code)/i, url: 'https://lex.uz/docs/-104720' },
+  { id: 'mehnat', regex: /(?:Mehnat kodeksi|Трудового кодекса|Labou?r Code)/i, url: 'https://lex.uz/docs/-6257288' },
+  { id: 'fuqarolik', regex: /(?:Fuqarolik kodeksi|Гражданского кодекса|Civil Code)/i, url: 'https://lex.uz/docs/-111189' },
+  { id: 'iqtisodiy', regex: /(?:Iqtisodiy protsessual kodeksi|Экономического процессуального кодекса|Economic Procedural Code)/i, url: 'https://lex.uz/docs/-3523891' }
+];
 function renderLegalAnswer(text) {
-  return esc(text).replace(/https:\/\/(?:www\.)?lex\.uz\/(?:uz\/|ru\/|en\/)?(?:docs|acts)\/-?\d+(?:\?[^\s&lt;&gt;"']*)?/gi, (url) => {
-    const clean = url.replace(/[.,;:)]+$/, "");
-    return `<a href="${clean.replace(/&amp;/g, '&')}" target="_blank" rel="noopener noreferrer" style="color:#1763aa;text-decoration:underline">${clean}</a>${url.slice(clean.length)}`;
-  });
+  const source = String(text || '');
+  // URL va modda ifodalarini bitta o'tishda ko'rib chiqamiz, shunda HTML atributlari buzilmaydi.
+  const token = /https:\/\/(?:www\.)?lex\.uz\/(?:uz\/|ru\/|en\/)?(?:docs|acts)\/-?\d+(?:#[\w-]+)?|\b\d{1,4}(?:[¹²³⁴⁵⁶⁷⁸⁹])?\s*[-–]?\s*(?:modda(?:si|siga|sining|da|dan)?|стать(?:я|и|е|ю)|article)\b/gi;
+  let output = '', last = 0, match;
+  while ((match = token.exec(source))) {
+    output += esc(source.slice(last, match.index));
+    const label = match[0];
+    if (/^https:\/\//i.test(label)) {
+      output += `<a href="${esc(label)}" target="_blank" rel="noopener noreferrer" style="color:#1763aa;text-decoration:underline">${esc(label)}</a>`;
+    } else {
+      // Qonun nomini modda yaqinidagi jumladan aniqlaymiz. Taxmin qilib boshqa kodeksga havola bermaymiz.
+      const nearby = source.slice(Math.max(0, match.index - 200), match.index);
+      const law = ARTICLE_LAWS.filter(x => x.regex.test(nearby)).pop();
+      if (law) {
+        const number = (label.match(/^\d+/) || [])[0];
+        const url = VERIFIED_LEXUZ_ARTICLES[`${law.id}:${number}`] || law.url;
+        output += `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${VERIFIED_LEXUZ_ARTICLES[`${law.id}:${number}`] ? 'LexUZ: aynan modda' : 'LexUZ: kodeks sahifasi (ichki modda havolasi tasdiqlanmagan)'}" style="color:#1763aa;text-decoration:underline;font-weight:600">${esc(label)}</a>`;
+      } else output += esc(label);
+    }
+    last = token.lastIndex;
+  }
+  return output + esc(source.slice(last));
 }
 
 function legalSourceFooter(text, lang) {
@@ -264,7 +292,7 @@ IMPORTANT RULES:
 
 4. Do not promise a court outcome.
 
-5. Every substantive legal answer MUST cite relevant official legal documents with clickable full LexUZ URLs (https://lex.uz/docs/-ID). Do not merely write "LexUZ" without a URL. Cite exact article numbers only if confidently supported; never invent an article number, paragraph anchor, or legal act. If the precise provision is uncertain, cite the correct law document URL and state that the article requires confirmation. Put a short "Normativ manbalar / Правовые источники / Legal sources" section at the end. Known official document URLs:
+5. Whenever mentioning a law article, write the law name immediately before its article number, e.g. "Oila kodeksining 99-moddasi". The interface makes the article text clickable. Every substantive legal answer MUST cite relevant official legal documents with clickable full LexUZ URLs (https://lex.uz/docs/-ID). Do not merely write "LexUZ" without a URL. Cite exact article numbers only if confidently supported; never invent an article number, paragraph anchor, or legal act. If the precise provision is uncertain, cite the correct law document URL and state that the article requires confirmation. Put a short "Normativ manbalar / Правовые источники / Legal sources" section at the end. Known official document URLs:
 - Mehnat kodeksi: https://lex.uz/docs/-6257288
 - Oila kodeksi: https://lex.uz/docs/-104720
 - Fuqarolik kodeksi I: https://lex.uz/docs/-111189
@@ -7163,7 +7191,6 @@ function questionnairePage(lang) {
     lang,
 
     "questionnaire",
-
     `
 
       <div class="notice noticeInfo">
@@ -7177,7 +7204,8 @@ function questionnairePage(lang) {
         </span>
 
       </div>
-      
+
+
       <div class="notice noticeGold">
 
         <span class="noticeIcon">
@@ -14356,6 +14384,5 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
-
 
 
