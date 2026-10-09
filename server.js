@@ -84,7 +84,7 @@ const GLOBAL_LEXUZ_SCRIPT = String.raw`<script id="global-lexuz-links">
       a.href = exact || law.url;
       a.target='_blank'; a.rel='noopener noreferrer';
       a.title=exact ? 'LexUZ: aynan modda' : 'LexUZ: qonun matni (moddaning ichki havolasi tasdiqlanmagan)';
-      a.style.cssText='color:#1763aa;text-decoration:underline;font-weight:700';
+      a.style.cssText='color:var(--gold3,#a67d42);text-decoration:underline;text-decoration-color:var(--gold,#c9a86a);text-underline-offset:3px;font-weight:700';
       a.textContent=match[0];
       fragment.appendChild(a);
       cursor=article.lastIndex;
@@ -101,15 +101,10 @@ const GLOBAL_LEXUZ_SCRIPT = String.raw`<script id="global-lexuz-links">
   }
   function start() {
     scan(document.body);
-    const observer=new MutationObserver(changes=>{
-      for (const change of changes) {
-        for (const added of change.addedNodes) {
-          if (added.nodeType===3) linkNode(added);
-          else if (added.nodeType===1 && !added.closest(skip)) scan(added);
-        }
-      }
-    });
-    observer.observe(document.body,{childList:true,subtree:true});
+    // Performance: global DOM MutationObserver removed. It repeatedly rescanned
+    // newly inserted UI nodes and could freeze large pages.
+    // AI replies are rendered with renderLegalAnswer() on the server side.
+
   }
   if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
@@ -7235,7 +7230,6 @@ function questionnairePage(lang) {
     en: {
       title:
         "Family law questionnaire",
-
       description:
         "Answer the questions to structure issues concerning divorce, children, child support and property.",
 
@@ -14469,4 +14463,5 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
+
 
