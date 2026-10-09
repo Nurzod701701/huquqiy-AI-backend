@@ -200,6 +200,36 @@ function localized(object, lang) {
 // AI
 // ======================================================
 
+// HUQUQIY MANBALAR — mavzuga mos LexUZ hujjatlari.
+// Havola hujjat sahifasiga olib boradi; modda ichki havolasi faqat tasdiqlanganda ishlatiladi.
+const AI_LEGAL_LINKS = [
+  { keys: /mehnat|ish haqi|ishdan|xodim|ish beruvchi|employment|labor|труд|зарплат|увольнен/i, name: "Mehnat kodeksi", url: "https://lex.uz/docs/-6257288" },
+  { keys: /nikoh|ajra|aliment|farzand|bola|er-xotin|divorc|child support|marriage|семь|брак|алимент|развод/i, name: "Oila kodeksi", url: "https://lex.uz/docs/-104720" },
+  { keys: /shartnoma|mulk|qarz|meros|biznes|tadbirkor|contract|property|business|договор|имуществ|наслед/i, name: "Fuqarolik kodeksi (I qism)", url: "https://lex.uz/docs/-111189" },
+  { keys: /savdo|ijara|oldi-sotdi|pudrat|xizmat|sale|lease|аренд|купл/i, name: "Fuqarolik kodeksi (II qism)", url: "https://lex.uz/docs/-180552" },
+  { keys: /davlat boji|sud xarajat|court fee|госпошлин/i, name: "Davlat boji to‘g‘risidagi qonun", url: "https://lex.uz/uz/acts/-4680944" },
+  { keys: /iqtisodiy sud|xo‘jalik nizosi|economic court|экономическ.*суд/i, name: "Iqtisodiy protsessual kodeks", url: "https://lex.uz/docs/-3523891" },
+];
+
+function legalLinksFor(text) {
+  return AI_LEGAL_LINKS.filter(item => item.keys.test(String(text))).slice(0, 5);
+}
+
+// Matn avval HTML-escape qilinadi; faqat lex.uz manzillari kliklanadigan bo‘ladi.
+function renderLegalAnswer(text) {
+  return esc(text).replace(/https:\/\/(?:www\.)?lex\.uz\/(?:uz\/|ru\/|en\/)?(?:docs|acts)\/-?\d+(?:\?[^\s&lt;&gt;"']*)?/gi, (url) => {
+    const clean = url.replace(/[.,;:)]+$/, "");
+    return `<a href="${clean.replace(/&amp;/g, '&')}" target="_blank" rel="noopener noreferrer" style="color:#1763aa;text-decoration:underline">${clean}</a>${url.slice(clean.length)}`;
+  });
+}
+
+function legalSourceFooter(text, lang) {
+  const items = legalLinksFor(text);
+  if (!items.length) return '';
+  const label = lang === 'ru' ? 'Нормативные источники (LexUZ)' : lang === 'en' ? 'Legal sources (LexUZ)' : 'Normativ manbalar (LexUZ)';
+  return `<div style="margin-top:18px;padding:16px;border:1px solid #d7e1eb;border-radius:12px;background:#f8fafc"><strong>${label}</strong><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:9px">${items.map(x => `<a href="${x.url}" target="_blank" rel="noopener noreferrer" style="color:#145b96;text-decoration:underline">${esc(x.name)} ↗</a>`).join('')}</div></div>`;
+}
+
 async function callAI(question, lang = "uz", context = "") {
   if (!OPENROUTER_API_KEY) {
     throw new Error(
@@ -234,8 +264,15 @@ IMPORTANT RULES:
 
 4. Do not promise a court outcome.
 
-5. When appropriate, recommend checking the current official text
-   through LexUZ or the relevant official court resource.
+5. Every substantive legal answer MUST cite relevant official legal documents with clickable full LexUZ URLs (https://lex.uz/docs/-ID). Do not merely write "LexUZ" without a URL. Cite exact article numbers only if confidently supported; never invent an article number, paragraph anchor, or legal act. If the precise provision is uncertain, cite the correct law document URL and state that the article requires confirmation. Put a short "Normativ manbalar / Правовые источники / Legal sources" section at the end. Known official document URLs:
+- Mehnat kodeksi: https://lex.uz/docs/-6257288
+- Oila kodeksi: https://lex.uz/docs/-104720
+- Fuqarolik kodeksi I: https://lex.uz/docs/-111189
+- Fuqarolik kodeksi II: https://lex.uz/docs/-180552
+- Iqtisodiy protsessual kodeks: https://lex.uz/docs/-3523891
+- Davlat boji: https://lex.uz/uz/acts/-4680944
+- Employment contract templates resolution 758: https://lex.uz/uz/docs/-7220862
+Only cite documents genuinely relevant to the user's question. No real-time LexUZ verification is performed by this model.
 
 6. Use simple language understandable to an ordinary citizen.
 
@@ -6903,7 +6940,7 @@ async function aiResultPage(
           ${t.label}
         </div>
 
-        ${esc(answer)}
+        ${renderLegalAnswer(answer)}
 
       </div>
 
@@ -7362,7 +7399,7 @@ Do not guarantee a court outcome and do not invent legislation.`
           ${t.label}
         </div>
 
-        ${esc(answer)}
+        ${renderLegalAnswer(answer)}
 
       </div>
 
@@ -7638,7 +7675,7 @@ async function legalReviewResultPage(lang,form){
   try{answer=cleanLegalReviewText(await callAI(prompt,lang));}catch(e){console.error("LEGAL REVIEW ERROR",e);answer=lang==="ru"?"Не удалось выполнить проверку. Проверьте настройку AI на сервере.":lang==="en"?"The review could not be completed. Check the server AI configuration.":"Tekshiruvni bajarib bo‘lmadi. Serverdagi AI sozlamasini tekshiring.";}
   return appLayout(lang,"legal-review",`
     <section class="hero"><div class="eyebrow">✓ LEGAL REVIEW</div><h1>${lang==="ru"?"Результат правовой проверки":lang==="en"?"Legal review result":"Huquqiy tekshiruv natijasi"}</h1><p>${lang==="uz"?"Natijadagi huquqiy norma va tahrirlarni LexUZdagi amaldagi matn bilan yakuniy tekshiring.":lang==="ru"?"Окончательно сверяйте нормы и редакции с действующим текстом LexUZ.":"Finally verify legal provisions and versions against the current LexUZ text."}</p></section>
-    <section class="panel" style="max-width:1050px;margin:0 auto 24px"><div class="claimDocument" style="white-space:pre-wrap">${esc(answer)}</div><button class="btn btnGold" type="button" onclick="window.print()" style="margin-top:20px">${lang==="uz"?"Natijani PDF qilib saqlash":lang==="ru"?"Сохранить PDF":"Save as PDF"}</button></section>
+    <section class="panel" style="max-width:1050px;margin:0 auto 24px"><div class="claimDocument" style="white-space:pre-wrap">${renderLegalAnswer(answer)}</div><button class="btn btnGold" type="button" onclick="window.print()" style="margin-top:20px">${lang==="uz"?"Natijani PDF qilib saqlash":lang==="ru"?"Сохранить PDF":"Save as PDF"}</button></section>
     <section class="panel" style="max-width:1050px;margin:0 auto"><div class="accountActions"><a class="accountButton gold" href="/legal-review?lang=${lang}">Yana hujjat tekshirish</a><a class="accountButton" target="_blank" rel="noopener" href="https://lex.uz/uz/">LexUZda tekshirish</a><a class="accountButton light" href="/documents?lang=${lang}">Hujjatlar</a></div></section>
   `,"Huquqiy tekshiruv natijasi","");
 }
@@ -8691,7 +8728,7 @@ Goal/request: ${goal}
       <p>${lang==="uz"?"Natijani amaldagi rasmiy qonunchilik va ish hujjatlari bilan tekshiring.":"AI legal output should be verified against current official law and case documents."}</p>
     </div>
     <div class="surface surfacePad">
-      <div style="white-space:pre-wrap;line-height:1.75">${esc(result)}</div>
+      <div style="white-space:pre-wrap;line-height:1.75">${renderLegalAnswer(result)}</div>
       <div class="formActions" style="margin-top:22px;">
         <a class="btn btnOutline" href="/business${q(lang)}">← ${lang==="uz"?"Biznes huquqiga qaytish":"Back"}</a>
         <a class="btn btnOutline" href="https://lex.uz/" target="_blank" rel="noopener noreferrer">LexUZ ↗</a>
@@ -8701,6 +8738,53 @@ Goal/request: ${goal}
   `);
 }
 
+
+
+// === HUQUQIY AI: EMPLOYMENT CONTRACT LIBRARY (educational fictional examples) ===
+const CONTRACT_LIBRARY = [{"id": 1, "title": "Nomuayyan muddatli", "position": "Yuriskonsult", "employee": "Azizbek Rahimov", "employer": "ADOLAT CONSULTING", "ru_position": "Юрисконсульт"}, {"id": 2, "title": "Muddatli loyiha", "position": "Loyiha mutaxassisi", "employee": "Dilshod Karimov", "employer": "TARAQQIYOT GROUP", "ru_position": "Специалист проекта"}, {"id": 3, "title": "Masofaviy", "position": "Dasturchi", "employee": "Sardor Aliyev", "employer": "DIGITAL SOFT", "ru_position": "Разработчик"}, {"id": 4, "title": "O‘rindoshlik", "position": "Buxgalter", "employee": "Malika Ergasheva", "employer": "MOLIYA SERVIS", "ru_position": "Бухгалтер"}, {"id": 5, "title": "To‘liqsiz ish vaqti", "position": "Operator", "employee": "Madina Qodirova", "employer": "ALOQA PLUS", "ru_position": "Оператор"}, {"id": 6, "title": "Rahbar", "position": "Direktor", "employee": "Jamshid Ortiqov", "employer": "BUNYODKOR INVEST", "ru_position": "Директор"}, {"id": 7, "title": "Mavsumiy", "position": "Agronom", "employee": "Bekzod Rasulov", "employer": "AGRO BOG‘", "ru_position": "Агроном"}, {"id": 8, "title": "Uyda ishlash", "position": "Tikuvchi", "employee": "Nilufar Saidova", "employer": "LIBOS TEXTILE", "ru_position": "Швея"}, {"id": 9, "title": "Dastlabki sinov sharti bilan", "position": "Marketing mutaxassisi", "employee": "Diyorbek Umarov", "employer": "REKLAMA MEDIA", "ru_position": "Маркетолог"}, {"id": 10, "title": "Vaqtincha yo‘q xodim o‘rniga", "position": "Kotiba", "employee": "Mohira Sobirova", "employer": "HUJJAT SERVIS", "ru_position": "Секретарь"}, {"id": 11, "title": "YTT bilan", "position": "Sotuvchi", "employee": "Sherzod Olimov", "employer": "YTT QODIROV", "ru_position": "Продавец"}, {"id": 12, "title": "Pedagog", "position": "O‘qituvchi", "employee": "Zilola Akbarova", "employer": "ZIYO TA’LIM", "ru_position": "Учитель"}, {"id": 13, "title": "Tibbiyot xodimi", "position": "Hamshira", "employee": "Feruza Ismoilova", "employer": "SHIFO MED", "ru_position": "Медсестра"}, {"id": 14, "title": "Haydovchi", "position": "Haydovchi", "employee": "Abror To‘xtayev", "employer": "TRANS LOGISTIK", "ru_position": "Водитель"}, {"id": 15, "title": "Savdo xodimi", "position": "Savdo menejeri", "employee": "Kamola Nabiyeva", "employer": "SAVDO MARKAZ", "ru_position": "Менеджер по продажам"}];
+const CONTRACT_LAW = 'https://lex.uz/docs/-6257288';
+const CONTRACT_DECREE = 'https://lex.uz/uz/docs/-7220862';
+function contractCopy(lang,uz,ru,en){return lang==='ru'?ru:lang==='en'?en:uz;}
+function contractBody(item,lang){
+ const e=esc(item.employer), n=esc(item.employee),pos=esc(item.position), num=String(item.id).padStart(2,'0');
+ const special=item.id===3?'Ish vazifalari masofadan bajariladi; aloqa va hisobot tartibi taraflar kelishuvida belgilanadi.':item.id===4?'Ish o‘rindoshlik asosida bajariladi; asosiy ish bilan bog‘liq cheklovlar tekshiriladi.':item.id===5?'To‘liqsiz ish vaqti: kuniga 4 soat; haq amalda ishlangan vaqtga mutanosib belgilanadi.':item.id===7?'Mavsumiy ishning aniq mavsumi va tugash shartlari taraflar tomonidan belgilanadi.':item.id===9?'Dastlabki sinov sharti taraflar kelishuvida va qonunchilik ruxsat bergan hollarda qo‘llanadi.':item.id===10?'Vaqtincha yo‘q xodim ishga qaytishi bilan bog‘liq muddatli shartlar aniqlashtiriladi.':'Lavozimga oid vazifalar lavozim yo‘riqnomasi va ish beruvchining qonuniy topshiriqlariga muvofiq bajariladi.';
+ return `<article id="contractPaper" style="background:white;color:#182536;padding:32px;line-height:1.8;border:1px solid #d9dfe5;border-radius:14px;max-width:850px;margin:20px auto;font-size:16px">
+ <p style="text-align:center;font-weight:800">MEHNAT SHARTNOMASI № ${num}/2026</p><p>Toshkent shahri — 2026-yil 9-oktabr</p>
+ <p>«${e}» (to‘qima tashkilot), vakolatli rahbar nomidan, bundan buyon «Ish beruvchi», bir tomondan va fuqaro <b>${n}</b> (to‘qima shaxs), bundan buyon «Xodim», ikkinchi tomondan quyidagilar haqida kelishdilar.</p>
+ <h3>1. Shartnoma predmeti</h3><p>1.1. Xodim ${pos} lavozimiga ishga qabul qilinadi. Ish joyi: Toshkent shahri (namunaviy manzil). 1.2. Ish boshlash sanasi: 2026-yil 12-oktabr.</p>
+ <h3>2. Shartnomaning muddati va xususiyatlari</h3><p>2.1. ${item.id===1?'Shartnoma nomuayyan muddatga tuziladi.':item.id===2||item.id===7||item.id===10?'Shartnoma muddati va uni muddatli tuzishning qonuniy asosi real vaziyatga muvofiq belgilanadi.':'Shartnoma muddati qonunchilikka muvofiq taraflar tomonidan belgilanadi.'} 2.2. ${special}</p>
+ <h3>3. Ish vaqti va dam olish</h3><p>3.1. Ish jadvali: ${item.id===5?'dushanba–juma 09:00–13:00':'dushanba–juma 09:00–18:00, 13:00–14:00 tanaffus'}; qonuniy cheklovlar va tegishli maxsus rejimlar saqlanadi. 3.2. Dam olish va yillik mehnat ta’tili amaldagi Mehnat kodeksiga muvofiq beriladi.</p>
+ <h3>4. Mehnatga haq to‘lash</h3><p>4.1. Namunaviy oylik maosh: <b>${(5000000+item.id*250000).toLocaleString('en-US').replaceAll(',',' ')} so‘m</b> (soliq ushlanmalari qonunchilikka muvofiq). 4.2. Ish haqi to‘lash muddatlari va usuli tashkilot hujjatlari va qonunchilikka muvofiq belgilanadi.</p>
+ <h3>5. Xodimning huquq va majburiyatlari</h3><p>5.1. Xodim xavfsiz mehnat sharoitlari, ish haqi, dam olish va qonunda belgilangan boshqa kafolatlarga ega. 5.2. Xodim ish vazifalarini vijdonan bajaradi, mehnat intizomi va xavfsizlik qoidalariga rioya qiladi.</p>
+ <h3>6. Ish beruvchining huquq va majburiyatlari</h3><p>6.1. Ish beruvchi ish joyini, zarur sharoit va vositalarni ta’minlaydi, ish haqini o‘z vaqtida to‘laydi va xodim huquqlariga rioya qiladi. 6.2. Ish beruvchi qonuniy ichki tartibga rioya etilishini talab qilishi mumkin.</p>
+ <h3>7. O‘zgartirish va bekor qilish</h3><p>7.1. Shartnoma shartlari qonunchilikda nazarda tutilgan tartibda o‘zgartiriladi. 7.2. Bekor qilish asoslari va tartibi Mehnat kodeksiga muvofiq belgilanadi.</p>
+ <h3>8. Yakuniy qoidalar</h3><p>8.1. Nizolar qonunchilikda belgilangan tartibda hal etiladi. 8.2. Shartnoma taraflarga bir nusxadan taqdim etiladi. Real qo‘llashdan oldin majburiy rekvizitlar, muddat va maxsus shartlar to‘ldiriladi.</p>
+ <h3>9. Taraflarning rekvizitlari va imzolari</h3><p>Ish beruvchi: ${e}; STIR: [to‘ldiriladi]; manzil: [to‘ldiriladi]. Imzo: __________</p><p>Xodim: ${n}; ID ma’lumotlari: [to‘ldiriladi]; manzil: [to‘ldiriladi]. Imzo: __________</p>
+ <p style="color:#7a5b28;font-size:13px"><b>DIQQAT:</b> Barcha shaxslar, tashkilotlar va raqamlar o‘quv maqsadida to‘qilgan. Bu hujjat rasmiy tasdiqlangan shaklning aynan ko‘chirmasi emas; haqiqiy shartnomani rasmiylashtirishdan oldin qonunchilik va rekvizitlarni tekshiring.</p></article>`;
+}
+function contractLibraryPage(lang, selected=0){
+ lang=getLang(lang);const item=CONTRACT_LIBRARY.find(x=>x.id===Number(selected));
+ const heading=contractCopy(lang,'Mehnat shartnomalari — tayyor namunalar','Трудовые договоры — примеры','Employment contracts — examples');
+ const menu=CONTRACT_LIBRARY.map(x=>`<a class="btn btnOutline" style="margin:5px;white-space:normal" href="/employment-contracts?lang=${lang}&id=${x.id}">${x.id}. ${esc(x.title)}</a>`).join('');
+ const tools=item?`<div class="surface surfacePad" style="margin-top:20px"><h2>${esc(item.title)} — ${esc(item.position)}</h2>
+ <p><a class="btn btnOutline" target="_blank" rel="noopener noreferrer" href="${CONTRACT_LAW}">Mehnat kodeksi — LexUZ ↗</a> <a class="btn btnOutline" target="_blank" rel="noopener noreferrer" href="${CONTRACT_DECREE}">758-son qaror — LexUZ ↗</a></p>
+ <p style="font-size:15px">Matnni bevosita quyida tahrirlang. Word va PDF tugmalari aynan tahrirlangan matnni oladi.</p>
+ <div style="display:flex;flex-wrap:wrap;gap:10px;margin:12px 0"><button class="btn btnGold" type="button" onclick="saveContractWord()">Word (.doc) ↓</button><button class="btn btnPrimary" type="button" onclick="printContractPdf()">PDF ↓</button><button class="btn btnOutline" type="button" onclick="resetContract()">Asl namunani tiklash</button></div>
+ <div id="contractEditor" contenteditable="true" role="textbox" aria-label="Shartnoma matnini tahrirlash" aria-multiline="true" spellcheck="true" style="background:#fff;border:2px solid #d8e0e8;border-radius:12px;padding:12px;min-height:450px;outline-offset:4px">${contractBody(item,lang)}</div>
+ <script>
+ (function(){
+ const editor=document.getElementById('contractEditor');if(!editor)return;
+ const initial=editor.innerHTML;
+ window.resetContract=function(){if(confirm('O‘zgartirishlar bekor qilinsinmi?'))editor.innerHTML=initial;};
+ function htmlDocument(){return '<!doctype html><html><head><meta charset="utf-8"><title>Mehnat shartnomasi</title><style>body{font-family:Arial,sans-serif;color:#172536;line-height:1.6;margin:35px}article{border:0!important;padding:0!important;max-width:none!important}h3{page-break-after:avoid}</style></head><body>'+editor.innerHTML+'</body></html>';}
+ window.saveContractWord=function(){const blob=new Blob(['\ufeff',htmlDocument()],{type:'application/msword;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='mehnat-shartnomasi-${item.id}.doc';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ window.printContractPdf=function(){const w=window.open('','_blank');if(!w){alert('Brauzer yangi oynani blokladi. Pop-upga ruxsat bering.');return;}w.document.open();w.document.write(htmlDocument());w.document.close();w.onload=function(){w.focus();w.print();};};
+ })();
+ </script></div>`:'';
+ const inner=`<div class="surface surfacePad"><h2>${heading}</h2><p>${contractCopy(lang,'15 ta to‘qima, to‘ldirilgan o‘quv namunasi. Shartnomalar shu sahifada ochiladi.','15 заполненных вымышленных учебных примеров.','15 fictional filled-in educational examples.')}</p><div style="display:flex;flex-wrap:wrap">${menu}</div><p><a class="btn btnOutline" href="/employment?lang=${lang}">← ${contractCopy(lang,'Mehnat huquqi','Трудовое право','Employment law')}</a></p></div>`+tools;
+ return appLayout(lang,'employment',inner,heading,heading);
+}
+function contractDownload(res,item){const body=contractBody(item,'uz');const html='<!doctype html><html><head><meta charset="utf-8"></head><body>'+body+'</body></html>';res.writeHead(200,{'Content-Type':'application/msword; charset=utf-8','Content-Disposition':`attachment; filename="mehnat-shartnomasi-${item.id}.doc"`,'Cache-Control':'no-store'});res.end('\ufeff'+html);}
 
 function employmentPage(lang) {
 
@@ -8795,6 +8879,7 @@ function employmentPage(lang) {
     lang,
     "employment",
     `
+      <div class="surface surfacePad" style="margin-bottom:22px;border:2px solid #c9a86a"><h2>📄 ${contractCopy(lang,'Mehnat shartnomalari — 15 ta to‘ldirilgan namuna','Трудовые договоры — 15 образцов','Employment contracts — 15 examples')}</h2><p>${contractCopy(lang,'LexUZga o‘tmasdan, shartnomalarni sayt ichida ko‘ring.','Просматривайте образцы прямо на сайте.','View examples directly on this website.')}</p><a class="btn btnGold" href="/employment-contracts${q(lang)}">${contractCopy(lang,'Namunalarni ochish','Открыть образцы','Open examples')} →</a> <a class="btn btnOutline" href="${CONTRACT_DECREE}" target="_blank" rel="noopener noreferrer">LexUZ ↗</a></div>
       <div class="notice noticeGold">
         <span class="noticeIcon">!</span>
         <span>${esc(t.note)}</span>
@@ -9069,7 +9154,7 @@ REQUESTED OUTPUT: ${wantsContract ? "EMPLOYMENT CONTRACT DRAFT" : (wantsClaim ? 
     `
       <div class="resultBox">
         <div class="resultLabel">HUQUQIY AI • EMPLOYMENT</div>
-        ${esc(answer)}
+        ${renderLegalAnswer(answer)}
       </div>
 
       <div class="formActions">
@@ -12783,6 +12868,8 @@ const server =
 
         // ------------------------------------------------
         // NEW INDEPENDENT COURT COSTS AND BUSINESS CONTRACT COSTS
+        if(req.method==="GET" && pathname==="/employment-contracts") return sendHtml(res,contractLibraryPage(lang,url.searchParams.get("id")));
+        if(req.method==="GET" && pathname==="/employment-contract-download") {const item=CONTRACT_LIBRARY.find(x=>x.id===Number(url.searchParams.get("id")));if(!item)return sendHtml(res,'Not found',404);return contractDownload(res,item);}
         if(req.method==="GET" && pathname==="/court-costs") return sendHtml(res,courtCostsPage(lang));
         if(req.method==="POST" && pathname==="/court-costs-result") return sendHtml(res,courtCostsResultPage(lang,await readForm(req)));
         if(req.method==="GET" && pathname==="/business-contract-costs") return sendHtml(res,businessContractCostsPage(lang));
