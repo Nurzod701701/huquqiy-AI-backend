@@ -9502,7 +9502,7 @@ function calculatorsPage(lang) {
 
         function linkFamilyArticles(text) {
           const safe = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-          return safe.replace(/(\d{1,3}\s*[-–]?\s*modda(?:si|siga|ning|da|dan)?)/gi,
+          return safe.replace(/(\\d{1,3}\\s*[-–]?\\s*modda(?:si|siga|ning|da|dan)?)/gi,
             '<a href="https://lex.uz/docs/-104720" target="_blank" rel="noopener noreferrer" title="Oila kodeksi (hujjat sahifasi)" style="color:#1763aa;text-decoration:underline;font-weight:700">$1</a>');
         }
         function calculateAliment(){
@@ -9571,7 +9571,7 @@ function calculatorsPage(lang) {
 
           document.getElementById("propertyResult").innerHTML =
             "${lang === "uz" ? "Dastlabki huquqiy baho:" : lang === "ru" ? "Предварительная правовая оценка:" : "Preliminary legal assessment:"} " +
-            linkFamilyArticles(status + "\\n" + article + shareText).replace(/\n/g, '<br>');
+            linkFamilyArticles(status + "\\n" + article + shareText).replace(/\\n/g, '<br>');
         }
       </script>
     `,
