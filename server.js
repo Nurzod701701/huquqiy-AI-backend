@@ -6032,6 +6032,8 @@ function homePage(lang) {
                 ▤ ${lang === "uz" ? "Da’vo arizasi tayyorlash" : lang === "ru" ? "Подготовить иск" : "Prepare a claim"}
               </a>
 
+              <a class="btn btnGold" href="/pension${q(lang)}">♜ ${lang === "uz" ? "Pensiya va nafaqalar" : lang === "ru" ? "Пенсии и пособия" : "Pensions and benefits"}</a>
+
               <a class="btn btnOutline" href="/calculators${q(lang)}">
                 ∑ ${lang === "uz" ? "Hisob-kitob" : lang === "ru" ? "Расчёты" : "Calculators"}
               </a>
@@ -7264,8 +7266,6 @@ function questionnairePage(lang) {
     lang,
 
     "questionnaire",
-
-    `
 
       <div class="notice noticeInfo">
 
@@ -9273,6 +9273,72 @@ REQUESTED OUTPUT: ${wantsContract ? "EMPLOYMENT CONTRACT DRAFT" : (wantsClaim ? 
 // CALCULATORS PAGE
 // ======================================================
 
+
+// ======================================================
+// PENSION & BENEFITS — UZ / RU / EN
+// Preliminary calculation only. No fabricated statutory minimums.
+// ======================================================
+function pensionPage(lang) {
+  lang=getLang(lang);
+  const all={
+    uz:{title:'Pensiya va nafaqalarni hisoblash',sub:'Pensiya huquqi va taxminiy hisob-kitob. Qonuniy asoslar hamda hisoblash bosqichlari bilan.',kind:'To‘lov turi',old:'Yoshga doir pensiya',dis:'Nogironlik pensiyasi',sur:'Boquvchisini yo‘qotganlik pensiyasi',ben:'Ijtimoiy nafaqa',sex:'Jinsi',male:'Erkak',female:'Ayol',age:'Yoshi (to‘liq yil)',years:'Umumiy ish staji (to‘liq yil)',salary:'Pensiya hisobida olinadigan o‘rtacha oylik ish haqi (so‘m)',special:'Imtiyozli shartlar yoki maxsus staj bormi?',no:'Yo‘q',yes:'Ha / aniq emas',calc:'Hisoblash',reset:'Tozalash',print:'PDF / Chop etish',out:'Dastlabki hisob-kitob',warning:'Bu hisob dastlabki matematik baholashdir, tayinlanadigan pensiya miqdori emas. Pensiya uchun hisobga olinadigan ish haqi, eng kam miqdorlar, cheklovlar, ustamalar, to‘liqsiz staj va imtiyozlar rasmiy tartibda tekshiriladi.',needs:'Ushbu turdagi to‘lovni aniq hisoblash uchun qo‘shimcha ma’lumot va amaldagi maxsus qoidalarni tekshirish kerak. Asossiz summa chiqarilmaydi.',base:'Asosiy foiz',extra:'Ortiqcha to‘liq staj uchun',sum:'Formulaga ko‘ra shartli summa',elig:'Umumiy yosh/staj mezoni',ok:'Umumiy mezonlar bajarilgan bo‘lishi mumkin',notok:'Umumiy mezonlar to‘liq bajarilmagan',specialNote:'Imtiyozli shartlar va maxsus davrlar alohida tekshiriladi.',sources:'Rasmiy manbalar',details:'Hisoblash tafsiloti',missing:'Ish haqi va stajni to‘g‘ri kiriting.',other:'Boshqa pensiya yoki nafaqa turini tanladingiz. Bunday holatda yagona 55% formulani qo‘llash noto‘g‘ri.'},
+    ru:{title:'Расчёт пенсий и пособий',sub:'Предварительная оценка права на пенсию, расчёт и правовые основания.',kind:'Вид выплаты',old:'Пенсия по возрасту',dis:'Пенсия по инвалидности',sur:'Пенсия по потере кормильца',ben:'Социальное пособие',sex:'Пол',male:'Мужчина',female:'Женщина',age:'Возраст (полных лет)',years:'Трудовой стаж (полных лет)',salary:'Среднемесячный заработок для расчёта пенсии (сум)',special:'Есть льготные условия или специальный стаж?',no:'Нет',yes:'Да / неизвестно',calc:'Рассчитать',reset:'Очистить',print:'PDF / Печать',out:'Предварительный расчёт',warning:'Это предварительная математическая оценка, а не назначенный размер пенсии. Минимумы, ограничения, надбавки, неполный стаж и льготы проверяются отдельно.',needs:'Для точного расчёта этой выплаты нужны дополнительные данные и проверка специальных действующих норм. Неподтверждённая сумма не выводится.',base:'Базовый процент',extra:'За полный стаж сверх нормы',sum:'Условная сумма по формуле',elig:'Общие критерии возраста и стажа',ok:'Общие условия могут быть выполнены',notok:'Общие условия выполнены не полностью',specialNote:'Льготы и специальные периоды проверяются отдельно.',sources:'Официальные источники',details:'Этапы расчёта',missing:'Введите корректный заработок и стаж.',other:'Выбран другой вид выплаты. Применять к нему единую формулу 55% неправильно.'},
+    en:{title:'Pension and benefit calculator',sub:'Preliminary eligibility, illustrative calculation and legal references.',kind:'Payment type',old:'Old-age pension',dis:'Disability pension',sur:'Survivor pension',ben:'Social benefit',sex:'Sex',male:'Male',female:'Female',age:'Age (completed years)',years:'Service record (completed years)',salary:'Average monthly pensionable earnings (UZS)',special:'Preferential eligibility or special service?',no:'No',yes:'Yes / unknown',calc:'Calculate',reset:'Clear',print:'Print / PDF',out:'Preliminary calculation',warning:'This is an illustrative mathematical estimate, not an official pension award. Statutory minimums, caps, supplements, partial service and preferential conditions require separate verification.',needs:'Additional facts and current special rules are needed for this payment type. No unsupported amount will be shown.',base:'Base percentage',extra:'For completed years above requirement',sum:'Illustrative formula amount',elig:'General age and service conditions',ok:'General criteria may be met',notok:'General criteria not fully met',specialNote:'Preferential rules and special periods must be assessed separately.',sources:'Official sources',details:'Calculation breakdown',missing:'Enter valid earnings and service years.',other:'Another benefit type was selected. Applying the 55% formula to it would be incorrect.'}
+  };
+  const t=all[lang];
+  const js=JSON.stringify(t).replace(/</g,'\\u003c');
+  return appLayout(lang,'calculators',`
+    <section class="panel pension-module" style="max-width:1080px;margin:0 auto;padding:clamp(20px,4vw,38px)">
+      <span class="eyebrow">HUQUQIY AI · PENSION</span>
+      <h1 style="font-size:clamp(29px,4vw,42px);margin:16px 0 8px">${esc(t.title)}</h1>
+      <p style="font-size:16px;line-height:1.7">${esc(t.sub)}</p>
+      <div class="notice noticeGold" style="margin:18px 0"><span class="noticeIcon">!</span><span>${esc(t.warning)}</span></div>
+      <form id="pensionForm" autocomplete="off">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
+        <div class="formGroup"><label for="pKind">${esc(t.kind)}</label><select id="pKind"><option value="old">${esc(t.old)}</option><option value="dis">${esc(t.dis)}</option><option value="sur">${esc(t.sur)}</option><option value="ben">${esc(t.ben)}</option></select></div>
+        <div class="formGroup"><label for="pSex">${esc(t.sex)}</label><select id="pSex"><option value="male">${esc(t.male)}</option><option value="female">${esc(t.female)}</option></select></div>
+        <div class="formGroup"><label for="pAge">${esc(t.age)}</label><input id="pAge" type="number" min="0" max="120" step="1" required></div>
+        <div class="formGroup"><label for="pYears">${esc(t.years)}</label><input id="pYears" type="number" min="0" max="80" step="1" required></div>
+        <div class="formGroup"><label for="pSalary">${esc(t.salary)}</label><input id="pSalary" type="number" min="0" max="100000000000" step="1" required></div>
+        <div class="formGroup"><label for="pSpecial">${esc(t.special)}</label><select id="pSpecial"><option value="no">${esc(t.no)}</option><option value="yes">${esc(t.yes)}</option></select></div>
+      </div>
+      <div class="formActions" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:25px">
+        <button class="btn btnPrimary" type="submit">∑ ${esc(t.calc)}</button>
+        <button class="btn btnOutline" type="reset">${esc(t.reset)}</button>
+        <button class="btn btnOutline" type="button" onclick="window.print()">${esc(t.print)}</button>
+        <a class="btn btnOutline" href="/calculators${q(lang)}">← ${esc(tr(lang,'calculators'))}</a>
+      </div>
+      </form>
+      <div id="pensionResult" class="calcResult" role="status" aria-live="polite" style="margin-top:24px;padding:22px;white-space:pre-line">${esc(t.out)}: —</div>
+      <div style="margin-top:22px;padding:18px;border:1px solid #d8dfe6;border-radius:14px;background:#f8fafc">
+        <h3>${esc(t.sources)}</h3>
+        <a style="text-decoration:underline;color:#17588b" target="_blank" rel="noopener noreferrer" href="https://lex.uz/docs/-112314">${lang==='ru'?'Закон о государственном пенсионном обеспечении граждан':lang==='en'?'Law on State Pension Provision for Citizens':'Fuqarolarning davlat pensiya ta’minoti to‘g‘risidagi qonun'} ↗</a>
+        <p><a style="text-decoration:underline;color:#17588b" target="_blank" rel="noopener noreferrer" href="https://lex.uz">LexUZ ↗</a></p>
+        <p>${esc(t.specialNote)}</p>
+      </div>
+    </section>
+    <script>(function(){
+      'use strict';
+      const T=${js};
+      const form=document.getElementById('pensionForm'),out=document.getElementById('pensionResult');
+      const by=id=>document.getElementById(id);
+      const fmt=n=>new Intl.NumberFormat('${lang==='ru'?'ru-RU':lang==='en'?'en-US':'uz-UZ'}',{maximumFractionDigits:0}).format(n);
+      by('pKind').addEventListener('change',()=>{const old=by('pKind').value==='old';for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;out.textContent=T.out+': —';});
+      form.addEventListener('reset',()=>{setTimeout(()=>{for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=false;out.textContent=T.out+': —';},0);});
+      form.addEventListener('submit',e=>{
+        e.preventDefault();
+        if(by('pKind').value!=='old'){out.textContent=T.out+'\\n'+T.other+'\\n'+T.needs;return;}
+        const age=Number(by('pAge').value),years=Number(by('pYears').value),salary=Number(by('pSalary').value);
+        if(!Number.isInteger(age)||age<0||age>120||!Number.isInteger(years)||years<0||years>80||!Number.isFinite(salary)||salary<=0){out.textContent=T.missing;return;}
+        const male=by('pSex').value==='male',minAge=male?60:55,minYears=male?25:20;
+        const extra=Math.max(0,years-minYears),pct=55+extra,amount=salary*pct/100;
+        const eligible=age>=minAge&&years>=minYears;
+        out.textContent=T.out+'\\n'+T.elig+': '+(eligible?T.ok:T.notok)+' (age '+minAge+' / '+minYears+' years)'+'\\n'+T.details+': '+fmt(salary)+' × ('+T.base+' 55% + '+T.extra+' '+extra+'%) = '+fmt(amount)+' UZS\\n'+T.sum+': '+fmt(amount)+' UZS\\n\\n'+T.warning+(by('pSpecial').value==='yes'?'\\n'+T.specialNote:'');
+      });
+    })();${'</'+'script>'}
+  `,t.title,t.sub);
+}
+
 function calculatorsPage(lang) {
 
   lang = getLang(lang);
@@ -9360,6 +9426,8 @@ function calculatorsPage(lang) {
         <span class="noticeIcon">!</span>
         <span>${esc(t.warning)}</span>
       </div>
+
+      <a class="btn btnGold" style="margin:0 0 24px;font-size:15px" href="/pension${q(lang)}">♜ ${lang==='uz'?'Pensiya va nafaqalarni hisoblash':lang==='ru'?'Расчёт пенсий и пособий':'Pension and benefits calculator'} →</a>
 
       <div class="calculatorGrid">
 
@@ -13299,6 +13367,10 @@ const server =
         }
 
 
+        if(req.method === "GET" && pathname === "/pension"){
+          return sendHtml(res,pensionPage(lang));
+        }
+
         // ------------------------------------------------
         // COURTS
         // ------------------------------------------------
@@ -14465,3 +14537,5 @@ server.listen(
 */
 
 
+
+    `
