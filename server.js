@@ -7309,6 +7309,7 @@ function questionnairePage(lang) {
         <span>
           ${t.privacy}
         </span>
+
       </div>
 
 
@@ -7318,7 +7319,6 @@ function questionnairePage(lang) {
       >
 
         <div class="questionnaireGrid">
-
           ${questions}
 
         </div>
@@ -9348,7 +9348,7 @@ function pensionPage(lang) {
         <div class="formGroup"><label for="pSex">${esc(t.sex)}</label><select id="pSex"><option value="male">${esc(t.male)}</option><option value="female">${esc(t.female)}</option></select></div>
         <div class="formGroup"><label for="pAge">${esc(t.age)}</label><input id="pAge" type="number" min="0" max="120" step="1" required></div>
         <div class="formGroup"><label for="pYears">${esc(t.years)}</label><input id="pYears" type="number" min="0" max="80" step="1" required></div>
-        <div class="formGroup"><label for="pSalary">${esc(t.salary)}</label><input id="pSalary" type="number" min="0" max="100000000000" step="1" required></div>
+        <div class="formGroup" id="pSalaryGroup"><label for="pSalary" id="pSalaryLabel">${esc(t.salary)}</label><div id="pSalaryChoices"></div><input id="pSalary" type="number" min="0" max="100000000000" step="1" placeholder="3500000"><div id="pSalaryGuidance"></div></div>
         <div class="formGroup"><label for="pSpecial">${esc(t.special)}</label><select id="pSpecial"><option value="no">${esc(t.no)}</option><option value="yes">${esc(t.yes)}</option></select></div>
       </div>
       <div id="survivorFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #c9a86a;border-radius:14px;background:#fffaf0">
@@ -9356,7 +9356,7 @@ function pensionPage(lang) {
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
           <div class="formGroup"><label id="surCountLabel" for="surCount">Pensiya olish huquqiga ega oila a’zolari soni</label><input id="surCount" type="number" min="1" max="30" step="1" value="1"></div>
           <div class="formGroup"><label id="surOrphanLabel" for="surOrphan">Chin yetim yoki vafot etgan yolg‘iz onaning bolalari soni</label><input id="surOrphan" type="number" min="0" max="30" step="1" value="0"></div>
-          <div class="formGroup"><label id="surSalaryLabel" for="surSalary">Boquvchining pensiya hisobiga olinadigan o‘rtacha oylik ish haqi (so‘m)</label><input id="surSalary" type="number" min="1" step="1" placeholder="Masalan: 3000000"></div>
+          <div class="formGroup"><label id="surSalaryLabel" for="surSalary">Boquvchining oylik rasmiy ish haqi (so‘m)</label><div id="surSalaryChoices"></div><input id="surSalary" type="number" min="1" step="1" placeholder="3000000"><div id="surSalaryGuidance"></div></div>
           <div class="formGroup"><label id="surYearsLabel" for="surYears">Boquvchining ish staji (to‘liq yil)</label><input id="surYears" type="number" min="0" max="80" step="1" placeholder="Masalan: 15"></div>
           <div class="formGroup"><label id="surDeathLabel" for="surDeath">Vafot etish holati</label><select id="surDeath"><option value="ordinary">Umumiy kasallik yoki boshqa holat</option><option value="work">Mehnatda mayiblanish / kasb kasalligi</option><option value="unknown">Aniq emas</option></select></div>
         </div>
@@ -9382,6 +9382,24 @@ function pensionPage(lang) {
       const T=${js};
       const form=document.getElementById('pensionForm'),out=document.getElementById('pensionResult');
       const by=id=>document.getElementById(id);
+      const salaryWords=${JSON.stringify(({uz:["Oylik rasmiy ish haqingiz (so‘m)", "Oylik ish haqingizni bilasizmi?", "Ha, taxminan bilaman", "Yo‘q, bilmayman", "Bu nimani anglatadi?", "Pensiya uchun hisobga olinadigan ish haqi har doim hozirgi oyligingiz yoki qo‘lga olgan pulingiz bilan bir xil emas. Hisoblash davri, tasdiqlangan daromad va qonuniy cheklovlar tekshiriladi.", "Ish haqini ish joyingiz buxgalteriyasidan, ish haqi ma’lumotnomalaridan yoki mavjud rasmiy elektron xizmatlardan aniqlashingiz mumkin. Hozircha summani kiritmasdan davom eting — tizim asossiz pensiya miqdorini ko‘rsatmaydi.", "Ish haqi noma’lum. Aniq summa hisoblanmadi. Rasmiy ish haqi ma’lumotlarini aniqlang.", "Kiritilgan summa siz bildirgan taxminiy oylik. U pensiya hisobida qabul qilinadigan tasdiqlangan o‘rtacha ish haqi ekanligi tekshirilmagan."],ru:["Ваша официальная месячная зарплата (сум)", "Вы знаете размер зарплаты?", "Да, примерно знаю", "Нет, не знаю", "Что это означает?", "Учитываемый для пенсии заработок не всегда равен текущей зарплате или сумме на руки. Проверяются расчётный период, подтверждённый доход и законные ограничения.", "Уточните заработок в бухгалтерии работодателя, справках о зарплате или доступных государственных электронных сервисах. Можно продолжить без суммы — неподтверждённый размер пенсии не выводится.", "Заработок неизвестен. Сумма не рассчитана. Уточните официальные сведения.", "Введённая сумма — ваша оценка зарплаты; она не подтверждена как расчётный заработок для пенсии."],en:["Your official monthly earnings (UZS)", "Do you know your monthly earnings?", "Yes, approximately", "No, I do not know", "What does this mean?", "Pensionable earnings may differ from your current salary or take-home pay. The relevant period, verified income and statutory limits must be checked.", "Ask your employer’s payroll office, obtain salary statements or use available official online services. You can continue without an amount; no unsupported pension figure will be shown.", "Earnings unknown. No amount calculated. Obtain official earnings records.", "The amount entered is your estimate, not verified pensionable average earnings."]})[lang])};
+      function setupSalary(prefix){
+        const input=by(prefix==='p'?'pSalary':'surSalary');
+        const choices=by(prefix+'SalaryChoices'),guidance=by(prefix+'SalaryGuidance');
+        const group=by(prefix+'SalaryGroup');
+        const name='salaryKnowledge'+prefix;
+        choices.innerHTML='<div style="font-size:14px;font-weight:700;margin:8px 0">'+salaryWords[1]+'</div>'+
+          '<label style="display:block;margin:7px 0"><input type="radio" name="'+name+'" value="yes" checked> '+salaryWords[2]+'</label>'+
+          '<label style="display:block;margin:7px 0"><input type="radio" name="'+name+'" value="no"> '+salaryWords[3]+'</label>';
+        guidance.innerHTML='<details style="margin-top:10px;padding:10px;border:1px solid #c9a86a;border-radius:10px"><summary style="cursor:pointer;font-weight:700">'+salaryWords[4]+'</summary><p style="line-height:1.7;margin:9px 0">'+salaryWords[5]+'</p></details><p class="salaryUnknown" style="display:none;line-height:1.7;font-size:14px;padding:10px;background:#fff8e7;border-radius:9px">'+salaryWords[6]+'</p>';
+        function update(){const unknown=choices.querySelector('input[value="no"]').checked;input.disabled=unknown;input.required=!unknown&&(!group||!group.hidden);input.style.display=unknown?'none':'';guidance.querySelector('.salaryUnknown').style.display=unknown?'block':'none';}
+        choices.addEventListener('change',update);update();
+        return ()=>choices.querySelector('input[value="no"]').checked;
+      }
+      by('pSalaryLabel').textContent=salaryWords[0];
+      const pSalaryUnknown=setupSalary('p');
+      const surSalaryUnknown=setupSalary('sur');
+
       const fmt=n=>new Intl.NumberFormat('${lang==='ru'?'ru-RU':lang==='en'?'en-US':'uz-UZ'}',{maximumFractionDigits:0}).format(n);
       const survivor=by('survivorFields');
       const words={
@@ -9392,12 +9410,13 @@ function pensionPage(lang) {
       ['surTitle','surCountLabel','surOrphanLabel','surSalaryLabel','surYearsLabel','surDeathLabel','surHelp'].forEach((id,i)=>by(id).textContent=words[i]);
       const deathOptions={uz:['Umumiy kasallik yoki boshqa holat','Mehnatda mayiblanish / kasb kasalligi','Aniq emas'],ru:['Общее заболевание или иные обстоятельства','Трудовое увечье / профзаболевание','Неизвестно'],en:['General illness or other cause','Work injury / occupational disease','Unknown']}['${lang}'];
       Array.from(by('surDeath').options).forEach((o,i)=>o.textContent=deathOptions[i]);
-      function sync(){const kind=by('pKind').value;const old=kind==='old';survivor.style.display=kind==='sur'?'block':'none';for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;for(const id of ['pAge','pYears','pSalary'])by(id).required=old;by('surCount').required=kind==='sur';by('surSalary').required=kind==='sur';out.textContent=T.out+': —';}
+      function sync(){const kind=by('pKind').value;const old=kind==='old';survivor.style.display=kind==='sur'?'block':'none';for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;for(const id of ['pAge','pYears'])by(id).required=old;by('pSalary').required=old&&!pSalaryUnknown();by('surSalary').required=kind==='sur'&&!surSalaryUnknown();by('surCount').required=kind==='sur';by('surSalary').required=kind==='sur'&&!surSalaryUnknown();out.textContent=T.out+': —';}
       by('pKind').addEventListener('change',sync);
       form.addEventListener('reset',()=>setTimeout(sync,0));sync();
       form.addEventListener('submit',e=>{
         e.preventDefault();const kind=by('pKind').value;
         if(kind==='sur'){
+          if(surSalaryUnknown()){out.textContent=salaryWords[7];return;}
           const count=Number(by('surCount').value),orphans=Number(by('surOrphan').value),salary=Number(by('surSalary').value),years=by('surYears').value.trim(),cause=by('surDeath').value;
           if(!Number.isInteger(count)||count<1||count>30||!Number.isInteger(orphans)||orphans<0||orphans>count||!Number.isFinite(salary)||salary<=0||years!==''&&(!Number.isInteger(Number(years))||Number(years)<0||Number(years)>80)){
             out.textContent=({'uz':'Oila a’zolari soni, chin yetimlar soni va boquvchining ish haqini to‘g‘ri kiriting.','ru':'Проверьте число членов семьи, сирот и заработок кормильца.','en':'Check eligible family members, orphans and earnings.'}['${lang}']);return;
@@ -9410,15 +9429,16 @@ function pensionPage(lang) {
             ru:['ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ — ПЕНСИЯ ПО ПОТЕРЕ КОРМИЛЬЦА','Расчётный среднемесячный заработок: ','Базовый размер на одного (30%): ','Обычные получатели: ','Круглые сироты / дети одинокой матери: ','Сумма базовых размеров с индивидуальными порогами по статье 26: ','ВНИМАНИЕ: Это не окончательная назначаемая пенсия. Семейный минимум для одного получателя 878 000 сум с июля 2026 года, правила для нескольких получателей, стаж, обстоятельства смерти, надбавки и пределы заработка проверяются отдельно.','Стаж: ','Причина смерти: '],
             en:['PRELIMINARY SURVIVOR PENSION CALCULATION','Pensionable average monthly earnings: ','Base per eligible member (30%): ','Regular eligible members: ','Full orphans / children of single mother: ','Sum of statutory base amounts and individual floors under Article 26: ','IMPORTANT: This is not the final payable pension. The July 2026 family minimum of UZS 878,000 for one recipient, multi-recipient rules, service eligibility, cause of death, supplements and earnings caps require official review.','Service years: ','Cause of death: ']
           }['${lang}'];
-          out.textContent=lines[0]+'\n'+lines[1]+fmt(salary)+' UZS\n'+lines[2]+fmt(base)+' UZS\n'+lines[3]+regular+' × '+fmt(perOrdinary)+' UZS\n'+lines[4]+orphans+' × '+fmt(perOrphan)+' UZS\n'+lines[5]+fmt(illustrative)+' UZS\n'+lines[7]+(years||'—')+'\n'+lines[8]+cause+'\n\n'+lines[6]+'\nhttps://lex.uz/docs/-112314';return;
+          out.textContent=salaryWords[8]+'\n\n'+lines[0]+'\n'+lines[1]+fmt(salary)+' UZS\n'+lines[2]+fmt(base)+' UZS\n'+lines[3]+regular+' × '+fmt(perOrdinary)+' UZS\n'+lines[4]+orphans+' × '+fmt(perOrphan)+' UZS\n'+lines[5]+fmt(illustrative)+' UZS\n'+lines[7]+(years||'—')+'\n'+lines[8]+cause+'\n\n'+lines[6]+'\nhttps://lex.uz/docs/-112314';return;
         }
         if(kind!=='old'){out.textContent=T.out+'\n'+T.other+'\n'+T.needs;return;}
+        if(pSalaryUnknown()){out.textContent=salaryWords[7];return;}
         const age=Number(by('pAge').value),years=Number(by('pYears').value),salary=Number(by('pSalary').value);
         if(!Number.isInteger(age)||age<0||age>120||!Number.isInteger(years)||years<0||years>80||!Number.isFinite(salary)||salary<=0){out.textContent=T.missing;return;}
         const male=by('pSex').value==='male',minAge=male?60:55,minYears=male?25:20;
         const extra=Math.max(0,years-minYears),pct=55+extra,amount=salary*pct/100;
         const eligible=age>=minAge&&years>=minYears;
-        out.textContent=T.out+'\n'+T.elig+': '+(eligible?T.ok:T.notok)+' (age '+minAge+' / '+minYears+' years)'+'\n'+T.details+': '+fmt(salary)+' × ('+T.base+' 55% + '+T.extra+' '+extra+'%) = '+fmt(amount)+' UZS\n'+T.sum+': '+fmt(amount)+' UZS\n\n'+T.warning+(by('pSpecial').value==='yes'?'\n'+T.specialNote:'');
+        out.textContent=salaryWords[8]+'\n\n'+T.out+'\n'+T.elig+': '+(eligible?T.ok:T.notok)+' (age '+minAge+' / '+minYears+' years)'+'\n'+T.details+': '+fmt(salary)+' × ('+T.base+' 55% + '+T.extra+' '+extra+'%) = '+fmt(amount)+' UZS\n'+T.sum+': '+fmt(amount)+' UZS\n\n'+T.warning+(by('pSpecial').value==='yes'?'\n'+T.specialNote:'');
       });
     })();${'</'+'script>'}
   `,t.title,t.sub);
