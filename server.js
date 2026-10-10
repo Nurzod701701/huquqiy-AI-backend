@@ -7267,6 +7267,8 @@ function questionnairePage(lang) {
 
     "questionnaire",
 
+    `
+
       <div class="notice noticeInfo">
 
         <span class="noticeIcon">
@@ -7533,8 +7535,6 @@ Do not guarantee a court outcome and do not invent legislation.`
   );
 
 }
-
-
 // ======================================================
 // SOURCES PAGE
 // ======================================================
@@ -14538,4 +14538,4 @@ server.listen(
 
 
 
-    `
+
