@@ -7309,7 +7309,6 @@ function questionnairePage(lang) {
         <span>
           ${t.privacy}
         </span>
-
       </div>
 
 
@@ -9313,6 +9312,36 @@ function pensionPage(lang) {
       <h1 style="font-size:clamp(29px,4vw,42px);margin:16px 0 8px">${esc(t.title)}</h1>
       <p style="font-size:16px;line-height:1.7">${esc(t.sub)}</p>
       <div class="notice noticeGold" style="margin:18px 0"><span class="noticeIcon">!</span><span>${esc(t.warning)}</span></div>
+      <section id="pensionRates" style="margin:25px 0;padding:clamp(17px,3vw,27px);border:2px solid #c9a86a;border-radius:18px;background:linear-gradient(145deg,#09263e,#164667);color:#fff">
+        <h2 style="color:#f1d292;font-size:clamp(23px,3vw,30px);margin:0 0 8px">${lang==='uz'?'Amaldagi pensiya va nafaqa miqdorlari':lang==='ru'?'Действующие размеры пенсий и пособий':'Current pension and benefit rates'}</h2>
+        <p style="color:#e2edf5;margin:0 0 18px;font-size:15px">${lang==='uz'?'2026-yil 1-iyuldan amal qiladi · Oylik miqdorlar, so‘m':lang==='ru'?'Действуют с 1 июля 2026 года · Суммы в месяц, сум':'Effective from 1 July 2026 · Monthly amounts in UZS'}</p>
+        <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;color:#fff;font-size:15px;line-height:1.5"><thead><tr><th style="text-align:left;padding:11px;border-bottom:1px solid #b9a16c">${lang==='uz'?'To‘lov turi':lang==='ru'?'Вид выплаты':'Payment type'}</th><th style="text-align:right;padding:11px;border-bottom:1px solid #b9a16c">${lang==='uz'?'Miqdori':lang==='ru'?'Сумма':'Amount'}</th></tr></thead><tbody>
+        ${[
+          [['Pensiyani hisoblash bazaviy miqdori','Базовая величина исчисления пенсии','Pension calculation base'],504000],
+          [['Yoshga doir eng kam pensiya','Минимальная пенсия по возрасту','Minimum old-age pension'],983000],
+          [['Nogironlik pensiyasining eng kam miqdori','Минимальная пенсия по инвалидности','Minimum disability pension'],1083000],
+          [['To‘liqsiz stajdagi yoshga doir eng kam pensiya (qo‘shimcha bilan)','Минимальная пенсия по возрасту при неполном стаже (с доплатой)','Minimum partial-service old-age pension (incl. supplement)'],878000],
+          [['Boquvchisini yo‘qotganlik pensiyasi: bir huquqli a’zo uchun eng kam','Пенсия по потере кормильца: минимум на одного получателя','Survivor pension: minimum for one eligible recipient'],878000],
+          [['Zarur stajsiz keksa fuqarolar nafaqasi','Пособие пожилым без необходимого стажа','Old-age allowance without required service'],878000],
+          [['Nogironlik nafaqasi (tegishli toifalar)','Пособие по инвалидности (соответствующие категории)','Disability allowance (eligible categories)'],1083000],
+          [['Parvarishlash nafaqasi (tegishli toifa)','Пособие по уходу (соответствующая категория)','Care allowance (eligible category)'],878000],
+          [['Boquvchisini yo‘qotganlik nafaqasi: bir huquqli a’zo','Пособие по потере кормильца: один получатель','Survivor allowance: one eligible recipient'],878000],
+          [['Boquvchisini yo‘qotganlik nafaqasi: keyingi har bir a’zo uchun qo‘shimcha','Пособие по потере кормильца: доплата за каждого следующего','Survivor allowance: each additional recipient'],290000],
+          [['Bolalar nafaqasi: 3 yoshgacha bo‘lgan bitta kichik farzand','Детское пособие: младший ребёнок до 3 лет','Child benefit: youngest child under 3'],386000],
+          [['Bolalar nafaqasi: 3–18 yoshdagi bitta farzand','Детское пособие: один ребёнок 3–18 лет','Child benefit: one child aged 3–18'],295000],
+          [['Bolalar nafaqasi: ikkinchi farzand uchun qo‘shimcha','Детское пособие: доплата за второго ребёнка','Child benefit: second-child supplement'],177000],
+          [['Bolalar nafaqasi: uchinchi va keyingi har biri uchun qo‘shimcha','Детское пособие: доплата за третьего и последующих','Child benefit: third and subsequent child supplement'],118000],
+          [['Ijtimoiy reyestrdagi oilalar uchun moddiy yordam','Материальная помощь семьям из Социального реестра','Financial assistance for Social Register families'],450000]
+        ].map(item=>'<tr><td style="padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.17)">'+esc(item[0][lang==='uz'?0:lang==='ru'?1:2])+'</td><td style="padding:10px 11px;text-align:right;white-space:nowrap;font-weight:800;color:#f1d292;border-bottom:1px solid rgba(255,255,255,.17)">'+item[1].toLocaleString('en-US').replace(/,/g,' ')+'</td></tr>').join('')}
+        </tbody></table></div>
+        <p style="color:#e2edf5;font-size:13px;line-height:1.7;margin:17px 0 10px">${lang==='uz'?'Muhim: jadvaldagi eng kam miqdorlar hamma fuqaroga avtomatik tayinlanmaydi. Pensiya va nafaqa alohida to‘lovlar. Bolalar nafaqasi Ijtimoiy reyestr va daromad mezonlariga bog‘liq; ayrim oilalarda kamaytirilgan koeffitsiyent qo‘llanadi. Boquvchisini yo‘qotganlik PENSIYASIDA keyingi a’zolar uchun 290 000 so‘m qoidasini ishlatmang — u NAFAQAGA tegishli.':lang==='ru'?'Важно: минимальные суммы не назначаются автоматически. Пенсия и пособие — разные выплаты. Детское пособие зависит от Социального реестра и доходов. Доплата 290 000 сум за следующего члена семьи относится к ПОСОБИЮ по потере кормильца, не к ПЕНСИИ.':'Important: minimum amounts are not automatic entitlements. Pensions and allowances differ. Child benefits depend on Social Register and income eligibility. The UZS 290,000 additional-recipient rule applies to the survivor ALLOWANCE, not the survivor PENSION.'}</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px">
+          <a href="https://gov.uz/oz/pj/news/view/183000" target="_blank" rel="noopener noreferrer" style="background:#d5ac63;color:#09263e;padding:11px 15px;border-radius:9px;font-weight:800">${lang==='uz'?'PF–115: rasmiy miqdorlar ↗':lang==='ru'?'УП–115: официальные суммы ↗':'Decree PF–115: official rates ↗'}</a>
+          <a href="https://advice.adliya.uz/oz/document/3360" target="_blank" rel="noopener noreferrer" style="border:1px solid #d5ac63;color:#fff;padding:11px 15px;border-radius:9px">${lang==='uz'?'Nafaqalar — Adliya ↗':lang==='ru'?'Пособия — Минюст ↗':'Allowances — Ministry of Justice ↗'}</a>
+          <a href="https://advice.adliya.uz/oz/document/4216" target="_blank" rel="noopener noreferrer" style="border:1px solid #d5ac63;color:#fff;padding:11px 15px;border-radius:9px">${lang==='uz'?'Bolalar nafaqasi — Adliya ↗':lang==='ru'?'Детские пособия — Минюст ↗':'Child benefits — Ministry of Justice ↗'}</a>
+          <a href="https://lex.uz/uz/docs/-112314" target="_blank" rel="noopener noreferrer" style="border:1px solid #d5ac63;color:#fff;padding:11px 15px;border-radius:9px">${lang==='uz'?'Pensiya qonuni — LexUZ ↗':lang==='ru'?'Закон о пенсиях — LexUZ ↗':'Pension law — LexUZ ↗'}</a>
+        </div>
+      </section>
       <form id="pensionForm" autocomplete="off">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
         <div class="formGroup"><label for="pKind">${esc(t.kind)}</label><select id="pKind"><option value="old">${esc(t.old)}</option><option value="dis">${esc(t.dis)}</option><option value="sur">${esc(t.sur)}</option><option value="ben">${esc(t.ben)}</option></select></div>
@@ -9321,6 +9350,17 @@ function pensionPage(lang) {
         <div class="formGroup"><label for="pYears">${esc(t.years)}</label><input id="pYears" type="number" min="0" max="80" step="1" required></div>
         <div class="formGroup"><label for="pSalary">${esc(t.salary)}</label><input id="pSalary" type="number" min="0" max="100000000000" step="1" required></div>
         <div class="formGroup"><label for="pSpecial">${esc(t.special)}</label><select id="pSpecial"><option value="no">${esc(t.no)}</option><option value="yes">${esc(t.yes)}</option></select></div>
+      </div>
+      <div id="survivorFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #c9a86a;border-radius:14px;background:#fffaf0">
+        <h3 id="surTitle" style="margin:0 0 15px">Boquvchisini yo‘qotganlik pensiyasi — maxsus ma’lumotlar</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
+          <div class="formGroup"><label id="surCountLabel" for="surCount">Pensiya olish huquqiga ega oila a’zolari soni</label><input id="surCount" type="number" min="1" max="30" step="1" value="1"></div>
+          <div class="formGroup"><label id="surOrphanLabel" for="surOrphan">Chin yetim yoki vafot etgan yolg‘iz onaning bolalari soni</label><input id="surOrphan" type="number" min="0" max="30" step="1" value="0"></div>
+          <div class="formGroup"><label id="surSalaryLabel" for="surSalary">Boquvchining pensiya hisobiga olinadigan o‘rtacha oylik ish haqi (so‘m)</label><input id="surSalary" type="number" min="1" step="1" placeholder="Masalan: 3000000"></div>
+          <div class="formGroup"><label id="surYearsLabel" for="surYears">Boquvchining ish staji (to‘liq yil)</label><input id="surYears" type="number" min="0" max="80" step="1" placeholder="Masalan: 15"></div>
+          <div class="formGroup"><label id="surDeathLabel" for="surDeath">Vafot etish holati</label><select id="surDeath"><option value="ordinary">Umumiy kasallik yoki boshqa holat</option><option value="work">Mehnatda mayiblanish / kasb kasalligi</option><option value="unknown">Aniq emas</option></select></div>
+        </div>
+        <p id="surHelp" style="font-size:13px;line-height:1.7;color:#765522">Faqat pensiya olish huquqiga ega a’zolarni kiriting. Ish haqi pensiya hisobiga olinadigan tasdiqlangan miqdor bo‘lishi kerak. Natija dastlabki hisobdir.</p>
       </div>
       <div class="formActions" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:25px">
         <button class="btn btnPrimary" type="submit">∑ ${esc(t.calc)}</button>
@@ -9343,17 +9383,42 @@ function pensionPage(lang) {
       const form=document.getElementById('pensionForm'),out=document.getElementById('pensionResult');
       const by=id=>document.getElementById(id);
       const fmt=n=>new Intl.NumberFormat('${lang==='ru'?'ru-RU':lang==='en'?'en-US':'uz-UZ'}',{maximumFractionDigits:0}).format(n);
-      by('pKind').addEventListener('change',()=>{const old=by('pKind').value==='old';for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;out.textContent=T.out+': —';});
-      form.addEventListener('reset',()=>{setTimeout(()=>{for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=false;out.textContent=T.out+': —';},0);});
+      const survivor=by('survivorFields');
+      const words={
+        uz:['Boquvchisini yo‘qotganlik pensiyasi — maxsus ma’lumotlar','Pensiya olish huquqiga ega oila a’zolari soni','Chin yetim yoki vafot etgan yolg‘iz onaning bolalari soni','Boquvchining pensiya hisobiga olinadigan o‘rtacha oylik ish haqi (so‘m)','Boquvchining ish staji (to‘liq yil)','Vafot etish holati','Faqat pensiya olish huquqiga ega a’zolarni kiriting. Natija dastlabki hisobdir.'],
+        ru:['Пенсия по потере кормильца — дополнительные сведения','Количество членов семьи, имеющих право на пенсию','Число круглых сирот или детей умершей одинокой матери','Среднемесячный заработок умершего кормильца для расчёта пенсии (сум)','Стаж кормильца (полных лет)','Обстоятельства смерти','Указывайте только членов семьи, имеющих право на пенсию. Расчёт предварительный.'],
+        en:['Survivor pension — additional details','Number of eligible family members','Number of full orphans or children of a deceased single mother','Deceased breadwinner’s pensionable average monthly earnings (UZS)','Breadwinner’s completed service years','Circumstances of death','Count only eligible family members. This is a preliminary estimate.']
+      }['${lang}'];
+      ['surTitle','surCountLabel','surOrphanLabel','surSalaryLabel','surYearsLabel','surDeathLabel','surHelp'].forEach((id,i)=>by(id).textContent=words[i]);
+      const deathOptions={uz:['Umumiy kasallik yoki boshqa holat','Mehnatda mayiblanish / kasb kasalligi','Aniq emas'],ru:['Общее заболевание или иные обстоятельства','Трудовое увечье / профзаболевание','Неизвестно'],en:['General illness or other cause','Work injury / occupational disease','Unknown']}['${lang}'];
+      Array.from(by('surDeath').options).forEach((o,i)=>o.textContent=deathOptions[i]);
+      function sync(){const kind=by('pKind').value;const old=kind==='old';survivor.style.display=kind==='sur'?'block':'none';for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;for(const id of ['pAge','pYears','pSalary'])by(id).required=old;by('surCount').required=kind==='sur';by('surSalary').required=kind==='sur';out.textContent=T.out+': —';}
+      by('pKind').addEventListener('change',sync);
+      form.addEventListener('reset',()=>setTimeout(sync,0));sync();
       form.addEventListener('submit',e=>{
-        e.preventDefault();
-        if(by('pKind').value!=='old'){out.textContent=T.out+'\\n'+T.other+'\\n'+T.needs;return;}
+        e.preventDefault();const kind=by('pKind').value;
+        if(kind==='sur'){
+          const count=Number(by('surCount').value),orphans=Number(by('surOrphan').value),salary=Number(by('surSalary').value),years=by('surYears').value.trim(),cause=by('surDeath').value;
+          if(!Number.isInteger(count)||count<1||count>30||!Number.isInteger(orphans)||orphans<0||orphans>count||!Number.isFinite(salary)||salary<=0||years!==''&&(!Number.isInteger(Number(years))||Number(years)<0||Number(years)>80)){
+            out.textContent=({'uz':'Oila a’zolari soni, chin yetimlar soni va boquvchining ish haqini to‘g‘ri kiriting.','ru':'Проверьте число членов семьи, сирот и заработок кормильца.','en':'Check eligible family members, orphans and earnings.'}['${lang}']);return;
+          }
+          const base=salary*.30,regular=count-orphans,ordinaryMinimum=983000*.5,orphanMinimum=983000;
+          const perOrdinary=Math.max(base,ordinaryMinimum),perOrphan=Math.max(base,orphanMinimum);
+          const illustrative=regular*perOrdinary+orphans*perOrphan;
+          const lines={
+            uz:['DASTLABKI HISOB — BOQUVCHISINI YO‘QOTGANLIK PENSIYASI','Boquvchining hisobga olinadigan oylik ish haqi: ','Har bir a’zo uchun tayanch hisob (30%): ','Oddiy huquqli a’zolar: ','Chin yetim / yolg‘iz ona bolalari: ','Qonundagi 26-modda bo‘yicha tayanch va individual eng kam mezonlar yig‘indisi: ','DIQQAT: Bu tayinlanadigan yakuniy pensiya emas. 2026-yildagi bir nafar oluvchi uchun 878 000 so‘mlik oilaviy eng kam pensiya kafolati, bir nechta oluvchiga oid tartib, boquvchining staji, o‘lim sababi, ustamalar va ish haqi chegaralari rasmiy hisobda alohida qo‘llanadi.','Staj: ','Vafot etish holati: '],
+            ru:['ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ — ПЕНСИЯ ПО ПОТЕРЕ КОРМИЛЬЦА','Расчётный среднемесячный заработок: ','Базовый размер на одного (30%): ','Обычные получатели: ','Круглые сироты / дети одинокой матери: ','Сумма базовых размеров с индивидуальными порогами по статье 26: ','ВНИМАНИЕ: Это не окончательная назначаемая пенсия. Семейный минимум для одного получателя 878 000 сум с июля 2026 года, правила для нескольких получателей, стаж, обстоятельства смерти, надбавки и пределы заработка проверяются отдельно.','Стаж: ','Причина смерти: '],
+            en:['PRELIMINARY SURVIVOR PENSION CALCULATION','Pensionable average monthly earnings: ','Base per eligible member (30%): ','Regular eligible members: ','Full orphans / children of single mother: ','Sum of statutory base amounts and individual floors under Article 26: ','IMPORTANT: This is not the final payable pension. The July 2026 family minimum of UZS 878,000 for one recipient, multi-recipient rules, service eligibility, cause of death, supplements and earnings caps require official review.','Service years: ','Cause of death: ']
+          }['${lang}'];
+          out.textContent=lines[0]+'\n'+lines[1]+fmt(salary)+' UZS\n'+lines[2]+fmt(base)+' UZS\n'+lines[3]+regular+' × '+fmt(perOrdinary)+' UZS\n'+lines[4]+orphans+' × '+fmt(perOrphan)+' UZS\n'+lines[5]+fmt(illustrative)+' UZS\n'+lines[7]+(years||'—')+'\n'+lines[8]+cause+'\n\n'+lines[6]+'\nhttps://lex.uz/docs/-112314';return;
+        }
+        if(kind!=='old'){out.textContent=T.out+'\n'+T.other+'\n'+T.needs;return;}
         const age=Number(by('pAge').value),years=Number(by('pYears').value),salary=Number(by('pSalary').value);
         if(!Number.isInteger(age)||age<0||age>120||!Number.isInteger(years)||years<0||years>80||!Number.isFinite(salary)||salary<=0){out.textContent=T.missing;return;}
         const male=by('pSex').value==='male',minAge=male?60:55,minYears=male?25:20;
         const extra=Math.max(0,years-minYears),pct=55+extra,amount=salary*pct/100;
         const eligible=age>=minAge&&years>=minYears;
-        out.textContent=T.out+'\\n'+T.elig+': '+(eligible?T.ok:T.notok)+' (age '+minAge+' / '+minYears+' years)'+'\\n'+T.details+': '+fmt(salary)+' × ('+T.base+' 55% + '+T.extra+' '+extra+'%) = '+fmt(amount)+' UZS\\n'+T.sum+': '+fmt(amount)+' UZS\\n\\n'+T.warning+(by('pSpecial').value==='yes'?'\\n'+T.specialNote:'');
+        out.textContent=T.out+'\n'+T.elig+': '+(eligible?T.ok:T.notok)+' (age '+minAge+' / '+minYears+' years)'+'\n'+T.details+': '+fmt(salary)+' × ('+T.base+' 55% + '+T.extra+' '+extra+'%) = '+fmt(amount)+' UZS\n'+T.sum+': '+fmt(amount)+' UZS\n\n'+T.warning+(by('pSpecial').value==='yes'?'\n'+T.specialNote:'');
       });
     })();${'</'+'script>'}
   `,t.title,t.sub);
@@ -14555,5 +14620,6 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
+
 
 
