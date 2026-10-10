@@ -6251,6 +6251,14 @@ function homePage(lang) {
           .homeLongCard.review .homeLongQuick em{background:rgba(255,255,255,.12);border-color:#d5ac63;color:#fff}
           .homeLongCard.review .homeLongEnter{background:#d5ac63;color:#09263e}
           .homeLongCard.review:hover{box-shadow:0 22px 48px rgba(9,38,62,.3)}
+          /* Pensiya: hujjat tekshirish kartasi bilan bir xil premium dizayn */
+          .homeLongCard.pension{background:linear-gradient(115deg,#09263e 0%,#123d5d 68%,#1c4d68 100%);border:2px solid #d5ac63;box-shadow:0 14px 38px rgba(9,38,62,.22)}
+          .homeLongCard.pension .homeLongIcon{background:#d5ac63;color:#09263e}
+          .homeLongCard.pension .homeLongCopy h3{color:#fff}
+          .homeLongCard.pension .homeLongCopy p{color:#e4edf3}
+          .homeLongCard.pension .homeLongQuick em{background:rgba(255,255,255,.12);border-color:#d5ac63;color:#fff}
+          .homeLongCard.pension .homeLongEnter{background:#d5ac63;color:#09263e}
+          .homeLongCard.pension:hover{box-shadow:0 22px 48px rgba(9,38,62,.3)}
           .homeLongCard.family,.homeLongCard.employment,.homeLongCard.business{
             background:linear-gradient(105deg,#fffdf9 0%,#fbf8f1 100%);
             border-color:#ded8cc;
@@ -6315,6 +6323,16 @@ function homePage(lang) {
                 <div class="homeLongQuick"><em>${lang==='uz'?'Da’vo arizalari':'Claims'}</em><em>${lang==='uz'?'Shartnomalar':'Contracts'}</em><em>${lang==='uz'?'Huquqiy tahlil':'Legal review'}</em></div>
               </div>
               <span class="homeLongEnter">${lang==='uz'?'Tekshirish bo‘limiga kirish →':lang==='ru'?'Открыть проверку →':'Open document review →'}</span>
+            </a>
+            <!-- PENSIYA VA NAFAQALAR: ALOHIDA KATTA PREMIUM BO‘LIM -->
+            <a class="homeLongCard pension" href="/pension${q(lang)}" aria-label="${lang==='uz'?'Pensiya va nafaqalarni hisoblash':lang==='ru'?'Расчёт пенсий и пособий':'Pension and benefit calculator'}">
+              <div class="homeLongIcon">₽</div>
+              <div class="homeLongCopy">
+                <h3>${lang==='uz'?'Pensiya va nafaqalarni hisoblash':lang==='ru'?'Расчёт пенсий и пособий':'Pension and benefit calculator'}</h3>
+                <p>${lang==='uz'?'Yosh, ish staji va ish haqi asosida yoshga doir pensiyaning dastlabki hisobini ko‘ring. Boshqa pensiya va nafaqa turlari bo‘yicha huquqiy shartlarni tekshiring.':lang==='ru'?'Предварительный расчёт пенсии по возрасту на основе стажа и заработка; проверка условий других видов пенсий и пособий.':'Estimate an old-age pension from service and earnings; review eligibility for other pensions and benefits.'}</p>
+                <div class="homeLongQuick"><em>${lang==='uz'?'Pensiya kalkulyatori':lang==='ru'?'Калькулятор':'Calculator'}</em><em>${lang==='uz'?'Ish staji':lang==='ru'?'Стаж':'Service'}</em><em>${lang==='uz'?'Qonuniy asoslar':lang==='ru'?'Правовые основания':'Legal sources'}</em></div>
+              </div>
+              <span class="homeLongEnter">${lang==='uz'?'Hisoblash bo‘limiga kirish →':lang==='ru'?'Открыть расчёт →':'Open calculator →'}</span>
             </a>
             <a class="homeLongCard courtcost" href="/court-costs${q(lang)}">
               <div class="homeLongIcon">₴</div><div class="homeLongCopy">
@@ -7535,6 +7553,8 @@ Do not guarantee a court outcome and do not invent legislation.`
   );
 
 }
+
+
 // ======================================================
 // SOURCES PAGE
 // ======================================================
@@ -14535,7 +14555,5 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
-
-
 
 
