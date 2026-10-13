@@ -7353,6 +7353,7 @@ function questionnairePage(lang) {
     "questionnaire",
 
     `
+
       <div class="notice noticeInfo">
 
         <span class="noticeIcon">
@@ -14706,7 +14707,6 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
-
 
 
 
