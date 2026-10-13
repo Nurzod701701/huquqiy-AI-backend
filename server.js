@@ -9,8 +9,8 @@ const querystring = require("querystring");
 
 const PORT = process.env.PORT || 3000;
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
-const AI_MODEL = process.env.AI_MODEL || "openrouter/free";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+const AI_MODEL = process.env.AI_MODEL || "gpt-4.1-mini";
 
 
 // ======================================================
@@ -333,9 +333,9 @@ function legalSourceFooter(text, lang) {
 }
 
 async function callAI(question, lang = "uz", context = "") {
-  if (!OPENROUTER_API_KEY) {
+  if (!OPENAI_API_KEY) {
     throw new Error(
-      "OPENROUTER_API_KEY topilmadi."
+      "OPENAI_API_KEY topilmadi."
     );
   }
 
@@ -423,76 +423,49 @@ Only cite documents genuinely relevant to the user's question. No real-time LexU
 13. Never claim that a predicted court outcome is guaranteed.
 `;
 
-  const response = await fetch(
-    "https://openrouter.ai/api/v1/chat/completions",
-    {
+  // OpenAI API (Chat Completions); key remains server-side in Render Environment.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 45000);
+  let response;
+  try {
+    response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-
+      signal: controller.signal,
       headers: {
-        Authorization:
-          "Bearer " + OPENROUTER_API_KEY,
-
-        "Content-Type":
-          "application/json",
-
-        "HTTP-Referer":
-          process.env.SITE_URL ||
-          "https://huquqiy-ai-backend.onrender.com",
-
-        "X-Title":
-          "Huquqiy AI"
+        Authorization: "Bearer " + OPENAI_API_KEY,
+        "Content-Type": "application/json"
       },
-
       body: JSON.stringify({
         model: AI_MODEL,
-
         messages: [
-          {
-            role: "system",
-            content: systemPrompt
-          },
-
-          ...(context
-            ? [
-                {
-                  role: "system",
-
-                  content:
-                    "Collected case information:\n" +
-                    context
-                }
-              ]
-            : []),
-
-          {
-            role: "user",
-            content: question
-          }
+          { role: "system", content: systemPrompt },
+          ...(context ? [{ role: "system", content: "Collected case information:\n" + context }] : []),
+          { role: "user", content: question }
         ],
-
         temperature: 0.2
       })
-    }
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    console.error(
-      "OpenRouter error:",
-      data
-    );
-
-    throw new Error(
-      data?.error?.message ||
-      "AI xizmatiga ulanishda xatolik."
-    );
+    });
+  } catch (error) {
+    if (error?.name === "AbortError") throw new Error("OpenAI javobi 45 soniyada kelmadi (timeout).");
+    throw new Error("OpenAI API bilan tarmoq aloqasi uzildi: " + (error?.message || "unknown"));
+  } finally {
+    clearTimeout(timeout);
   }
 
-  return (
-    data?.choices?.[0]?.message?.content ||
-    "Javob olinmadi."
-  );
+  let data;
+  try { data = await response.json(); }
+  catch { throw new Error("OpenAI API noto‘g‘ri formatda javob qaytardi."); }
+
+  if (!response.ok) {
+    const details = data?.error?.message || "Unknown API error";
+    console.error("OpenAI API error:", response.status, details);
+    if (response.status === 401) throw new Error("OpenAI API kaliti noto‘g‘ri yoki bekor qilingan (401).");
+    if (response.status === 429) throw new Error("OpenAI API limiti yoki balans muammosi (429): " + details);
+    throw new Error("OpenAI API HTTP " + response.status + ": " + details);
+  }
+  const content = data?.choices?.[0]?.message?.content;
+  if (!content) throw new Error("OpenAI API bo‘sh javob qaytardi.");
+  return content;
 }
 
 
@@ -7040,10 +7013,10 @@ async function aiResultPage(
 
     answer =
       lang === "uz"
-        ? "AI xizmatiga ulanishda xatolik yuz berdi. OPENROUTER_API_KEY va server sozlamalarini tekshiring."
+        ? "AI xizmatiga ulanishda xatolik yuz berdi. OPENAI_API_KEY va server sozlamalarini tekshiring."
         : lang === "ru"
-        ? "Произошла ошибка подключения к AI. Проверьте OPENROUTER_API_KEY и настройки сервера."
-        : "An error occurred while connecting to the AI service. Check OPENROUTER_API_KEY and the server configuration.";
+        ? "Произошла ошибка подключения к AI. Проверьте OPENAI_API_KEY и настройки сервера."
+        : "An error occurred while connecting to the AI service. Check OPENAI_API_KEY and the server configuration.";
 
   }
 
@@ -7497,10 +7470,10 @@ Do not guarantee a court outcome and do not invent legislation.`
 
     answer =
       lang === "uz"
-        ? "AI tahlilini olishda xatolik yuz berdi. Serverdagi OPENROUTER_API_KEY sozlamasini tekshiring."
+        ? "AI tahlilini olishda xatolik yuz berdi. Serverdagi OPENAI_API_KEY sozlamasini tekshiring."
         : lang === "ru"
-        ? "Не удалось получить AI-анализ. Проверьте OPENROUTER_API_KEY на сервере."
-        : "The AI analysis could not be generated. Check OPENROUTER_API_KEY on the server.";
+        ? "Не удалось получить AI-анализ. Проверьте OPENAI_API_KEY на сервере."
+        : "The AI analysis could not be generated. Check OPENAI_API_KEY on the server.";
 
   }
 
@@ -9262,10 +9235,10 @@ REQUESTED OUTPUT: ${wantsContract ? "EMPLOYMENT CONTRACT DRAFT" : (wantsClaim ? 
     console.error("EMPLOYMENT AI ERROR:", error);
     answer =
       lang === "uz"
-        ? "Mehnat huquqi bo‘yicha natijani yaratishda xatolik yuz berdi. OPENROUTER_API_KEY sozlamasini tekshiring."
+        ? "Mehnat huquqi bo‘yicha natijani yaratishda xatolik yuz berdi. OPENAI_API_KEY sozlamasini tekshiring."
         : lang === "ru"
-        ? "Не удалось сформировать результат. Проверьте OPENROUTER_API_KEY."
-        : "The result could not be generated. Check OPENROUTER_API_KEY.";
+        ? "Не удалось сформировать результат. Проверьте OPENAI_API_KEY."
+        : "The result could not be generated. Check OPENAI_API_KEY.";
   }
 
   return appLayout(
