@@ -423,6 +423,20 @@ Only cite documents genuinely relevant to the user's question. No real-time LexU
 13. Never claim that a predicted court outcome is guaranteed.
 `;
 
+  // HUQUQIY ANIQLIK: modelga huquqiy asoslar bo'yicha qo'shimcha qoida.
+  // Bu jonli LexUZ tekshiruvi EMAS. Tasdiqlanmagan moddalarni aytmaslikni talab qiladi.
+  const accuracyInstruction = `
+LEGAL ACCURACY CHECK (HIGH PRIORITY):
+- Never guess an article number, legal deadline, penalty, amount, or direct article URL.
+- The supplied LexUZ links are links to legal DOCUMENTS, not verified deep links to articles.
+- For employment contract termination, distinguish: mutual agreement (Labour Code art. 157), employee initiative (art. 160), employer initiative (art. 161). These are reference points, not a complete list of grounds.
+- Under the general employee-initiative rule, notice is normally 14 CALENDAR DAYS, not one month; exceptions depend on the situation. Do not state that all terminations have one universal notice period.
+- Never cite Labour Code art. 84 as the general termination procedure.
+- When unable to confirm an exact rule, omit the article number and deadline and say that the current LexUZ text must be checked.
+- Before finalizing, review every article number, deadline and URL for consistency. Do not claim live verification.
+- Provide a concise useful answer; do not invent citations just to satisfy formatting.
+`;
+
   // OpenRouter: bepul model, chiqish tokenlari cheklangan.
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 45000);
@@ -441,6 +455,7 @@ Only cite documents genuinely relevant to the user's question. No real-time LexU
         model: AI_MODEL,
         messages: [
           { role: "system", content: systemPrompt },
+          { role: "system", content: accuracyInstruction },
           ...(context ? [{ role: "system", content: "Collected case information:\n" + context }] : []),
           { role: "user", content: question }
         ],
@@ -468,6 +483,19 @@ Only cite documents genuinely relevant to the user's question. No real-time LexU
   }
   const content = data?.choices?.[0]?.message?.content;
   if (!content) throw new Error("OpenRouter bo‘sh javob qaytardi.");
+  // Hech bir modelning javobi qonun matni bilan avtomatik solishtirilmaydi.
+  // Aniq aniqlangan noto'g'ri umumiy qoida bo'lsa, ogohlantirish qo'shamiz.
+  const employmentQuestion = /mehnat shartnoma|трудов(ого|ой) договор|employment contract/i.test(question);
+  const suspiciousMonth = /(?:1\s*oy|bir\s*oy|один\s*месяц|one\s*month)\s*(?:oldin|avval|до|before)/i.test(content);
+  const wrongArticle = /(?:Mehnat kodeksining|Трудового кодекса|Labour Code)\s*84[-– ]?(?:modda|модд|стать|article)/i.test(content);
+  if (employmentQuestion && (suspiciousMonth || wrongArticle)) {
+    const warning = {
+      uz: "\n\n⚠️ Huquqiy tekshiruv: yuqoridagi modda yoki ogohlantirish muddati noto‘g‘ri bo‘lishi mumkin. Xodim tashabbusi bilan bekor qilishning umumiy qoidasi Mehnat kodeksi 160-moddasida 14 kalendar kun deb belgilangan; istisnolar mavjud. Amaldagi matn: https://lex.uz/docs/-6257288",
+      ru: "\n\n⚠️ Проверка: указанные выше статья или срок могут быть неточными. По общему правилу инициатива работника регулируется статьёй 160 Трудового кодекса (14 календарных дней); возможны исключения. https://lex.uz/docs/-6257288",
+      en: "\n\n⚠️ Legal accuracy warning: the article or notice period above may be inaccurate. Employee-initiated termination is generally covered by Labour Code article 160 (14 calendar days), subject to exceptions. https://lex.uz/docs/-6257288"
+    };
+    return content + warning[lang];
+  }
   return content;
 }
 
@@ -7308,7 +7336,7 @@ function questionnairePage(lang) {
           >
             ✦ ${t.submit}
           </button>
-          
+
         </div>
 
       </form>
@@ -14616,7 +14644,6 @@ server.listen(
   931. Reklama talablari: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
   932. Yer va ko‘chmas mulk biznesda: guided intake, evidence checklist, legal-source verification, document output, official-service handoff.
 */
-
 
 
 
