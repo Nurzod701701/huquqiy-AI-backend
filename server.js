@@ -12777,7 +12777,18 @@ const path = require("path");
 let nodemailer = null;
 try { nodemailer = require("nodemailer"); } catch (_) {}
 
-const ACCOUNT_DATA_FILE = process.env.ACCOUNT_DATA_FILE || path.join(process.cwd(), "huquqiy-ai-data.json");
+// Render: /var/data faqat shu manzilga Persistent Disk ulangan bo'lsa yoziladi.
+// ACCOUNT_DATA_FILE ni Render Environment'da /var/data/... qilib belgilashdan oldin diskni ulang.
+// Disk bo'lmasa /tmp ishlaydi, ammo restart/deploy paytida ma'lumotlar yo'qolishi mumkin.
+const ACCOUNT_DATA_FILE_CONFIGURED = process.env.ACCOUNT_DATA_FILE || path.join(process.cwd(), "huquqiy-ai-data.json");
+let ACCOUNT_DATA_FILE = ACCOUNT_DATA_FILE_CONFIGURED;
+try {
+  fs.mkdirSync(path.dirname(ACCOUNT_DATA_FILE), {recursive:true});
+  fs.accessSync(path.dirname(ACCOUNT_DATA_FILE), fs.constants.W_OK);
+} catch (err) {
+  ACCOUNT_DATA_FILE = path.join(require('os').tmpdir(), 'huquqiy-ai-data.json');
+  console.error('ACCOUNT STORAGE WARNING: ' + ACCOUNT_DATA_FILE_CONFIGURED + ' yozib bo‘lmaydi (' + err.code + '). Vaqtincha ' + ACCOUNT_DATA_FILE + ' ishlatiladi. Doimiy saqlash uchun Render Persistent Disk yoki tashqi DB sozlang!');
+}
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const VERIFY_TTL_MS = 1000 * 60 * 15;
 const RESET_TTL_MS = 1000 * 60 * 20;
