@@ -111,6 +111,8 @@ const GLOBAL_LEXUZ_SCRIPT = String.raw`<script id="global-lexuz-links">
 })();
 ${"</" + "script>"}`;
 
+const LANGUAGE_PRESERVE_SCRIPT = '<script id="huquqiy-language-preserve">\n(function(){\n  function update(){\n    document.querySelectorAll(\'.languages a, .appLang a, .accountLanguage a\').forEach(function(a){\n      var match = /(?:\\?|&)lang=(uz|ru|en)(?:&|$)/.exec(a.getAttribute(\'href\') || \'\');\n      if(!match) return;\n      var url = new URL(window.location.href);\n      url.searchParams.set(\'lang\', match[1]);\n      url.hash = window.location.hash;\n      a.href = url.pathname + url.search + url.hash;\n    });\n  }\n  if(document.readyState === \'loading\') document.addEventListener(\'DOMContentLoaded\',update,{once:true});\n  else update();\n  document.addEventListener(\'click\',function(e){\n    var a=e.target.closest && e.target.closest(\'.languages a, .appLang a, .accountLanguage a\');\n    if(!a) return;\n    var match=/(?:\\?|&)lang=(uz|ru|en)(?:&|$)/.exec(a.getAttribute(\'href\')||\'\');\n    if(!match)return;\n    var url=new URL(window.location.href);url.searchParams.set(\'lang\',match[1]);\n    a.href=url.pathname+url.search+url.hash;\n  },true);\n})();\n</script>';
+
 function sendHtml(res, html, status = 200) {
   res.writeHead(status, {
     "Content-Type": "text/html; charset=utf-8",
@@ -118,7 +120,9 @@ function sendHtml(res, html, status = 200) {
   });
 
   const pageHtml = String(html || '');
-  res.end(pageHtml.includes('id="global-lexuz-links"') ? pageHtml : pageHtml.replace(/<\/body>/i, GLOBAL_LEXUZ_SCRIPT + '</body>'));
+  let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : pageHtml.replace(/<\/body>/i, GLOBAL_LEXUZ_SCRIPT + '</body>');
+  if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = resultHtml.replace(/<\/body>/i, LANGUAGE_PRESERVE_SCRIPT + '</body>');
+  res.end(resultHtml);
 }
 
 function sendJson(res, data, status = 200) {
@@ -12792,7 +12796,8 @@ function accountLoadDb(){
 }
 function accountSaveDb(db){
   const temp = ACCOUNT_DATA_FILE + ".tmp";
-  fs.writeFileSync(temp, JSON.stringify(db,null,2), "utf8");
+  fs.mkdirSync(path.dirname(ACCOUNT_DATA_FILE),{recursive:true});
+  fs.writeFileSync(temp, JSON.stringify(db,null,2), {encoding:"utf8",mode:0o600});
   fs.renameSync(temp, ACCOUNT_DATA_FILE);
 }
 function accountId(prefix="ID"){
@@ -12800,6 +12805,8 @@ function accountId(prefix="ID"){
 }
 function accountEmail(v){ return String(v||"").trim().toLowerCase(); }
 function accountNow(){ return new Date().toISOString(); }
+function accountSixDigitCode(){ return String(crypto.randomInt(100000,1000000)); }
+function accountCanSendCode(user){ return !user.verificationSentAt || Date.now()-Date.parse(user.verificationSentAt)>=60000; }
 function accountHashPassword(password, salt=crypto.randomBytes(16).toString("hex")){
   const hash = crypto.scryptSync(String(password), salt, 64).toString("hex");
   return salt + ":" + hash;
@@ -12887,6 +12894,7 @@ const ACCOUNT_CSS = `
 @media(max-width:980px){.accountShell{grid-template-columns:1fr}.accountSide{position:relative;height:auto}.accountSideBottom{position:static!important;margin-top:18px}.accountStats{grid-template-columns:repeat(2,1fr)}.accountGrid{grid-template-columns:1fr}.accountCards{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.accountMain{padding:16px}.accountStats{grid-template-columns:1fr 1fr}.accountCards{grid-template-columns:1fr}.accountAuth{padding:22px}.accountTop{align-items:flex-start;flex-direction:column}}
 
+.accountEntryActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.accountEntryLink{display:flex;align-items:center;justify-content:center;text-align:center;min-height:40px;padding:8px 10px;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none!important;box-shadow:0 6px 16px rgba(7,24,39,.09);transition:transform .15s ease,box-shadow .15s ease}.accountEntryLink:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(7,24,39,.15)}.accountEntryLink.primary{background:linear-gradient(135deg,#e7cc91,#c39a54);color:#071827!important}.accountEntryLink.secondary{background:#0d2b43;color:#fff!important}.accountEntryLink:focus-visible{outline:3px solid #b9954f;outline-offset:3px}@media(max-width:460px){.accountEntryActions{grid-template-columns:1fr}.accountEntryLink{min-height:40px}}
 /* MATCH PERSONAL CABINET TO CLASSIC SITE */
 .accountWrap,.accountShell{background:#f5f7fa}
 .accountSide{background:linear-gradient(180deg,#071827,#10334c);border-right:1px solid rgba(201,168,106,.25)}
@@ -12983,7 +12991,7 @@ function accountSidebar(lang,user,active){
 }
 function accountAppPage(lang,user,active,title,body){
   const initials=(user.firstName?.[0]||"U")+(user.lastName?.[0]||"");
-  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — Huquqiy AI</title><style>${CSS}${ACCOUNT_CSS}</style></head><body><div class="accountShell">${accountSidebar(lang,user,active)}<main class="accountMain"><div class="accountTop"><div><b>${esc(title)}</b><div class="accountMuted">Huquqiy AI shaxsiy ish maydoni</div></div><div class="accountIdentity"><div><b>${esc(user.firstName)} ${esc(user.lastName)}</b><div class="accountMuted">${esc(user.email)}</div></div><div class="accountAvatar">${esc(initials)}</div></div></div>${body}</main></div></body></html>`;
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — Huquqiy AI</title><style>${CSS}${ACCOUNT_CSS}</style></head><body><div class="accountShell">${accountSidebar(lang,user,active)}<main class="accountMain"><div class="accountTop"><div><b>${esc(title)}</b><div class="accountMuted">Huquqiy AI shaxsiy ish maydoni</div></div><div class="accountIdentity"><div class="accountLanguage" style="display:flex;gap:6px;margin-right:12px">${["uz","ru","en"].map(code=>`<a href="?lang=${code}" style="padding:7px 9px;border:1px solid #c9a86a;border-radius:7px;font-weight:700;${code===lang?'background:#c9a86a;color:#06111f;':''}">${code.toUpperCase()}</a>`).join('')}</div><div><b>${esc(user.firstName)} ${esc(user.lastName)}</b><div class="accountMuted">${esc(user.email)}</div></div><div class="accountAvatar">${esc(initials)}</div></div></div>${body}</main></div></body></html>`;
 }
 function accountRequire(req,res,lang,roles=null){
   const auth=accountSession(req);
@@ -12993,13 +13001,13 @@ function accountRequire(req,res,lang,roles=null){
 }
 
 function accountLoginPage(lang,msg=""){
-  return accountPublicPage(lang,at(lang,"login"),`<section class="accountAuth"><h1>${at(lang,"account")}ga kirish</h1><p class="accountMuted">Email va parolingiz orqali Huquqiy AI profilingizga kiring.</p>${msg?accountMessage(msg,msg.includes("xato")||msg.includes("noto")?"error":"info"):""}<form class="accountForm" method="post" action="/login?lang=${lang}"><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">${at(lang,"login")}</button></form><div class="accountActions" style="margin-top:16px"><a href="/register?lang=${lang}">${at(lang,"createAccount")}</a><a href="/forgot-password?lang=${lang}">${at(lang,"forgotPassword")}</a></div></section>`);
+  return accountPublicPage(lang,at(lang,"login"),`<section class="accountAuth"><h1>${at(lang,"account")}ga kirish</h1><p class="accountMuted">Email va parolingiz orqali Huquqiy AI profilingizga kiring.</p>${msg?accountMessage(msg,msg.includes("xato")||msg.includes("noto")?"error":"info"):""}<form class="accountForm" method="post" action="/login?lang=${lang}"><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">${at(lang,"login")}</button></form><nav class="accountEntryActions" aria-label="${at(lang,"account")}"><a class="accountEntryLink primary" href="/register?lang=${lang}">＋ ${at(lang,"createAccount")}</a><a class="accountEntryLink secondary" href="/forgot-password?lang=${lang}">↻ ${at(lang,"forgotPassword")}</a></nav></section>`);
 }
 function accountRegisterPage(lang,msg=""){
   return accountPublicPage(lang,at(lang,"register"),`<section class="accountAuth"><h1>Akkaunt yaratish</h1><p class="accountMuted">Huquqiy ishlaringiz, AI suhbatlari va hujjatlaringizni bitta profilga bog‘lang.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/register?lang=${lang}"><label>Ism<input name="firstName" required maxlength="60"></label><label>Familiya<input name="lastName" required maxlength="60"></label><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label>Parolni takrorlang<input name="password2" type="password" minlength="8" required></label><label style="display:flex;gap:10px;align-items:flex-start"><input style="width:auto;margin-top:4px" name="terms" value="yes" type="checkbox" required><span>Foydalanish shartlari va maxfiylik siyosatini o‘qidim.</span></label><button class="accountButton gold">Akkaunt yaratish</button></form><p class="accountMuted">Akkauntingiz bormi? <a href="/login?lang=${lang}">${at(lang,"login")}</a></p></section>`);
 }
 function accountVerifyPage(lang,email,msg=""){
-  return accountPublicPage(lang,"Emailni tasdiqlash",`<section class="accountAuth"><h1>Emailni tasdiqlash</h1><p class="accountMuted"><b>${esc(email)}</b> manziliga yuborilgan 6 xonali kodni kiriting.</p>${msg?accountMessage(msg,msg.includes("Tasdiqlandi")?"success":"error"):""}<form class="accountForm" method="post" action="/verify-email?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Tasdiqlash kodi<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><button class="accountButton gold">Tasdiqlash</button></form></section>`);
+  return accountPublicPage(lang,"Emailni tasdiqlash",`<section class="accountAuth"><h1>Emailni tasdiqlash</h1><p class="accountMuted"><b>${esc(email)}</b> manziliga yuborilgan 6 xonali kodni kiriting.</p>${msg?accountMessage(msg,msg.includes("yuborildi")||msg.includes("sent")?"success":"error"):""}<form class="accountForm" method="post" action="/verify-email?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Tasdiqlash kodi<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><button class="accountButton gold">Tasdiqlash</button></form><form method="post" action="/resend-verification?lang=${lang}" style="margin-top:14px"><input type="hidden" name="email" value="${esc(email)}"><button type="submit" class="accountButton light">Kodni qayta yuborish</button></form></section>`);
 }
 function accountDashboard(lang,user,db){
   const cases=db.cases.filter(x=>x.userId===user.id), docs=db.documents.filter(x=>x.userId===user.id), chats=db.conversations.filter(x=>x.userId===user.id), done=cases.filter(x=>x.status==="completed").length;
@@ -13086,18 +13094,37 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     const f=await readForm(req), email=accountEmail(f.email); const db=accountLoadDb();
     if(!f.firstName||!f.lastName||!email.includes("@")||String(f.password||"").length<8||f.password!==f.password2||f.terms!=="yes"){ sendHtml(res,accountRegisterPage(lang,"Ma’lumotlarni tekshiring. Parol kamida 8 belgi va ikki parol bir xil bo‘lishi kerak."),400); return true; }
     if(email===OWNER_EMAIL){ sendHtml(res,accountRegisterPage(lang,"Bu email platforma OWNER akkaunti uchun ajratilgan. /admin/login orqali kiring."),403); return true; }
-    if(db.users.some(u=>u.email===email)){ sendHtml(res,accountRegisterPage(lang,"Bu email bilan account mavjud."),409); return true; }
-    const code=String(Math.floor(100000+Math.random()*900000)); const role="user";
-    const user={id:accountId("USR"),firstName:String(f.firstName).trim(),lastName:String(f.lastName).trim(),email,passwordHash:accountHashPassword(f.password),role,status:"active",emailVerified:false,verificationCodeHash:accountHashPassword(code),verificationExpiresAt:new Date(Date.now()+VERIFY_TTL_MS).toISOString(),createdAt:accountNow(),updatedAt:accountNow()};
-    db.users.push(user); db.consents.push({id:accountId("CNS"),userId:user.id,type:"terms_privacy",version:"2026-09-25-v1",acceptedAt:accountNow()}); accountAudit(db,user.id,"register",{email}); accountSaveDb(db);
-    try {
-      const sent = await accountSendEmail(email,"Huquqiy AI — emailni tasdiqlash",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
-      if(!sent){ sendHtml(res,accountVerifyPage(lang,email,"Email yuborish xizmati sozlanmagan. Render Environment’da RESEND_API_KEY va EMAIL_FROM ni tekshiring."),503); return true; }
-    } catch(error){
-      console.error("VERIFY EMAIL SEND ERROR", error);
-      sendHtml(res,accountVerifyPage(lang,email,"Tasdiqlash kodi emailga yuborilmadi. RESEND_API_KEY, EMAIL_FROM va Resend domen sozlamalarini tekshiring."),502); return true;
+    const existing=db.users.find(u=>u.email===email);
+    if(existing){
+      if(existing.emailVerified){sendHtml(res,accountRegisterPage(lang,"Bu email ro‘yxatdan o‘tgan. Kirish yoki parolni tiklashdan foydalaning."),409);return true;}
+      accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`);return true;
     }
-    accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
+    const code=accountSixDigitCode();
+    const user={id:accountId("USR"),firstName:String(f.firstName).trim(),lastName:String(f.lastName).trim(),email,passwordHash:accountHashPassword(f.password),role:"user",status:"active",emailVerified:false,verificationCodeHash:accountHashPassword(code),verificationExpiresAt:new Date(Date.now()+VERIFY_TTL_MS).toISOString(),verificationSentAt:accountNow(),createdAt:accountNow(),updatedAt:accountNow()};
+    try {
+      const sent=await accountSendEmail(email,"Huquqiy AI — emailni tasdiqlash",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
+      if(!sent){sendHtml(res,accountRegisterPage(lang,"Email xizmati sozlanmagan. Render Environment’da RESEND_API_KEY va EMAIL_FROM yoki SMTP sozlamalarini kiriting."),503);return true;}
+    }catch(error){console.error("VERIFY EMAIL SEND ERROR",error);sendHtml(res,accountRegisterPage(lang,"Email yuborilmadi. Pochta xizmati va jo‘natuvchi domenini tekshiring."),502);return true;}
+    // Email jo‘natilishi tasdiqlangandan keyingina akkauntni bazaga kiritamiz.
+    db.users.push(user);
+    db.consents.push({id:accountId("CNS"),userId:user.id,type:"terms_privacy",version:"2026-09-25-v1",acceptedAt:accountNow()});
+    accountAudit(db,user.id,"register",{email});accountSaveDb(db);
+    accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`);return true;
+  }
+  if(req.method==="POST" && pathname==="/resend-verification"){
+    const f=await readForm(req),email=accountEmail(f.email),db=accountLoadDb(),user=db.users.find(u=>u.email===email);
+    if(!user || user.emailVerified){sendHtml(res,accountVerifyPage(lang,email,"Bu email uchun tasdiqlash kutilmayapti."),400);return true;}
+    if(!accountCanSendCode(user)){sendHtml(res,accountVerifyPage(lang,email,"Qayta yuborishdan oldin 60 soniya kuting."),429);return true;}
+    const code=accountSixDigitCode();
+    try{
+      const sent=await accountSendEmail(email,"Huquqiy AI — yangi tasdiqlash kodi",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
+      if(!sent){sendHtml(res,accountVerifyPage(lang,email,"Email xizmati sozlanmagan."),503);return true;}
+    }catch(error){console.error("RESEND VERIFICATION ERROR",error);sendHtml(res,accountVerifyPage(lang,email,"Kod yuborilmadi. Email sozlamalarini tekshiring."),502);return true;}
+    user.verificationCodeHash=accountHashPassword(code);
+    user.verificationExpiresAt=new Date(Date.now()+VERIFY_TTL_MS).toISOString();
+    user.verificationSentAt=accountNow();user.updatedAt=accountNow();
+    accountAudit(db,user.id,"verification_resent",{});accountSaveDb(db);
+    sendHtml(res,accountVerifyPage(lang,email,"Yangi tasdiqlash kodi emailingizga yuborildi."));return true;
   }
   if(req.method==="GET" && pathname==="/verify-email"){ sendHtml(res,accountVerifyPage(lang,accountEmail(url.searchParams.get("email")))); return true; }
   if(req.method==="POST" && pathname==="/verify-email"){
@@ -13109,7 +13136,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
   }
   if(req.method==="POST" && pathname==="/forgot-password"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user){const code=String(Math.floor(100000+Math.random()*900000));user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);try{const sent=await accountSendEmail(email,"Huquqiy AI — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true;}} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
+    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user){const code=accountSixDigitCode();user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);try{const sent=await accountSendEmail(email,"Huquqiy AI — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true;}} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
   }
   if(req.method==="GET" && pathname==="/reset-password"){
     const email=accountEmail(url.searchParams.get("email")); sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" required maxlength="6"></label><label>Yangi parol<input name="password" type="password" minlength="8" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" required></label><button class="accountButton">Parolni yangilash</button></form></section>`)); return true;
