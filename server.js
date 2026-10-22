@@ -9416,11 +9416,30 @@ function pensionPage(lang) {
       <form id="pensionForm" autocomplete="off">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
         <div class="formGroup"><label for="pKind">${esc(t.kind)}</label><select id="pKind"><option value="old">${esc(t.old)}</option><option value="dis">${esc(t.dis)}</option><option value="sur">${esc(t.sur)}</option><option value="ben">${esc(t.ben)}</option></select></div>
-        <div class="formGroup"><label for="pSex">${esc(t.sex)}</label><select id="pSex"><option value="male">${esc(t.male)}</option><option value="female">${esc(t.female)}</option></select></div>
-        <div class="formGroup"><label for="pAge">${esc(t.age)}</label><input id="pAge" type="number" min="0" max="120" step="1" required></div>
-        <div class="formGroup"><label for="pYears">${esc(t.years)}</label><input id="pYears" type="number" min="0" max="80" step="1" required></div>
-        <div class="formGroup" id="pSalaryGroup"><label for="pSalary" id="pSalaryLabel">${esc(t.salary)}</label><div id="pSalaryChoices"></div><input id="pSalary" type="number" min="0" max="100000000000" step="1" placeholder="3500000"><div id="pSalaryGuidance"></div></div>
-        <div class="formGroup"><label for="pSpecial">${esc(t.special)}</label><select id="pSpecial"><option value="no">${esc(t.no)}</option><option value="yes">${esc(t.yes)}</option></select></div>
+        <div class="formGroup pension-old-field"><label for="pSex">${esc(t.sex)}</label><select id="pSex"><option value="male">${esc(t.male)}</option><option value="female">${esc(t.female)}</option></select></div>
+        <div class="formGroup pension-old-field"><label for="pAge">${esc(t.age)}</label><input id="pAge" type="number" min="0" max="120" step="1" required></div>
+        <div class="formGroup pension-old-field"><label for="pYears">${esc(t.years)}</label><input id="pYears" type="number" min="0" max="80" step="1" required></div>
+        <div class="formGroup pension-old-field" id="pSalaryGroup"><label for="pSalary" id="pSalaryLabel">${esc(t.salary)}</label><div id="pSalaryChoices"></div><input id="pSalary" type="number" min="0" max="100000000000" step="1" placeholder="3500000"><div id="pSalaryGuidance"></div></div>
+        <div class="formGroup pension-old-field"><label for="pSpecial">${esc(t.special)}</label><select id="pSpecial"><option value="no">${esc(t.no)}</option><option value="yes">${esc(t.yes)}</option></select></div>
+      </div>
+      <div id="disabilityFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #c9a86a;border-radius:14px;background:#fffaf0">
+        <h3>${lang==='uz'?'Nogironlik pensiyasi uchun ma’lumotlar':lang==='ru'?'Данные для пенсии по инвалидности':'Disability pension details'}</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
+          <div class="formGroup"><label for="disGroup">${lang==='uz'?'Nogironlik guruhi':lang==='ru'?'Группа инвалидности':'Disability group'}</label><select id="disGroup"><option value="">—</option><option value="1">I</option><option value="2">II</option><option value="3">III</option></select></div>
+          <div class="formGroup"><label for="disCause">${lang==='uz'?'Nogironlik sababi':lang==='ru'?'Причина инвалидности':'Cause of disability'}</label><select id="disCause"><option value="unknown">${lang==='uz'?'Aniq emas':lang==='ru'?'Неизвестно':'Unknown'}</option><option value="general">${lang==='uz'?'Umumiy kasallik':lang==='ru'?'Общее заболевание':'General illness'}</option><option value="work">${lang==='uz'?'Mehnat jarohati / kasb kasalligi':lang==='ru'?'Трудовая травма / профзаболевание':'Work injury / occupational disease'}</option></select></div>
+          <div class="formGroup"><label for="disDate">${lang==='uz'?'Nogironlik belgilangan sana':lang==='ru'?'Дата установления инвалидности':'Date disability was established'}</label><input id="disDate" type="date"></div>
+          <div class="formGroup"><label for="disYears">${esc(t.years)}</label><input id="disYears" type="number" min="0" max="80" step="1"></div>
+          <div class="formGroup"><label for="disSalary">${esc(t.salary)}</label><input id="disSalary" type="number" min="0" step="1"></div>
+        </div>
+      </div>
+      <div id="benefitFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #c9a86a;border-radius:14px;background:#fffaf0">
+        <h3>${lang==='uz'?'Ijtimoiy nafaqa uchun ma’lumotlar':lang==='ru'?'Данные для социального пособия':'Social benefit details'}</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
+          <div class="formGroup"><label for="benType">${lang==='uz'?'Nafaqa turi':lang==='ru'?'Вид пособия':'Benefit type'}</label><select id="benType"><option value="old">${lang==='uz'?'Yoshga doir nafaqa':lang==='ru'?'Пособие по возрасту':'Old-age allowance'}</option><option value="dis">${lang==='uz'?'Nogironlik nafaqasi':lang==='ru'?'Пособие по инвалидности':'Disability allowance'}</option><option value="sur">${lang==='uz'?'Boquvchisini yo‘qotganlik nafaqasi':lang==='ru'?'Пособие по потере кормильца':'Survivor allowance'}</option><option value="other">${lang==='uz'?'Boshqa ijtimoiy nafaqa':lang==='ru'?'Другое социальное пособие':'Other social benefit'}</option></select></div>
+          <div class="formGroup"><label for="benAge">${esc(t.age)}</label><input id="benAge" type="number" min="0" max="120" step="1"></div>
+          <div class="formGroup"><label for="benPension">${lang==='uz'?'Pensiya olish huquqi mavjudmi?':lang==='ru'?'Есть ли право на пенсию?':'Eligible for a pension?'}</label><select id="benPension"><option value="unknown">${lang==='uz'?'Aniq emas':lang==='ru'?'Неизвестно':'Unknown'}</option><option value="no">${esc(t.no)}</option><option value="yes">${esc(t.yes)}</option></select></div>
+          <div class="formGroup" id="benMembersGroup" style="display:none"><label for="benMembers">${lang==='uz'?'Huquqqa ega oila a’zolari soni':lang==='ru'?'Число членов семьи с правом на выплату':'Eligible family members'}</label><input id="benMembers" type="number" min="1" max="30" step="1" value="1"></div>
+        </div>
       </div>
       <div id="survivorFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #c9a86a;border-radius:14px;background:#fffaf0">
         <h3 id="surTitle" style="margin:0 0 15px">Boquvchisini yo‘qotganlik pensiyasi — maxsus ma’lumotlar</h3>
@@ -9481,8 +9500,25 @@ function pensionPage(lang) {
       ['surTitle','surCountLabel','surOrphanLabel','surSalaryLabel','surYearsLabel','surDeathLabel','surHelp'].forEach((id,i)=>by(id).textContent=words[i]);
       const deathOptions={uz:['Umumiy kasallik yoki boshqa holat','Mehnatda mayiblanish / kasb kasalligi','Aniq emas'],ru:['Общее заболевание или иные обстоятельства','Трудовое увечье / профзаболевание','Неизвестно'],en:['General illness or other cause','Work injury / occupational disease','Unknown']}['${lang}'];
       Array.from(by('surDeath').options).forEach((o,i)=>o.textContent=deathOptions[i]);
-      function sync(){const kind=by('pKind').value;const old=kind==='old';survivor.style.display=kind==='sur'?'block':'none';for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;for(const id of ['pAge','pYears'])by(id).required=old;by('pSalary').required=old&&!pSalaryUnknown();by('surSalary').required=kind==='sur'&&!surSalaryUnknown();by('surCount').required=kind==='sur';by('surSalary').required=kind==='sur'&&!surSalaryUnknown();out.textContent=T.out+': —';}
+      function sync(){
+        const kind=by('pKind').value,old=kind==='old';
+        document.querySelectorAll('.pension-old-field').forEach(el=>{el.style.display=old?'':'none';});
+        survivor.style.display=kind==='sur'?'block':'none';
+        by('disabilityFields').style.display=kind==='dis'?'block':'none';
+        by('benefitFields').style.display=kind==='ben'?'block':'none';
+        by('benMembersGroup').style.display=by('benType').value==='sur'?'':'none';
+        for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;
+        for(const id of ['pAge','pYears'])by(id).required=old;
+        by('pSalary').required=old&&!pSalaryUnknown();
+        by('surSalary').required=kind==='sur'&&!surSalaryUnknown();
+        by('surCount').required=kind==='sur';
+        by('disGroup').required=kind==='dis';
+        by('disYears').required=kind==='dis';
+        by('benAge').required=kind==='ben';
+        out.textContent=T.out+': —';
+      }
       by('pKind').addEventListener('change',sync);
+      by('benType').addEventListener('change',sync);
       form.addEventListener('reset',()=>setTimeout(sync,0));sync();
       form.addEventListener('submit',e=>{
         e.preventDefault();const kind=by('pKind').value;
@@ -9502,7 +9538,19 @@ function pensionPage(lang) {
           }['${lang}'];
           out.textContent=salaryWords[8]+'\\n\\n'+lines[0]+'\\n'+lines[1]+fmt(salary)+' UZS\\n'+lines[2]+fmt(base)+' UZS\\n'+lines[3]+regular+' × '+fmt(perOrdinary)+' UZS\\n'+lines[4]+orphans+' × '+fmt(perOrphan)+' UZS\\n'+lines[5]+fmt(illustrative)+' UZS\\n'+lines[7]+(years||'—')+'\\n'+lines[8]+cause+'\\n\\n'+lines[6]+'\\nhttps://lex.uz/docs/-112314';return;
         }
-        if(kind!=='old'){out.textContent=T.out+'\\n'+T.other+'\\n'+T.needs;return;}
+        if(kind==='dis'){
+          const group=by('disGroup').value,years=by('disYears').value,salary=by('disSalary').value;
+          if(!group||years===''||!Number.isInteger(Number(years))||Number(years)<0){out.textContent=T.missing;return;}
+          const msg={uz:'Nogironlik guruhi: ',ru:'Группа инвалидности: ',en:'Disability group: '}['${lang}'];
+          out.textContent=T.out+'\n'+msg+group+'\n'+T.years+': '+years+'\n'+T.salary+': '+(salary||'—')+'\n'+T.needs+'\nhttps://lex.uz/docs/-112314';return;
+        }
+        if(kind==='ben'){
+          const age=by('benAge').value;
+          if(age===''||!Number.isInteger(Number(age))||Number(age)<0||Number(age)>120){out.textContent=T.missing;return;}
+          const type=by('benType').selectedOptions[0].textContent;
+          const members=by('benType').value==='sur'?'\n'+by('benMembers').previousElementSibling.textContent+': '+by('benMembers').value:'';
+          out.textContent=T.out+'\n'+type+'\n'+T.age+': '+age+members+'\n'+T.needs+'\nhttps://lex.uz/docs/-112314';return;
+        }
         if(pSalaryUnknown()){out.textContent=salaryWords[7];return;}
         const age=Number(by('pAge').value),years=Number(by('pYears').value),salary=Number(by('pSalary').value);
         if(!Number.isInteger(age)||age<0||age>120||!Number.isInteger(years)||years<0||years>80||!Number.isFinite(salary)||salary<=0){out.textContent=T.missing;return;}
