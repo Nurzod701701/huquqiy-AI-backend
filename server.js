@@ -9383,36 +9383,7 @@ function pensionPage(lang) {
       <h1 style="font-size:clamp(29px,4vw,42px);margin:16px 0 8px">${esc(t.title)}</h1>
       <p style="font-size:16px;line-height:1.7">${esc(t.sub)}</p>
       <div class="notice noticeGold" style="margin:18px 0"><span class="noticeIcon">!</span><span>${esc(t.warning)}</span></div>
-      <details id="pensionRates" style="margin:25px 0;padding:clamp(17px,3vw,27px);border:2px solid #c9a86a;border-radius:18px;background:linear-gradient(145deg,#09263e,#164667);color:#fff">
-        <summary style="cursor:pointer;font-size:clamp(17px,2.4vw,22px);font-weight:800;color:#f1d292;margin:0 0 8px">${lang==='uz'?'Amaldagi pensiya va nafaqa miqdorlari':lang==='ru'?'Действующие размеры пенсий и пособий':'Current pension and benefit rates'}</summary>
-        <p style="color:#e2edf5;margin:0 0 18px;font-size:15px">${lang==='uz'?'2026-yil 1-iyuldan amal qiladi · Oylik miqdorlar, so‘m':lang==='ru'?'Действуют с 1 июля 2026 года · Суммы в месяц, сум':'Effective from 1 July 2026 · Monthly amounts in UZS'}</p>
-        <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;color:#fff;font-size:15px;line-height:1.5"><thead><tr><th style="text-align:left;padding:11px;border-bottom:1px solid #b9a16c">${lang==='uz'?'To‘lov turi':lang==='ru'?'Вид выплаты':'Payment type'}</th><th style="text-align:right;padding:11px;border-bottom:1px solid #b9a16c">${lang==='uz'?'Miqdori':lang==='ru'?'Сумма':'Amount'}</th></tr></thead><tbody>
-        ${[
-          [['Pensiyani hisoblash bazaviy miqdori','Базовая величина исчисления пенсии','Pension calculation base'],504000],
-          [['Yoshga doir eng kam pensiya','Минимальная пенсия по возрасту','Minimum old-age pension'],983000],
-          [['Nogironlik pensiyasining eng kam miqdori','Минимальная пенсия по инвалидности','Minimum disability pension'],1083000],
-          [['To‘liqsiz stajdagi yoshga doir eng kam pensiya (qo‘shimcha bilan)','Минимальная пенсия по возрасту при неполном стаже (с доплатой)','Minimum partial-service old-age pension (incl. supplement)'],878000],
-          [['Boquvchisini yo‘qotganlik pensiyasi: bir huquqli a’zo uchun eng kam','Пенсия по потере кормильца: минимум на одного получателя','Survivor pension: minimum for one eligible recipient'],878000],
-          [['Zarur stajsiz keksa fuqarolar nafaqasi','Пособие пожилым без необходимого стажа','Old-age allowance without required service'],878000],
-          [['Nogironlik nafaqasi (tegishli toifalar)','Пособие по инвалидности (соответствующие категории)','Disability allowance (eligible categories)'],1083000],
-          [['Parvarishlash nafaqasi (tegishli toifa)','Пособие по уходу (соответствующая категория)','Care allowance (eligible category)'],878000],
-          [['Boquvchisini yo‘qotganlik nafaqasi: bir huquqli a’zo','Пособие по потере кормильца: один получатель','Survivor allowance: one eligible recipient'],878000],
-          [['Boquvchisini yo‘qotganlik nafaqasi: keyingi har bir a’zo uchun qo‘shimcha','Пособие по потере кормильца: доплата за каждого следующего','Survivor allowance: each additional recipient'],290000],
-          [['Bolalar nafaqasi: 3 yoshgacha bo‘lgan bitta kichik farzand','Детское пособие: младший ребёнок до 3 лет','Child benefit: youngest child under 3'],386000],
-          [['Bolalar nafaqasi: 3–18 yoshdagi bitta farzand','Детское пособие: один ребёнок 3–18 лет','Child benefit: one child aged 3–18'],295000],
-          [['Bolalar nafaqasi: ikkinchi farzand uchun qo‘shimcha','Детское пособие: доплата за второго ребёнка','Child benefit: second-child supplement'],177000],
-          [['Bolalar nafaqasi: uchinchi va keyingi har biri uchun qo‘shimcha','Детское пособие: доплата за третьего и последующих','Child benefit: third and subsequent child supplement'],118000],
-          [['Ijtimoiy reyestrdagi oilalar uchun moddiy yordam','Материальная помощь семьям из Социального реестра','Financial assistance for Social Register families'],450000]
-        ].map(item=>'<tr><td style="padding:10px 11px;border-bottom:1px solid rgba(255,255,255,.17)">'+esc(item[0][lang==='uz'?0:lang==='ru'?1:2])+'</td><td style="padding:10px 11px;text-align:right;white-space:nowrap;font-weight:800;color:#f1d292;border-bottom:1px solid rgba(255,255,255,.17)">'+item[1].toLocaleString('en-US').replace(/,/g,' ')+'</td></tr>').join('')}
-        </tbody></table></div>
-        <p style="color:#e2edf5;font-size:13px;line-height:1.7;margin:17px 0 10px">${lang==='uz'?'Muhim: jadvaldagi eng kam miqdorlar hamma fuqaroga avtomatik tayinlanmaydi. Pensiya va nafaqa alohida to‘lovlar. Bolalar nafaqasi Ijtimoiy reyestr va daromad mezonlariga bog‘liq; ayrim oilalarda kamaytirilgan koeffitsiyent qo‘llanadi. Boquvchisini yo‘qotganlik PENSIYASIDA keyingi a’zolar uchun 290 000 so‘m qoidasini ishlatmang — u NAFAQAGA tegishli.':lang==='ru'?'Важно: минимальные суммы не назначаются автоматически. Пенсия и пособие — разные выплаты. Детское пособие зависит от Социального реестра и доходов. Доплата 290 000 сум за следующего члена семьи относится к ПОСОБИЮ по потере кормильца, не к ПЕНСИИ.':'Important: minimum amounts are not automatic entitlements. Pensions and allowances differ. Child benefits depend on Social Register and income eligibility. The UZS 290,000 additional-recipient rule applies to the survivor ALLOWANCE, not the survivor PENSION.'}</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px">
-          <a href="https://gov.uz/oz/pj/news/view/183000" target="_blank" rel="noopener noreferrer" style="background:#d5ac63;color:#09263e;padding:11px 15px;border-radius:9px;font-weight:800">${lang==='uz'?'PF–115: rasmiy miqdorlar ↗':lang==='ru'?'УП–115: официальные суммы ↗':'Decree PF–115: official rates ↗'}</a>
-          <a href="https://advice.adliya.uz/oz/document/3360" target="_blank" rel="noopener noreferrer" style="border:1px solid #d5ac63;color:#fff;padding:11px 15px;border-radius:9px">${lang==='uz'?'Nafaqalar — Adliya ↗':lang==='ru'?'Пособия — Минюст ↗':'Allowances — Ministry of Justice ↗'}</a>
-          <a href="https://advice.adliya.uz/oz/document/4216" target="_blank" rel="noopener noreferrer" style="border:1px solid #d5ac63;color:#fff;padding:11px 15px;border-radius:9px">${lang==='uz'?'Bolalar nafaqasi — Adliya ↗':lang==='ru'?'Детские пособия — Минюст ↗':'Child benefits — Ministry of Justice ↗'}</a>
-          <a href="https://lex.uz/uz/docs/-112314" target="_blank" rel="noopener noreferrer" style="border:1px solid #d5ac63;color:#fff;padding:11px 15px;border-radius:9px">${lang==='uz'?'Pensiya qonuni — LexUZ ↗':lang==='ru'?'Закон о пенсиях — LexUZ ↗':'Pension law — LexUZ ↗'}</a>
-        </div>
-      </details>
+      <details style="margin:15px 0;padding:13px 16px;border:1px solid #d8dfe6;border-radius:12px"><summary style="cursor:pointer;font-weight:700">${lang==='uz'?'Rasmiy miqdorlar va qonuniy asoslar':lang==='ru'?'Официальные суммы и правовые основания':'Official rates and legal basis'}</summary><p style="line-height:1.6">${lang==='uz'?'Pensiya va nafaqa turli to‘lovlar. Eng kam miqdorlar va sanalarni rasmiy manbadan tekshiring.':lang==='ru'?'Пенсии и пособия регулируются отдельно. Проверяйте актуальные суммы.':'Pensions and allowances are separate. Check current official rates.'}</p><a href="https://lex.uz/uz/acts/-112314" target="_blank" rel="noopener">Pensiya qonuni ↗</a> · <a href="https://lex.uz/uz/acts/-6411319" target="_blank" rel="noopener">119-son nizom ↗</a> · <a href="https://lex.uz/uz/acts/-6236060" target="_blank" rel="noopener">592-son nizom ↗</a></details>
       <form id="pensionForm" autocomplete="off">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
         <div class="formGroup" style="grid-column:1/-1"><label for="pKind" style="font-size:18px;font-weight:800">${esc(t.kind)} — 1 / 3</label>
@@ -9431,9 +9402,9 @@ function pensionPage(lang) {
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
           <div class="formGroup"><label for="disGroup">${lang==='uz'?'Nogironlik guruhi':lang==='ru'?'Группа инвалидности':'Disability group'}</label><select id="disGroup"><option value="">—</option><option value="1">I</option><option value="2">II</option><option value="3">III</option></select></div>
           <div class="formGroup"><label for="disCause">${lang==='uz'?'Nogironlik sababi':lang==='ru'?'Причина инвалидности':'Cause of disability'}</label><select id="disCause"><option value="unknown">${lang==='uz'?'Aniq emas':lang==='ru'?'Неизвестно':'Unknown'}</option><option value="general">${lang==='uz'?'Umumiy kasallik':lang==='ru'?'Общее заболевание':'General illness'}</option><option value="work">${lang==='uz'?'Mehnat jarohati / kasb kasalligi':lang==='ru'?'Трудовая травма / профзаболевание':'Work injury / occupational disease'}</option></select></div>
-          <div class="formGroup"><label for="disDate">${lang==='uz'?'Nogironlik belgilangan sana':lang==='ru'?'Дата установления инвалидности':'Date disability was established'}</label><input id="disDate" type="date"></div>
+          
           <div class="formGroup"><label for="disYears">${esc(t.years)}</label><input id="disYears" type="number" min="0" max="80" step="1"></div>
-          <div class="formGroup"><label for="disSalary">${esc(t.salary)}</label><input id="disSalary" type="number" min="0" step="1"></div>
+          <div class="formGroup" id="disSalaryGroup"><label for="disSalary">${esc(t.salary)}</label><input id="disSalary" type="number" min="0" step="1"></div>
         </div>
       </div>
       <div id="benefitFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #d8dfe6;border-radius:14px;background:#f8fafc">
@@ -9451,7 +9422,7 @@ function pensionPage(lang) {
         <div style="display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start">
           <div class="formGroup" style="min-width:0;padding:15px 17px;border:1px solid #e4e9ef;border-radius:12px;background:#f9fbfd;margin:0"><label id="surDeathLabel" for="surDeath">1. Boquvchining vafot etish holati</label><select id="surDeath"><option value="ordinary">Umumiy kasallik yoki boshqa holat</option><option value="work">Mehnatda mayiblanish / kasb kasalligi</option><option value="unknown">Aniq emas</option></select></div>
           <div class="formGroup" style="min-width:0;padding:15px 17px;border:1px solid #e4e9ef;border-radius:12px;background:#f9fbfd;margin:0"><label id="surCountLabel" for="surCount">2. Pensiya olish huquqiga ega oila a’zolari soni</label><input id="surCount" type="number" min="1" max="30" step="1" value="1"></div>
-          <div class="formGroup" style="min-width:0;padding:15px 17px;border:1px solid #e4e9ef;border-radius:12px;background:#f9fbfd;margin:0"><label id="surSalaryLabel" for="surSalary">3. Boquvchining o‘rtacha oylik ish haqi (so‘m)</label><div id="surSalaryChoices" style="display:none"></div><input id="surSalary" type="number" min="1" step="1" placeholder="3000000"><div id="surSalaryGuidance" style="font-size:12px;line-height:1.5;color:#596a78;margin-top:6px"></div></div>
+          <div class="formGroup" id="surSalaryGroup" style="min-width:0;padding:15px 17px;border:1px solid #e4e9ef;border-radius:12px;background:#f9fbfd;margin:0"><label id="surSalaryLabel" for="surSalary">3. Boquvchining o‘rtacha oylik ish haqi (so‘m)</label><div id="surSalaryChoices" style="display:none"></div><input id="surSalary" type="number" min="1" step="1" placeholder="3000000"><div id="surSalaryGuidance" style="font-size:12px;line-height:1.5;color:#596a78;margin-top:6px"></div></div>
           <div class="formGroup" style="min-width:0;padding:15px 17px;border:1px solid #e4e9ef;border-radius:12px;background:#f9fbfd;margin:0"><label id="surYearsLabel" for="surYears">4. Boquvchining ish staji (yil)</label><input id="surYears" type="number" min="0" max="80" step="1" placeholder="Masalan: 15"></div>
           <div class="formGroup" style="min-width:0;padding:15px 17px;border:1px solid #e4e9ef;border-radius:12px;background:#f9fbfd;margin:0"><label for="surSpecial">5. Alohida holat bormi?</label><select id="surSpecial"><option value="none">${lang==='uz'?'Yo‘q':lang==='ru'?'Нет':'No'}</option><option value="orphan">${lang==='uz'?'Chin yetim yoki vafot etgan yolg‘iz onaning bolasi':lang==='ru'?'Круглый сирота / ребёнок умершей одинокой матери':'Full orphan / child of deceased single mother'}</option><option value="pensioner">${lang==='uz'?'Boquvchi pensiya olgan':lang==='ru'?'Кормилец получал пенсию':'Breadwinner received a pension'}</option></select></div>
           <div class="formGroup" id="surOrphanGroup" style="display:none;min-width:0;padding:15px 17px;border:1px solid #e4e9ef;border-radius:12px;background:#f9fbfd;margin:0"><label id="surOrphanLabel" for="surOrphan">Chin yetim yoki yolg‘iz ona bolalari soni</label><input id="surOrphan" type="number" min="0" max="30" step="1" value="0"></div>
@@ -9516,12 +9487,16 @@ function pensionPage(lang) {
         by('benMembersGroup').style.display=by('benType').value==='sur'?'':'none';
         for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;
         for(const id of ['pAge','pYears'])by(id).required=old;
-        by('pSalary').required=old&&!pSalaryUnknown();
-        by('surSalary').required=kind==='sur'&&!surSalaryUnknown();
+        by('pSalary').required=false;
+        by('surSalary').required=false;
         by('surCount').required=kind==='sur';
         by('disGroup').required=kind==='dis';
-        by('disYears').required=kind==='dis';
-        by('benAge').required=kind==='ben';
+        by('disYears').required=false;
+        by('benAge').required=kind==='ben'&&by('benType').value==='old';
+        const disNoStaj=kind==='dis'&&by('disYears').value.trim()==='0'&&by('disCause').value!=='work';
+        by('disSalaryGroup').style.display=disNoStaj?'none':'';
+        const surNoStaj=kind==='sur'&&by('surYears').value.trim()==='0'&&by('surDeath').value!=='work';
+        by('surSalaryGroup').style.display=surNoStaj?'none':'';
         out.textContent=T.out+': —';
         by('pensionStepTitle').textContent=({'uz':'2 / 3 — Ma’lumotlarni kiriting','ru':'2 / 3 — Заполните данные','en':'2 / 3 — Enter details'}['${lang}']);
       }
@@ -9536,45 +9511,58 @@ function pensionPage(lang) {
       syncSurSpecial();
       by('pKind').addEventListener('change',sync);
       by('benType').addEventListener('change',sync);
+      ['disYears','disCause','surYears','surDeath'].forEach(id=>by(id).addEventListener('change',sync));
       form.addEventListener('reset',()=>setTimeout(sync,0));sync();
       form.addEventListener('submit',e=>{
         e.preventDefault();const kind=by('pKind').value;
-        if(kind==='sur'){
-          if(surSalaryUnknown()){out.textContent=salaryWords[7];return;}
-          const count=Number(by('surCount').value),orphans=Number(by('surOrphan').value),salary=Number(by('surSalary').value),years=by('surYears').value.trim(),cause=by('surDeath').value;
-          if(!Number.isInteger(count)||count<1||count>30||!Number.isInteger(orphans)||orphans<0||orphans>count||!Number.isFinite(salary)||salary<=0||years!==''&&(!Number.isInteger(Number(years))||Number(years)<0||Number(years)>80)){
-            out.textContent=({'uz':'Oila a’zolari soni, chin yetimlar soni va boquvchining ish haqini to‘g‘ri kiriting.','ru':'Проверьте число членов семьи, сирот и заработок кормильца.','en':'Check eligible family members, orphans and earnings.'}['${lang}']);return;
-          }
-          const base=salary*.30,regular=count-orphans,ordinaryMinimum=983000*.5,orphanMinimum=983000;
-          const perOrdinary=Math.max(base,ordinaryMinimum),perOrphan=Math.max(base,orphanMinimum);
-          const illustrative=regular*perOrdinary+orphans*perOrphan;
-          const lines={
-            uz:['DASTLABKI HISOB — BOQUVCHISINI YO‘QOTGANLIK PENSIYASI','Boquvchining hisobga olinadigan oylik ish haqi: ','Har bir a’zo uchun tayanch hisob (30%): ','Oddiy huquqli a’zolar: ','Chin yetim / yolg‘iz ona bolalari: ','Qonundagi 26-modda bo‘yicha tayanch va individual eng kam mezonlar yig‘indisi: ','DIQQAT: Bu tayinlanadigan yakuniy pensiya emas. 2026-yildagi bir nafar oluvchi uchun 878 000 so‘mlik oilaviy eng kam pensiya kafolati, bir nechta oluvchiga oid tartib, boquvchining staji, o‘lim sababi, ustamalar va ish haqi chegaralari rasmiy hisobda alohida qo‘llanadi.','Staj: ','Vafot etish holati: '],
-            ru:['ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ — ПЕНСИЯ ПО ПОТЕРЕ КОРМИЛЬЦА','Расчётный среднемесячный заработок: ','Базовый размер на одного (30%): ','Обычные получатели: ','Круглые сироты / дети одинокой матери: ','Сумма базовых размеров с индивидуальными порогами по статье 26: ','ВНИМАНИЕ: Это не окончательная назначаемая пенсия. Семейный минимум для одного получателя 878 000 сум с июля 2026 года, правила для нескольких получателей, стаж, обстоятельства смерти, надбавки и пределы заработка проверяются отдельно.','Стаж: ','Причина смерти: '],
-            en:['PRELIMINARY SURVIVOR PENSION CALCULATION','Pensionable average monthly earnings: ','Base per eligible member (30%): ','Regular eligible members: ','Full orphans / children of single mother: ','Sum of statutory base amounts and individual floors under Article 26: ','IMPORTANT: This is not the final payable pension. The July 2026 family minimum of UZS 878,000 for one recipient, multi-recipient rules, service eligibility, cause of death, supplements and earnings caps require official review.','Service years: ','Cause of death: ']
-          }['${lang}'];
-          out.textContent=salaryWords[8]+'\\n\\n'+lines[0]+'\\n'+lines[1]+fmt(salary)+' UZS\\n'+lines[2]+fmt(base)+' UZS\\n'+lines[3]+regular+' × '+fmt(perOrdinary)+' UZS\\n'+lines[4]+orphans+' × '+fmt(perOrphan)+' UZS\\n'+lines[5]+fmt(illustrative)+' UZS\\n'+lines[7]+(years||'—')+'\\n'+lines[8]+cause+'\\n\\n'+lines[6]+'\\nhttps://lex.uz/docs/-112314';return;
+        const L='${lang}';
+        const msg=(uz,ru,en)=>({uz,ru,en})[L];
+        const legal='\\n\\n'+msg('Huquqiy asoslar:','Правовые основания:','Legal basis:')+'\\nhttps://lex.uz/uz/acts/-112314\\nhttps://lex.uz/uz/acts/-6411319\\nhttps://lex.uz/uz/acts/-6236060';
+        const note=msg('Bu rasmiy tayinlov emas. Vakolatli organ staj, daromad va maxsus holatlarni tasdiqlaydi.','Это не официальное назначение. Стаж, доход и исключения проверяются уполномоченным органом.','This is not an official award. Authorities verify service, earnings and exceptions.');
+        function show(heading,detail){out.textContent=heading+'\\n\\n'+detail+'\\n\\n'+note+legal;}
+        if(kind==='old'){
+          const age=Number(by('pAge').value),yrs=Number(by('pYears').value),male=by('pSex').value==='male';
+          if(!Number.isInteger(age)||age<0||age>120||!Number.isInteger(yrs)||yrs<0||yrs>80){show(T.missing,'');return;}
+          const minAge=male?60:55,full=male?25:20,allowAge=male?65:60;
+          if(by('pSpecial').value==='yes'){show(msg('IMTIYOZLI PENSIYA — alohida tekshiruv','ЛЬГОТНАЯ ПЕНСИЯ — отдельная проверка','PREFERENTIAL PENSION — separate review'),msg('Kasb va imtiyozli staj tasdiqlanmasdan oddiy yosh/staj formulasini qo‘llamaymiz.','Нужна проверка льготного стажа.','Preferential service needs verification.'));return;}
+          if(age<minAge){show(msg('YOSHGA DOIR PENSIYA YOSHI HALI YETMAGAN','ПЕНСИОННЫЙ ВОЗРАСТ НЕ ДОСТИГНУТ','PENSION AGE NOT REACHED'),msg('Umumiy tartib: ','Общий возраст: ','Standard age: ')+minAge);return;}
+          if(yrs<7){show(msg('YOSHGA DOIR NAFAQA HUQUQINI TEKSHIRING','ПРОВЕРЬТЕ ПРАВО НА ПОСОБИЕ ПО ВОЗРАСТУ','CHECK OLD-AGE ALLOWANCE'),age>=allowAge?msg('Pensiya uchun kamida 7 yil tegishli staj yo‘q. Nafaqa shartlari tekshiriladi; ish haqi kerak emas.','Стаж менее 7 лет. Проверьте пособие; заработок не требуется.','Service under 7 years. Check allowance; earnings not needed.'):msg('Pensiya uchun kamida 7 yil tegishli staj yo‘q. Nafaqa uchun odatiy yosh: ','Стаж менее 7 лет. Возраст пособия: ','Service under 7 years. Allowance age: ')+allowAge);return;}
+          if(yrs<full){show(msg('TO‘LIQSIZ STAJ BILAN PENSIYA','ПЕНСИЯ ПРИ НЕПОЛНОМ СТАЖЕ','PARTIAL-SERVICE PENSION'),msg('Kamida 7 yil staj bor, lekin to‘liq staj yetmaydi. Miqdor stajga mutanosib hisoblanadi; 55% ni to‘liq pensiyadek qo‘llamaymiz.','Стаж от 7 лет, но меньше полного. Размер рассчитывается пропорционально.','Service at least 7 years but below full. Proportional calculation required.'));return;}
+          const salary=Number(by('pSalary').value);
+          if(!Number.isFinite(salary)||salary<=0){show(msg('YOSHGA DOIR PENSIYA HUQUQI — DASTLABKI','ПРАВО НА ПЕНСИЮ ПО ВОЗРАСТУ — ПРЕДВАРИТЕЛЬНО','OLD-AGE PENSION — PRELIMINARY'),msg('To‘liq yosh va staj mezonlari bajarilgan. Hisoblash uchun pensiya hisobiga olinadigan tasdiqlangan o‘rtacha ish haqi kerak.','Условия возраста и стажа выполнены. Нужен подтверждённый заработок.','Age and service met. Verified pensionable earnings needed.'));return;}
+          const pct=55+Math.max(0,yrs-full),raw=salary*pct/100;
+          show(msg('YOSHGA DOIR PENSIYA — FORMULA NAMUNASI','ПЕНСИЯ ПО ВОЗРАСТУ — ПРИМЕР ФОРМУЛЫ','OLD-AGE PENSION — FORMULA EXAMPLE'),fmt(salary)+' × '+pct+'% = '+fmt(raw)+' '+msg('so‘m','сум','UZS')+'\\n'+msg('Bu yakuniy summa emas: ish haqi chegarasi, eng kam miqdor va ustamalar qo‘llanmagan.','Не итог: не учтены пределы заработка, минимумы и надбавки.','Not final: caps, minimums and supplements excluded.'));return;
         }
         if(kind==='dis'){
-          const group=by('disGroup').value,years=by('disYears').value,salary=by('disSalary').value;
-          if(!group||years===''||!Number.isInteger(Number(years))||Number(years)<0){out.textContent=T.missing;return;}
-          const msg={uz:'Nogironlik guruhi: ',ru:'Группа инвалидности: ',en:'Disability group: '}['${lang}'];
-          out.textContent=T.out+'\\n'+msg+group+'\\n'+T.years+': '+years+'\\n'+T.salary+': '+(salary||'—')+'\\n'+T.needs+'\\nhttps://lex.uz/docs/-112314';return;
+          const group=by('disGroup').value,yrsText=by('disYears').value.trim(),cause=by('disCause').value;
+          if(!group){show(msg('Nogironlik guruhini tanlang','Выберите группу инвалидности','Select disability group'),'');return;}
+          if(group==='3'){show(msg('III GURUH — MAXSUS HUQUQIY TEKSHIRUV','III ГРУППА — СПЕЦИАЛЬНАЯ ПРОВЕРКА','GROUP III — SPECIAL REVIEW'),msg('I–II guruh uchun belgilangan umumiy pensiya/nafaqa formulasini III guruhga avtomatik qo‘llamaymiz.','Не применяем правила I–II групп автоматически.','Do not apply group I–II rules automatically.'));return;}
+          if(yrsText===''||!Number.isInteger(Number(yrsText))||Number(yrsText)<0){show(msg('Ish stajini kiriting (bo‘lmasa 0)','Укажите стаж (0, если отсутствует)','Enter service years (0 if none)'),'');return;}
+          const yrs=Number(yrsText);
+          if(cause==='work'){show(msg('NOGIRONLIK PENSIYASI — MEHNAT JAROHATI','ПЕНСИЯ ПО ИНВАЛИДНОСТИ — ТРУДОВАЯ ТРАВМА','DISABILITY PENSION — WORK INJURY'),msg('Mehnat jarohati yoki kasb kasalligida staj talabi alohida qoida bilan belgilanadi. Staj 0 bo‘lsa ham pensiya huquqi tekshiriladi.','При трудовом увечье право проверяется и при нулевом стаже.','Work injury may qualify even with zero service.'));return;}
+          if(yrs===0){show(msg('NOGIRONLIK NAFAQASI — HUQUQNI TEKSHIRISH','ПОСОБИЕ ПО ИНВАЛИДНОСТИ — ПРОВЕРКА','DISABILITY ALLOWANCE — ELIGIBILITY'),msg('I yoki II guruh, ish staji yo‘q. Nogironlik nafaqasi shartlari tekshiriladi. Oylik ish haqi talab qilinmaydi.','Группа I или II без стажа: проверяется пособие, зарплата не требуется.','Group I or II with no service: check allowance; no earnings needed.'));return;}
+          show(msg('NOGIRONLIK PENSIYASI — STAJNI TEKSHIRISH','ПЕНСИЯ ПО ИНВАЛИДНОСТИ — ПРОВЕРКА СТАЖА','DISABILITY PENSION — SERVICE REVIEW'),msg('Nogironlik boshlangan yosh, sabab va qonuniy staj talabi tekshiriladi. Staj yetmasa mutanosib pensiya yoki nafaqa huquqi ko‘riladi. Tasdiqlanmagan ma’lumot bilan summa chiqarilmaydi.','Требуется проверить возраст наступления инвалидности, стаж и право на пропорциональную пенсию или пособие.','Review onset age, service requirement and partial pension or allowance.'));return;
+        }
+        if(kind==='sur'){
+          const count=Number(by('surCount').value),yrsText=by('surYears').value.trim(),cause=by('surDeath').value;
+          if(!Number.isInteger(count)||count<1||count>30){show(msg('Huquqli oila a’zolari sonini tekshiring','Проверьте число получателей','Check eligible recipient count'),'');return;}
+          if(yrsText===''||!Number.isInteger(Number(yrsText))||Number(yrsText)<0){show(msg('Boquvchining stajini kiriting (bo‘lmasa 0)','Укажите стаж кормильца (0, если отсутствует)','Enter breadwinner service (0 if none)'),'');return;}
+          const yrs=Number(yrsText);
+          if(yrs===0&&cause!=='work'){show(msg('BOQUVCHISINI YO‘QOTGANLIK NAFAQASI — HUQUQNI TEKSHIRISH','ПОСОБИЕ ПО ПОТЕРЕ КОРМИЛЬЦА — ПРОВЕРКА','SURVIVOR ALLOWANCE — REVIEW'),msg('Boquvchida staj yo‘q. Oila a’zolarining huquqi tasdiqlansa, nafaqa shartlari tekshiriladi. Ish haqi kiritish shart emas.','Стаж отсутствует: проверьте право членов семьи на пособие. Заработок не обязателен.','No service: check allowance eligibility. Earnings not required.'));return;}
+          const salary=Number(by('surSalary').value);
+          if(!Number.isFinite(salary)||salary<=0){show(msg('BOQUVCHISINI YO‘QOTGANLIK PENSIYASI — TEKSHIRUV','ПЕНСИЯ ПО ПОТЕРЕ КОРМИЛЬЦА — ПРОВЕРКА','SURVIVOR PENSION — REVIEW'),msg('Huquqli oila a’zolari soni: ','Число получателей: ','Eligible recipients: ')+count+'\\n'+msg('Pensiya hisoblash uchun boquvchining tasdiqlangan ish haqi va stajga oid hujjatlar kerak.','Нужны подтверждённые заработок и стаж.','Verified earnings and service required.'));return;}
+          const base=salary*.30*count;
+          show(msg('BOQUVCHISINI YO‘QOTGANLIK — TAYANCH FORMULA','ПОТЕРЯ КОРМИЛЬЦА — БАЗОВАЯ ФОРМУЛА','SURVIVOR — BASE FORMULA'),fmt(salary)+' × 30% × '+count+' = '+fmt(base)+' '+msg('so‘m','сум','UZS')+'\\n'+msg('Bu faqat tayanch formula: oila a’zolarining huquqi, eng kam miqdor, ortiqcha staj, chin yetimlik va maxsus holatlar qo‘shilmagan.','Только базовая формула: право получателей, минимумы и особые случаи не учтены.','Base only: eligibility, minimums and exceptions not included.'));return;
         }
         if(kind==='ben'){
-          const age=by('benAge').value;
-          if(age===''||!Number.isInteger(Number(age))||Number(age)<0||Number(age)>120){out.textContent=T.missing;return;}
-          const type=by('benType').selectedOptions[0].textContent;
-          const members=by('benType').value==='sur'?'\\n'+by('benMembers').previousElementSibling.textContent+': '+by('benMembers').value:'';
-          out.textContent=T.out+'\\n'+type+'\\n'+T.age+': '+age+members+'\\n'+T.needs+'\\nhttps://lex.uz/docs/-112314';return;
+          const type=by('benType').value,age=Number(by('benAge').value),pension=by('benPension').value;
+          if(pension==='yes'){show(msg('PENSIYA VA NAFAQA HUQUQINI ALOHIDA TEKSHIRING','ПРОВЕРЬТЕ ПРАВО НА ПЕНСИЮ И ПОСОБИЕ','REVIEW PENSION AND ALLOWANCE'),msg('Bir xil shartlarni ikki to‘lovga qo‘llamaymiz. Avval pensiya huquqi tasdiqlansin.','Не смешиваем условия пенсии и пособия.','Do not mix pension and allowance eligibility.'));return;}
+          if(type==='old'){
+            if(!Number.isInteger(age)||age<0||age>120){show(msg('Yoshni kiriting','Укажите возраст','Enter age'),'');return;}
+            show(msg('YOSHGA DOIR NAFAQA','ПОСОБИЕ ПО ВОЗРАСТУ','OLD-AGE ALLOWANCE'),msg('Umumiy nafaqa yoshi: erkaklar 65, ayollar 60. Yosh va pensiya huquqi aniqlangandan so‘ng belgilangan nafaqa miqdori tekshiriladi.','Обычно мужчины 65, женщины 60. Сначала проверяется право.','Generally men 65, women 60; verify eligibility first.'));return;
+          }
+          show(type==='dis'?msg('NOGIRONLIK NAFAQASI','ПОСОБИЕ ПО ИНВАЛИДНОСТИ','DISABILITY ALLOWANCE'):type==='sur'?msg('BOQUVCHISINI YO‘QOTGANLIK NAFAQASI','ПОСОБИЕ ПО ПОТЕРЕ КОРМИЛЬЦА','SURVIVOR ALLOWANCE'):msg('IJTIMOIY NAFAQA — ALOHIDA TEKSHIRUV','СОЦИАЛЬНОЕ ПОСОБИЕ — ПРОВЕРКА','SOCIAL BENEFIT — REVIEW'),msg('Bu nafaqa uchun pensiya ish haqi formulasi qo‘llanmaydi. Toifa, huquq va amaldagi belgilangan miqdor alohida tekshiriladi.','Формула пенсии по зарплате здесь не применяется.','Do not use earnings-based pension formula for allowances.'));return;
         }
-        if(pSalaryUnknown()){out.textContent=salaryWords[7];return;}
-        const age=Number(by('pAge').value),years=Number(by('pYears').value),salary=Number(by('pSalary').value);
-        if(!Number.isInteger(age)||age<0||age>120||!Number.isInteger(years)||years<0||years>80||!Number.isFinite(salary)||salary<=0){out.textContent=T.missing;return;}
-        const male=by('pSex').value==='male',minAge=male?60:55,minYears=male?25:20;
-        const extra=Math.max(0,years-minYears),pct=55+extra,amount=salary*pct/100;
-        const eligible=age>=minAge&&years>=minYears;
-        out.textContent=salaryWords[8]+'\\n\\n'+T.out+'\\n'+T.elig+': '+(eligible?T.ok:T.notok)+' (age '+minAge+' / '+minYears+' years)'+'\\n'+T.details+': '+fmt(salary)+' × ('+T.base+' 55% + '+T.extra+' '+extra+'%) = '+fmt(amount)+' UZS\\n'+T.sum+': '+fmt(amount)+' UZS\\n\\n'+T.warning+(by('pSpecial').value==='yes'?'\\n'+T.specialNote:'');
       });
     })();${'</'+'script>'}
   `,t.title,t.sub);
