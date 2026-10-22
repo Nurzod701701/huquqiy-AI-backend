@@ -5499,7 +5499,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "QOMUS", desc
   ];
 
   const sideLinks = items.map(([key, href, icon, label]) => `
-    <a class="sideLink ${active === key ? "active" : ""}" href="${href}${q(lang)}" ${key === "legal-review" ? 'style="min-height:66px;background:#e8c98c;color:#142c47;border:2px solid #ae823c;font-size:18px;font-weight:900"' : ""}>
+    <a class="sideLink ${active === key ? "active" : ""}" href="${href}${q(lang)}">
       <span class="sideIcon">${icon}</span>
       <span>${esc(label)}</span>
     </a>
@@ -9542,14 +9542,14 @@ function pensionPage(lang) {
           const group=by('disGroup').value,years=by('disYears').value,salary=by('disSalary').value;
           if(!group||years===''||!Number.isInteger(Number(years))||Number(years)<0){out.textContent=T.missing;return;}
           const msg={uz:'Nogironlik guruhi: ',ru:'Группа инвалидности: ',en:'Disability group: '}['${lang}'];
-          out.textContent=T.out+'\n'+msg+group+'\n'+T.years+': '+years+'\n'+T.salary+': '+(salary||'—')+'\n'+T.needs+'\nhttps://lex.uz/docs/-112314';return;
+          out.textContent=T.out+'\\n'+msg+group+'\\n'+T.years+': '+years+'\\n'+T.salary+': '+(salary||'—')+'\\n'+T.needs+'\\nhttps://lex.uz/docs/-112314';return;
         }
         if(kind==='ben'){
           const age=by('benAge').value;
           if(age===''||!Number.isInteger(Number(age))||Number(age)<0||Number(age)>120){out.textContent=T.missing;return;}
           const type=by('benType').selectedOptions[0].textContent;
-          const members=by('benType').value==='sur'?'\n'+by('benMembers').previousElementSibling.textContent+': '+by('benMembers').value:'';
-          out.textContent=T.out+'\n'+type+'\n'+T.age+': '+age+members+'\n'+T.needs+'\nhttps://lex.uz/docs/-112314';return;
+          const members=by('benType').value==='sur'?'\\n'+by('benMembers').previousElementSibling.textContent+': '+by('benMembers').value:'';
+          out.textContent=T.out+'\\n'+type+'\\n'+T.age+': '+age+members+'\\n'+T.needs+'\\nhttps://lex.uz/docs/-112314';return;
         }
         if(pSalaryUnknown()){out.textContent=salaryWords[7];return;}
         const age=Number(by('pAge').value),years=Number(by('pYears').value),salary=Number(by('pSalary').value);
