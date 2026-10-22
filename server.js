@@ -9383,8 +9383,8 @@ function pensionPage(lang) {
       <h1 style="font-size:clamp(29px,4vw,42px);margin:16px 0 8px">${esc(t.title)}</h1>
       <p style="font-size:16px;line-height:1.7">${esc(t.sub)}</p>
       <div class="notice noticeGold" style="margin:18px 0"><span class="noticeIcon">!</span><span>${esc(t.warning)}</span></div>
-      <section id="pensionRates" style="margin:25px 0;padding:clamp(17px,3vw,27px);border:2px solid #c9a86a;border-radius:18px;background:linear-gradient(145deg,#09263e,#164667);color:#fff">
-        <h2 style="color:#f1d292;font-size:clamp(23px,3vw,30px);margin:0 0 8px">${lang==='uz'?'Amaldagi pensiya va nafaqa miqdorlari':lang==='ru'?'Действующие размеры пенсий и пособий':'Current pension and benefit rates'}</h2>
+      <details id="pensionRates" style="margin:25px 0;padding:clamp(17px,3vw,27px);border:2px solid #c9a86a;border-radius:18px;background:linear-gradient(145deg,#09263e,#164667);color:#fff">
+        <summary style="cursor:pointer;font-size:clamp(17px,2.4vw,22px);font-weight:800;color:#f1d292;margin:0 0 8px">${lang==='uz'?'Amaldagi pensiya va nafaqa miqdorlari':lang==='ru'?'Действующие размеры пенсий и пособий':'Current pension and benefit rates'}</summary>
         <p style="color:#e2edf5;margin:0 0 18px;font-size:15px">${lang==='uz'?'2026-yil 1-iyuldan amal qiladi · Oylik miqdorlar, so‘m':lang==='ru'?'Действуют с 1 июля 2026 года · Суммы в месяц, сум':'Effective from 1 July 2026 · Monthly amounts in UZS'}</p>
         <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;color:#fff;font-size:15px;line-height:1.5"><thead><tr><th style="text-align:left;padding:11px;border-bottom:1px solid #b9a16c">${lang==='uz'?'To‘lov turi':lang==='ru'?'Вид выплаты':'Payment type'}</th><th style="text-align:right;padding:11px;border-bottom:1px solid #b9a16c">${lang==='uz'?'Miqdori':lang==='ru'?'Сумма':'Amount'}</th></tr></thead><tbody>
         ${[
@@ -9412,17 +9412,21 @@ function pensionPage(lang) {
           <a href="https://advice.adliya.uz/oz/document/4216" target="_blank" rel="noopener noreferrer" style="border:1px solid #d5ac63;color:#fff;padding:11px 15px;border-radius:9px">${lang==='uz'?'Bolalar nafaqasi — Adliya ↗':lang==='ru'?'Детские пособия — Минюст ↗':'Child benefits — Ministry of Justice ↗'}</a>
           <a href="https://lex.uz/uz/docs/-112314" target="_blank" rel="noopener noreferrer" style="border:1px solid #d5ac63;color:#fff;padding:11px 15px;border-radius:9px">${lang==='uz'?'Pensiya qonuni — LexUZ ↗':lang==='ru'?'Закон о пенсиях — LexUZ ↗':'Pension law — LexUZ ↗'}</a>
         </div>
-      </section>
+      </details>
       <form id="pensionForm" autocomplete="off">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
-        <div class="formGroup"><label for="pKind">${esc(t.kind)}</label><select id="pKind"><option value="old">${esc(t.old)}</option><option value="dis">${esc(t.dis)}</option><option value="sur">${esc(t.sur)}</option><option value="ben">${esc(t.ben)}</option></select></div>
+        <div class="formGroup" style="grid-column:1/-1"><label for="pKind" style="font-size:18px;font-weight:800">${esc(t.kind)} — 1 / 3</label>
+          <select id="pKind" aria-label="${esc(t.kind)}" style="max-width:100%;margin:8px 0 10px"><option value="old">${esc(t.old)}</option><option value="dis">${esc(t.dis)}</option><option value="sur">${esc(t.sur)}</option><option value="ben">${esc(t.ben)}</option></select>
+          <p style="font-size:14px;opacity:.8;margin:3px 0 10px">${lang==='uz'?'Avval pensiya yoki nafaqa turini tanlang. Keyin faqat shu turga kerakli savollar ko‘rsatiladi.':lang==='ru'?'Выберите вид выплаты — затем появятся только нужные вопросы.':'Choose a payment type to see only relevant questions.'}</p>
+        </div>
+        <div style="grid-column:1/-1;font-size:17px;font-weight:800;margin-top:5px" id="pensionStepTitle">${lang==='uz'?'2 / 3 — Ma’lumotlarni kiriting':lang==='ru'?'2 / 3 — Заполните данные':'2 / 3 — Enter details'}</div>
         <div class="formGroup pension-old-field"><label for="pSex">${esc(t.sex)}</label><select id="pSex"><option value="male">${esc(t.male)}</option><option value="female">${esc(t.female)}</option></select></div>
         <div class="formGroup pension-old-field"><label for="pAge">${esc(t.age)}</label><input id="pAge" type="number" min="0" max="120" step="1" required></div>
         <div class="formGroup pension-old-field"><label for="pYears">${esc(t.years)}</label><input id="pYears" type="number" min="0" max="80" step="1" required></div>
         <div class="formGroup pension-old-field" id="pSalaryGroup"><label for="pSalary" id="pSalaryLabel">${esc(t.salary)}</label><div id="pSalaryChoices"></div><input id="pSalary" type="number" min="0" max="100000000000" step="1" placeholder="3500000"><div id="pSalaryGuidance"></div></div>
         <div class="formGroup pension-old-field"><label for="pSpecial">${esc(t.special)}</label><select id="pSpecial"><option value="no">${esc(t.no)}</option><option value="yes">${esc(t.yes)}</option></select></div>
       </div>
-      <div id="disabilityFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #c9a86a;border-radius:14px;background:#fffaf0">
+      <div id="disabilityFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #d8dfe6;border-radius:14px;background:#f8fafc">
         <h3>${lang==='uz'?'Nogironlik pensiyasi uchun ma’lumotlar':lang==='ru'?'Данные для пенсии по инвалидности':'Disability pension details'}</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
           <div class="formGroup"><label for="disGroup">${lang==='uz'?'Nogironlik guruhi':lang==='ru'?'Группа инвалидности':'Disability group'}</label><select id="disGroup"><option value="">—</option><option value="1">I</option><option value="2">II</option><option value="3">III</option></select></div>
@@ -9432,7 +9436,7 @@ function pensionPage(lang) {
           <div class="formGroup"><label for="disSalary">${esc(t.salary)}</label><input id="disSalary" type="number" min="0" step="1"></div>
         </div>
       </div>
-      <div id="benefitFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #c9a86a;border-radius:14px;background:#fffaf0">
+      <div id="benefitFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #d8dfe6;border-radius:14px;background:#f8fafc">
         <h3>${lang==='uz'?'Ijtimoiy nafaqa uchun ma’lumotlar':lang==='ru'?'Данные для социального пособия':'Social benefit details'}</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
           <div class="formGroup"><label for="benType">${lang==='uz'?'Nafaqa turi':lang==='ru'?'Вид пособия':'Benefit type'}</label><select id="benType"><option value="old">${lang==='uz'?'Yoshga doir nafaqa':lang==='ru'?'Пособие по возрасту':'Old-age allowance'}</option><option value="dis">${lang==='uz'?'Nogironlik nafaqasi':lang==='ru'?'Пособие по инвалидности':'Disability allowance'}</option><option value="sur">${lang==='uz'?'Boquvchisini yo‘qotganlik nafaqasi':lang==='ru'?'Пособие по потере кормильца':'Survivor allowance'}</option><option value="other">${lang==='uz'?'Boshqa ijtimoiy nafaqa':lang==='ru'?'Другое социальное пособие':'Other social benefit'}</option></select></div>
@@ -9441,7 +9445,7 @@ function pensionPage(lang) {
           <div class="formGroup" id="benMembersGroup" style="display:none"><label for="benMembers">${lang==='uz'?'Huquqqa ega oila a’zolari soni':lang==='ru'?'Число членов семьи с правом на выплату':'Eligible family members'}</label><input id="benMembers" type="number" min="1" max="30" step="1" value="1"></div>
         </div>
       </div>
-      <div id="survivorFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #c9a86a;border-radius:14px;background:#fffaf0">
+      <div id="survivorFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #d8dfe6;border-radius:14px;background:#f8fafc">
         <h3 id="surTitle" style="margin:0 0 15px">Boquvchisini yo‘qotganlik pensiyasi — maxsus ma’lumotlar</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
           <div class="formGroup"><label id="surCountLabel" for="surCount">Pensiya olish huquqiga ega oila a’zolari soni</label><input id="surCount" type="number" min="1" max="30" step="1" value="1"></div>
@@ -9459,6 +9463,7 @@ function pensionPage(lang) {
         <a class="btn btnOutline" href="/calculators${q(lang)}">← ${esc(tr(lang,'calculators'))}</a>
       </div>
       </form>
+      <h3 style="margin:25px 0 8px;font-size:17px">${lang==='uz'?'3 / 3 — Natija':lang==='ru'?'3 / 3 — Результат':'3 / 3 — Result'}</h3>
       <div id="pensionResult" class="calcResult" role="status" aria-live="polite" style="margin-top:24px;padding:22px;white-space:pre-line">${esc(t.out)}: —</div>
       <div style="margin-top:22px;padding:18px;border:1px solid #d8dfe6;border-radius:14px;background:#f8fafc">
         <h3>${esc(t.sources)}</h3>
@@ -9516,6 +9521,7 @@ function pensionPage(lang) {
         by('disYears').required=kind==='dis';
         by('benAge').required=kind==='ben';
         out.textContent=T.out+': —';
+        by('pensionStepTitle').textContent=({'uz':'2 / 3 — Ma’lumotlarni kiriting','ru':'2 / 3 — Заполните данные','en':'2 / 3 — Enter details'}['${lang}']);
       }
       by('pKind').addEventListener('change',sync);
       by('benType').addEventListener('change',sync);
