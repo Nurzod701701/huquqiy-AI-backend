@@ -9445,16 +9445,18 @@ function pensionPage(lang) {
           <div class="formGroup" id="benMembersGroup" style="display:none"><label for="benMembers">${lang==='uz'?'Huquqqa ega oila a’zolari soni':lang==='ru'?'Число членов семьи с правом на выплату':'Eligible family members'}</label><input id="benMembers" type="number" min="1" max="30" step="1" value="1"></div>
         </div>
       </div>
-      <div id="survivorFields" style="display:none;margin-top:20px;padding:22px;border:1px solid #d8dfe6;border-radius:14px;background:#f8fafc">
-        <h3 id="surTitle" style="margin:0 0 15px">Boquvchisini yo‘qotganlik pensiyasi — maxsus ma’lumotlar</h3>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
-          <div class="formGroup"><label id="surCountLabel" for="surCount">Pensiya olish huquqiga ega oila a’zolari soni</label><input id="surCount" type="number" min="1" max="30" step="1" value="1"></div>
-          <div class="formGroup"><label id="surOrphanLabel" for="surOrphan">Chin yetim yoki vafot etgan yolg‘iz onaning bolalari soni</label><input id="surOrphan" type="number" min="0" max="30" step="1" value="0"></div>
-          <div class="formGroup"><label id="surSalaryLabel" for="surSalary">Boquvchining oylik rasmiy ish haqi (so‘m)</label><div id="surSalaryChoices"></div><input id="surSalary" type="number" min="1" step="1" placeholder="3000000"><div id="surSalaryGuidance"></div></div>
-          <div class="formGroup"><label id="surYearsLabel" for="surYears">Boquvchining ish staji (to‘liq yil)</label><input id="surYears" type="number" min="0" max="80" step="1" placeholder="Masalan: 15"></div>
-          <div class="formGroup"><label id="surDeathLabel" for="surDeath">Vafot etish holati</label><select id="surDeath"><option value="ordinary">Umumiy kasallik yoki boshqa holat</option><option value="work">Mehnatda mayiblanish / kasb kasalligi</option><option value="unknown">Aniq emas</option></select></div>
+      <div id="survivorFields" style="display:none;margin-top:18px;padding:clamp(15px,3vw,24px);border:1px solid #d8dfe6;border-radius:14px;background:#f8fafc;max-width:100%;box-sizing:border-box">
+        <h3 id="surTitle" style="margin:0 0 8px;font-size:21px">Boquvchisini yo‘qotganlik pensiyasi</h3>
+        <p id="surHelp" style="font-size:14px;line-height:1.65;color:#536374;margin:0 0 18px">Faqat pensiya olish huquqiga ega oila a’zolarini hisobga oling. Natija dastlabki hisobdir.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;align-items:start">
+          <div class="formGroup"><label id="surDeathLabel" for="surDeath">1. Boquvchining vafot etish holati</label><select id="surDeath"><option value="ordinary">Umumiy kasallik yoki boshqa holat</option><option value="work">Mehnatda mayiblanish / kasb kasalligi</option><option value="unknown">Aniq emas</option></select></div>
+          <div class="formGroup"><label id="surCountLabel" for="surCount">2. Pensiya olish huquqiga ega oila a’zolari soni</label><input id="surCount" type="number" min="1" max="30" step="1" value="1"></div>
+          <div class="formGroup"><label id="surSalaryLabel" for="surSalary">3. Boquvchining o‘rtacha oylik ish haqi (so‘m)</label><div id="surSalaryChoices"></div><input id="surSalary" type="number" min="1" step="1" placeholder="3000000"><div id="surSalaryGuidance"></div></div>
+          <div class="formGroup"><label id="surYearsLabel" for="surYears">4. Boquvchining ish staji (yil)</label><input id="surYears" type="number" min="0" max="80" step="1" placeholder="Masalan: 15"></div>
+          <div class="formGroup"><label for="surSpecial">5. Alohida holat bormi?</label><select id="surSpecial"><option value="none">${lang==='uz'?'Yo‘q':lang==='ru'?'Нет':'No'}</option><option value="orphan">${lang==='uz'?'Chin yetim yoki vafot etgan yolg‘iz onaning bolasi':lang==='ru'?'Круглый сирота / ребёнок умершей одинокой матери':'Full orphan / child of deceased single mother'}</option><option value="pensioner">${lang==='uz'?'Boquvchi pensiya olgan':lang==='ru'?'Кормилец получал пенсию':'Breadwinner received a pension'}</option></select></div>
+          <div class="formGroup" id="surOrphanGroup" style="display:none"><label id="surOrphanLabel" for="surOrphan">Chin yetim yoki yolg‘iz ona bolalari soni</label><input id="surOrphan" type="number" min="0" max="30" step="1" value="0"></div>
         </div>
-        <p id="surHelp" style="font-size:13px;line-height:1.7;color:#765522">Faqat pensiya olish huquqiga ega a’zolarni kiriting. Ish haqi pensiya hisobiga olinadigan tasdiqlangan miqdor bo‘lishi kerak. Natija dastlabki hisobdir.</p>
+        <p style="font-size:13px;line-height:1.65;color:#536374;margin:17px 0 0">${lang==='uz'?'Izoh: oila a’zolarining pensiya olish huquqi (yoshi, o‘qishi yoki mehnatga layoqatsizligi) alohida tekshiriladi. Bu shakl rasmiy tayinlov o‘rnini bosmaydi.':lang==='ru'?'Право членов семьи на пенсию проверяется отдельно. Расчёт не является официальным назначением.':'Eligibility of family members must be verified separately. This is not an official award.'}</p>
       </div>
       <div class="formActions" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:25px">
         <button class="btn btnPrimary" type="submit">∑ ${esc(t.calc)}</button>
@@ -9498,7 +9500,7 @@ function pensionPage(lang) {
       const fmt=n=>new Intl.NumberFormat('${lang==='ru'?'ru-RU':lang==='en'?'en-US':'uz-UZ'}',{maximumFractionDigits:0}).format(n);
       const survivor=by('survivorFields');
       const words={
-        uz:['Boquvchisini yo‘qotganlik pensiyasi — maxsus ma’lumotlar','Pensiya olish huquqiga ega oila a’zolari soni','Chin yetim yoki vafot etgan yolg‘iz onaning bolalari soni','Boquvchining pensiya hisobiga olinadigan o‘rtacha oylik ish haqi (so‘m)','Boquvchining ish staji (to‘liq yil)','Vafot etish holati','Faqat pensiya olish huquqiga ega a’zolarni kiriting. Natija dastlabki hisobdir.'],
+        uz:['Boquvchisini yo‘qotganlik pensiyasi — maxsus ma’lumotlar','2. Pensiya olish huquqiga ega oila a’zolari soni','Chin yetim yoki vafot etgan yolg‘iz onaning bolalari soni','3. Boquvchining pensiya hisobiga olinadigan o‘rtacha oylik ish haqi (so‘m)','4. Boquvchining ish staji (to‘liq yil)','1. Vafot etish holati','Faqat pensiya olish huquqiga ega a’zolarni kiriting. Natija dastlabki hisobdir.'],
         ru:['Пенсия по потере кормильца — дополнительные сведения','Количество членов семьи, имеющих право на пенсию','Число круглых сирот или детей умершей одинокой матери','Среднемесячный заработок умершего кормильца для расчёта пенсии (сум)','Стаж кормильца (полных лет)','Обстоятельства смерти','Указывайте только членов семьи, имеющих право на пенсию. Расчёт предварительный.'],
         en:['Survivor pension — additional details','Number of eligible family members','Number of full orphans or children of a deceased single mother','Deceased breadwinner’s pensionable average monthly earnings (UZS)','Breadwinner’s completed service years','Circumstances of death','Count only eligible family members. This is a preliminary estimate.']
       }['${lang}'];
@@ -9523,6 +9525,15 @@ function pensionPage(lang) {
         out.textContent=T.out+': —';
         by('pensionStepTitle').textContent=({'uz':'2 / 3 — Ma’lumotlarni kiriting','ru':'2 / 3 — Заполните данные','en':'2 / 3 — Enter details'}['${lang}']);
       }
+      const special=by('surSpecial');
+      function syncSurSpecial(){
+        const show=special.value==='orphan';
+        by('surOrphanGroup').style.display=show?'':'none';
+        if(!show)by('surOrphan').value='0';
+      }
+      special.addEventListener('change',syncSurSpecial);
+      form.addEventListener('reset',()=>setTimeout(syncSurSpecial,0));
+      syncSurSpecial();
       by('pKind').addEventListener('change',sync);
       by('benType').addEventListener('change',sync);
       form.addEventListener('reset',()=>setTimeout(sync,0));sync();
