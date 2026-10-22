@@ -12913,39 +12913,51 @@ function accountRedirect(res,to){ res.writeHead(302,{Location:to}); return res.e
 function accountMessage(text,type="info"){ return `<div class="accountAlert ${type}">${esc(text)}</div>`; }
 
 async function accountSendEmail(to,subject,text){
-  // 1) RESEND API — tavsiya etiladi. Nodemailer paketi shart emas.
+  // Production: confirmed domain on Resend OR authenticated SMTP.
+  // Never treat a failed email as delivered or skip verification.
+  const smtpReady=!!(nodemailer && process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+  let resendError=null;
   if(process.env.RESEND_API_KEY){
-    const from = process.env.EMAIL_FROM || "QOMUS <onboarding@resend.dev>";
-    const response = await fetch("https://api.resend.com/emails", {
-      method:"POST",
-      headers:{
-        "Authorization":"Bearer " + process.env.RESEND_API_KEY,
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({from,to:[to],subject,text})
-    });
-    if(!response.ok){
-      const detail = await response.text();
-      console.error("RESEND EMAIL ERROR", response.status, detail);
-      throw new Error("Tasdiqlash emailini yuborib bo‘lmadi.");
+    const from=process.env.EMAIL_FROM || "QOMUS <onboarding@resend.dev>";
+    try {
+      const response=await fetch("https://api.resend.com/emails",{
+        method:"POST",
+        headers:{"Authorization":"Bearer "+process.env.RESEND_API_KEY,"Content-Type":"application/json"},
+        body:JSON.stringify({from,to:[to],subject,text})
+      });
+      if(response.ok) return true;
+      const detail=await response.text();
+      console.error("RESEND EMAIL ERROR",response.status,detail);
+      resendError=new Error(response.status===403
+        ? "Resend 403: boshqa foydalanuvchilarga xat yuborish uchun domenni tasdiqlang yoki SMTP sozlang."
+        : "Resend xizmati xatni qabul qilmadi (HTTP "+response.status+").");
+    }catch(error){
+      resendError=error;
+      console.error("RESEND EMAIL REQUEST ERROR",error.message);
     }
-    return true;
   }
-
-  // 2) SMTP fallback — Gmail/Brevo va boshqa SMTP xizmatlari uchun.
-  if(nodemailer && process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS){
-    const transport=nodemailer.createTransport({
-      host:process.env.SMTP_HOST,
-      port:Number(process.env.SMTP_PORT||587),
-      secure:String(process.env.SMTP_SECURE||"")==="true",
-      auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}
-    });
-    await transport.sendMail({from:process.env.SMTP_FROM||process.env.SMTP_USER,to,subject,text});
-    return true;
+  // If Resend is in testing mode, a separately configured SMTP provider can still deliver.
+  if(smtpReady){
+    try{
+      const transport=nodemailer.createTransport({
+        host:process.env.SMTP_HOST,
+        port:Number(process.env.SMTP_PORT||587),
+        secure:String(process.env.SMTP_SECURE||"")==="true",
+        auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}
+      });
+      await transport.sendMail({
+        from:process.env.SMTP_FROM||process.env.SMTP_USER,
+        to,subject,text
+      });
+      return true;
+    }catch(error){
+      console.error("SMTP EMAIL ERROR",error.message);
+      throw new Error("SMTP orqali ham email yuborilmadi. SMTP_HOST, SMTP_USER, SMTP_PASS va SMTP_FROM sozlamalarini tekshiring.");
+    }
   }
-
-  console.error("EMAIL CONFIG MISSING: RESEND_API_KEY yoki SMTP sozlamalari kerak.");
-  return false;
+  if(resendError) throw resendError;
+  console.error("EMAIL CONFIG MISSING: tasdiqlangan Resend domeni yoki SMTP kerak.");
+  throw new Error("Email xizmati sozlanmagan. Tasdiqlangan domen yoki SMTP sozlang.");
 }
 
 const ACCOUNT_CSS = `
@@ -13168,7 +13180,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     try {
       const sent=await accountSendEmail(email,"QOMUS — emailni tasdiqlash",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
       if(!sent){sendHtml(res,accountRegisterPage(lang,"Email xizmati sozlanmagan. Render Environment’da RESEND_API_KEY va EMAIL_FROM yoki SMTP sozlamalarini kiriting."),503);return true;}
-    }catch(error){console.error("VERIFY EMAIL SEND ERROR",error);sendHtml(res,accountRegisterPage(lang,"Email yuborilmadi. Pochta xizmati va jo‘natuvchi domenini tekshiring."),502);return true;}
+    }catch(error){console.error("VERIFY EMAIL SEND ERROR",error);sendHtml(res,accountRegisterPage(lang,String(error.message||"Email yuborilmadi.")),502);return true;}
     // Email jo‘natilishi tasdiqlangandan keyingina akkauntni bazaga kiritamiz.
     db.users.push(user);
     db.consents.push({id:accountId("CNS"),userId:user.id,type:"terms_privacy",version:"2026-09-25-v1",acceptedAt:accountNow()});
@@ -13183,7 +13195,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     try{
       const sent=await accountSendEmail(email,"QOMUS — yangi tasdiqlash kodi",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
       if(!sent){sendHtml(res,accountVerifyPage(lang,email,"Email xizmati sozlanmagan."),503);return true;}
-    }catch(error){console.error("RESEND VERIFICATION ERROR",error);sendHtml(res,accountVerifyPage(lang,email,"Kod yuborilmadi. Email sozlamalarini tekshiring."),502);return true;}
+    }catch(error){console.error("RESEND VERIFICATION ERROR",error);sendHtml(res,accountVerifyPage(lang,email,String(error.message||"Kod yuborilmadi.")),502);return true;}
     user.verificationCodeHash=accountHashPassword(code);
     user.verificationExpiresAt=new Date(Date.now()+VERIFY_TTL_MS).toISOString();
     user.verificationSentAt=accountNow();user.updatedAt=accountNow();
