@@ -9460,8 +9460,8 @@ function pensionPage(lang) {
         const group=by(prefix+'SalaryGroup');
         const name='salaryKnowledge'+prefix;
         choices.innerHTML='<div style="font-size:14px;font-weight:700;margin:8px 0">'+salaryWords[1]+'</div>'+
-          '<label style="display:block;margin:7px 0"><input type="radio" name="'+name+'" value="yes" checked> '+salaryWords[2]+'</label>'+
-          '<label style="display:block;margin:7px 0"><input type="radio" name="'+name+'" value="no"> '+salaryWords[3]+'</label>';
+          '<label style="display:block;margin:7px 0"><input type="radio" style="appearance:auto;-webkit-appearance:radio;width:16px;height:16px;min-width:16px;min-height:16px;margin:0 7px 0 0;vertical-align:middle;accent-color:#a67d42;box-shadow:none;border:0;padding:0;display:inline-block" name="'+name+'" value="yes" checked> '+salaryWords[2]+'</label>'+
+          '<label style="display:block;margin:7px 0"><input type="radio" style="appearance:auto;-webkit-appearance:radio;width:16px;height:16px;min-width:16px;min-height:16px;margin:0 7px 0 0;vertical-align:middle;accent-color:#a67d42;box-shadow:none;border:0;padding:0;display:inline-block" name="'+name+'" value="no"> '+salaryWords[3]+'</label>';
         guidance.innerHTML='<details style="margin-top:10px;padding:10px;border:1px solid #c9a86a;border-radius:10px"><summary style="cursor:pointer;font-weight:700">'+salaryWords[4]+'</summary><p style="line-height:1.7;margin:9px 0">'+salaryWords[5]+'</p></details><p class="salaryUnknown" style="display:none;line-height:1.7;font-size:14px;padding:10px;background:#fff8e7;border-radius:9px">'+salaryWords[6]+'</p>';
         function update(){const unknown=choices.querySelector('input[value="no"]').checked;input.disabled=unknown;input.required=!unknown&&(!group||!group.hidden);input.style.display=unknown?'none':'';guidance.querySelector('.salaryUnknown').style.display=unknown?'block':'none';}
         choices.addEventListener('change',update);update();
