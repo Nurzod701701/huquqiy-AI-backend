@@ -14,7 +14,7 @@ const AI_MODEL = process.env.AI_MODEL || "openrouter/free";
 
 
 // ======================================================
-// HUQUQIY AI — ASOSIY YORDAMCHI FUNKSIYALAR
+// QOMUS — ASOSIY YORDAMCHI FUNKSIYALAR
 // ======================================================
 
 function esc(value = "") {
@@ -188,7 +188,7 @@ async function readJson(req) {
 
 const UI = {
   uz: {
-    brand: "Huquqiy AI",
+    brand: "QOMUS",
     home: "Bosh sahifa",
     assistant: "Huquqiy yordamchi",
     questionnaire: "Savol-javob",
@@ -207,7 +207,7 @@ const UI = {
   },
 
   ru: {
-    brand: "Huquqiy AI",
+    brand: "QOMUS",
     home: "Главная",
     assistant: "Юридический помощник",
     questionnaire: "Вопросы",
@@ -226,7 +226,7 @@ const UI = {
   },
 
   en: {
-    brand: "Huquqiy AI",
+    brand: "QOMUS",
     home: "Home",
     assistant: "Legal assistant",
     questionnaire: "Questionnaire",
@@ -362,7 +362,7 @@ async function getLexuzEvidence(question) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 9000);
     try {
-      const r = await fetch(doc.url, { signal: controller.signal, headers: { 'Accept': 'text/html', 'User-Agent': 'HuquqiyAI-LegalResearch/1.0' }, redirect: 'follow' });
+      const r = await fetch(doc.url, { signal: controller.signal, headers: { 'Accept': 'text/html', 'User-Agent': 'QOMUS-LegalResearch/1.0' }, redirect: 'follow' });
       if (!r.ok || !/text\/html/i.test(r.headers.get('content-type') || '')) continue;
       const html = (await r.text()).slice(0, 1800000);
       const txt = lexPlainText(html);
@@ -402,7 +402,7 @@ async function callAI(question, lang = "uz", context = "") {
   }[lang];
 
   const systemPrompt = `
-You are Huquqiy AI, a legal information assistant focused on Uzbekistan.
+You are QOMUS, a legal information assistant focused on Uzbekistan.
 
 ${languageInstruction}
 
@@ -508,8 +508,8 @@ Use only provisions actually visible in these excerpts for precise article-numbe
       headers: {
         Authorization: "Bearer " + OPENROUTER_API_KEY,
         "Content-Type": "application/json",
-        "HTTP-Referer": process.env.SITE_URL || "https://huquqiy-ai-backend.onrender.com",
-        "X-Title": "Huquqiy AI"
+        "HTTP-Referer": process.env.SITE_URL || "https://QOMUS-backend.onrender.com",
+        "X-Title": "QOMUS"
       },
       body: JSON.stringify({
         model: AI_MODEL,
@@ -4846,7 +4846,7 @@ const CSS_APP = `
 
 
 /* =====================================================
-   HUQUQIY AI — READABLE LARGE TYPOGRAPHY OVERRIDE
+   QOMUS — READABLE LARGE TYPOGRAPHY OVERRIDE
 ===================================================== */
 body{
   font-size:16px;
@@ -5483,7 +5483,7 @@ function navigation(lang) {
 // ======================================================
 // APP LAYOUT — RESTORED
 // ======================================================
-function appLayout(lang = "uz", active = "", content = "", title = "Huquqiy AI", description = "") {
+function appLayout(lang = "uz", active = "", content = "", title = "QOMUS", description = "") {
   lang = getLang(lang);
 
   const items = [
@@ -5520,7 +5520,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "Huquqiy AI",
             <div class="sidebarBrandTop">
               <span class="sidebarBrandMark">§</span>
               <div>
-                <strong>Huquqiy AI</strong>
+                <strong>QOMUS</strong>
                 <small>LEGAL INTELLIGENCE</small>
               </div>
             </div>
@@ -5544,7 +5544,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "Huquqiy AI",
             <div class="appBreadcrumb">
               <a href="/${q(lang)}">${esc(tr(lang, "home"))}</a>
               <span>›</span>
-              <strong>${esc(title || "Huquqiy AI")}</strong>
+              <strong>${esc(title || "QOMUS")}</strong>
             </div>
             <div class="appTopRight">
               ${appLanguageMenu(lang, active ? "/" + active : "/")}
@@ -5554,7 +5554,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "Huquqiy AI",
 
           ${title ? `
             <div class="appHeader">
-              <div class="appHeaderSmall">HUQUQIY AI</div>
+              <div class="appHeaderSmall">QOMUS</div>
               <h1>${esc(title)}</h1>
               ${description ? `<p>${esc(description)}</p>` : ""}
             </div>
@@ -5568,7 +5568,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "Huquqiy AI",
 
   return page({
     lang,
-    title: title || "Huquqiy AI",
+    title: title || "QOMUS",
     content: appContent
   });
 }
@@ -5588,7 +5588,7 @@ function footer(lang = "uz") {
     <footer class="footer">
       <div class="container" style="padding:32px 0">
         <div class="footerBrand">
-          <strong>Huquqiy AI</strong>
+          <strong>QOMUS</strong>
           <p>${esc(copy.text)}</p>
           <p>${esc(copy.note)}</p>
         </div>
@@ -5598,7 +5598,7 @@ function footer(lang = "uz") {
           <a href="/court${q(lang)}">${esc(tr(lang,"court"))}</a>
           <a href="/login${q(lang)}">${lang === "ru" ? "Войти" : lang === "en" ? "Sign in" : "Kirish"}</a>
         </div>
-        <div class="footerBottom" style="margin-top:18px">© ${new Date().getFullYear()} Huquqiy AI</div>
+        <div class="footerBottom" style="margin-top:18px">© ${new Date().getFullYear()} QOMUS</div>
       </div>
     </footer>`;
 }
@@ -5606,7 +5606,7 @@ function footer(lang = "uz") {
 // ======================================================
 // ASOSIY HTML PAGE WRAPPER
 // ======================================================
-function page({ lang = "uz", title = "Huquqiy AI", content = "" } = {}) {
+function page({ lang = "uz", title = "QOMUS", content = "" } = {}) {
   lang = getLang(lang);
 
   return `<!DOCTYPE html>
@@ -5650,7 +5650,7 @@ function homePage(lang) {
         "tushunishdan boshlang.",
 
       heroText:
-        "Huquqiy AI vaziyatingizni bosqichma-bosqich tahlil qilish, muhim faktlarni aniqlash, rasmiy manbalarni tekshirish va keyingi huquqiy qadamlarni tushunishga yordam beradi.",
+        "QOMUS vaziyatingizni bosqichma-bosqich tahlil qilish, muhim faktlarni aniqlash, rasmiy manbalarni tekshirish va keyingi huquqiy qadamlarni tushunishga yordam beradi.",
 
       ai:
         "AI yordamchini ochish",
@@ -5722,7 +5722,7 @@ function homePage(lang) {
         "Platforma bir nechta huquqiy yo‘nalish bo‘yicha dastlabki tahlil va yo‘naltirish imkonini beradi.",
 
       coreSmall:
-        "HUQUQIY AI METODI",
+        "QOMUS METODI",
 
       coreTitle:
         "Tizimli huquqiy tahlil",
@@ -5754,7 +5754,7 @@ function homePage(lang) {
         "вашей правовой ситуации.",
 
       heroText:
-        "Huquqiy AI помогает поэтапно анализировать ситуацию, выявлять важные факты, проверять официальные источники и понимать дальнейшие юридические действия.",
+        "QOMUS помогает поэтапно анализировать ситуацию, выявлять важные факты, проверять официальные источники и понимать дальнейшие юридические действия.",
 
       ai:
         "Открыть AI-помощника",
@@ -5826,7 +5826,7 @@ function homePage(lang) {
         "Платформа предоставляет первичный анализ и навигацию по нескольким правовым направлениям.",
 
       coreSmall:
-        "МЕТОД HUQUQIY AI",
+        "МЕТОД QOMUS",
 
       coreTitle:
         "Системный правовой анализ",
@@ -5858,7 +5858,7 @@ function homePage(lang) {
         "your legal situation.",
 
       heroText:
-        "Huquqiy AI helps analyze your situation step by step, identify important facts, check official sources and understand possible next legal steps.",
+        "QOMUS helps analyze your situation step by step, identify important facts, check official sources and understand possible next legal steps.",
 
       ai:
         "Open AI assistant",
@@ -5930,7 +5930,7 @@ function homePage(lang) {
         "The platform provides initial analysis and navigation across several legal areas.",
 
       coreSmall:
-        "HUQUQIY AI METHOD",
+        "QOMUS METHOD",
 
       coreTitle:
         "Structured legal analysis",
@@ -6048,7 +6048,7 @@ function homePage(lang) {
     lang,
 
     title:
-      "Huquqiy AI",
+      "QOMUS",
 
     content: `
 
@@ -6418,7 +6418,7 @@ function homePage(lang) {
 
 
 
-      <!-- HUQUQIY AI SMART ENTRY + POPULAR SERVICES -->
+      <!-- QOMUS SMART ENTRY + POPULAR SERVICES -->
       <section class="smartLegalHub">
         <style>
           .smartLegalHub{padding:12px 0 34px}.smartHubBox{background:#071f36;border-radius:24px;padding:30px 34px;color:#fff;position:relative;overflow:hidden}
@@ -6440,7 +6440,7 @@ function homePage(lang) {
             <div class="smartHubGrid">
               <div><div class="smartHubLabel">${lang==="uz"?"AI YO‘NALISH TANLASH":lang==="ru"?"AI ВЫБОР НАПРАВЛЕНИЯ":"AI LEGAL ROUTING"}</div>
                 <h2>${lang==="uz"?"Qaysi bo‘lim kerakligini bilmaysizmi?":lang==="ru"?"Не знаете, какой раздел выбрать?":"Not sure which legal area you need?"}</h2>
-                <p>${lang==="uz"?"Muammoingizni bir jumlada yozing. HUQUQIY AI matndagi kalit huquqiy mavzuga qarab sizni Oila, Mehnat yoki Biznes bo‘limiga yo‘naltiradi.":lang==="ru"?"Опишите проблему одним предложением — система предложит подходящий раздел.":"Describe the problem in one sentence and the system will suggest the relevant area."}</p>
+                <p>${lang==="uz"?"Muammoingizni bir jumlada yozing. QOMUS matndagi kalit huquqiy mavzuga qarab sizni Oila, Mehnat yoki Biznes bo‘limiga yo‘naltiradi.":lang==="ru"?"Опишите проблему одним предложением — система предложит подходящий раздел.":"Describe the problem in one sentence and the system will suggest the relevant area."}</p>
               </div>
               <div><div class="smartAsk"><input id="smartLegalInput" placeholder="${lang==="uz"?"Masalan: ish haqimni 3 oydan beri bermayapti...":lang==="ru"?"Например: зарплату не платят 3 месяца...":"Example: my salary has not been paid for 3 months..."}"><button type="button" onclick="smartLegalRoute()">${lang==="uz"?"Yo‘nalishni aniqlash →":lang==="ru"?"Определить →":"Find area →"}</button></div><div id="smartLegalHint" class="smartHint"></div></div>
             </div>
@@ -6544,7 +6544,7 @@ function homePage(lang) {
           <a class="popularLink" href="/business${q(lang)}"><span class="popularIcon">Q</span>${lang==="uz"?"Qarzdorlik undirish":lang==="ru"?"Взыскание долга":"Debt recovery"}</a>
           <a class="popularLink" href="/business${q(lang)}"><span class="popularIcon">S</span>${lang==="uz"?"Shartnoma tayyorlash":lang==="ru"?"Подготовка договора":"Draft contract"}</a>
         </div>
-        <div class="trustStrip"><div class="trustMark">✓</div><div><strong>${lang==="uz"?"HUQUQIY AI: tushuning → oqibatini biling → yechimni tanlang":lang==="ru"?"HUQUQIY AI не выдумывает отсутствующие факты":"HUQUQIY AI does not invent missing facts"}</strong><span>${lang==="uz"?"Tizim darhol sudga yuborishga emas, avval vaziyatni aniqlash, oqibatlarni ko‘rsatish, sudgacha yechimlarni tekshirish va keyingi amaliy qadamni berishga qaratilgan.":lang==="ru"?"Отсутствующие имена, даты, суммы, суды и доказательства не выдумываются.":"Missing names, dates, amounts, courts and evidence are not fabricated."}</span></div></div>
+        <div class="trustStrip"><div class="trustMark">✓</div><div><strong>${lang==="uz"?"QOMUS: tushuning → oqibatini biling → yechimni tanlang":lang==="ru"?"QOMUS не выдумывает отсутствующие факты":"QOMUS does not invent missing facts"}</strong><span>${lang==="uz"?"Tizim darhol sudga yuborishga emas, avval vaziyatni aniqlash, oqibatlarni ko‘rsatish, sudgacha yechimlarni tekshirish va keyingi amaliy qadamni berishga qaratilgan.":lang==="ru"?"Отсутствующие имена, даты, суммы, суды и доказательства не выдумываются.":"Missing names, dates, amounts, courts and evidence are not fabricated."}</span></div></div>
       </div></section>
 
       <script>
@@ -6628,7 +6628,7 @@ function aiPage(lang) {
   const t = {
 
     uz: {
-      title: "Huquqiy AI yordamchi",
+      title: "QOMUS yordamchi",
       description:
         "Huquqiy vaziyatingizni oddiy tilda yozing. Tizim muammoni, muhim faktlarni va keyingi qadamlarni tahlil qiladi.",
 
@@ -6791,7 +6791,7 @@ function aiPage(lang) {
             <div>
 
               <strong>
-                Huquqiy AI
+                QOMUS
               </strong>
 
               <small>
@@ -6989,7 +6989,7 @@ async function aiResultPage(
         "Siz taqdim etgan ma’lumotlar asosidagi dastlabki huquqiy tahlil.",
 
       label:
-        "HUQUQIY AI • TAHLIL NATIJASI",
+        "QOMUS • TAHLIL NATIJASI",
 
       newQuestion:
         "Yangi savol",
@@ -7010,7 +7010,7 @@ async function aiResultPage(
         "Первичный правовой анализ на основе предоставленной информации.",
 
       label:
-        "HUQUQIY AI • РЕЗУЛЬТАТ АНАЛИЗА",
+        "QOMUS • РЕЗУЛЬТАТ АНАЛИЗА",
 
       newQuestion:
         "Новый вопрос",
@@ -7031,7 +7031,7 @@ async function aiResultPage(
         "Initial legal analysis based on the information provided.",
 
       label:
-        "HUQUQIY AI • ANALYSIS RESULT",
+        "QOMUS • ANALYSIS RESULT",
 
       newQuestion:
         "New question",
@@ -7441,7 +7441,7 @@ async function questionnaireResultPage(
         "Savolnoma javoblari asosidagi dastlabki huquqiy yo‘naltirish.",
 
       label:
-        "HUQUQIY AI • OILAVIY HUQUQ TAHLILI",
+        "QOMUS • OILAVIY HUQUQ TAHLILI",
 
       back:
         "Savolnomaga qaytish",
@@ -7477,7 +7477,7 @@ Sud natijasini kafolatlamang va mavjud bo‘lmagan qonun moddalarini uydirmang.`
         "Первичная правовая навигация на основе ответов анкеты.",
 
       label:
-        "HUQUQIY AI • АНАЛИЗ СЕМЕЙНОГО ПРАВА",
+        "QOMUS • АНАЛИЗ СЕМЕЙНОГО ПРАВА",
 
       back:
         "Вернуться к анкете",
@@ -7512,7 +7512,7 @@ Sud natijasini kafolatlamang va mavjud bo‘lmagan qonun moddalarini uydirmang.`
         "Initial legal guidance based on the questionnaire answers.",
 
       label:
-        "HUQUQIY AI • FAMILY LAW ANALYSIS",
+        "QOMUS • FAMILY LAW ANALYSIS",
 
       back:
         "Return to questionnaire",
@@ -8577,7 +8577,7 @@ function courtCostsPage(lang="uz") {
  const t=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
  return appLayout(lang,"court-costs",`
  <style>.feeShell{max-width:950px;margin:auto}.feeHero{background:linear-gradient(135deg,#071f36,#123e60);padding:35px;border-radius:22px;color:white}.feeHero h1{font-size:clamp(27px,4vw,39px);margin:5px 0}.feeHero p{color:#dbe5ee;font-size:17px}.feeBox{background:white;border:1px solid #e1e7ed;border-radius:18px;padding:28px;margin-top:19px}.feeBox label{display:block;font-size:18px;font-weight:750;margin:15px 0 8px}.feeBox select,.feeBox input{width:100%;font-size:18px;min-height:52px;border:1px solid #bbc9d5;border-radius:11px;padding:10px}.feeHelp{font-size:15px;color:#526779}.feeWarn{border-left:4px solid #bb8e3c;background:#fff8e9;padding:15px;border-radius:8px;font-size:15px}.feeActions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}@media(max-width:650px){.feeBox,.feeHero{padding:22px}}</style>
- <div class="feeShell"><div class="feeHero"><div style="color:#e5c17a;font-weight:800">HUQUQIY AI</div><h1>${t("Davlat boji va sud xarajatlarini hisoblash","Расчёт госпошлины и судебных расходов","Court fees and costs")}</h1><p>${t("Ariza topshirishdan oldin muhim holatlarni aniqlang.","Уточните сведения до подачи заявления.","Check the facts before filing.")}</p></div>
+ <div class="feeShell"><div class="feeHero"><div style="color:#e5c17a;font-weight:800">QOMUS</div><h1>${t("Davlat boji va sud xarajatlarini hisoblash","Расчёт госпошлины и судебных расходов","Court fees and costs")}</h1><p>${t("Ariza topshirishdan oldin muhim holatlarni aniqlang.","Уточните сведения до подачи заявления.","Check the facts before filing.")}</p></div>
  <form class="feeBox" method="POST" action="/court-costs-result${q(lang)}">
  <h2>${t("1. Sudga murojaat turi","1. Вид обращения","1. Type of claim")}</h2>
  <label>${t("Qanday masala?","Какой вопрос?","Which matter?")}</label><select name="claim" id="feeClaim" required onchange="feeToggle()"><option value="">${t("Tanlang","Выберите","Choose")}</option><option value="divorce">${t("Nikohdan ajratish","Развод","Divorce")}</option><option value="alimony">${t("Aliment undirish","Алименты","Child support")}</option><option value="property">${t("Mol-mulkni bo‘lish","Раздел имущества","Property division")}</option><option value="labor">${t("Mehnat nizosi","Трудовой спор","Employment dispute")}</option><option value="business">${t("Iqtisodiy / biznes nizosi","Экономический спор","Business dispute")}</option><option value="other">${t("Boshqa da’vo","Другой иск","Other claim")}</option></select>
@@ -8721,7 +8721,7 @@ function businessPage(lang="uz"){
 
   <div class="bWrap">
     <section class="bTop">
-      <div class="bKicker">HUQUQIY AI · BUSINESS DESK</div>
+      <div class="bKicker">QOMUS · BUSINESS DESK</div>
       <h1>${t("Biznes huquqi","Бизнес-право","Business Law")}</h1>
       <p>${t("Tadbirkor va kompaniya uchun huquqiy ish stoli: AI tahlil, shartnoma, da’vo, korporativ hujjatlar, qonunchilik va rasmiy davlat xizmatlari.","Юридическое рабочее пространство для бизнеса.","A legal workspace for entrepreneurs and companies.")}</p>
       <div class="bTopBtns"><a class="bTopBtn gold" href="#b-ai">${t("AI biznes yuristi","AI бизнес-юрист","AI business lawyer")}</a><a class="bTopBtn" href="#b-laws">${t("Qonun manbalari","Источники права","Legal sources")}</a><a class="bTopBtn" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">${t("Sud kabineti ↗","Судебный кабинет ↗","Court cabinet ↗")}</a></div>
@@ -8803,7 +8803,7 @@ function businessPage(lang="uz"){
   </div>
 
   <div id="bizModal" class="bModal" onclick="if(event.target===this)bizClose()"><div class="bModalCard">
-    <div class="bModalTop"><div><div class="resultLabel">HUQUQIY AI · BUSINESS</div><h2 id="bizModalTitle">${t("AI biznes yuristi","AI бизнес-юрист","AI business lawyer")}</h2></div><button class="bClose" onclick="bizClose()">×</button></div>
+    <div class="bModalTop"><div><div class="resultLabel">QOMUS · BUSINESS</div><h2 id="bizModalTitle">${t("AI biznes yuristi","AI бизнес-юрист","AI business lawyer")}</h2></div><button class="bClose" onclick="bizClose()">×</button></div>
     <form method="POST" action="/business-result${q(lang)}">
       <input id="bizMode" type="hidden" name="mode" value="analysis"><input id="bizIssue" type="hidden" name="issue"><input id="bizDocType" type="hidden" name="document_type"><input id="bizContractType" type="hidden" name="contract_type">
       <div class="formGrid"><div class="formGroup"><label>${t("Sizning tomoningiz / korxona","Ваша сторона / компания","Your side / company")}</label><input name="party1"></div><div class="formGroup"><label>${t("Kontragent / qarshi tomon","Контрагент","Counterparty")}</label><input name="counterparty"></div><div class="formGroup"><label>${t("Summa / narx","Сумма / цена","Amount / price")}</label><input name="amount"></div><div class="formGroup"><label>${t("Shartnoma yoki hujjat","Договор или документ","Contract/document")}</label><input name="contract"></div></div>
@@ -8859,7 +8859,7 @@ async function businessResultPage(lang, body){
   }[mode] || "Provide a structured Uzbekistan business-law response.";
 
   const prompt = `
-You are HUQUQIY AI's BUSINESS LAW module for Uzbekistan.
+You are QOMUS's BUSINESS LAW module for Uzbekistan.
 Respond in ${languageName}.
 
 CORE RULES:
@@ -8931,7 +8931,7 @@ Goal/request: ${goal}
 
 
 
-// === HUQUQIY AI: EMPLOYMENT CONTRACT LIBRARY (educational fictional examples) ===
+// === QOMUS: EMPLOYMENT CONTRACT LIBRARY (educational fictional examples) ===
 const CONTRACT_LIBRARY = [{"id": 1, "title": "Nomuayyan muddatli", "position": "Yuriskonsult", "employee": "Azizbek Rahimov", "employer": "ADOLAT CONSULTING", "ru_position": "Юрисконсульт"}, {"id": 2, "title": "Muddatli loyiha", "position": "Loyiha mutaxassisi", "employee": "Dilshod Karimov", "employer": "TARAQQIYOT GROUP", "ru_position": "Специалист проекта"}, {"id": 3, "title": "Masofaviy", "position": "Dasturchi", "employee": "Sardor Aliyev", "employer": "DIGITAL SOFT", "ru_position": "Разработчик"}, {"id": 4, "title": "O‘rindoshlik", "position": "Buxgalter", "employee": "Malika Ergasheva", "employer": "MOLIYA SERVIS", "ru_position": "Бухгалтер"}, {"id": 5, "title": "To‘liqsiz ish vaqti", "position": "Operator", "employee": "Madina Qodirova", "employer": "ALOQA PLUS", "ru_position": "Оператор"}, {"id": 6, "title": "Rahbar", "position": "Direktor", "employee": "Jamshid Ortiqov", "employer": "BUNYODKOR INVEST", "ru_position": "Директор"}, {"id": 7, "title": "Mavsumiy", "position": "Agronom", "employee": "Bekzod Rasulov", "employer": "AGRO BOG‘", "ru_position": "Агроном"}, {"id": 8, "title": "Uyda ishlash", "position": "Tikuvchi", "employee": "Nilufar Saidova", "employer": "LIBOS TEXTILE", "ru_position": "Швея"}, {"id": 9, "title": "Dastlabki sinov sharti bilan", "position": "Marketing mutaxassisi", "employee": "Diyorbek Umarov", "employer": "REKLAMA MEDIA", "ru_position": "Маркетолог"}, {"id": 10, "title": "Vaqtincha yo‘q xodim o‘rniga", "position": "Kotiba", "employee": "Mohira Sobirova", "employer": "HUJJAT SERVIS", "ru_position": "Секретарь"}, {"id": 11, "title": "YTT bilan", "position": "Sotuvchi", "employee": "Sherzod Olimov", "employer": "YTT QODIROV", "ru_position": "Продавец"}, {"id": 12, "title": "Pedagog", "position": "O‘qituvchi", "employee": "Zilola Akbarova", "employer": "ZIYO TA’LIM", "ru_position": "Учитель"}, {"id": 13, "title": "Tibbiyot xodimi", "position": "Hamshira", "employee": "Feruza Ismoilova", "employer": "SHIFO MED", "ru_position": "Медсестра"}, {"id": 14, "title": "Haydovchi", "position": "Haydovchi", "employee": "Abror To‘xtayev", "employer": "TRANS LOGISTIK", "ru_position": "Водитель"}, {"id": 15, "title": "Savdo xodimi", "position": "Savdo menejeri", "employee": "Kamola Nabiyeva", "employer": "SAVDO MARKAZ", "ru_position": "Менеджер по продажам"}];
 const CONTRACT_LAW = 'https://lex.uz/docs/-6257288';
 const CONTRACT_DECREE = 'https://lex.uz/uz/docs/-7220862';
@@ -9344,7 +9344,7 @@ REQUESTED OUTPUT: ${wantsContract ? "EMPLOYMENT CONTRACT DRAFT" : (wantsClaim ? 
     "employment",
     `
       <div class="resultBox">
-        <div class="resultLabel">HUQUQIY AI • EMPLOYMENT</div>
+        <div class="resultLabel">QOMUS • EMPLOYMENT</div>
         ${renderLegalAnswer(answer)}
       </div>
 
@@ -9379,7 +9379,7 @@ function pensionPage(lang) {
   const js=JSON.stringify(t).replace(/</g,'\\u003c');
   return appLayout(lang,'calculators',`
     <section class="panel pension-module" style="max-width:1080px;margin:0 auto;padding:clamp(20px,4vw,38px)">
-      <span class="eyebrow">HUQUQIY AI · PENSION</span>
+      <span class="eyebrow">QOMUS · PENSION</span>
       <h1 style="font-size:clamp(29px,4vw,42px);margin:16px 0 8px">${esc(t.title)}</h1>
       <p style="font-size:16px;line-height:1.7">${esc(t.sub)}</p>
       <div class="notice noticeGold" style="margin:18px 0"><span class="noticeIcon">!</span><span>${esc(t.warning)}</span></div>
@@ -9500,16 +9500,16 @@ function pensionPage(lang) {
             ru:['ПРЕДВАРИТЕЛЬНЫЙ РАСЧЁТ — ПЕНСИЯ ПО ПОТЕРЕ КОРМИЛЬЦА','Расчётный среднемесячный заработок: ','Базовый размер на одного (30%): ','Обычные получатели: ','Круглые сироты / дети одинокой матери: ','Сумма базовых размеров с индивидуальными порогами по статье 26: ','ВНИМАНИЕ: Это не окончательная назначаемая пенсия. Семейный минимум для одного получателя 878 000 сум с июля 2026 года, правила для нескольких получателей, стаж, обстоятельства смерти, надбавки и пределы заработка проверяются отдельно.','Стаж: ','Причина смерти: '],
             en:['PRELIMINARY SURVIVOR PENSION CALCULATION','Pensionable average monthly earnings: ','Base per eligible member (30%): ','Regular eligible members: ','Full orphans / children of single mother: ','Sum of statutory base amounts and individual floors under Article 26: ','IMPORTANT: This is not the final payable pension. The July 2026 family minimum of UZS 878,000 for one recipient, multi-recipient rules, service eligibility, cause of death, supplements and earnings caps require official review.','Service years: ','Cause of death: ']
           }['${lang}'];
-          out.textContent=salaryWords[8]+'\n\n'+lines[0]+'\n'+lines[1]+fmt(salary)+' UZS\n'+lines[2]+fmt(base)+' UZS\n'+lines[3]+regular+' × '+fmt(perOrdinary)+' UZS\n'+lines[4]+orphans+' × '+fmt(perOrphan)+' UZS\n'+lines[5]+fmt(illustrative)+' UZS\n'+lines[7]+(years||'—')+'\n'+lines[8]+cause+'\n\n'+lines[6]+'\nhttps://lex.uz/docs/-112314';return;
+          out.textContent=salaryWords[8]+'\\n\\n'+lines[0]+'\\n'+lines[1]+fmt(salary)+' UZS\\n'+lines[2]+fmt(base)+' UZS\\n'+lines[3]+regular+' × '+fmt(perOrdinary)+' UZS\\n'+lines[4]+orphans+' × '+fmt(perOrphan)+' UZS\\n'+lines[5]+fmt(illustrative)+' UZS\\n'+lines[7]+(years||'—')+'\\n'+lines[8]+cause+'\\n\\n'+lines[6]+'\\nhttps://lex.uz/docs/-112314';return;
         }
-        if(kind!=='old'){out.textContent=T.out+'\n'+T.other+'\n'+T.needs;return;}
+        if(kind!=='old'){out.textContent=T.out+'\\n'+T.other+'\\n'+T.needs;return;}
         if(pSalaryUnknown()){out.textContent=salaryWords[7];return;}
         const age=Number(by('pAge').value),years=Number(by('pYears').value),salary=Number(by('pSalary').value);
         if(!Number.isInteger(age)||age<0||age>120||!Number.isInteger(years)||years<0||years>80||!Number.isFinite(salary)||salary<=0){out.textContent=T.missing;return;}
         const male=by('pSex').value==='male',minAge=male?60:55,minYears=male?25:20;
         const extra=Math.max(0,years-minYears),pct=55+extra,amount=salary*pct/100;
         const eligible=age>=minAge&&years>=minYears;
-        out.textContent=salaryWords[8]+'\n\n'+T.out+'\n'+T.elig+': '+(eligible?T.ok:T.notok)+' (age '+minAge+' / '+minYears+' years)'+'\n'+T.details+': '+fmt(salary)+' × ('+T.base+' 55% + '+T.extra+' '+extra+'%) = '+fmt(amount)+' UZS\n'+T.sum+': '+fmt(amount)+' UZS\n\n'+T.warning+(by('pSpecial').value==='yes'?'\n'+T.specialNote:'');
+        out.textContent=salaryWords[8]+'\\n\\n'+T.out+'\\n'+T.elig+': '+(eligible?T.ok:T.notok)+' (age '+minAge+' / '+minYears+' years)'+'\\n'+T.details+': '+fmt(salary)+' × ('+T.base+' 55% + '+T.extra+' '+extra+'%) = '+fmt(amount)+' UZS\\n'+T.sum+': '+fmt(amount)+' UZS\\n\\n'+T.warning+(by('pSpecial').value==='yes'?'\\n'+T.specialNote:'');
       });
     })();${'</'+'script>'}
   `,t.title,t.sub);
@@ -12780,13 +12780,13 @@ try { nodemailer = require("nodemailer"); } catch (_) {}
 // Render: /var/data faqat shu manzilga Persistent Disk ulangan bo'lsa yoziladi.
 // ACCOUNT_DATA_FILE ni Render Environment'da /var/data/... qilib belgilashdan oldin diskni ulang.
 // Disk bo'lmasa /tmp ishlaydi, ammo restart/deploy paytida ma'lumotlar yo'qolishi mumkin.
-const ACCOUNT_DATA_FILE_CONFIGURED = process.env.ACCOUNT_DATA_FILE || path.join(process.cwd(), "huquqiy-ai-data.json");
+const ACCOUNT_DATA_FILE_CONFIGURED = process.env.ACCOUNT_DATA_FILE || path.join(process.cwd(), "QOMUS-data.json");
 let ACCOUNT_DATA_FILE = ACCOUNT_DATA_FILE_CONFIGURED;
 try {
   fs.mkdirSync(path.dirname(ACCOUNT_DATA_FILE), {recursive:true});
   fs.accessSync(path.dirname(ACCOUNT_DATA_FILE), fs.constants.W_OK);
 } catch (err) {
-  ACCOUNT_DATA_FILE = path.join(require('os').tmpdir(), 'huquqiy-ai-data.json');
+  ACCOUNT_DATA_FILE = path.join(require('os').tmpdir(), 'QOMUS-data.json');
   console.error('ACCOUNT STORAGE WARNING: ' + ACCOUNT_DATA_FILE_CONFIGURED + ' yozib bo‘lmaydi (' + err.code + '). Vaqtincha ' + ACCOUNT_DATA_FILE + ' ishlatiladi. Doimiy saqlash uchun Render Persistent Disk yoki tashqi DB sozlang!');
 }
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
@@ -12862,7 +12862,7 @@ function accountMessage(text,type="info"){ return `<div class="accountAlert ${ty
 async function accountSendEmail(to,subject,text){
   // 1) RESEND API — tavsiya etiladi. Nodemailer paketi shart emas.
   if(process.env.RESEND_API_KEY){
-    const from = process.env.EMAIL_FROM || "Huquqiy AI <onboarding@resend.dev>";
+    const from = process.env.EMAIL_FROM || "QOMUS <onboarding@resend.dev>";
     const response = await fetch("https://api.resend.com/emails", {
       method:"POST",
       headers:{
@@ -12991,18 +12991,18 @@ function at(lang, key){
 // ===================== ACCOUNT I18N END =====================
 
 function accountPublicPage(lang,title,body){
-  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — Huquqiy AI</title><style>${CSS}${ACCOUNT_CSS}</style></head><body>${navigation(lang)}<main class="accountWrap">${body}</main>${footer(lang)}</body></html>`;
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body>${navigation(lang)}<main class="accountWrap">${body}</main>${footer(lang)}</body></html>`;
 }
 function accountSidebar(lang,user,active){
   const admin=user.role==="owner"||user.role==="admin";
   const item=(key,icon,label,href)=>`<a class="${active===key?"active":""}" href="${href}${href.includes("?")?"&":"?"}lang=${lang}"><span>${icon}</span>${label}</a>`;
-  return `<aside class="accountSide"><div class="accountSideBrand"><span>§</span><span>Huquqiy AI</span></div>
+  return `<aside class="accountSide"><div class="accountSideBrand"><span>§</span><span>QOMUS</span></div>
   ${item("dashboard","▦","Dashboard","/account")}${item("cases","⚖",at(lang,"cases"),"/account/cases")}${item("new","＋",at(lang,"newCase"),"/account/cases/new")}${item("chats","💬",at(lang,"chats"),"/account/chats")}${item("documents","▤",at(lang,"documents"),"/account/documents")}${item("notifications","●",at(lang,"notifications"),"/account/notifications")}${item("profile","◉",at(lang,"profile"),"/account/profile")}${item("security","⌾",at(lang,"security"),"/account/security")}${item("settings","⚙",at(lang,"settings"),"/account/settings")}${admin?item("admin","◆","ADMIN PANEL","/admin"):""}
   <div class="accountSideBottom"><a href="/logout?lang=${lang}">↪ ${at(lang,"logout")}</a></div></aside>`;
 }
 function accountAppPage(lang,user,active,title,body){
   const initials=(user.firstName?.[0]||"U")+(user.lastName?.[0]||"");
-  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — Huquqiy AI</title><style>${CSS}${ACCOUNT_CSS}</style></head><body><div class="accountShell">${accountSidebar(lang,user,active)}<main class="accountMain"><div class="accountTop"><div><b>${esc(title)}</b><div class="accountMuted">Huquqiy AI shaxsiy ish maydoni</div></div><div class="accountIdentity"><div class="accountLanguage" style="display:flex;gap:6px;margin-right:12px">${["uz","ru","en"].map(code=>`<a href="?lang=${code}" style="padding:7px 9px;border:1px solid #c9a86a;border-radius:7px;font-weight:700;${code===lang?'background:#c9a86a;color:#06111f;':''}">${code.toUpperCase()}</a>`).join('')}</div><div><b>${esc(user.firstName)} ${esc(user.lastName)}</b><div class="accountMuted">${esc(user.email)}</div></div><div class="accountAvatar">${esc(initials)}</div></div></div>${body}</main></div></body></html>`;
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body><div class="accountShell">${accountSidebar(lang,user,active)}<main class="accountMain"><div class="accountTop"><div><b>${esc(title)}</b><div class="accountMuted">QOMUS shaxsiy ish maydoni</div></div><div class="accountIdentity"><div class="accountLanguage" style="display:flex;gap:6px;margin-right:12px">${["uz","ru","en"].map(code=>`<a href="?lang=${code}" style="padding:7px 9px;border:1px solid #c9a86a;border-radius:7px;font-weight:700;${code===lang?'background:#c9a86a;color:#06111f;':''}">${code.toUpperCase()}</a>`).join('')}</div><div><b>${esc(user.firstName)} ${esc(user.lastName)}</b><div class="accountMuted">${esc(user.email)}</div></div><div class="accountAvatar">${esc(initials)}</div></div></div>${body}</main></div></body></html>`;
 }
 function accountRequire(req,res,lang,roles=null){
   const auth=accountSession(req);
@@ -13012,7 +13012,7 @@ function accountRequire(req,res,lang,roles=null){
 }
 
 function accountLoginPage(lang,msg=""){
-  return accountPublicPage(lang,at(lang,"login"),`<section class="accountAuth"><h1>${at(lang,"account")}ga kirish</h1><p class="accountMuted">Email va parolingiz orqali Huquqiy AI profilingizga kiring.</p>${msg?accountMessage(msg,msg.includes("xato")||msg.includes("noto")?"error":"info"):""}<form class="accountForm" method="post" action="/login?lang=${lang}"><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">${at(lang,"login")}</button></form><nav class="accountEntryActions" aria-label="${at(lang,"account")}"><a class="accountEntryLink primary" href="/register?lang=${lang}">＋ ${at(lang,"createAccount")}</a><a class="accountEntryLink secondary" href="/forgot-password?lang=${lang}">↻ ${at(lang,"forgotPassword")}</a></nav></section>`);
+  return accountPublicPage(lang,at(lang,"login"),`<section class="accountAuth"><h1>${at(lang,"account")}ga kirish</h1><p class="accountMuted">Email va parolingiz orqali QOMUS profilingizga kiring.</p>${msg?accountMessage(msg,msg.includes("xato")||msg.includes("noto")?"error":"info"):""}<form class="accountForm" method="post" action="/login?lang=${lang}"><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">${at(lang,"login")}</button></form><nav class="accountEntryActions" aria-label="${at(lang,"account")}"><a class="accountEntryLink primary" href="/register?lang=${lang}">＋ ${at(lang,"createAccount")}</a><a class="accountEntryLink secondary" href="/forgot-password?lang=${lang}">↻ ${at(lang,"forgotPassword")}</a></nav></section>`);
 }
 function accountRegisterPage(lang,msg=""){
   return accountPublicPage(lang,at(lang,"register"),`<section class="accountAuth"><h1>Akkaunt yaratish</h1><p class="accountMuted">Huquqiy ishlaringiz, AI suhbatlari va hujjatlaringizni bitta profilga bog‘lang.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/register?lang=${lang}"><label>Ism<input name="firstName" required maxlength="60"></label><label>Familiya<input name="lastName" required maxlength="60"></label><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label>Parolni takrorlang<input name="password2" type="password" minlength="8" required></label><label style="display:flex;gap:10px;align-items:flex-start"><input style="width:auto;margin-top:4px" name="terms" value="yes" type="checkbox" required><span>Foydalanish shartlari va maxfiylik siyosatini o‘qidim.</span></label><button class="accountButton gold">Akkaunt yaratish</button></form><p class="accountMuted">Akkauntingiz bormi? <a href="/login?lang=${lang}">${at(lang,"login")}</a></p></section>`);
@@ -13030,7 +13030,7 @@ function accountCasesPage(lang,user,db){
   return accountAppPage(lang,user,"cases",at(lang,"cases"),`<section class="accountPanel"><div class="accountTop"><div><h1>Mening huquqiy ishlarim</h1><p class="accountMuted">Har bir masala alohida Case ID bilan saqlanadi.</p></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">＋ Yangi ish</a></div><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>Yo‘nalish</th><th>Nomi</th><th>Status</th><th>Progress</th><th>Sana</th><th></th></tr></thead><tbody>${cases.map(c=>`<tr><td>${esc(c.caseNo)}</td><td>${esc(c.area)}</td><td><b>${esc(c.title)}</b></td><td><span class="accountBadge">${esc(c.status)}</span></td><td>${Number(c.progress||0)}%</td><td>${esc(String(c.createdAt).slice(0,10))}</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">Ochish</a></td></tr>`).join("")||`<tr><td colspan="7">Hali ish yo‘q.</td></tr>`}</tbody></table></div></section>`);
 }
 function accountNewCasePage(lang,user,msg=""){
-  return accountAppPage(lang,user,"new",at(lang,"newCase"),`<section class="accountPanel"><h1>Yangi ish ochish</h1><p class="accountMuted">Muammoni tanlang. Keyin mavjud Huquqiy AI modullaridan davom etishingiz mumkin.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/account/cases/new?lang=${lang}"><label>Huquq sohasi<select name="area" required><option value="Oila huquqi">Oila huquqi</option><option value="Mehnat huquqi">Mehnat huquqi</option><option value="Biznes huquqi">Biznes huquqi</option><option value="Fuqarolik huquqi">Fuqarolik huquqi</option><option value="Boshqa">Boshqa</option></select></label><label>Masala nomi<input name="title" placeholder="Masalan: Nikohdan ajratish" required maxlength="140"></label><label>Qisqa tavsif<textarea name="description" rows="5" maxlength="1500" placeholder="Vaziyatni qisqacha yozing"></textarea></label><button class="accountButton gold">Ishni yaratish</button></form></section>`);
+  return accountAppPage(lang,user,"new",at(lang,"newCase"),`<section class="accountPanel"><h1>Yangi ish ochish</h1><p class="accountMuted">Muammoni tanlang. Keyin mavjud QOMUS modullaridan davom etishingiz mumkin.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/account/cases/new?lang=${lang}"><label>Huquq sohasi<select name="area" required><option value="Oila huquqi">Oila huquqi</option><option value="Mehnat huquqi">Mehnat huquqi</option><option value="Biznes huquqi">Biznes huquqi</option><option value="Fuqarolik huquqi">Fuqarolik huquqi</option><option value="Boshqa">Boshqa</option></select></label><label>Masala nomi<input name="title" placeholder="Masalan: Nikohdan ajratish" required maxlength="140"></label><label>Qisqa tavsif<textarea name="description" rows="5" maxlength="1500" placeholder="Vaziyatni qisqacha yozing"></textarea></label><button class="accountButton gold">Ishni yaratish</button></form></section>`);
 }
 function accountCasePage(lang,user,db,id){
   const c=db.cases.find(x=>x.id===id && (x.userId===user.id || ["owner","admin"].includes(user.role))); if(!c) return accountAppPage(lang,user,"cases","Ish topilmadi",accountMessage("Bu ish topilmadi.","error"));
@@ -13049,7 +13049,7 @@ function accountSettingsPage(lang,user){ return accountAppPage(lang,user,"settin
 
 function adminDashboardPage(lang,user,db){
   const active=db.users.filter(x=>x.status==="active").length;
-  return accountAppPage(lang,user,"admin","Owner / Admin panel",`<section class="accountHero"><h1>Huquqiy AI boshqaruv markazi</h1><p>Foydalanuvchilar, huquqiy ishlar, hujjatlar va audit faoliyatini boshqaring.</p></section><section class="accountStats"><div class="accountStat"><strong>${db.users.length}</strong><span>Foydalanuvchilar</span></div><div class="accountStat"><strong>${active}</strong><span>Faol account</span></div><div class="accountStat"><strong>${db.cases.length}</strong><span>Huquqiy ishlar</span></div><div class="accountStat"><strong>${db.documents.length}</strong><span>Hujjatlar</span></div></section><section class="accountCards"><a class="accountCard" href="/admin/users?lang=${lang}"><h3>Foydalanuvchilar</h3><p class="accountMuted">Accountlar va statuslarni boshqarish.</p></a><a class="accountCard" href="/admin/cases?lang=${lang}"><h3>Cases</h3><p class="accountMuted">Platformadagi huquqiy ishlar metadata-si.</p></a><a class="accountCard" href="/admin/audit?lang=${lang}"><h3>Audit log</h3><p class="accountMuted">Muhim boshqaruv va account hodisalari.</p></a></section>`);
+  return accountAppPage(lang,user,"admin","Owner / Admin panel",`<section class="accountHero"><h1>QOMUS boshqaruv markazi</h1><p>Foydalanuvchilar, huquqiy ishlar, hujjatlar va audit faoliyatini boshqaring.</p></section><section class="accountStats"><div class="accountStat"><strong>${db.users.length}</strong><span>Foydalanuvchilar</span></div><div class="accountStat"><strong>${active}</strong><span>Faol account</span></div><div class="accountStat"><strong>${db.cases.length}</strong><span>Huquqiy ishlar</span></div><div class="accountStat"><strong>${db.documents.length}</strong><span>Hujjatlar</span></div></section><section class="accountCards"><a class="accountCard" href="/admin/users?lang=${lang}"><h3>Foydalanuvchilar</h3><p class="accountMuted">Accountlar va statuslarni boshqarish.</p></a><a class="accountCard" href="/admin/cases?lang=${lang}"><h3>Cases</h3><p class="accountMuted">Platformadagi huquqiy ishlar metadata-si.</p></a><a class="accountCard" href="/admin/audit?lang=${lang}"><h3>Audit log</h3><p class="accountMuted">Muhim boshqaruv va account hodisalari.</p></a></section>`);
 }
 function adminUsersPage(lang,user,db){
   return accountAppPage(lang,user,"admin","Foydalanuvchilar",`<section class="accountPanel"><div class="accountTop"><div><h1>Foydalanuvchilar</h1><p class="accountMuted">Admin uchun zarur account metadata. Maxfiy AI matnlari bu jadvalda ko‘rsatilmaydi.</p></div><a class="accountButton light" href="/admin?lang=${lang}">← Admin</a></div><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Ism</th><th>Email</th><th>Rol</th><th>Verified</th><th>Status</th><th>Cases</th><th>Ro‘yxat</th><th>Amal</th></tr></thead><tbody>${db.users.map(u=>`<tr><td><b>${esc(u.firstName)} ${esc(u.lastName)}</b></td><td>${esc(u.email)}</td><td>${esc(u.role)}</td><td>${u.emailVerified?"Ha":"Yo‘q"}</td><td><span class="accountBadge ${u.status==="blocked"?"bad":"good"}">${esc(u.status)}</span></td><td>${db.cases.filter(c=>c.userId===u.id).length}</td><td>${esc(String(u.createdAt).slice(0,10))}</td><td>${u.id===user.id?"Owner":`<form method="post" action="/admin/user-status?lang=${lang}" style="display:flex;gap:6px"><input type="hidden" name="id" value="${esc(u.id)}"><select name="status"><option value="active">active</option><option value="suspended">suspended</option><option value="blocked">blocked</option></select><button class="accountButton small">Saqlash</button></form>`}</td></tr>`).join("")}</tbody></table></div></section>`);
@@ -13062,7 +13062,7 @@ function adminAuditPage(lang,user,db){
 }
 
 function ownerSetupPage(lang,msg=""){
-  return accountPublicPage(lang,"Admin sozlash",`<section class="accountAuth"><h1>Huquqiy AI — Admin kirish</h1><p class="accountMuted">Alohida setup kerak emas. Render Environment ichida OWNER_EMAIL va OWNER_PASSWORD o‘rnatilgach, to‘g‘ridan-to‘g‘ri admin login orqali kirasiz.</p>${msg?accountMessage(msg,"error"):""}<a class="accountButton gold" href="/admin/login?lang=${lang}">ADMIN LOGIN →</a></section>`);
+  return accountPublicPage(lang,"Admin sozlash",`<section class="accountAuth"><h1>QOMUS — Admin kirish</h1><p class="accountMuted">Alohida setup kerak emas. Render Environment ichida OWNER_EMAIL va OWNER_PASSWORD o‘rnatilgach, to‘g‘ridan-to‘g‘ri admin login orqali kirasiz.</p>${msg?accountMessage(msg,"error"):""}<a class="accountButton gold" href="/admin/login?lang=${lang}">ADMIN LOGIN →</a></section>`);
 }
 function ownerLoginPage(lang,msg=""){
   return accountPublicPage(lang,"Admin kirish",`<section class="accountAuth"><h1>Owner / Admin kirish</h1><p class="accountMuted">Owner email oldindan belgilangan. Render’dagi OWNER_PASSWORD bilan kiring.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/admin/login?lang=${lang}"><label>Owner email<input name="email" type="email" value="${esc(OWNER_EMAIL)}" readonly></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">ADMIN PANELGA KIRISH</button></form></section>`);
@@ -13113,7 +13113,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     const code=accountSixDigitCode();
     const user={id:accountId("USR"),firstName:String(f.firstName).trim(),lastName:String(f.lastName).trim(),email,passwordHash:accountHashPassword(f.password),role:"user",status:"active",emailVerified:false,verificationCodeHash:accountHashPassword(code),verificationExpiresAt:new Date(Date.now()+VERIFY_TTL_MS).toISOString(),verificationSentAt:accountNow(),createdAt:accountNow(),updatedAt:accountNow()};
     try {
-      const sent=await accountSendEmail(email,"Huquqiy AI — emailni tasdiqlash",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
+      const sent=await accountSendEmail(email,"QOMUS — emailni tasdiqlash",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
       if(!sent){sendHtml(res,accountRegisterPage(lang,"Email xizmati sozlanmagan. Render Environment’da RESEND_API_KEY va EMAIL_FROM yoki SMTP sozlamalarini kiriting."),503);return true;}
     }catch(error){console.error("VERIFY EMAIL SEND ERROR",error);sendHtml(res,accountRegisterPage(lang,"Email yuborilmadi. Pochta xizmati va jo‘natuvchi domenini tekshiring."),502);return true;}
     // Email jo‘natilishi tasdiqlangandan keyingina akkauntni bazaga kiritamiz.
@@ -13128,7 +13128,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     if(!accountCanSendCode(user)){sendHtml(res,accountVerifyPage(lang,email,"Qayta yuborishdan oldin 60 soniya kuting."),429);return true;}
     const code=accountSixDigitCode();
     try{
-      const sent=await accountSendEmail(email,"Huquqiy AI — yangi tasdiqlash kodi",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
+      const sent=await accountSendEmail(email,"QOMUS — yangi tasdiqlash kodi",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
       if(!sent){sendHtml(res,accountVerifyPage(lang,email,"Email xizmati sozlanmagan."),503);return true;}
     }catch(error){console.error("RESEND VERIFICATION ERROR",error);sendHtml(res,accountVerifyPage(lang,email,"Kod yuborilmadi. Email sozlamalarini tekshiring."),502);return true;}
     user.verificationCodeHash=accountHashPassword(code);
@@ -13147,7 +13147,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
   }
   if(req.method==="POST" && pathname==="/forgot-password"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user){const code=accountSixDigitCode();user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);try{const sent=await accountSendEmail(email,"Huquqiy AI — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true;}} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
+    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user){const code=accountSixDigitCode();user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);try{const sent=await accountSendEmail(email,"QOMUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true;}} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
   }
   if(req.method==="GET" && pathname==="/reset-password"){
     const email=accountEmail(url.searchParams.get("email")); sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" required maxlength="6"></label><label>Yangi parol<input name="password" type="password" minlength="8" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" required></label><button class="accountButton">Parolni yangilash</button></form></section>`)); return true;
@@ -13203,7 +13203,7 @@ function healthResponse(){
 
   return {
     ok: true,
-    service: "Huquqiy AI",
+    service: "QOMUS",
     timestamp:
       new Date().toISOString()
   };
@@ -13771,7 +13771,7 @@ server.listen(
     );
 
     console.log(
-      " HUQUQIY AI SERVER ISHLADI"
+      " QOMUS SERVER ISHLADI"
     );
 
     console.log(
@@ -13808,7 +13808,7 @@ server.listen(
 
 
 // ======================================================
-// END OF HUQUQIY AI
+// END OF QOMUS
 // ======================================================
 
 /* BUSINESS MODULE EXPANSION ROADMAP
