@@ -9411,7 +9411,9 @@ function pensionPage(lang) {
         <h3>${lang==='uz'?'Ijtimoiy nafaqa uchun ma’lumotlar':lang==='ru'?'Данные для социального пособия':'Social benefit details'}</h3>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px">
           <div class="formGroup"><label for="benType">${lang==='uz'?'Nafaqa turi':lang==='ru'?'Вид пособия':'Benefit type'}</label><select id="benType"><option value="old">${lang==='uz'?'Yoshga doir nafaqa':lang==='ru'?'Пособие по возрасту':'Old-age allowance'}</option><option value="dis">${lang==='uz'?'Nogironlik nafaqasi':lang==='ru'?'Пособие по инвалидности':'Disability allowance'}</option><option value="sur">${lang==='uz'?'Boquvchisini yo‘qotganlik nafaqasi':lang==='ru'?'Пособие по потере кормильца':'Survivor allowance'}</option><option value="other">${lang==='uz'?'Boshqa ijtimoiy nafaqa':lang==='ru'?'Другое социальное пособие':'Other social benefit'}</option></select></div>
-          <div class="formGroup"><label for="benAge">${esc(t.age)}</label><input id="benAge" type="number" min="0" max="120" step="1"></div>
+          <div class="formGroup" id="benOldBirthGroup" style="display:none"><label for="benBirth">${lang==='uz'?'Tug‘ilgan sanangiz':lang==='ru'?'Дата рождения':'Date of birth'}</label><input id="benBirth" type="date" autocomplete="bday"><small style="display:block;margin-top:7px;color:#536374">${lang==='uz'?'Sanani tanlang — yoshingiz avtomatik aniqlanadi.':lang==='ru'?'Выберите дату — возраст рассчитается автоматически.':'Select your birth date — age is calculated automatically.'}</small><div id="benAgePreview" style="margin-top:7px;font-weight:700" aria-live="polite"></div></div>
+          <div class="formGroup" id="benOldSexGroup" style="display:none"><label for="benSex">${lang==='uz'?'Jinsingiz':lang==='ru'?'Ваш пол':'Sex'}</label><select id="benSex"><option value="">${lang==='uz'?'Tanlang':lang==='ru'?'Выберите':'Select'}</option><option value="male">${esc(t.male)}</option><option value="female">${esc(t.female)}</option></select></div>
+          <div class="formGroup" id="benAgeGroup"><label for="benAge">${esc(t.age)}</label><input id="benAge" type="number" min="0" max="120" step="1"></div>
           <div class="formGroup"><label for="benPension">${lang==='uz'?'Pensiya olish huquqi mavjudmi?':lang==='ru'?'Есть ли право на пенсию?':'Eligible for a pension?'}</label><select id="benPension"><option value="unknown">${lang==='uz'?'Aniq emas':lang==='ru'?'Неизвестно':'Unknown'}</option><option value="no">${esc(t.no)}</option><option value="yes">${esc(t.yes)}</option></select></div>
           <div class="formGroup" id="benMembersGroup" style="display:none"><label for="benMembers">${lang==='uz'?'Huquqqa ega oila a’zolari soni':lang==='ru'?'Число членов семьи с правом на выплату':'Eligible family members'}</label><input id="benMembers" type="number" min="1" max="30" step="1" value="1"></div>
         </div>
@@ -9484,6 +9486,10 @@ function pensionPage(lang) {
         survivor.style.display=kind==='sur'?'block':'none';
         by('disabilityFields').style.display=kind==='dis'?'block':'none';
         by('benefitFields').style.display=kind==='ben'?'block':'none';
+        const isOldBenefit=kind==='ben'&&by('benType').value==='old';
+        by('benOldBirthGroup').style.display=isOldBenefit?'':'none';
+        by('benOldSexGroup').style.display=isOldBenefit?'':'none';
+        by('benAgeGroup').style.display=isOldBenefit?'none':'';
         by('benMembersGroup').style.display=by('benType').value==='sur'?'':'none';
         for(const id of ['pSex','pAge','pYears','pSalary','pSpecial'])by(id).disabled=!old;
         for(const id of ['pAge','pYears'])by(id).required=old;
@@ -9492,7 +9498,11 @@ function pensionPage(lang) {
         by('surCount').required=kind==='sur';
         by('disGroup').required=kind==='dis';
         by('disYears').required=false;
-        by('benAge').required=kind==='ben'&&by('benType').value==='old';
+        by('benAge').required=false;
+        by('benBirth').required=isOldBenefit;
+        by('benSex').required=isOldBenefit;
+        by('benBirth').disabled=!isOldBenefit;
+        by('benSex').disabled=!isOldBenefit;
         const disNoStaj=kind==='dis'&&by('disYears').value.trim()==='0'&&by('disCause').value!=='work';
         by('disSalaryGroup').style.display=disNoStaj?'none':'';
         const surNoStaj=kind==='sur'&&by('surYears').value.trim()==='0'&&by('surDeath').value!=='work';
@@ -9510,6 +9520,22 @@ function pensionPage(lang) {
       form.addEventListener('reset',()=>setTimeout(syncSurSpecial,0));
       syncSurSpecial();
       by('pKind').addEventListener('change',sync);
+      function getBenefitAge(){
+        const value=by('benBirth').value;
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;
+        const parts=value.split('-').map(Number);
+        const d=new Date(parts[0],parts[1]-1,parts[2]);
+        const today=new Date();
+        if(d.getFullYear()!==parts[0]||d.getMonth()!==parts[1]-1||d.getDate()!==parts[2]||d>today)return null;
+        return today.getFullYear()-parts[0]-(today.getMonth()<parts[1]-1||(today.getMonth()===parts[1]-1&&today.getDate()<parts[2])?1:0);
+      }
+      function updateBenefitAge(){
+        const age=getBenefitAge();
+        by('benAgePreview').textContent=age===null?'':({'uz':'Yoshingiz: ','ru':'Ваш возраст: ','en':'Your age: '}['${lang}'])+age+({'uz':' yosh','ru':' лет','en':' years'}['${lang}']);
+      }
+      by('benBirth').addEventListener('change',updateBenefitAge);
+      by('benBirth').addEventListener('input',updateBenefitAge);
+      form.addEventListener('reset',()=>setTimeout(updateBenefitAge,0));
       by('benType').addEventListener('change',sync);
       ['disYears','disCause','surYears','surDeath'].forEach(id=>by(id).addEventListener('change',sync));
       form.addEventListener('reset',()=>setTimeout(sync,0));sync();
@@ -9555,12 +9581,18 @@ function pensionPage(lang) {
           show(msg('BOQUVCHISINI YO‘QOTGANLIK — TAYANCH FORMULA','ПОТЕРЯ КОРМИЛЬЦА — БАЗОВАЯ ФОРМУЛА','SURVIVOR — BASE FORMULA'),fmt(salary)+' × 30% × '+count+' = '+fmt(base)+' '+msg('so‘m','сум','UZS')+'\\n'+msg('Bu faqat tayanch formula: oila a’zolarining huquqi, eng kam miqdor, ortiqcha staj, chin yetimlik va maxsus holatlar qo‘shilmagan.','Только базовая формула: право получателей, минимумы и особые случаи не учтены.','Base only: eligibility, minimums and exceptions not included.'));return;
         }
         if(kind==='ben'){
-          const type=by('benType').value,age=Number(by('benAge').value),pension=by('benPension').value;
-          if(pension==='yes'){show(msg('PENSIYA VA NAFAQA HUQUQINI ALOHIDA TEKSHIRING','ПРОВЕРЬТЕ ПРАВО НА ПЕНСИЮ И ПОСОБИЕ','REVIEW PENSION AND ALLOWANCE'),msg('Bir xil shartlarni ikki to‘lovga qo‘llamaymiz. Avval pensiya huquqi tasdiqlansin.','Не смешиваем условия пенсии и пособия.','Do not mix pension and allowance eligibility.'));return;}
+          const type=by('benType').value,pension=by('benPension').value;
           if(type==='old'){
-            if(!Number.isInteger(age)||age<0||age>120){show(msg('Yoshni kiriting','Укажите возраст','Enter age'),'');return;}
-            show(msg('YOSHGA DOIR NAFAQA','ПОСОБИЕ ПО ВОЗРАСТУ','OLD-AGE ALLOWANCE'),msg('Umumiy nafaqa yoshi: erkaklar 65, ayollar 60. Yosh va pensiya huquqi aniqlangandan so‘ng belgilangan nafaqa miqdori tekshiriladi.','Обычно мужчины 65, женщины 60. Сначала проверяется право.','Generally men 65, women 60; verify eligibility first.'));return;
+            const age=getBenefitAge(),sex=by('benSex').value;
+            if(age===null||age>120){show(msg('Tug‘ilgan sanani to‘g‘ri kiriting','Укажите корректную дату рождения','Enter a valid birth date'),'');return;}
+            if(!sex){show(msg('Jinsingizni tanlang','Выберите пол','Select sex'),'');return;}
+            const threshold=sex==='male'?65:60;
+            const intro=msg('Sizning yoshingiz: ','Ваш возраст: ','Your age: ')+age+'.\n';
+            if(age<threshold){show(msg('YOSHGA DOIR NAFAQA — DASTLABKI TEKSHIRUV','ПОСОБИЕ ПО ВОЗРАСТУ — ПРЕДВАРИТЕЛЬНО','OLD-AGE ALLOWANCE — PRELIMINARY'),intro+msg('Umumiy yosh mezoniga hali yetmagansiz. Mezon: ','Общий возрастной порог ещё не достигнут: ','General age threshold not yet reached: ')+threshold+'.\n'+msg('Imtiyozli holatlar alohida tekshiriladi.','Особые случаи проверяются отдельно.','Special cases require separate review.'));return;}
+            if(pension==='yes'){show(msg('PENSIYA HUQUQINI TEKSHIRISH','ПРОВЕРКА ПРАВА НА ПЕНСИЮ','CHECK PENSION ELIGIBILITY'),intro+msg('Pensiya olish huquqi mavjud bo‘lishi mumkin. Nafaqa va pensiya bir xil to‘lov emas; rasmiy tekshiruv kerak.','Право на пенсию и пособие проверяются отдельно.','Pension and allowance eligibility must be checked separately.'));return;}
+            show(msg('YOSHGA DOIR NAFAQA — DASTLABKI NATIJA','ПОСОБИЕ ПО ВОЗРАСТУ — ПРЕДВАРИТЕЛЬНЫЙ РЕЗУЛЬТАТ','OLD-AGE ALLOWANCE — INITIAL RESULT'),intro+msg('Umumiy yosh mezoniga yetgansiz (','Общий возрастной порог достигнут (','General age threshold met (')+threshold+').\n'+msg('Bu nafaqa tayinlandi degani emas. Pensiya olish huquqi va boshqa shartlar rasmiy tekshiriladi. Amaldagi nafaqa miqdori tasdiqlanmagani uchun summa ko‘rsatilmaydi.','Это не означает назначения пособия. Право на пенсию и другие условия нужно проверить. Сумма без подтверждения не показывается.','This is not an award. Pension eligibility and other conditions need official verification. No unverified amount is displayed.'));return;
           }
+          if(pension==='yes'){show(msg('PENSIYA VA NAFAQA HUQUQINI ALOHIDA TEKSHIRING','ПРОВЕРЬТЕ ПРАВО НА ПЕНСИЮ И ПОСОБИЕ','REVIEW PENSION AND ALLOWANCE'),msg('Bir xil shartlarni ikki to‘lovga qo‘llamaymiz. Avval pensiya huquqi tasdiqlansin.','Не смешиваем условия пенсии и пособия.','Do not mix pension and allowance eligibility.'));return;}
           show(type==='dis'?msg('NOGIRONLIK NAFAQASI','ПОСОБИЕ ПО ИНВАЛИДНОСТИ','DISABILITY ALLOWANCE'):type==='sur'?msg('BOQUVCHISINI YO‘QOTGANLIK NAFAQASI','ПОСОБИЕ ПО ПОТЕРЕ КОРМИЛЬЦА','SURVIVOR ALLOWANCE'):msg('IJTIMOIY NAFAQA — ALOHIDA TEKSHIRUV','СОЦИАЛЬНОЕ ПОСОБИЕ — ПРОВЕРКА','SOCIAL BENEFIT — REVIEW'),msg('Bu nafaqa uchun pensiya ish haqi formulasi qo‘llanmaydi. Toifa, huquq va amaldagi belgilangan miqdor alohida tekshiriladi.','Формула пенсии по зарплате здесь не применяется.','Do not use earnings-based pension formula for allowances.'));return;
         }
       });
