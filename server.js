@@ -12845,7 +12845,7 @@ try {
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const VERIFY_TTL_MS = 1000 * 60 * 15;
 const RESET_TTL_MS = 1000 * 60 * 20;
-const OWNER_EMAIL = String(process.env.OWNER_EMAIL || "nurzodziyodullayev799@gmail.com").trim().toLowerCase();
+const OWNER_EMAIL = String(process.env.OWNER_EMAIL || "").trim().toLowerCase();
 const OWNER_PASSWORD = String(process.env.OWNER_PASSWORD || "").trim();
 
 function accountEmptyDb(){
@@ -12883,12 +12883,12 @@ function accountVerifyPassword(password, stored){
   } catch(_){ return false; }
 }
 function accountCookies(req){
-  const out={}; String(req.headers.cookie||"").split(";").forEach(x=>{ const i=x.indexOf("="); if(i>0) out[x.slice(0,i).trim()]=decodeURIComponent(x.slice(i+1).trim()); }); return out;
+  const out={}; String(req.headers.cookie||"").split(";").forEach(x=>{ const i=x.indexOf("="); if(i>0){ try {out[x.slice(0,i).trim()]=decodeURIComponent(x.slice(i+1).trim());}catch(_){/* ignore malformed cookie */} } }); return out;
 }
 function accountSession(req){
-  const token=accountCookies(req).hq_session; if(!token) return null;
+  const token=accountCookies(req).hq_session; if(!token || !/^[a-f0-9]{64}$/.test(token)) return null;
   const db=accountLoadDb(); const s=db.sessions.find(x=>x.token===token && new Date(x.expiresAt)>new Date());
-  if(!s) return null; const user=db.users.find(x=>x.id===s.userId && x.status!=="blocked");
+  if(!s) return null; const user=db.users.find(x=>x.id===s.userId && x.status==="active" && x.emailVerified===true);
   return user ? {db,session:s,user} : null;
 }
 function accountSetSession(res,userId){
@@ -13147,7 +13147,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="POST" && pathname==="/admin/login"){
     const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb();
     if(!OWNER_EMAIL || !OWNER_PASSWORD){ sendHtml(res,ownerLoginPage(lang,"Render Environment’da OWNER_EMAIL va OWNER_PASSWORD o‘rnatilmagan."),500); return true; }
-    if(email!==OWNER_EMAIL || String(f.password||"")!==OWNER_PASSWORD){ sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
+    if(email!==OWNER_EMAIL || !crypto.timingSafeEqual(crypto.createHash("sha256").update(String(f.password||"")).digest(),crypto.createHash("sha256").update(OWNER_PASSWORD).digest())){ sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
     let user=db.users.find(u=>u.email===OWNER_EMAIL);
     if(!user){
       user={id:accountId("OWN"),firstName:"Nurzod",lastName:"Ziyodullayev",email:OWNER_EMAIL,passwordHash:accountHashPassword(OWNER_PASSWORD),role:"owner",status:"active",emailVerified:true,createdAt:accountNow(),updatedAt:accountNow(),ownerCreated:true};
@@ -13212,7 +13212,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
   }
   if(req.method==="POST" && pathname==="/forgot-password"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user){const code=accountSixDigitCode();user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);try{const sent=await accountSendEmail(email,"QOMUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true;}} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
+    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user && user.role==="user" && user.status==="active"){if(user.resetSentAt && Date.now()-Date.parse(user.resetSentAt)<60000){accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`);return true;}const code=accountSixDigitCode();try{const sent=await accountSendEmail(email,"QOMUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true; }user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();user.resetSentAt=accountNow();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
   }
   if(req.method==="GET" && pathname==="/reset-password"){
     const email=accountEmail(url.searchParams.get("email")); sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" required maxlength="6"></label><label>Yangi parol<input name="password" type="password" minlength="8" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" required></label><button class="accountButton">Parolni yangilash</button></form></section>`)); return true;
@@ -13220,7 +13220,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="POST" && pathname==="/reset-password"){
     const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email);
     if(!user||!user.resetCodeHash||new Date(user.resetExpiresAt)<new Date()||!accountVerifyPassword(f.code,user.resetCodeHash)||String(f.password||"").length<8||f.password!==f.password2){ sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Kod yoki yangi parol ma’lumotlari noto‘g‘ri.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),400); return true; }
-    user.passwordHash=accountHashPassword(f.password); delete user.resetCodeHash; delete user.resetExpiresAt; db.sessions=db.sessions.filter(s=>s.userId!==user.id); accountAudit(db,user.id,"password_reset_completed",{}); accountSaveDb(db); accountRedirect(res,`/login?lang=${lang}`); return true;
+    user.passwordHash=accountHashPassword(f.password); delete user.resetCodeHash; delete user.resetExpiresAt; delete user.resetSentAt; db.sessions=db.sessions.filter(s=>s.userId!==user.id); accountAudit(db,user.id,"password_reset_completed",{}); accountSaveDb(db); accountRedirect(res,`/login?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/logout"){ accountClearSession(req,res); accountRedirect(res,`/login?lang=${lang}`); return true; }
 
