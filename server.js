@@ -8133,6 +8133,38 @@ Da’vo bahosi va har bir obyektning qiymatini foydalanuvchi bergan ma’lumot a
   return common;
 }
 
+// QOMUS CLAIM EVIDENCE V1: temporary in-memory extraction, no file storage.
+async function claimEvidenceUpload(req){
+  const Busboy=require('busboy');
+  const allowed={'.pdf':'application/pdf','.docx':'application/vnd.openxmlformats-officedocument.wordprocessingml.document','.txt':'text/plain'};
+  const path=require('path');
+  return new Promise((resolve,reject)=>{
+    const files=[];let tasks=[];let error=null;let total=0;
+    const bb=Busboy({headers:req.headers,limits:{files:5,fileSize:5*1024*1024,fields:5}});
+    bb.on('file',(field,stream,info)=>{
+      const name=path.basename(String(info.filename||'')).slice(0,120);
+      const ext=path.extname(name).toLowerCase();
+      const chunks=[];let size=0;let truncated=false;
+      stream.on('limit',()=>{truncated=true;error='Fayl 5 MB dan oshmasligi kerak.';});
+      stream.on('data',c=>{size+=c.length;total+=c.length;if(total>15*1024*1024)error='Umumiy hajm 15 MB dan oshdi.';else chunks.push(c);});
+      const task=new Promise(done=>stream.on('end',async()=>{
+        if(truncated||error||!allowed[ext]){files.push({name,error:!allowed[ext]?'Faqat PDF, DOCX va TXT qabul qilinadi.':error});return done();}
+        try{
+          const buf=Buffer.concat(chunks);let content='';
+          if(ext==='.txt')content=buf.toString('utf8');
+          else if(ext==='.docx')content=(await require('mammoth').extractRawText({buffer:buf})).value;
+          else {const mod=require('pdf-parse');const parse=typeof mod==='function'?mod:mod.default;if(typeof parse!=='function')throw Error('pdf-parse versiyasi mos emas');content=(await parse(buf)).text||'';}
+          content=String(content).replace(/\u0000/g,'').trim().slice(0,12000);
+          files.push({name,text:content,warning:content?'Matn avtomatik ajratildi. To‘g‘riligini tasdiqlang.':'Matn aniqlanmadi. Skan hujjat uchun qo‘lda yozing.'});
+        }catch(e){files.push({name,error:'Hujjatni o‘qib bo‘lmadi: '+e.message});}done();
+      }));tasks.push(task);
+    });
+    bb.on('error',reject);
+    bb.on('finish',async()=>{await Promise.all(tasks);if(error)return reject(Error(error));resolve(files);});
+    req.pipe(bb);
+  });
+}
+
 function claimPage(lang,type="divorce_claim"){
   lang=getLang(lang);
   const selectedType=DOCUMENT_TYPES.find(x=>x.id===type)||DOCUMENT_TYPES[0];
@@ -8154,7 +8186,46 @@ function claimPage(lang,type="divorce_claim"){
           ${claimSpecificFields(selectedType.id,lang)}
           <div class="formGroup full"><label>${esc(L("Ish holatlari — faqat aniq faktlar *","Обстоятельства дела — только точные факты *","Case facts — exact facts only *"))}</label><textarea name="facts" required placeholder="${esc(L("Voqealarni sana va ketma-ketlik bilan yozing.","Изложите события по датам и последовательно.","Describe events chronologically with dates."))}"></textarea></div>
           <div class="formGroup full"><label>${esc(L("Suddan aynan nima so‘raysiz? *","Что именно вы просите у суда? *","Exactly what relief do you request? *"))}</label><textarea name="request" required></textarea></div>
-          <div class="formGroup full"><label>${esc(L("Mavjud dalillar va hujjatlar *","Имеющиеся доказательства и документы *","Available evidence and documents *"))}</label><textarea name="evidence" required></textarea></div>
+          <div class="formGroup full"><label>${esc(L("Dalillar va ilovalar (mavjud bo‘lsa)","Доказательства и приложения (при наличии)","Evidence and attachments (if available)"))}</label><textarea id="claimEvidence" name="evidence" placeholder="Hujjat bo‘lmasa, dalillarni qo‘lda tasvirlang."></textarea></div>
+          <div class="formGroup full" style="padding:18px;border:1px dashed #aab7c5;border-radius:12px">
+            <label>${esc(L("Dalil hujjatlarini yuklash (ixtiyoriy)","Загрузить доказательства (необязательно)","Upload evidence (optional)"))}</label>
+            <input id="claimFiles" type="file" multiple accept=".pdf,.docx,.txt" style="display:block;margin:10px 0" />
+            <small>PDF / DOCX / TXT. Har bir fayl 5 MB, ko‘pi bilan 5 ta. JPG/PNG va skaner PDF uchun hozircha OCR mavjud emas.</small>
+            <button id="claimAnalyze" type="button" class="btn btnOutline" style="margin-top:12px">${esc(L("Hujjat matnini ajratish","Извлечь текст","Extract document text"))}</button>
+            <div id="claimEvidenceStatus" role="status" style="margin-top:10px"></div>
+            <div id="claimEvidenceReview"></div>
+          </div>
+          <input type="hidden" id="claimEvidenceConfirmed" name="evidence_confirmed" value="no">
+          <script>
+          (function(){
+            const btn=document.getElementById('claimAnalyze'),input=document.getElementById('claimFiles');
+            const status=document.getElementById('claimEvidenceStatus'),review=document.getElementById('claimEvidenceReview');
+            const evidence=document.getElementById('claimEvidence'),confirmed=document.getElementById('claimEvidenceConfirmed');
+            btn.addEventListener('click',async function(){
+              const files=Array.from(input.files||[]);if(!files.length){status.textContent='Avval fayl tanlang.';return;}
+              if(files.length>5||files.some(f=>f.size>5*1024*1024)){status.textContent='Ko‘pi bilan 5 ta fayl, har biri 5 MB.';return;}
+              btn.disabled=true;status.textContent='Hujjatlar o‘qilmoqda...';review.replaceChildren();confirmed.value='no';
+              try{
+                const data=new FormData();files.forEach(f=>data.append('files',f));
+                const response=await fetch('/claim-evidence-extract'+window.location.search.split('&type=')[0],{method:'POST',body:data});
+                const result=await response.json();if(!response.ok)throw Error(result.error||'Xatolik');
+                status.textContent='Matnni tekshiring. Faqat tasdiqlangan ma’lumot arizaga qo‘shiladi.';
+                result.files.forEach(function(f){
+                  const wrap=document.createElement('div');wrap.style.marginTop='14px';
+                  const heading=document.createElement('strong');heading.textContent=f.name;wrap.appendChild(heading);
+                  if(f.error){const err=document.createElement('p');err.textContent=f.error;wrap.appendChild(err);review.appendChild(wrap);return;}
+                  const note=document.createElement('p');note.textContent=f.warning||'';wrap.appendChild(note);
+                  const ta=document.createElement('textarea');ta.rows=5;ta.style.width='100%';ta.value=f.text||'';wrap.appendChild(ta);
+                  const apply=document.createElement('button');apply.type='button';apply.className='btn btnGold';apply.textContent='Tekshirdim — dalillarga qo‘shish';
+                  apply.onclick=function(){const val=ta.value.trim();if(!val){status.textContent='Bo‘sh matn qo‘shilmaydi.';return;}
+                    evidence.value+=(evidence.value.trim()?'\n\n':'')+'Hujjat: '+f.name+'\n'+val;
+                    confirmed.value='yes';apply.disabled=true;apply.textContent='Dalillarga qo‘shildi';};
+                  wrap.appendChild(apply);review.appendChild(wrap);
+                });
+              }catch(e){status.textContent='Xatolik: '+e.message;}finally{btn.disabled=false;}
+            });
+          })();
+          </script>
         </div>
         <div class="formActions"><button class="btn btnGold" type="submit">✦ ${esc(L("Professional da’vo arizasini tayyorlash","Подготовить профессиональный иск","Prepare professional claim"))}</button></div>
       </form>
@@ -8209,7 +8280,7 @@ FAQAT YAKUNIY DA’VO ARIZASI MATNINI BERING. Ichki ko‘rsatma, izoh, tahlil, "
 QAT’IY QOIDALAR:
 1. Foydalanuvchi so‘ramagan talabni qo‘shmang. Nikohdan ajratish da’vosida bola yashash joyi, aliment yoki mol-mulk faqat tegishli ask_* maydoni "yes" bo‘lsa va requestda talab qilingan bo‘lsa kiritiladi.
 2. Hech qanday fakt, sana, summa, bola, mol-mulk, daromad, dalil yoki talabni uydirmang.
-3. Huquqiy asos sifatida quyida berilgan TASDIQLANGAN HUQUQIY BAZAdan foydalaning. Unda yo‘q modda raqamini o‘ylab topmang.
+3. Quyidagi huquqiy asoslar oldindan yozilgan ma’lumotnoma, jonli tasdiqlangan emas. Moddalarni rasmiy manbada tekshirmasdan qat’iy xulosa qilmang. Unda yo‘q modda raqamini o‘ylab topmang.
 4. FOYDALANUVCHI NAMUNASI BO‘YICHA QAT’IY TUZILISH: sudning to‘liq nomi; da’vogar F.I.Sh. va manzili; javobgar F.I.Sh. va manzili; tegishli bo‘lsa da’vo bahosi; alohida satrda DA’VO ARIZASI; keyingi satrda da’vo predmeti; I. ISHNING HOLATLARI; zarur bo‘lsa II. MULK TARKIBI VA HISOB-KITOB (boshqa da’voda mos nom); III. HUQUQIY ASOS VA DALILLAR; IV. SUDDAN SO‘RALADI (raqamlangan, foydalanuvchi so‘ragan talablar); V. ILOVALAR (faqat haqiqatda mavjudligi bildirilgan hujjatlar); Sana va Imzo. Bo‘lim raqamlari mavjud bo‘limlarga mos ketma-ket bo‘lsin. Namuna shakli saqlansin, mazmun faqat foydalanuvchi faktlaridan tuzilsin.
 5. HUQUQIY ASOSLAR qismida modda raqamini shunchaki sanamang — normaning aynan ushbu faktlarga qanday tatbiq etilishini rasmiy yuridik tilda tushuntiring.
 6. Yetishmagan ma’lumotni o‘zingiz to‘ldirmang. Muhim ma’lumot bo‘lmasa, yakuniy hujjatda noto‘g‘ri talab yaratmang; mavjud ma’lumot bilan hujjatni tuzing.
@@ -8220,7 +8291,7 @@ QAT’IY QOIDALAR:
 `Составьте только окончательный текст профессионального искового заявления. Не выводите внутренние инструкции, Markdown или незаявленные требования. Используйте только предоставленные факты и подтверждённую правовую базу ниже. Структура: суд и стороны; название иска; обстоятельства; ПРАВОВЫЕ ОСНОВАНИЯ; при необходимости расчёт; ПРОШУ СУД; приложения; дата; подпись.`,
 `Produce only the final professional statement of claim. No internal instructions, Markdown, invented facts or unrequested relief. Use only supplied facts and the verified legal basis below. Structure: court/parties; claim title; facts; LEGAL BASIS; calculation if needed; RELIEF SOUGHT; attachments; date; signature.`
   );
-  const context=`DOCUMENT TYPE:\n${localized(documentType.title,lang)}\n\nVERIFIED LEGAL BASIS:\n${legal}\n\nUSER-SUPPLIED INFORMATION:\n${supplied}`;
+  const context=`DOCUMENT TYPE:\n${localized(documentType.title,lang)}\n\nREFERENCE LEGAL BASIS (not live-verified; verify current LexUZ text):\n${legal}\n\nUSER-SUPPLIED INFORMATION:\n${supplied}`;
   let answer="";
   try{ answer=await callAI(instruction,lang,context); }
   catch(e){ console.error("DOCUMENT AI ERROR:",e); answer=L("Hujjatni yaratishda texnik xatolik yuz berdi.","Произошла техническая ошибка.","A technical error occurred."); }
@@ -13537,6 +13608,12 @@ const server =
 
         }
 
+
+        // CLAIM EVIDENCE: read transiently, return extracted text for human confirmation.
+        if(req.method === "POST" && pathname === "/claim-evidence-extract"){
+          try{return sendJson(res,{files:await claimEvidenceUpload(req)});}
+          catch(e){return sendJson(res,{error:e.message||"Hujjatlarni o‘qishda xatolik."},400);}
+        }
 
         // ------------------------------------------------
         // CLAIM RESULT
