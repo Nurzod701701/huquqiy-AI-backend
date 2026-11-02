@@ -8001,6 +8001,11 @@ function documentsPage(lang) {
 
     `
 
+      <div class="surface surfacePad" style="margin-bottom:18px;">
+        <h3 class="cardTitle">QOMUS Advokat PRO</h3>
+        <p class="cardDescription">Advokatlar uchun alohida boshlang‘ich kabinet. Mavjud hujjat konstruktori va sud tanlash funksiyalari bilan ishlang.</p>
+        <a class="btn btnGold" href="/advokat-pro${q(lang)}">Advokat PRO kabinetiga o‘tish</a>
+      </div>
       <div class="notice noticeGold">
 
         <span class="noticeIcon">
