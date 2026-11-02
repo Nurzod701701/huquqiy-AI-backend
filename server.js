@@ -8349,6 +8349,16 @@ async function claimResultPage(lang,form){
   lang=getLang(lang);
   const documentType=DOCUMENT_TYPES.find(x=>x.id===String(form.document_type||form.type||""))||DOCUMENT_TYPES[0];
   const L=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+  // CLAIM V3: validate on server, not only browser.
+  const mustHave=["court","claimant","defendant","facts","request"];
+  const missing=mustHave.filter(key=>!String(form[key]||"").trim());
+  const oversized=Object.values(form||{}).some(value=>String(value||"").length>50000);
+  if(missing.length||oversized){
+    const message=missing.length?"Majburiy maydonlar yetishmayapti: "+missing.join(", "):"Kiritilgan ma’lumot haddan tashqari uzun.";
+    return appLayout(lang,"documents",
+      '<section class="surface surfacePad"><h2>Da’vo arizasida kamchilik</h2><p>'+esc(message)+'</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta to‘ldirish</a></section>',
+      "Da’vo tekshiruvi",message);
+  }
   const supplied=Object.entries(form||{}).filter(([k,v])=>k!=="lang"&&String(v||"").trim()).map(([k,v])=>`${k}: ${String(v).trim()}`).join("\n");
   const legal=claimLegalBasis(documentType.id,lang);
   const instruction=L(
@@ -8366,7 +8376,11 @@ QAT’IY QOIDALAR:
 7. "Faktik hosil", "Huquqiy talqin", "Yetishmayotgan muhim ma’lumotlar", "Xulosa" kabi AI-tahlil sarlavhalarini ishlatmang.
 8. Sud hujjatiga xos ravon, rasmiy va professional o‘zbek yuridik uslubidan foydalaning.
 9. [TO‘LDIRILADI], [TO‘LDIRING], "tekshirilsin" kabi texnik placeholderlarni yakuniy hujjatga chiqarmang. Yetishmagan rekvizitni shunchaki tashlab keting yoki mavjud ma’lumot bilan grammatik to‘liq jumla tuzing.
-10. Da’vo nomi va SUDDAN SO‘RAYMAN qismi foydalanuvchining request maydoniga qat’iy mos bo‘lsin.`,
+10. Da’vo nomi va SUDDAN SO‘RAYMAN qismi foydalanuvchining request maydoniga qat’iy mos bo‘lsin.
+11. Dalillarni qaysi faktni tasdiqlashi bilan bog‘lab yozing, fakt yoki dalil uydirmang.
+12. Har bir mustaqil talabni alohida raqamlang; summa va asoslovchi faktni boshqa talablar bilan aralashtirmang.
+13. Ilovalarga foydalanuvchi tasdiqlagan mavjud hujjatlarnigina kiriting.
+14. Sudga tegishlilik, sudgacha tartib, muddat va davlat bojini tekshirilmagan holda qat’iy fakt deb yozmang.`,
 `Составьте только окончательный текст профессионального искового заявления. Не выводите внутренние инструкции, Markdown или незаявленные требования. Используйте только предоставленные факты и подтверждённую правовую базу ниже. Структура: суд и стороны; название иска; обстоятельства; ПРАВОВЫЕ ОСНОВАНИЯ; при необходимости расчёт; ПРОШУ СУД; приложения; дата; подпись.`,
 `Produce only the final professional statement of claim. No internal instructions, Markdown, invented facts or unrequested relief. Use only supplied facts and the verified legal basis below. Structure: court/parties; claim title; facts; LEGAL BASIS; calculation if needed; RELIEF SOUGHT; attachments; date; signature.`
   );
