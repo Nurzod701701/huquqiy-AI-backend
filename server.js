@@ -8260,9 +8260,12 @@ function claimPage(lang,type="divorce_claim"){
               var date=field('Dalil sanasi (ixtiyoriy)','YYYY-MM-DD');
               var fact=field('Qaysi faktni tasdiqlaydi?','Masalan: mehnat munosabatlari mavjudligi');
               var source=field('Manba yoki fayl nomi','Masalan: shartnoma.pdf');
+              var page=field('Hujjat beti yoki bandi','Masalan: 2-bet, 4-band');
+              var requestLink=field('Qaysi talabni asoslaydi?','Masalan: ish haqi undirish');
+              var authenticity=field('Kelib chiqishi va asl nusxa holati','Masalan: ish beruvchidan olingan, asl nusxa menda');
               var remove=el('button','Olib tashlash');remove.type='button';remove.className='btn btnOutline';
-              item.append(title.wrap,date.wrap,fact.wrap,source.wrap,remove);evRows.appendChild(item);
-              var record={item:item,title:title.input,date:date.input,fact:fact.input,source:source.input};
+              item.append(title.wrap,date.wrap,fact.wrap,source.wrap,page.wrap,requestLink.wrap,authenticity.wrap,remove);evRows.appendChild(item);
+              var record={item:item,title:title.input,date:date.input,fact:fact.input,source:source.input,page:page.input,requestLink:requestLink.input,authenticity:authenticity.input};
               evidenceItems.push(record);
               remove.onclick=function(){evidenceItems=evidenceItems.filter(function(i){return i!==record;});item.remove();};
             }
@@ -8284,13 +8287,13 @@ function claimPage(lang,type="divorce_claim"){
             form.addEventListener('submit',function(ev){
               check.textContent='';
               var requests=requestItems.map(function(i){return {name:i.name.value.trim(),amount:i.amount.value.trim(),proof:i.proof.value.trim()};}).filter(function(i){return i.name||i.amount||i.proof;});
-              var evidences=evidenceItems.map(function(i){return {title:i.title.value.trim(),date:i.date.value.trim(),fact:i.fact.value.trim(),source:i.source.value.trim()};}).filter(function(i){return i.title||i.date||i.fact||i.source;});
+              var evidences=evidenceItems.map(function(i){return {title:i.title.value.trim(),date:i.date.value.trim(),fact:i.fact.value.trim(),source:i.source.value.trim(),page:i.page.value.trim(),requestLink:i.requestLink.value.trim(),authenticity:i.authenticity.value.trim()};}).filter(function(i){return i.title||i.date||i.fact||i.source;});
               var problems=[];
               requests.forEach(function(i,n){
                 if(!i.name)problems.push('Talab №'+(n+1)+': suddan nima so‘ralayotganini kiriting.');
                 if(i.amount&&!/^[0-9]+(?:[.,][0-9]{1,2})?$/.test(i.amount.replaceAll(' ','')))problems.push('Talab №'+(n+1)+': summa raqam bo‘lishi kerak.');
               });
-              evidences.forEach(function(i,n){if(!i.title||!i.fact)problems.push('Dalil №'+(n+1)+': nomi va tasdiqlaydigan faktni kiriting.');});
+              evidences.forEach(function(i,n){if(!i.title||!i.fact||!i.requestLink)problems.push('Dalil №'+(n+1)+': nom, fakt va asoslaydigan talabni kiriting.');});
               if(problems.length){ev.preventDefault();check.textContent=problems.join('\\n');check.scrollIntoView({behavior:'smooth',block:'center'});return;}
               if(requests.length){
                 var structured=requests.map(function(i,n){return (n+1)+'. '+i.name+(i.amount?' (summa: '+i.amount+' so‘m)':'')+(i.proof?'; asos: '+i.proof:'');}).join('\\n');
@@ -8298,7 +8301,7 @@ function claimPage(lang,type="divorce_claim"){
                 request.value=[request.dataset.qomusBase,structured].filter(Boolean).join('\\n\\n');
               }
               if(evidences.length){
-                var detail=evidences.map(function(i,n){return 'Dalil №'+(n+1)+': '+i.title+(i.date?'; sana: '+i.date:'')+'; tasdiqlaydigan fakt: '+i.fact+(i.source?'; manba: '+i.source:'');}).join('\\n');
+                var detail=evidences.map(function(i,n){return 'Dalil №'+(n+1)+': '+i.title+(i.date?'; sana: '+i.date:'')+'; tasdiqlaydigan fakt: '+i.fact+(i.source?'; manba: '+i.source:'')+(i.page?'; sahifa/band: '+i.page:'')+(i.requestLink?'; asoslanadigan talab: '+i.requestLink:'')+(i.authenticity?'; kelib chiqishi: '+i.authenticity:'');}).join('\\n');
                 if(!evidence.dataset.qomusBase)evidence.dataset.qomusBase=evidence.value;
                 evidence.value=[evidence.dataset.qomusBase,detail].filter(Boolean).join('\\n\\n');
               }
