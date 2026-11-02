@@ -13735,6 +13735,11 @@ const server =
         }
 
 
+        // Advokat PRO starter dashboard. No client-case data persistence.
+        if(req.method === "GET" && pathname === "/advokat-pro"){
+          return sendHtml(res, require("./advokat-pro")(lang, appLayout));
+        }
+
         // ------------------------------------------------
         // CLAIM FORM
         // ------------------------------------------------
