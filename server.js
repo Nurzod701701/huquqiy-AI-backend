@@ -8227,6 +8227,85 @@ function claimPage(lang,type="divorce_claim"){
           })();
           </script>
         </div>
+
+          <script>
+          (function(){
+            var form=document.querySelector('form[action^="/claim-result"]');
+            if(!form)return;
+            var evidence=form.querySelector('textarea[name="evidence"]');
+            var request=form.querySelector('textarea[name="request"]');
+            var facts=form.querySelector('textarea[name="facts"]');
+            if(!evidence||!request||!facts)return;
+            function el(tag,txt){var x=document.createElement(tag);if(txt!==undefined)x.textContent=txt;return x;}
+            function field(label,placeholder){
+              var wrap=el('label');wrap.style.display='block';wrap.style.margin='8px 0';
+              var name=el('span',label);name.style.display='block';name.style.fontWeight='600';
+              var input=el('input');input.type='text';input.placeholder=placeholder||'';input.style.width='100%';
+              wrap.append(name,input);return {wrap:wrap,input:input};
+            }
+            function section(title,description,textarea){
+              var panel=el('section');panel.style.cssText='border:1px solid #c6af7e;border-radius:12px;padding:18px;margin:15px 0;background:rgba(190,153,82,.06)';
+              panel.append(el('h3',title),el('p',description));
+              textarea.parentNode.insertBefore(panel,textarea);
+              return panel;
+            }
+            var evBox=section('Dalillar konstruktori','Har bir dalilni sana, manba va isbotlaydigan fakt bilan bog‘lang. Mavjud dalil matni ham saqlanadi.',evidence);
+            var reqBox=section('Talablar konstruktori','Suddan so‘raladigan har bir talabni alohida kiriting. Tasdiqlamagan talab avtomatik qo‘shilmaydi.',request);
+            var evRows=el('div'),reqRows=el('div');
+            evBox.appendChild(evRows);reqBox.appendChild(reqRows);
+            var evidenceItems=[],requestItems=[];
+            function addEvidence(){
+              var item=el('div');item.style.cssText='padding:12px;margin:12px 0;border:1px solid #b9c5d1;border-radius:9px';
+              var title=field('Dalil nomi','Masalan: mehnat shartnomasi');
+              var date=field('Dalil sanasi (ixtiyoriy)','YYYY-MM-DD');
+              var fact=field('Qaysi faktni tasdiqlaydi?','Masalan: mehnat munosabatlari mavjudligi');
+              var source=field('Manba yoki fayl nomi','Masalan: shartnoma.pdf');
+              var remove=el('button','Olib tashlash');remove.type='button';remove.className='btn btnOutline';
+              item.append(title.wrap,date.wrap,fact.wrap,source.wrap,remove);evRows.appendChild(item);
+              var record={item:item,title:title.input,date:date.input,fact:fact.input,source:source.input};
+              evidenceItems.push(record);
+              remove.onclick=function(){evidenceItems=evidenceItems.filter(function(i){return i!==record;});item.remove();};
+            }
+            function addRequest(){
+              var item=el('div');item.style.cssText='padding:12px;margin:12px 0;border:1px solid #b9c5d1;border-radius:9px';
+              var name=field('Suddan talab','Masalan: ish haqi qarzdorligini undirish');
+              var amount=field('Summa (ixtiyoriy, so‘m)','Masalan: 5000000');
+              var proof=field('Asoslovchi dalil yoki fakt','Masalan: ish haqi hisob-kitobi');
+              var remove=el('button','Olib tashlash');remove.type='button';remove.className='btn btnOutline';
+              item.append(name.wrap,amount.wrap,proof.wrap,remove);reqRows.appendChild(item);
+              var record={item:item,name:name.input,amount:amount.input,proof:proof.input};
+              requestItems.push(record);
+              remove.onclick=function(){requestItems=requestItems.filter(function(i){return i!==record;});item.remove();};
+            }
+            var addEv=el('button','+ Dalil qo‘shish');addEv.type='button';addEv.className='btn btnOutline';addEv.onclick=addEvidence;evBox.appendChild(addEv);
+            var addReq=el('button','+ Talab qo‘shish');addReq.type='button';addReq.className='btn btnOutline';addReq.onclick=addRequest;reqBox.appendChild(addReq);
+            var check=el('div');check.setAttribute('role','alert');check.style.cssText='white-space:pre-line;color:#8a3827;font-weight:600;margin:10px 0';
+            reqBox.appendChild(check);
+            form.addEventListener('submit',function(ev){
+              check.textContent='';
+              var requests=requestItems.map(function(i){return {name:i.name.value.trim(),amount:i.amount.value.trim(),proof:i.proof.value.trim()};}).filter(function(i){return i.name||i.amount||i.proof;});
+              var evidences=evidenceItems.map(function(i){return {title:i.title.value.trim(),date:i.date.value.trim(),fact:i.fact.value.trim(),source:i.source.value.trim()};}).filter(function(i){return i.title||i.date||i.fact||i.source;});
+              var problems=[];
+              requests.forEach(function(i,n){
+                if(!i.name)problems.push('Talab №'+(n+1)+': suddan nima so‘ralayotganini kiriting.');
+                if(i.amount&&!/^\d+(?:[.,]\d{1,2})?$/.test(i.amount.replace(/\s/g,'')))problems.push('Talab №'+(n+1)+': summa raqam bo‘lishi kerak.');
+              });
+              evidences.forEach(function(i,n){if(!i.title||!i.fact)problems.push('Dalil №'+(n+1)+': nomi va tasdiqlaydigan faktni kiriting.');});
+              if(problems.length){ev.preventDefault();check.textContent=problems.join('\n');check.scrollIntoView({behavior:'smooth',block:'center'});return;}
+              if(requests.length){
+                var structured=requests.map(function(i,n){return (n+1)+'. '+i.name+(i.amount?' (summa: '+i.amount+' so‘m)':'')+(i.proof?'; asos: '+i.proof:'');}).join('\n');
+                if(!request.dataset.qomusBase)request.dataset.qomusBase=request.value;
+                request.value=[request.dataset.qomusBase,structured].filter(Boolean).join('\n\n');
+              }
+              if(evidences.length){
+                var detail=evidences.map(function(i,n){return 'Dalil №'+(n+1)+': '+i.title+(i.date?'; sana: '+i.date:'')+'; tasdiqlaydigan fakt: '+i.fact+(i.source?'; manba: '+i.source:'');}).join('\n');
+                if(!evidence.dataset.qomusBase)evidence.dataset.qomusBase=evidence.value;
+                evidence.value=[evidence.dataset.qomusBase,detail].filter(Boolean).join('\n\n');
+              }
+              if(!facts.value.trim()||!request.value.trim()){ev.preventDefault();check.textContent='Ish holatlari va suddan talab majburiy.';}
+            });
+          })();
+          </script>
         <div class="formActions"><button class="btn btnGold" type="submit">✦ ${esc(L("Professional da’vo arizasini tayyorlash","Подготовить профессиональный иск","Prepare professional claim"))}</button></div>
       </form>
     </div>`,
