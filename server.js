@@ -8185,7 +8185,7 @@ function claimPage(lang,type="divorce_claim"){
           <div class="formGroup full"><label>${esc(L("Javobgar manzili va ma’lum aloqa ma’lumotlari","Адрес и известные контакты ответчика","Defendant address and known contacts"))}</label><input name="defendant_contact"></div>
           ${claimSpecificFields(selectedType.id,lang)}
           <div class="formGroup full"><label>${esc(L("Ish holatlari — faqat aniq faktlar *","Обстоятельства дела — только точные факты *","Case facts — exact facts only *"))}</label><textarea name="facts" required placeholder="${esc(L("Voqealarni sana va ketma-ketlik bilan yozing.","Изложите события по датам и последовательно.","Describe events chronologically with dates."))}"></textarea></div>
-          <div class="formGroup full"><label>${esc(L("Suddan aynan nima so‘raysiz? *","Что именно вы просите у суда? *","Exactly what relief do you request? *"))}</label><textarea name="request" required></textarea></div>
+          <div class="formGroup full"><label>${esc(L("Suddan aynan nima so‘raysiz? *","Что именно вы просите у суда? *","Exactly what relief do you request? *"))}</label><textarea name="request"></textarea></div>
           <div class="formGroup full"><label>${esc(L("Dalillar va ilovalar (mavjud bo‘lsa)","Доказательства и приложения (при наличии)","Evidence and attachments (if available)"))}</label><textarea id="claimEvidence" name="evidence" placeholder="Hujjat bo‘lmasa, dalillarni qo‘lda tasvirlang."></textarea></div>
           <div class="formGroup full" style="padding:18px;border:1px dashed #aab7c5;border-radius:12px">
             <label>${esc(L("Dalil hujjatlarini yuklash (ixtiyoriy)","Загрузить доказательства (необязательно)","Upload evidence (optional)"))}</label>
@@ -8288,19 +8288,19 @@ function claimPage(lang,type="divorce_claim"){
               var problems=[];
               requests.forEach(function(i,n){
                 if(!i.name)problems.push('Talab №'+(n+1)+': suddan nima so‘ralayotganini kiriting.');
-                if(i.amount&&!/^\d+(?:[.,]\d{1,2})?$/.test(i.amount.replace(/\s/g,'')))problems.push('Talab №'+(n+1)+': summa raqam bo‘lishi kerak.');
+                if(i.amount&&!/^[0-9]+(?:[.,][0-9]{1,2})?$/.test(i.amount.replaceAll(' ','')))problems.push('Talab №'+(n+1)+': summa raqam bo‘lishi kerak.');
               });
               evidences.forEach(function(i,n){if(!i.title||!i.fact)problems.push('Dalil №'+(n+1)+': nomi va tasdiqlaydigan faktni kiriting.');});
-              if(problems.length){ev.preventDefault();check.textContent=problems.join('\n');check.scrollIntoView({behavior:'smooth',block:'center'});return;}
+              if(problems.length){ev.preventDefault();check.textContent=problems.join('\\n');check.scrollIntoView({behavior:'smooth',block:'center'});return;}
               if(requests.length){
-                var structured=requests.map(function(i,n){return (n+1)+'. '+i.name+(i.amount?' (summa: '+i.amount+' so‘m)':'')+(i.proof?'; asos: '+i.proof:'');}).join('\n');
+                var structured=requests.map(function(i,n){return (n+1)+'. '+i.name+(i.amount?' (summa: '+i.amount+' so‘m)':'')+(i.proof?'; asos: '+i.proof:'');}).join('\\n');
                 if(!request.dataset.qomusBase)request.dataset.qomusBase=request.value;
-                request.value=[request.dataset.qomusBase,structured].filter(Boolean).join('\n\n');
+                request.value=[request.dataset.qomusBase,structured].filter(Boolean).join('\\n\\n');
               }
               if(evidences.length){
-                var detail=evidences.map(function(i,n){return 'Dalil №'+(n+1)+': '+i.title+(i.date?'; sana: '+i.date:'')+'; tasdiqlaydigan fakt: '+i.fact+(i.source?'; manba: '+i.source:'');}).join('\n');
+                var detail=evidences.map(function(i,n){return 'Dalil №'+(n+1)+': '+i.title+(i.date?'; sana: '+i.date:'')+'; tasdiqlaydigan fakt: '+i.fact+(i.source?'; manba: '+i.source:'');}).join('\\n');
                 if(!evidence.dataset.qomusBase)evidence.dataset.qomusBase=evidence.value;
-                evidence.value=[evidence.dataset.qomusBase,detail].filter(Boolean).join('\n\n');
+                evidence.value=[evidence.dataset.qomusBase,detail].filter(Boolean).join('\\n\\n');
               }
               if(!facts.value.trim()||!request.value.trim()){ev.preventDefault();check.textContent='Ish holatlari va suddan talab majburiy.';}
             });
