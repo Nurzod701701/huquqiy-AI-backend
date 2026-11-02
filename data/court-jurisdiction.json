@@ -1,0 +1,776 @@
+{
+  "version": 2,
+  "court_type": "civil",
+  "status": "official_list_transcribed_review_aliases",
+  "source": "https://sud.uz/civil-court-jurisdictions/",
+  "regions": 14,
+  "courts": 80,
+  "routes": [
+    {
+      "region": "Qoraqalpog‘iston Respublikasi",
+      "court": "Fuqarolik ishlari bo‘yicha Amudaryo tuman sudi",
+      "districts": [
+        "Amudaryo"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qoraqalpog‘iston Respublikasi",
+      "court": "Fuqarolik ishlari bo‘yicha Beruniy tumanlararo sudi",
+      "districts": [
+        "Beruniy",
+        "To‘rtko‘l",
+        "Ellikqal’a"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qoraqalpog‘iston Respublikasi",
+      "court": "Fuqarolik ishlari bo‘yicha Qo‘ng‘irot tumanlararo sudi",
+      "districts": [
+        "Qonliko‘l",
+        "Qo‘ng‘irot",
+        "Mo‘ynoq",
+        "Shumanay"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qoraqalpog‘iston Respublikasi",
+      "court": "Fuqarolik ishlari bo‘yicha Nukus tumanlararo sudi",
+      "districts": [
+        "Nukus shahri",
+        "Nukus tumani",
+        "Xo‘jayli",
+        "Taxiatosh"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qoraqalpog‘iston Respublikasi",
+      "court": "Fuqarolik ishlari bo‘yicha Chimboy tumanlararo sudi",
+      "districts": [
+        "Qorao‘zak",
+        "Kegeyli",
+        "Taxtako‘pir",
+        "Chimboy",
+        "Bo‘zatov"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Andijon viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Andijon tumanlararo sudi",
+      "districts": [
+        "Andijon shahri",
+        "Oltinko‘l",
+        "Andijon tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Andijon viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Asaka tumanlararo sudi",
+      "districts": [
+        "Asaka",
+        "Marhamat"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Andijon viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Bo‘ston tumanlararo sudi",
+      "districts": [
+        "Bo‘ston",
+        "Ulug‘nor",
+        "Shahrixon"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Andijon viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Izboskan tumanlararo sudi",
+      "districts": [
+        "Baliqchi",
+        "Izboskan",
+        "Paxtaobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Andijon viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Qo‘rg‘ontepa tumanlararo sudi",
+      "districts": [
+        "Xonobod shahri",
+        "Qo‘rg‘ontepa"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Andijon viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Xo‘jaobod tumanlararo sudi",
+      "districts": [
+        "Buloqboshi",
+        "Jalaquduq",
+        "Xo‘jaobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Buxoro viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Buxoro tumanlararo sudi",
+      "districts": [
+        "Buxoro shahri",
+        "Buxoro tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Buxoro viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha G‘ijduvon tumanlararo sudi",
+      "districts": [
+        "G‘ijduvon",
+        "Shofirkon"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Buxoro viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Kogon tumanlararo sudi",
+      "districts": [
+        "Kogon shahri",
+        "Kogon tumani",
+        "Qorovulbozor"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Buxoro viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Qorako‘l tumanlararo sudi",
+      "districts": [
+        "Olot",
+        "Qorako‘l"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Buxoro viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Peshku tumanlararo sudi",
+      "districts": [
+        "Vobkent",
+        "Peshku"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Buxoro viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Romitan tumanlararo sudi",
+      "districts": [
+        "Jondor",
+        "Romitan"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Jizzax viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha G‘allaorol tumanlararo sudi",
+      "districts": [
+        "Baxmal",
+        "G‘allaorol"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Jizzax viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Do‘stlik tumanlararo sudi",
+      "districts": [
+        "Do‘stlik",
+        "Mirzacho‘l",
+        "Arnasoy"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Jizzax viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Paxtakor tuman sudi",
+      "districts": [
+        "Paxtakor"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Jizzax viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Jizzax tumanlararo sudi",
+      "districts": [
+        "Jizzax shahri",
+        "Sharof Rashidov",
+        "Zafarobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Jizzax viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Zarbdor tumanlararo sudi",
+      "districts": [
+        "Zomin",
+        "Zarbdor",
+        "Yangiobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Jizzax viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Forish tuman sudi",
+      "districts": [
+        "Forish"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha G‘uzor tumanlararo sudi",
+      "districts": [
+        "Dehqonobod",
+        "G‘uzor"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Qarshi tumanlararo sudi",
+      "districts": [
+        "Qarshi shahri",
+        "Qarshi tumani",
+        "Nishon"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Koson tumanlararo sudi",
+      "districts": [
+        "Koson",
+        "Muborak"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Kasbi tumanlararo sudi",
+      "districts": [
+        "Kasbi",
+        "Mirishkor"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Chiroqchi tumanlararo sudi",
+      "districts": [
+        "Chiroqchi",
+        "Ko‘kdala"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Shahrisabz tumanlararo sudi",
+      "districts": [
+        "Shahrisabz shahri",
+        "Kitob",
+        "Shahrisabz tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Yakkabog‘ tumanlararo sudi",
+      "districts": [
+        "Qamashi",
+        "Yakkabog‘"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Navoiy viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Zarafshon tumanlararo sudi",
+      "districts": [
+        "Zarafshon shahri",
+        "Tomdi"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Navoiy viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Karmana tumanlararo sudi",
+      "districts": [
+        "Navoiy shahri",
+        "Karmana",
+        "Qiziltepa"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Navoiy viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Xatirchi tuman sudi",
+      "districts": [
+        "Xatirchi"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Navoiy viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Navbahor tumanlararo sudi",
+      "districts": [
+        "Konimex",
+        "Navbahor",
+        "Nurota"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Navoiy viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Uchquduq tuman sudi",
+      "districts": [
+        "Uchquduq"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Namangan viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Namangan tumanlararo sudi",
+      "districts": [
+        "Namangan shahri",
+        "Mingbuloq",
+        "Namangan tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Namangan viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Uchqo‘rg‘on tumanlararo sudi",
+      "districts": [
+        "Norin",
+        "Uychi",
+        "Uchqo‘rg‘on"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Namangan viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Chust tumanlararo sudi",
+      "districts": [
+        "Pop",
+        "To‘raqo‘rg‘on",
+        "Chust"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Namangan viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Yangiqo‘rg‘on tumanlararo sudi",
+      "districts": [
+        "Kosonsoy",
+        "Chortoq",
+        "Yangiqo‘rg‘on"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Jomboy tumanlararo sudi",
+      "districts": [
+        "Bulung‘ur",
+        "Jomboy"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Ishtixon tumanlararo sudi",
+      "districts": [
+        "Ishtixon",
+        "Qo‘shrabot"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Kattaqo‘rg‘on tumanlararo sudi",
+      "districts": [
+        "Kattaqo‘rg‘on shahri",
+        "Kattaqo‘rg‘on tumani",
+        "Narpay",
+        "Paxtachi"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Samarqand shahar sudi",
+      "districts": [
+        "Samarqand shahri"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Toyloq tumanlararo sudi",
+      "districts": [
+        "Samarqand tumani",
+        "Toyloq"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Urgut tuman sudi",
+      "districts": [
+        "Urgut"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Payariq tumanlararo sudi",
+      "districts": [
+        "Oqdaryo",
+        "Payariq"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Pastdarg‘om tuman sudi",
+      "districts": [
+        "Pastdarg‘om"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Nurobod tuman sudi",
+      "districts": [
+        "Nurobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Surxondaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Boysun tuman sudi",
+      "districts": [
+        "Boysun"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Surxondaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Denov tumanlararo sudi",
+      "districts": [
+        "Oltinsoy",
+        "Denov",
+        "Sho‘rchi"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Surxondaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Qumqo‘rg‘on tumanlararo sudi",
+      "districts": [
+        "Jarqo‘rg‘on",
+        "Qiziriq",
+        "Qumqo‘rg‘on",
+        "Bandixon"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Surxondaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Sariosiyo tumanlararo sudi",
+      "districts": [
+        "Sariosiyo",
+        "Uzun"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Surxondaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Termiz tumanlararo sudi",
+      "districts": [
+        "Termiz shahri",
+        "Termiz tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Surxondaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Sherobod tumanlararo sudi",
+      "districts": [
+        "Angor",
+        "Muzrabot",
+        "Sherobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Sirdaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Oqoltin tumanlararo sudi",
+      "districts": [
+        "Oqoltin",
+        "Sardoba"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Sirdaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Boyovut tumanlararo sudi",
+      "districts": [
+        "Shirin shahri",
+        "Boyovut",
+        "Xovos"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Sirdaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Guliston tumanlararo sudi",
+      "districts": [
+        "Guliston shahri",
+        "Yangiyer shahri",
+        "Guliston tumani",
+        "Mirzaobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Sirdaryo viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Sirdaryo tumanlararo sudi",
+      "districts": [
+        "Sayxunobod",
+        "Sirdaryo"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Ohangaron tumanlararo sudi",
+      "districts": [
+        "Olmaliq shahri",
+        "Angren shahri",
+        "Ohangaron shahri",
+        "Ohangaron tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Bekobod tumanlararo sudi",
+      "districts": [
+        "Bekobod shahri",
+        "Bekobod tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Zangiota tumanlararo sudi",
+      "districts": [
+        "Zangiota",
+        "Toshkent tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Yangiyo‘l tumanlararo sudi",
+      "districts": [
+        "Yangiyo‘l shahri",
+        "Yangiyo‘l tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Quyi Chirchiq tumanlararo sudi",
+      "districts": [
+        "Oqqo‘rg‘on",
+        "Quyi Chirchiq",
+        "Chinoz"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha O‘rta Chirchiq tumanlararo sudi",
+      "districts": [
+        "Nurafshon shahri",
+        "Bo‘ka",
+        "Piskent",
+        "O‘rta Chirchiq"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Chirchiq tumanlararo sudi",
+      "districts": [
+        "Chirchiq shahri",
+        "Bo‘stonliq",
+        "Qibray"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Yuqori Chirchiq tumanlararo sudi",
+      "districts": [
+        "Parkent",
+        "Yuqori Chirchiq"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent shahri",
+      "court": "Fuqarolik ishlari bo‘yicha Mirobod tumanlararo sudi",
+      "districts": [
+        "Bektemir",
+        "Mirobod",
+        "Yashnobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent shahri",
+      "court": "Fuqarolik ishlari bo‘yicha Mirzo Ulug‘bek tumanlararo sudi",
+      "districts": [
+        "Mirzo Ulug‘bek",
+        "Yunusobod"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent shahri",
+      "court": "Fuqarolik ishlari bo‘yicha Uchtepa tumanlararo sudi",
+      "districts": [
+        "Uchtepa",
+        "Chilonzor"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent shahri",
+      "court": "Fuqarolik ishlari bo‘yicha Shayxontohur tumanlararo sudi",
+      "districts": [
+        "Olmazor",
+        "Shayxontohur"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Toshkent shahri",
+      "court": "Fuqarolik ishlari bo‘yicha Yakkasaroy tumanlararo sudi",
+      "districts": [
+        "Sergeli",
+        "Yangihayot",
+        "Yakkasaroy"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Farg‘ona viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Qo‘qon tumanlararo sudi",
+      "districts": [
+        "Qo‘qon shahri",
+        "Buvayda",
+        "Dang‘ara",
+        "Uchko‘prik"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Farg‘ona viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Marg‘ilon tumanlararo sudi",
+      "districts": [
+        "Marg‘ilon shahri",
+        "Yozyovon",
+        "Qo‘shtepa",
+        "Toshloq"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Farg‘ona viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Rishton tumanlararo sudi",
+      "districts": [
+        "Oltiariq",
+        "Bog‘dod",
+        "Rishton"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Farg‘ona viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha So‘x tuman sudi",
+      "districts": [
+        "So‘x"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Farg‘ona viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha O‘zbekiston tumanlararo sudi",
+      "districts": [
+        "Beshariq",
+        "O‘zbekiston",
+        "Furqat"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Farg‘ona viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Farg‘ona tumanlararo sudi",
+      "districts": [
+        "Farg‘ona shahri",
+        "Quvasoy shahri",
+        "Quva",
+        "Farg‘ona tumani"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Xorazm viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Bog‘ot tumanlararo sudi",
+      "districts": [
+        "Xiva shahri",
+        "Bog‘ot",
+        "Hazorasp",
+        "Xiva tumani",
+        "Yangiariq",
+        "Tuproqqal’a"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Xorazm viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Urganch tumanlararo sudi",
+      "districts": [
+        "Urganch shahri",
+        "Urganch tumani",
+        "Xonqa",
+        "Yangibozor"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    },
+    {
+      "region": "Xorazm viloyati",
+      "court": "Fuqarolik ishlari bo‘yicha Shovot tumanlararo sudi",
+      "districts": [
+        "Gurlan",
+        "Qo‘shko‘pir",
+        "Shovot"
+      ],
+      "source": "https://sud.uz/civil-court-jurisdictions/"
+    }
+  ],
+  "note": "Rasmiy jadvaldan fuqarolik sudlari mosliklari kiritildi. Hududlar imlosi, nom o‘zgarishi va individual protsessual sudga tegishlilik ishni topshirishdan oldin tekshirilsin. Iqtisodiy/ma’muriy sudlarga tatbiq etilmaydi."
+}
