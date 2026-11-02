@@ -1,7 +1,52 @@
 {
   "version": 1,
   "source": "https://sud.uz/civil-court-jurisdictions/",
-  "status": "verification_required",
-  "routes": [],
-  "note": "Sud nomlari va tumanlararo hududlar rasmiy katalog bilan tekshirilgandan keyingina routes to‘ldiriladi. Tasdiqlanmagan mosliklar avtomatik tanlanmasin."
+  "status": "partial_verified",
+  "court_type": "civil",
+  "routes": [
+    {
+      "region": "Toshkent viloyati",
+      "court": "O‘rta Chirchiq tumanlararo sudi",
+      "districts": [
+        "Bo‘ka",
+        "Piskent",
+        "O‘rta Chirchiq",
+        "Nurafshon shahri"
+      ]
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Quyi Chirchiq tumanlararo sudi",
+      "districts": [
+        "Oqqo‘rg‘on",
+        "Quyi Chirchiq",
+        "Chinoz"
+      ]
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Zangiota tumanlararo sudi",
+      "districts": [
+        "Zangiota",
+        "Toshkent tumani"
+      ]
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Yangiyo‘l tumanlararo sudi",
+      "districts": [
+        "Yangiyo‘l shahri",
+        "Yangiyo‘l tumani"
+      ]
+    },
+    {
+      "region": "Toshkent viloyati",
+      "court": "Bekobod tumanlararo sudi",
+      "districts": [
+        "Bekobod shahri",
+        "Bekobod tumani"
+      ]
+    }
+  ],
+  "note": "Faqat ko‘rsatilgan hududiy mosliklar kiritilgan. Protsessual tegishlilik va sudning rasmiy nomi topshirishdan oldin qayta tekshiriladi. Qolgan hududlar avtomatik tasdiqlanmaydi."
 }
