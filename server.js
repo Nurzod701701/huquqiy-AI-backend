@@ -8392,9 +8392,16 @@ QAT’IY QOIDALAR:
   try{ answer=await callAI(instruction,lang,context); }
   catch(e){ console.error("DOCUMENT AI ERROR:",e); answer=L("Hujjatni yaratishda texnik xatolik yuz berdi.","Произошла техническая ошибка.","A technical error occurred."); }
   answer=cleanClaimText(answer);
+  const generationFailed=!answer.trim()||/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer);
+  if(generationFailed){
+    return appLayout(lang,"documents",
+      '<section class="surface surfacePad"><h2>Da’vo arizasi hozir yaratilmagan</h2><p>Generatsiya bajarilmadi. Texnik xatoni sudga topshiriladigan hujjat sifatida yuklab olmang.</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta urinish</a></section>',
+      "Da’vo arizasi yaratilmagan","Hujjatni qayta yaratish zarur.");
+  }
   return appLayout(lang,"documents",`
     <div class="surface surfacePad">
-      <div class="resultLabel">${esc(L("TAYYOR DA’VO ARIZASI","ГОТОВОЕ ИСКОВОЕ ЗАЯВЛЕНИЕ","COMPLETED CLAIM"))}</div>
+      <div class="resultLabel">${esc(L("DA’VO ARIZASI LOYIHASI — SUDGA TOPSHIRISHDAN OLDIN TEKSHIRING","ПРОЕКТ ИСКА — ПРОВЕРЬТЕ ПЕРЕД ПОДАЧЕЙ","DRAFT CLAIM — REVIEW BEFORE FILING"))}</div>
+      <div class="notice noticeGold"><span class="noticeIcon">!</span><span>${esc(L("Tekshiring: sudga tegishlilik, taraflar manzili, protsessual muddatlar, da’vo bahosi, davlat boji, dalillar va ilovalar, qonun moddalarining amaldagi tahriri. Hujjat avtomatik huquqiy tasdiqdan o‘tmagan.","Проверьте подсудность, стороны, сроки, пошлину, доказательства и действующее законодательство.","Verify jurisdiction, parties, deadlines, court fees, evidence and current law. This draft is not legally certified."))}</span></div>
       <div id="claimPrintable" class="claimDocument">${esc(answer)}</div>
     </div>
     <div class="formActions" style="margin-top:18px">
