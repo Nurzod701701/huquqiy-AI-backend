@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "reviewed_at": "2026-11-02",
+  "source_registry": [
+    "https://sud.uz/la/about-us-la/",
+    "https://sud.uz/la/economical-district-courts-la/",
+    "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/",
+    "https://sud.uz/la/regional-courts-info-la/military-court-la/"
+  ],
+  "types": [
+    {
+      "id": "civil",
+      "document": "da’vo arizasi",
+      "status": "district_mapping_in_court-jurisdiction.json"
+    },
+    {
+      "id": "economic",
+      "document": "da’vo arizasi",
+      "status": "court_names_only"
+    },
+    {
+      "id": "administrative",
+      "document": "ma’muriy sudga ariza",
+      "status": "regional_names_only"
+    },
+    {
+      "id": "criminal",
+      "document": "jinoyat ishiga oid shikoyat/iltimosnoma",
+      "status": "requires_procedural_route"
+    },
+    {
+      "id": "military",
+      "document": "tegishli protsessual murojaat",
+      "status": "requires_military_venue_review"
+    },
+    {
+      "id": "constitutional",
+      "document": "maxsus konstitutsiyaviy murojaat",
+      "status": "special_admissibility_rules"
+    },
+    {
+      "id": "supreme",
+      "document": "instansiyaga mos shikoyat",
+      "status": "requires_appeal_stage_review"
+    }
+  ],
+  "economic_courts": [
+    {
+      "region": "Qoraqalpog‘iston Respublikasi",
+      "name": "Nukus tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Andijon viloyati",
+      "name": "Andijon tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Buxoro viloyati",
+      "name": "Buxoro tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Farg‘ona viloyati",
+      "name": "Farg‘ona tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Jizzax viloyati",
+      "name": "Jizzax tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Xorazm viloyati",
+      "name": "Urganch tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Namangan viloyati",
+      "name": "Namangan tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Navoiy viloyati",
+      "name": "Navoiy tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "name": "Qarshi tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "name": "Samarqand tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Sirdaryo viloyati",
+      "name": "Guliston tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Surxondaryo viloyati",
+      "name": "Termiz tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Toshkent shahri",
+      "name": "Toshkent tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "name": "Nurafshon tumanlararo iqtisodiy sudi",
+      "level": "interdistrict",
+      "status": "court_exists_territorial_jurisdiction_unverified",
+      "source": "https://sud.uz/la/economical-district-courts-la/"
+    }
+  ],
+  "regional_administrative_courts": [
+    {
+      "region": "Qoraqalpog‘iston Respublikasi",
+      "name": "Qoraqalpog‘iston Respublikasi ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Andijon viloyati",
+      "name": "Andijon viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Buxoro viloyati",
+      "name": "Buxoro viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Farg‘ona viloyati",
+      "name": "Farg‘ona viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Jizzax viloyati",
+      "name": "Jizzax viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Xorazm viloyati",
+      "name": "Xorazm viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Namangan viloyati",
+      "name": "Namangan viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Navoiy viloyati",
+      "name": "Navoiy viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Qashqadaryo viloyati",
+      "name": "Qashqadaryo viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Samarqand viloyati",
+      "name": "Samarqand viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Sirdaryo viloyati",
+      "name": "Sirdaryo viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Surxondaryo viloyati",
+      "name": "Surxondaryo viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Toshkent shahri",
+      "name": "Toshkent shahar ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    },
+    {
+      "region": "Toshkent viloyati",
+      "name": "Toshkent viloyat ma’muriy sudi",
+      "level": "regional",
+      "status": "regional_court_exists_local_first_instance_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/administrative-courts-info-la/"
+    }
+  ],
+  "military_courts": [
+    {
+      "name": "O‘zbekiston Respublikasi Harbiy sudi",
+      "status": "court_exists_jurisdiction_unverified",
+      "source": "https://sud.uz/la/regional-courts-info-la/military-court-la/"
+    }
+  ],
+  "criminal_courts": [],
+  "rule": "Sud turini faqat ish mazmuni, instansiya, taraflar va hududiy tegishlilikdan keyin belgilash. Sud nomi mavjudligi uning muayyan ish uchun vakolatini isbotlamaydi; noaniq natija uchun avtomatik to‘ldirishni bloklash."
+}
