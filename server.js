@@ -13750,6 +13750,9 @@ const server =
         if(req.method === "GET" && pathname === "/advokat-pro/check"){
           return sendHtml(res, require("./advokat-check")(lang));
         }
+        if(req.method === "GET" && pathname === "/advokat-pro/court-practice"){
+          return sendHtml(res, require("./advokat-court-practice")(lang));
+        }
 
         // ------------------------------------------------
         // CLAIM FORM
