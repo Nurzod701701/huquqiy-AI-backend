@@ -13746,6 +13746,10 @@ const server =
         if(req.method === "GET" && pathname === "/advokat-pro/documents"){
           return sendHtml(res, require("./advokat-pro")(lang, appLayout));
         }
+        // Advocate-only legal preflight and official reference gateway.
+        if(req.method === "GET" && pathname === "/advokat-pro/check"){
+          return sendHtml(res, require("./advokat-check")(lang));
+        }
 
         // ------------------------------------------------
         // CLAIM FORM
