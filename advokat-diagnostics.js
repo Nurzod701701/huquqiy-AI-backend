@@ -28,7 +28,10 @@ function capabilities(){
  {name:"LexUZ",status:"link_only",details:"Rasmiy manba havolasi; norma/tahrirni avtomatik qiyoslash yo‘q"},
  {name:"Advice.uz",status:"link_only",details:"Huquqiy tushuntirishlarga havola; API tekshiruvi yo‘q"},
  {name:"Oliy sud",status:"link_only",details:"Sud tizimi rasmiy saytiga havola; sud ma’lumotlarini avtomatik tekshirish yo‘q"},
- {name:"Adliya vazirligi",status:"link_only",details:"Rasmiy sayt havolasi; real-time API integratsiyasi yo‘q"}
+ {name:"Adliya vazirligi",status:"link_only",details:"Rasmiy sayt havolasi; real-time API integratsiyasi yo‘q"},
+ {name:"Ochiq ma’lumotlar portali",status:"link_only",details:"Data.gov.uz: mashinada o‘qiladigan ma’lumotlar mavjud, ammo QOMUSda API sozlanmagan"},
+ {name:"Davlat xizmatlari portali",status:"link_only",details:"My.gov.uz: rasmiy davlat xizmatlariga havola; avtomatik ma’lumot olish yo‘q"},
+ {name:"Hukumat portali",status:"link_only",details:"Gov.uz: davlat tashkilotlari ma’lumoti, hujjat ekspertizasi API emas"}
  ];
 }
 module.exports={run,capabilities,count};
