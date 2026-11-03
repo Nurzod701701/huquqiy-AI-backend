@@ -13753,6 +13753,11 @@ const server =
         if(req.method === "GET" && pathname === "/advokat-pro/court-practice"){
           return sendHtml(res, require("./advokat-court-practice")(lang));
         }
+        if(req.method === "GET" && pathname === "/advokat-pro/public-judgments"){
+          const category=url.searchParams.get("category")||"civil";
+          const result=await require("./public-judgments").list(category);
+          return sendJson(res,result,result.state==="invalid_category"?400:200);
+        }
 
         // ------------------------------------------------
         // CLAIM FORM
