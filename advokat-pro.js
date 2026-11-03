@@ -1,19 +1,68 @@
 "use strict";
-// QOMUS Advokat PRO: entry dashboard only; no confidential data stored.
+// QOMUS Advokat PRO — v1. Citizens' pages remain untouched.
+// This module stores no confidential information on server.
 module.exports = function advokatProPage(lang, appLayout) {
-  const q = "?lang=" + encodeURIComponent(lang || "uz");
-  const card = (title, description, href, label) =>
-    '<article class="surface surfacePad" style="margin-bottom:16px"><h3 class="cardTitle">'+title+
-    '</h3><p class="cardDescription">'+description+'</p><a class="btn btnGold" href="'+href+'">'+label+'</a></article>';
-  const main =
-    '<section class="surface surfacePad" style="margin-bottom:18px">'+
-    '<h1>QOMUS — Advokat PRO</h1>'+
-    '<p>Professional huquqiy ish muhiti. Hozircha boshlang‘ich kabinet: yangi mijoz ma’lumotlari va fayllar bu sahifada saqlanmaydi.</p>'+
-    '<div class="notice noticeGold"><span class="noticeIcon">!</span><span>Advokatlik siriga oid materiallarni maxsus himoyalangan ishlar kabineti ishga tushmaguncha ushbu bo‘lim orqali yuklamang. Har qanday hujjatni topshirishdan oldin advokat tekshiradi.</span></div></section>'+
-    card('Da’vo konstruktori','Mavjud da’vo yaratish va sudni tanlash mexanizmi.','/documents'+q,'Hujjatlarni ochish')+
-    card('Sudga yo‘naltirish','Hudud va nizo turiga qarab mavjud sud tanlash shakli.','/claim'+q,'Sud tanlash')+
-    card('Huquqiy materiallar','Mavjud QOMUS huquqiy yordam bo‘limlariga qaytish.','/'+q,'Bosh sahifa')+
-    card('Advokatlar rasmiy reyestri','Ochiq rasmiy manbada advokat va advokatlik tuzilmasini tekshirish. Manzillar bu kabinetda hozircha saqlanmagan.','https://e-advokat.uz','E-advokat reyestri')+
-    '<section class="surface surfacePad"><h3>Keyingi bosqich</h3><p>Himoyalangan mijozlar va ishlar kabineti, ruxsatlar, audit jurnali, hujjatlar va muddatlar nazorati alohida amalga oshiriladi.</p></section>';
-  return appLayout(lang, "documents", main, "Advokat PRO", "Advokatlar uchun professional ish muhiti");
+  const q="?lang="+encodeURIComponent(["uz","ru","en"].includes(lang)?lang:"uz");
+  const types=[
+    ["debt","Qarz undirish","Fuqarolik","Shartnoma yoki tilxat|To‘lov dalili|Talabnoma","https://lex.uz/docs/-111189"],
+    ["property","Mol-mulkni talab qilib olish","Fuqarolik","Mulk hujjati|Mulk tavsifi|Egalik dalili","https://lex.uz/docs/-111189"],
+    ["damage","Zararni undirish","Fuqarolik","Zarar hisob-kitobi|Zarar dalili|Sababiy bog‘liqlik","https://lex.uz/docs/-111189"],
+    ["divorce","Nikohdan ajratish","Oila","Nikoh qaydi|Farzandlar hujjatlari|Boshqa dalillar","https://lex.uz/docs/-104720"],
+    ["alimony","Aliment undirish","Oila","Tug‘ilganlik guvohnomasi|Taraflar ma’lumotlari|Xarajat dalillari","https://lex.uz/docs/-104720"],
+    ["labor","Ishga tiklash","Mehnat","Mehnat shartnomasi|Bo‘shatish buyrug‘i|Ish dalillari","https://lex.uz/docs/-6257288"],
+    ["complaint","Shikoyat","Protsessual","Shikoyat hujjati|Muddatlar|Dalillar","https://lex.uz/docs/-3517337"],
+    ["motion","Iltimosnoma","Protsessual","Ish rekvizitlari|Asoslovchi dalillar|Ilovalar","https://lex.uz/docs/-3517337"],
+    ["objection","E’tiroz","Protsessual","Qarshi taraf hujjati|E’tiroz dalillari|Yozishmalar","https://lex.uz/docs/-3517337"],
+    ["request","Advokat so‘rovi","Advokatlik","Adresat tashkilot|Vakolat hujjatlari|So‘raladigan ma’lumotlar","https://lex.uz/"]
+  ];
+  const input=(id,label,multi=false)=>'<label class="ap-field">'+label+(multi?'<textarea id="ap'+id+'" rows="3"></textarea>':'<input id="ap'+id+'" type="text">')+'</label>';
+  const main='<div id="advokatWorkspace">'+
+    '<header class="ap-hero"><div><small>QOMUS PROFESSIONAL</small><h1>Advokat PRO</h1><p>Professional hujjatlar markazi — tayyorlash, nazorat va eksport</p></div><strong>§</strong></header>'+
+    '<div class="ap-warning">Maxfiylik: ushbu boshlang‘ich modul mijoz ma’lumotlarini serverga saqlamaydi. JSON eksport faylini xavfsiz saqlang. Hujjatni topshirishdan oldin advokat tekshiradi.</div>'+
+    '<div class="ap-layout"><nav class="ap-side"><b>ISH MARKAZI</b><a class="ap-active" href="#apOffice">Hujjatlar markazi</a><a href="/documents'+q+'">Mavjud hujjatlar katalogi</a><a href="/claim'+q+'">Mavjud da’vo konstruktori</a><a href="/legal-review'+q+'">Hujjat ekspertizasi</a><b>MANBALAR</b><a href="https://lex.uz/" target="_blank" rel="noopener noreferrer">LexUZ</a><a href="https://e-advokat.uz/" target="_blank" rel="noopener noreferrer">Advokatlar reyestri</a></nav>'+
+    '<div id="apOffice" class="ap-office"><div class="ap-stats"><div><b>10 ta</b><small>Hujjat shakli</small></div><div><b>Word / PDF</b><small>Eksport</small></div><div><b>Tekshiruv</b><small>To‘liqlik nazorati</small></div></div><div class="ap-columns">'+
+    '<section class="ap-card"><h2>1. Hujjat ma’lumotlari</h2><label class="ap-field">Hujjat turi<select id="apType">'+types.map(t=>'<option value="'+t[0]+'">'+t[1]+'</option>').join("")+'</select></label><p class="ap-muted" id="apArea"></p>'+
+    '<div class="ap-two">'+input("Client","Arizachi / mijoz")+input("Opponent","Qarshi taraf / adresat")+'</div>'+
+    input("Address","Sud yoki tashkilot / manzil")+input("Case","Ish raqami (agar bo‘lsa)")+input("Subject","Hujjat sarlavhasi")+
+    input("Facts","Faktlar bayoni",true)+input("Demand","Talab / iltimos",true)+
+    '<div class="ap-two">'+input("Amount","Talab summasi")+input("Date","Sana")+'</div>'+
+    input("Law","Huquqiy asoslar (tekshirilgan normalar)",true)+input("Notes","Izohlar",true)+
+    '<h2>2. Dalillar va ilovalar</h2><div id="apChecks"></div><div class="ap-two"><input id="apAttachment" placeholder="Ilova nomi" maxlength="180"><button type="button" id="apAdd">+ Ilova</button></div><ul id="apAttachments"></ul><p><a id="apSource" target="_blank" rel="noopener noreferrer">LexUZda tekshirish</a></p>'+
+    '<div class="ap-buttons"><button type="button" class="ap-primary" id="apGenerate">Hujjat yaratish</button><button type="button" id="apSave">JSON saqlash</button><label class="ap-load">JSON ochish<input type="file" id="apLoad" accept=".json,application/json" hidden></label></div></section>'+
+    '<section class="ap-card"><h2>3. Dastlabki sifat tekshiruvi</h2><strong class="ap-score" id="apScore"></strong><div id="apWarnings"></div><p class="ap-muted">Huquqiy to‘g‘rilik, tegishli sud, muddat va dalillar haqiqiyligini advokat tekshirishi shart.</p><h2>4. Tahrirlanuvchi hujjat</h2><textarea id="apDraft" rows="23" placeholder="Hujjat yaratish tugmasini bosing. Matnni shu yerda tahrirlash mumkin."></textarea><div class="ap-buttons"><button type="button" class="ap-primary" id="apWord">Word (.docx)</button><button type="button" id="apPrint">PDF / Chop etish</button><button type="button" id="apTxt">TXT</button></div></section></div></div></div></div>'+
+    '<style>'+
+    '#advokatWorkspace{max-width:1480px;margin:auto;color:#183249}#advokatWorkspace *{box-sizing:border-box}#advokatWorkspace .ap-hero{border-radius:20px;padding:25px;color:white;display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(120deg,#0b2037,#274d69)}#advokatWorkspace .ap-hero small{color:#e6c57b;letter-spacing:.14em;font-weight:800}#advokatWorkspace .ap-hero h1{margin:6px 0;color:#fff}#advokatWorkspace .ap-hero p{margin:0;color:#dce8ef}#advokatWorkspace .ap-hero strong{font-size:62px;color:#e6c57b}'+
+    '#advokatWorkspace .ap-warning{background:#fff7e7;border:1px solid #e9d6aa;border-radius:11px;color:#6f5525;padding:12px;margin:14px 0;font-size:13px}#advokatWorkspace .ap-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:14px}#advokatWorkspace .ap-side{background:#102a40;border-radius:16px;padding:16px 10px;align-self:start;position:sticky;top:15px}#advokatWorkspace .ap-side b{display:block;color:#d8b979;font-size:11px;letter-spacing:.1em;margin:12px}#advokatWorkspace .ap-side a{display:block;text-decoration:none;color:#e5eef4;padding:12px;font-size:13px;border-radius:10px}#advokatWorkspace .ap-side a:hover,#advokatWorkspace .ap-side a.ap-active{background:#284d67}'+
+    '#advokatWorkspace .ap-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px}#advokatWorkspace .ap-stats div,#advokatWorkspace .ap-card{background:#fff;border:1px solid #dce5ec;border-radius:15px;padding:17px;min-width:0}#advokatWorkspace .ap-stats b{display:block}#advokatWorkspace .ap-stats small,#advokatWorkspace .ap-muted{color:#6f8391;font-size:12px}#advokatWorkspace .ap-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;align-items:start}#advokatWorkspace .ap-card h2{font-size:19px;color:#143349;margin:3px 0 16px}#advokatWorkspace .ap-field{display:grid;gap:6px;font-weight:750;font-size:12px;margin-bottom:11px}#advokatWorkspace .ap-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}'+
+    '#advokatWorkspace input:not([type=checkbox]):not([type=file]),#advokatWorkspace textarea,#advokatWorkspace select{border:1px solid #cbd8e1;border-radius:9px;padding:10px;width:100%;min-width:0;font:inherit;color:#173247;background:white}#advokatWorkspace textarea{resize:vertical}#advokatWorkspace #apDraft{font:14px/1.65 Georgia,serif;min-height:420px}#advokatWorkspace button,#advokatWorkspace .ap-load{padding:10px 12px;border:1px solid #cad8df;background:#eef3f6;color:#193b52;border-radius:9px;font:inherit;font-size:13px;font-weight:750;cursor:pointer}#advokatWorkspace .ap-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}#advokatWorkspace .ap-primary{background:#12344e;color:#fff;border-color:#12344e}#advokatWorkspace .ap-check{display:block;font-size:13px;margin:9px 0}#advokatWorkspace .ap-score{display:block;background:#f0f5f7;padding:13px;border-radius:10px;margin-bottom:12px}#advokatWorkspace #apWarnings{font-size:13px;color:#865f21}#advokatWorkspace #apAttachments li{font-size:13px;padding:4px}'+
+    '@media(max-width:1050px){#advokatWorkspace .ap-columns{grid-template-columns:1fr}}@media(max-width:750px){#advokatWorkspace .ap-layout{grid-template-columns:1fr}#advokatWorkspace .ap-side{position:static;display:flex;gap:4px;overflow-x:auto;align-items:center}#advokatWorkspace .ap-side a{white-space:nowrap}#advokatWorkspace .ap-side b{display:none}}@media(max-width:480px){#advokatWorkspace .ap-two,#advokatWorkspace .ap-stats{grid-template-columns:1fr}#advokatWorkspace .ap-hero{padding:18px}#advokatWorkspace .ap-hero strong{display:none}}'+
+    '</style>';
+  const js = [
+  '(function(){',
+  '"use strict";',
+  'var data='+JSON.stringify(types)+';',
+  'var root=document.getElementById("advokatWorkspace"); if(!root)return;',
+  'var el=function(x){return document.getElementById("ap"+x)};',
+  'var keys=["Client","Opponent","Address","Case","Subject","Facts","Demand","Amount","Date","Law","Notes"];',
+  'var attachments=[],edited=false;',
+  'function current(){return data.find(function(x){return x[0]===el("Type").value})||data[0]}',
+  'function values(){var o={};keys.forEach(function(k){o[k]=el(k).value.trim()});return o}',
+  'function repaint(){var t=current();el("Area").textContent="Yo‘nalish: "+t[2];el("Source").href=t[4];el("Checks").replaceChildren();t[3].split("|").forEach(function(s){var l=document.createElement("label"),i=document.createElement("input");l.className="ap-check";i.type="checkbox";i.dataset.name=s;l.appendChild(i);l.appendChild(document.createTextNode(" "+s));el("Checks").appendChild(l)});audit()}',
+  'function audit(){var v=values(),miss=[];[["Client","Mijoz"],["Opponent","Qarshi taraf"],["Subject","Sarlavha"],["Facts","Faktlar"],["Demand","Talab"],["Law","Huquqiy asos"]].forEach(function(x){if(!v[x[0]])miss.push(x[1]+" kiritilmagan")});if(!v.Date)miss.push("Sana kiritilmagan");var n=el("Checks").querySelectorAll("input:not(:checked)").length;if(n)miss.push(n+" ta dalil toifasi tekshirilmagan");el("Score").textContent=miss.length?miss.length+" ta tekshiruv masalasi":"Dastlabki maydonlar to‘ldirilgan";el("Warnings").replaceChildren();miss.forEach(function(s){var p=document.createElement("p");p.textContent="• "+s;el("Warnings").appendChild(p)});if(!miss.length)el("Warnings").textContent="Yuridik jihatdan tasdiqlangan degani emas."}',
+  'function drawAttachments(){el("Attachments").replaceChildren();attachments.forEach(function(s,n){var li=document.createElement("li"),b=document.createElement("button");li.appendChild(document.createTextNode(s+" "));b.textContent="O‘chirish";b.type="button";b.onclick=function(){attachments.splice(n,1);drawAttachments()};li.appendChild(b);el("Attachments").appendChild(li)})}',
+  'function build(){var t=current(),v=values(),checked=Array.from(el("Checks").querySelectorAll("input:checked")).map(function(x){return x.dataset.name});return ["HUJJAT LOYIHASI — ADVOKAT TEKSHIRUVI TALAB ETILADI","","Turi: "+t[1],"Sana: "+(v.Date||"[sana]"),"Ish raqami: "+(v.Case||"—"),"Arizachi: "+(v.Client||"[mijoz]"),"Qarshi taraf / adresat: "+(v.Opponent||"[taraf]"),"Tashkilot va manzil: "+(v.Address||"[manzil]"),"",v.Subject||t[1],"","HOLATLAR:",v.Facts||"[faktlar]","","HUQUQIY ASOS:",v.Law||"[tekshirilgan normalar]","","TALAB / ILTIMOS:",v.Demand||"[talab]",v.Amount?"Talab summasi: "+v.Amount:"","","DALILLAR:",checked.join("; ")||"[tekshirilmagan]","","ILOVALAR:",attachments.map(function(s,n){return (n+1)+". "+s}).join("\n")||"[ilovalar yo‘q]","","IZOHLAR:",v.Notes||"—","","Sana: _____________     Imzo: _____________","","Sudlovga tegishlilik, muddatlar, majburiy rekvizitlar va huquqiy asoslarni advokat tekshiradi."].join("\n")}',
+  'function download(name,txt,mime){var blob=new Blob([txt],{type:mime||"text/plain;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(url)},1500)}',
+  'el("Type").addEventListener("change",repaint);keys.forEach(function(k){el(k).addEventListener("input",audit)});el("Checks").addEventListener("change",audit);',
+  'el("Add").onclick=function(){var s=el("Attachment").value.trim();if(!s||attachments.length>=40)return;attachments.push(s.slice(0,180));el("Attachment").value="";drawAttachments()};',
+  'el("Generate").onclick=function(){if(edited&&el("Draft").value&&!confirm("Tahrirlangan matn qayta yaratiladi. Davom etasizmi?"))return;el("Draft").value=build();edited=false;el("Draft").focus()};',
+  'el("Draft").addEventListener("input",function(){edited=true});',
+  'el("Save").onclick=function(){download("qomus-hujjat-loyihasi.json",JSON.stringify({v:1,type:current()[0],fields:values(),attachments:attachments,checks:Array.from(el("Checks").querySelectorAll("input:checked")).map(function(x){return x.dataset.name}),draft:el("Draft").value},null,2),"application/json;charset=utf-8")};',
+  'el("Load").onchange=async function(e){var file=e.target.files[0];if(!file)return;try{if(file.size>100000)throw Error("Fayl juda katta");var obj=JSON.parse(await file.text());if(obj.v!==1||!obj.fields||!data.some(function(x){return x[0]===obj.type}))throw Error("Noto‘g‘ri loyiha fayli");el("Type").value=obj.type;repaint();keys.forEach(function(k){el(k).value=String(obj.fields[k]||"").slice(0,20000)});attachments=Array.isArray(obj.attachments)?obj.attachments.slice(0,40).map(function(x){return String(x).slice(0,180)}):[];drawAttachments();el("Checks").querySelectorAll("input").forEach(function(x){x.checked=Array.isArray(obj.checks)&&obj.checks.includes(x.dataset.name)});el("Draft").value=String(obj.draft||"").slice(0,150000);edited=!!obj.draft;audit()}catch(err){alert("Loyiha ochilmadi: "+err.message)}e.target.value=""};',
+  'el("Word").onclick=function(){var txt=el("Draft").value.trim();if(!txt)return alert("Avval hujjat yarating");var form=document.createElement("form"),ta=document.createElement("textarea");form.method="POST";form.action="/claim-download";form.style.display="none";ta.name="claim_text";ta.value=txt;form.appendChild(ta);document.body.appendChild(form);form.submit();setTimeout(function(){form.remove()},1500)};',
+  'el("Txt").onclick=function(){var txt=el("Draft").value.trim();if(!txt)return alert("Avval hujjat yarating");download("qomus-hujjat.txt",txt)};',
+  'el("Print").onclick=function(){var txt=el("Draft").value.trim();if(!txt)return alert("Avval hujjat yarating");var win=window.open("","_blank");if(!win)return alert("Brauzer yangi oynani blokladi");win.document.write("<!doctype html><html><head><meta charset=utf-8><title>QOMUS hujjat</title><style>body{font-family:Georgia,serif;white-space:pre-wrap;line-height:1.6;padding:20mm}</style></head><body></body></html>");win.document.close();win.document.body.textContent=txt;win.focus();win.print()};',
+  'repaint();',
+  '})();'
+  ].join("\n");
+  return appLayout(lang,"documents",main+"<script>"+js.replace(/<\/script/gi,"<\\/script")+"</script>","Advokat PRO","QOMUS professional hujjatlar markazi");
 };
