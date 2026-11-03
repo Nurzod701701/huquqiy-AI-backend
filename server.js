@@ -13739,8 +13739,11 @@ const server =
         }
 
 
-        // Advokat PRO starter dashboard. No client-case data persistence.
+        // Advokat PRO: separate landing page and preserved document constructor.
         if(req.method === "GET" && pathname === "/advokat-pro"){
+          return sendHtml(res, require("./advokat-home")(lang));
+        }
+        if(req.method === "GET" && pathname === "/advokat-pro/documents"){
           return sendHtml(res, require("./advokat-pro")(lang, appLayout));
         }
 
