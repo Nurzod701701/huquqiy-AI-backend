@@ -13591,16 +13591,15 @@ const server =
         // HOME
         // ------------------------------------------------
 
-        if(
-          req.method === "GET" &&
-          pathname === "/"
-        ){
-
-          return sendHtml(
-            res,
-            homePage(lang)
-          );
-
+        // QOMUS entry selector; the original citizen homePage() remains unchanged.
+        if(req.method === "GET" && pathname === "/"){
+          if(url.searchParams.get("portal") === "fuqarolar"){
+            return sendHtml(res, homePage(lang));
+          }
+          return sendHtml(res, require("./portal-choice")(lang));
+        }
+        if(req.method === "GET" && pathname === "/fuqarolar"){
+          return sendHtml(res, homePage(lang));
         }
 
 
