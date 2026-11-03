@@ -18,7 +18,10 @@ module.exports=function(lang){
    ["LexUZ","Rasmiy normativ-huquqiy hujjatlar","https://lex.uz/"],
    ["Advice.uz","Huquqiy tushuntirishlar va maslahatlar","https://advice.uz/"],
    ["Oliy sud","Sud tizimi bo‘yicha rasmiy ma’lumotlar","https://sud.uz/"],
-   ["Adliya vazirligi","Huquqiy ma’lumotlar","https://adliya.uz/"]
+   ["Adliya vazirligi","Huquqiy ma’lumotlar","https://adliya.uz/"],
+   ["Ochiq ma’lumotlar","Davlat ochiq ma’lumotlari","https://data.gov.uz/"],
+   ["Davlat xizmatlari","Interaktiv davlat xizmatlari","https://my.gov.uz/"],
+   ["Hukumat portali","Davlat organlari va tashkilotlar","https://gov.uz/"]
   ];
   const css=[
    "*{box-sizing:border-box}body{margin:0;background:#f3f6f8;color:#162f44;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}a{text-decoration:none;color:inherit}.top{background:#06111f;padding:20px max(4%,calc((100vw - 1210px)/2));display:flex;justify-content:space-between;align-items:center;gap:15px}.top strong{font:27px Georgia,serif;color:#e6c98e}.top a{color:#d3e1ed;font-size:13px;font-weight:700}",
