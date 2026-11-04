@@ -19,3 +19,5 @@ jobs:
         run: node --check server.js
       - name: Advocate language and buttons regression
         run: node advokat-ui.test.js
+      - name: Case calendar and document quality regression
+        run: node advokat-quality.test.js
