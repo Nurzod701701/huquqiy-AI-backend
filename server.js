@@ -3199,6 +3199,60 @@ body{background:var(--bg);color:var(--ink)}
  .q-motion-tilt,.q-motion-tilt:hover{transform:none!important}
  .btnGold:hover{animation:none!important}
 }
+
+/* QOMUS MOTION V2 — calmer motion and consistent finishing details. */
+:root{
+  --q-premium-line:rgba(197,161,106,.26);
+  --q-premium-soft:rgba(231,204,154,.16);
+  --q-premium-shadow:0 17px 42px rgba(11,25,43,.09);
+}
+.hero{isolation:isolate}
+.hero::before,.hero::after{pointer-events:none}
+.hero h1{letter-spacing:-.034em;line-height:1.075;text-wrap:balance}
+.heroDescription{line-height:1.78}
+.heroTrust{row-gap:9px}
+.sectionTitle{letter-spacing:-.028em;line-height:1.14;text-wrap:balance}
+.serviceCard,.sourceCard{isolation:isolate;border-color:#e4ddd3;box-shadow:0 7px 22px rgba(11,25,43,.052)}
+.serviceCard h3,.sourceCard h3{letter-spacing:-.017em;line-height:1.34}
+.serviceCard p,.sourceCard p{line-height:1.72}
+.serviceCard::after,.sourceCard::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  opacity:0;transition:opacity .42s ease;
+  background:radial-gradient(190px circle at var(--qlx,50%) var(--qly,50%),rgba(229,203,155,.15),transparent 75%);
+}
+.serviceCard:hover::after,.sourceCard:hover::after,.serviceCard:focus-within::after,.sourceCard:focus-within::after{opacity:1}
+.serviceCard > *,.sourceCard > *{position:relative;z-index:1}
+.serviceCard:hover,.sourceCard:hover{border-color:rgba(197,161,106,.56)}
+.serviceCard:focus-within,.sourceCard:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(197,161,106,.13),var(--q-premium-shadow)}
+.btn,.accountButton{letter-spacing:.005em}
+.btn:focus-visible,.accountButton:focus-visible{outline:2px solid #b89157;outline-offset:3px}
+.btnGold{box-shadow:0 7px 21px rgba(175,130,67,.15),inset 0 1px 0 rgba(255,255,255,.52)}
+.navlinks a{font-size:12px;letter-spacing:.008em}
+@media(min-width:1151px) and (max-width:1320px){
+ .navin{gap:13px;width:min(1320px,97%)}
+ .navlinks a{padding:10px 8px;font-size:11px}
+}
+@media(prefers-reduced-motion:no-preference) and (hover:hover) and (pointer:fine){
+ .q-motion-tilt{
+   transition:transform .27s cubic-bezier(.2,.75,.24,1),box-shadow .4s var(--q-ease),border-color .35s ease;
+ }
+ .q-motion-tilt:hover{
+   transform:perspective(1050px) rotateX(var(--qrx)) rotateY(var(--qry)) translate3d(0,-4px,0);
+   box-shadow:0 21px 45px rgba(11,25,43,.115),0 5px 12px rgba(197,161,106,.055);
+ }
+ .serviceCard:not(.q-motion-tilt):hover,.sourceCard:not(.q-motion-tilt):hover{transform:translateY(-4px)}
+}
+@media(max-width:760px){
+ .hero h1{line-height:1.12;letter-spacing:-.028em}
+ .serviceCard,.sourceCard{box-shadow:0 8px 23px rgba(11,25,43,.055)}
+ .serviceCard::after,.sourceCard::after{display:none}
+ .serviceCard:hover,.sourceCard:hover{transform:none;box-shadow:0 8px 23px rgba(11,25,43,.055)}
+ .btn,.accountButton{min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){
+ .serviceCard::after,.sourceCard::after{transition:none}
+ .q-motion-tilt{transform:none!important}
+}
 `;
 // ======================================================
 // PART 2/4
@@ -5801,8 +5855,10 @@ const QOMUS_MOTION_SCRIPT = `<script>
         var b=card.getBoundingClientRect();
         var x=(point.x-b.left)/Math.max(1,b.width)-.5;
         var y=(point.y-b.top)/Math.max(1,b.height)-.5;
-        card.style.setProperty("--qrx",(-y*5).toFixed(2)+"deg");
-        card.style.setProperty("--qry",(x*5).toFixed(2)+"deg");
+        card.style.setProperty("--qrx",(-y*3.1).toFixed(2)+"deg");
+        card.style.setProperty("--qry",(x*3.1).toFixed(2)+"deg");
+        card.style.setProperty("--qlx",((x+.5)*100).toFixed(1)+"%");
+        card.style.setProperty("--qly",((y+.5)*100).toFixed(1)+"%");
       }
       card.addEventListener("pointermove",function(e){
         if(e.pointerType!=="mouse")return;
@@ -5813,6 +5869,7 @@ const QOMUS_MOTION_SCRIPT = `<script>
         if(frame)cancelAnimationFrame(frame);
         frame=0;point=null;
         card.style.setProperty("--qrx","0deg");card.style.setProperty("--qry","0deg");
+        card.style.setProperty("--qlx","50%");card.style.setProperty("--qly","50%");
       },{passive:true});
     });
   }
@@ -13515,6 +13572,16 @@ const ACCOUNT_CSS = `
 @media(prefers-reduced-motion:no-preference) and (hover:hover){
  .accountCard:not(.q-motion-tilt):hover,.accountStat:not(.q-motion-tilt):hover{transform:translateY(-4px)}
 }
+
+/* QOMUS cabinet polish V2 — same layout, clearer form hierarchy. */
+.accountPanel,.accountAuth,.accountCard,.accountStat{border-color:#e5ded4;box-shadow:0 8px 26px rgba(11,25,43,.055)}
+.accountPanel h1,.accountPanel h2,.accountAuth h1{letter-spacing:-.022em}
+.accountMuted{line-height:1.68}
+.accountForm label{line-height:1.4}
+.accountForm :is(input,textarea,select){transition:border-color .22s ease,box-shadow .22s ease;background:#fffdfb}
+.accountButton:active{filter:brightness(.98)}
+.accountSide a:focus-visible{outline-color:#e5cb9b}
+@media(max-width:620px){.accountPanel,.accountCard{max-width:100%;min-width:0}.accountTableWrap{overflow-x:auto}}
 `;
 
 
