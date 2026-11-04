@@ -3,7 +3,7 @@
 // No script, API, cookies, storage, or changes to Citizens pages.
 module.exports=function(language,pathname,html){
  const lang=["uz","ru","en"].includes(language)?language:"uz";
- const routes=new Set(["/advokat-pro/documents","/advokat-pro/check","/advokat-pro/grounded","/advokat-pro/court-practice"]);
+ const routes=new Set(["/advokat-pro/documents","/advokat-pro/check","/advokat-pro/grounded","/advokat-pro/court-practice","/advokat-pro/cases","/advokat-pro/calendar"]);
  if(!routes.has(pathname))return html;
  const label={uz:"Til",ru:"Язык",en:"Language"}[lang];
  const links=["uz","ru","en"].map(l=>
