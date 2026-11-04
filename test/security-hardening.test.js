@@ -71,3 +71,16 @@ test("rate limits repeated authentication requests",()=>{
   altered.tag=Buffer.alloc(16).toString("base64");
   assert.throws(()=>decrypt(JSON.stringify(altered),key));
 });
+
+
+test("removes common personal identifiers from outbound AI prompts",()=>{
+  const {redactForAI,minimizeMessages}=require("../ai-privacy");
+  const input="JSHSHIR: 12345678901234, passport AA1234567; Email: user@example.com";
+  const sanitized=redactForAI(input);
+  assert.ok(!sanitized.text.includes("12345678901234"));
+  assert.ok(!sanitized.text.includes("AA1234567"));
+  assert.ok(!sanitized.text.includes("user@example.com"));
+  const messages=minimizeMessages([{role:"user",content:input},{role:"system",content:"Public source"}]);
+  assert.ok(!messages[0].content.includes("12345678901234"));
+  assert.equal(messages[1].content,"Public source");
+});
