@@ -13755,7 +13755,8 @@ const server =
         }
         if(req.method === "GET" && pathname === "/advokat-pro/public-judgments"){
           const category=url.searchParams.get("category")||"civil";
-          const result=await require("./public-judgments").list(category);
+          const search=url.searchParams.get("search")||"";
+          const result=await require("./public-judgments").list(category,search);
           return sendJson(res,result,result.state==="invalid_category"?400:200);
         }
 
