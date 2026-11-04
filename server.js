@@ -113,6 +113,14 @@ ${"</" + "script>"}`;
 
 const LANGUAGE_PRESERVE_SCRIPT = '<script id="huquqiy-language-preserve">\n(function(){\n  function update(){\n    document.querySelectorAll(\'.languages a, .appLang a, .accountLanguage a, .lang a\').forEach(function(a){\n      var match = /(?:\\?|&)lang=(uz|ru|en)(?:&|$)/.exec(a.getAttribute(\'href\') || \'\');\n      if(!match) return;\n      var url = new URL(window.location.href);\n      url.searchParams.set(\'lang\', match[1]);\n      url.hash = window.location.hash;\n      a.href = url.pathname + url.search + url.hash;\n    });\n  }\n  if(document.readyState === \'loading\') document.addEventListener(\'DOMContentLoaded\',update,{once:true});\n  else update();\n  document.addEventListener(\'click\',function(e){\n    var a=e.target.closest && e.target.closest(\'.languages a, .appLang a, .accountLanguage a, .lang a\');\n    if(!a) return;\n    var match=/(?:\\?|&)lang=(uz|ru|en)(?:&|$)/.exec(a.getAttribute(\'href\')||\'\');\n    if(!match)return;\n    var url=new URL(window.location.href);url.searchParams.set(\'lang\',match[1]);\n    a.href=url.pathname+url.search+url.hash;\n  },true);\n})();\n</script>';
 
+// Insert at the FINAL closing body: documents may contain a literal "</body>"
+ // inside printable HTML strings embedded in an inline JavaScript script.
+function appendBeforeFinalBody(html, injected) {
+  const source = String(html || "");
+  const at = source.toLowerCase().lastIndexOf("</body>");
+  return at < 0 ? source + injected : source.slice(0, at) + injected + source.slice(at);
+}
+
 function sendHtml(res, html, status = 200) {
   res.writeHead(status, {
     "Content-Type": "text/html; charset=utf-8",
@@ -120,8 +128,8 @@ function sendHtml(res, html, status = 200) {
   });
 
   const pageHtml = String(html || '');
-  let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : pageHtml.replace(/<\/body>/i, GLOBAL_LEXUZ_SCRIPT + '</body>');
-  if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = resultHtml.replace(/<\/body>/i, LANGUAGE_PRESERVE_SCRIPT + '</body>');
+  let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : appendBeforeFinalBody(pageHtml, GLOBAL_LEXUZ_SCRIPT);
+  if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = appendBeforeFinalBody(resultHtml, LANGUAGE_PRESERVE_SCRIPT);
   res.end(resultHtml);
 }
 
