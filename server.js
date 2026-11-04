@@ -5,6 +5,8 @@ try {
 }
 
 const http = require("http");
+const { applySecurityHeaders, guardSensitiveRequest } = require("./security-hardening");
+const { minimizeMessages } = require("./ai-privacy");
 const querystring = require("querystring");
 
 const PORT = process.env.PORT || 3000;
@@ -547,7 +549,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
           "HTTP-Referer": process.env.SITE_URL || "https://huquqiy-ai-backend.onrender.com",
           "X-Title": "QOMUS"
         },
-        body: JSON.stringify({ model, messages, temperature: 0.2, max_tokens: 450 })
+        body: JSON.stringify({ model, messages: minimizeMessages(messages), temperature: 0.2, max_tokens: 450 })
       });
       try { data = await response.json(); }
       catch (_) { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
@@ -13811,7 +13813,8 @@ const server =
     ) => {
 
       try {
-
+        applySecurityHeaders(req, res);
+        if (guardSensitiveRequest(req, res)) return;
 
         const url =
           getUrl(req);
