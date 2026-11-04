@@ -14018,6 +14018,10 @@ const server =
         if(req.method === "GET" && pathname === "/advokat-pro/court-practice"){
           return sendHtml(res, require("./advokat-language")(lang, "/advokat-pro/court-practice", require("./advokat-court-practice")(lang)));
         }
+        if(req.method === "GET" && (pathname === "/advokat-pro/cases" || pathname === "/advokat-pro/calendar")){
+          const section=pathname.endsWith("/calendar")?"calendar":"cases";
+          return sendHtml(res, require("./advokat-language")(lang, pathname, require("./advokat-cases-calendar")(lang, section)));
+        }
         if(req.method === "GET" && pathname === "/advokat-pro/public-judgments"){
           const category=url.searchParams.get("category")||"civil";
           const search=url.searchParams.get("search")||"";
