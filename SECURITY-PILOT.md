@@ -17,13 +17,19 @@ This branch is isolated from `main`. Nothing here has been deployed or migrated.
 - Never move or delete the existing JSON data until a backup, consistency checks and restore dry run succeed.
 
 ## Privacy and AI
-- Current `callAI` sends question/context to OpenRouter. Redaction of passports/JSHSHIR before AI transmission is **not yet implemented**.
+- `callAI` now passes its outbound messages through a first-pass `ai-privacy.js` redaction filter (JSHSHIR/14-digit IDs, explicitly labeled passports, phones, emails). This is **heuristic and incomplete**: names, addresses, documents, alternate formats and AI instructions can still contain sensitive content. Do not consider third-party AI privacy solved.
 - Do not submit real citizen identity documents during the pilot. Implement explicit consent, minimization, redaction and model-provider retention verification first.
 
 ## Validation and rollout gate
-1. Run `npm run check` and `npm run test:security` in a clean checkout of this branch.
+1. Run `npm run check` and `npm run test:security` in a clean checkout of this branch. A GitHub Actions workflow is staged for syntax and unit checks; check its results before relying on it.
 2. Add proxy-aware rate limiting tests, webhook delivery tests and integration tests for every protected form.
 3. Use synthetic test accounts and fake documents in a separately configured Render preview.
 4. Verify that successful login, registration, admin controls and download flows still work.
 5. Confirm incident alert routing, backup/restore and safe rollback.
 6. Only after independent review should changes be considered for a production merge.
+
+## Immediate open security decisions
+- Replace JSON file persistence with a private, backed-up database; existing data has not been moved.
+- Protect AI input with consent, document classification, stronger detection and an option not to transmit sensitive cases.
+- Configure a trusted HTTPS alert endpoint and incident-response escalation. Until then alerts are not delivered.
+- The working main site remains unchanged and is NOT certified secure by this pilot.
