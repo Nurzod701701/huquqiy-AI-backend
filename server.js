@@ -3108,6 +3108,50 @@ body{
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* QOMUS PEARL NAVY 2026 — refined palette only, existing layout unchanged. */
+:root{
+  --navy:#0b192b;
+  --navy2:#152d46;
+  --navy3:#21435f;
+  --gold:#c5a16a;
+  --gold2:#e5cb9b;
+  --gold3:#a27a44;
+  --goldSoft:#faf3e7;
+  --ink:#18293a;
+  --muted:#647589;
+  --bg:#f6f5f2;
+  --surface:#fffdfb;
+  --line:#e6e2db;
+  --line2:#d8d1c7;
+  --shadow:0 16px 40px rgba(14,32,50,.075);
+  --shadowStrong:0 24px 56px rgba(14,32,50,.12);
+}
+body{background:var(--bg);color:var(--ink)}
+.nav{background:rgba(255,253,250,.96);border-bottom-color:rgba(197,161,106,.23);box-shadow:0 5px 20px rgba(15,31,48,.045)}
+.brandMark{background:linear-gradient(145deg,#0b192b,#22415d);border-color:rgba(229,203,155,.5)}
+.navlinks a{color:#495c70}
+.navlinks a:hover{background:#f3eee5;color:var(--navy)}
+.languages{background:#f9f6f1;border-color:#e7ded2}
+.hero{background:radial-gradient(circle at 81% 14%,rgba(197,161,106,.105),transparent 31%),linear-gradient(175deg,#fffdfa 0%,#f6f5f2 100%)}
+.hero h1 span{color:#365f79}
+.heroDescription,.sectionText{color:#617387}
+.eyebrow{background:linear-gradient(110deg,#fcf7ef,#f8eddb);border-color:#e8d5b5;color:#876239}
+.btnPrimary{background:linear-gradient(145deg,#0b192b,#1b3b55);border-color:rgba(229,203,155,.38)}
+.btnGold{background:linear-gradient(145deg,#f0dab1,#caa36b);color:#172838;border-color:#d4b47f;box-shadow:0 10px 24px rgba(162,122,68,.15),inset 0 1px 0 rgba(255,255,255,.55)}
+.btnOutline{background:#fffdfa;border-color:#dfd6ca;color:#23384a}
+.quickBox{background:radial-gradient(circle at 89% 8%,rgba(229,203,155,.12),transparent 36%),linear-gradient(135deg,#0b192b,#173550);border-color:rgba(229,203,155,.31)}
+.serviceCard,.sourceCard,.coreItem{background:#fffdfb;border-color:#e7e1d7}
+.serviceCard{box-shadow:0 10px 26px rgba(14,32,50,.055),0 1px 0 rgba(255,255,255,.8) inset}
+.serviceCard:hover{border-color:#d2b17e;box-shadow:0 18px 40px rgba(14,32,50,.09)}
+.serviceIcon{background:linear-gradient(150deg,#fbf4e8,#f3f1ec);border-color:#e7dac8;color:#21425d}
+.roadNumber{background:#f9f3e9;border-color:#e8dccb;color:#5c5143}
+.roadStep{border-bottom-color:#e9e5de}
+.coreSection{background:#f1efeb;border-color:#e6e0d6}
+.coreGrid{background:#e3ddd4;border-color:#e3ddd4}
+@media(prefers-reduced-motion:no-preference){
+  .serviceCard,.sourceCard,.btn{transition:transform .19s ease,box-shadow .19s ease,border-color .19s ease}
+}
 `;
 // ======================================================
 // PART 2/4
@@ -13346,6 +13390,23 @@ const ACCOUNT_CSS = `
 .accountMain{min-width:0}
 .accountTableWrap{max-width:100%;overflow-x:auto}
 @media(max-width:620px){.accountActions{flex-wrap:wrap}.accountForm input,.accountForm select,.accountForm textarea{font-size:16px}}
+
+/* QOMUS PEARL NAVY: cabinet color alignment, no layout changes. */
+.accountWrap,.accountShell{background:#f6f5f2}
+.accountSide{background:linear-gradient(180deg,#0b192b 0%,#15334d 100%);border-color:rgba(229,203,155,.22)}
+.accountSide a.active,.accountSide a:hover{background:rgba(229,203,155,.13);color:#f1dab2}
+.accountHero{background:radial-gradient(circle at 90% 0%,rgba(229,203,155,.15),transparent 19rem),linear-gradient(140deg,#0b192b,#1a3b54);border:1px solid rgba(229,203,155,.24)}
+.accountAuth,.accountPanel,.accountStat,.accountCard{background:#fffdfb;border-color:#e7e1d7}
+.accountButton{background:#173550}
+.accountButton.gold{background:linear-gradient(140deg,#f0dab1,#caa36b);color:#172838}
+.accountButton.light{background:#f5efe7;color:#26435a}
+.accountAvatar{background:linear-gradient(135deg,#f0dab1,#be9152);color:#172838}
+.accountMuted{color:#647589}
+.accountAlert{background:#f0f4f6;color:#26435a}
+.accountForm :is(input,select,textarea){background:#fffefc;border-color:#ddd5c9}
+.accountForm :is(input,select,textarea):focus{border-color:#c5a16a;box-shadow:0 0 0 4px rgba(197,161,106,.14)}
+.accountStat strong,.accountPanel h1,.accountAuth h1{color:#15283b}
+.accountCard:hover,.accountStat:hover{border-color:#d3b788}
 `;
 
 
