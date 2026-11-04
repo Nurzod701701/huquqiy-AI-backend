@@ -5,6 +5,7 @@ try {
 }
 
 const http = require("http");
+const { applySecurityHeaders, guardSensitiveRequest } = require("./security-hardening");
 const querystring = require("querystring");
 
 const PORT = process.env.PORT || 3000;
@@ -13811,7 +13812,8 @@ const server =
     ) => {
 
       try {
-
+        applySecurityHeaders(req, res);
+        if (guardSensitiveRequest(req, res)) return;
 
         const url =
           getUrl(req);
