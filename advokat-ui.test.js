@@ -6,7 +6,9 @@ const pages={
  "/advokat-pro/documents":require("./advokat-pro"),
  "/advokat-pro/check":require("./advokat-check"),
  "/advokat-pro/grounded":require("./advokat-grounded"),
- "/advokat-pro/court-practice":require("./advokat-court-practice")
+ "/advokat-pro/court-practice":require("./advokat-court-practice"),
+ "/advokat-pro/cases":lang=>require("./advokat-cases-calendar")(lang,"cases"),
+ "/advokat-pro/calendar":lang=>require("./advokat-cases-calendar")(lang,"calendar")
 };
 const wrap=require("./advokat-language");
 const langs=["uz","ru","en"];
@@ -25,6 +27,13 @@ for(const lang of langs){
    for(const l of langs)assert.ok(html.includes('href="/advokat-pro?lang='+l+'"'));
    assert.ok(html.includes('href="/advokat-pro/grounded?lang='+lang+'"'));
    assert.ok(html.includes('href="/advokat-pro/documents?lang='+lang+'"'));
+   assert.ok(html.includes('href="/advokat-pro/cases?lang='+lang+'"'));
+   assert.ok(html.includes('href="/advokat-pro/calendar?lang='+lang+'"'));
+  }
+  if(path==="/advokat-pro/cases"||path==="/advokat-pro/calendar"){
+    for(const id of ["caseForm","taskForm","caseList","taskList","caseName","taskName","taskCase","dueDate","export","import","clear"]){
+      assert.equal((html.match(new RegExp('id="'+id+'"',"g"))||[]).length,1,path+" missing "+id);
+    }
   }
   const inline=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
   for(const [,script] of inline)new Function(script);
