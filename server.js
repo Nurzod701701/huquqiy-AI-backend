@@ -7024,7 +7024,8 @@ function aiPage(lang) {
 
 async function aiResultPage(
   lang,
-  form
+  form,
+  onGenerated = null
 ) {
 
   lang = getLang(lang);
@@ -7142,6 +7143,7 @@ async function aiResultPage(
 
 
   let answer = "";
+  let aiSucceeded = false;
 
 
   try {
@@ -7151,6 +7153,7 @@ async function aiResultPage(
         question,
         lang
       );
+    aiSucceeded = true;
 
   } catch (error) {
 
@@ -7172,6 +7175,10 @@ async function aiResultPage(
 
   }
 
+
+  if(aiSucceeded && typeof onGenerated==="function"){
+    try { onGenerated(question,answer); } catch(e){ console.error("ACCOUNT AI HISTORY SAVE ERROR",e.message); }
+  }
 
   return appLayout(
 
@@ -8428,7 +8435,7 @@ async function claimDocxBuffer(rawText){
   return Packer.toBuffer(doc);
 }
 
-async function claimResultPage(lang,form){
+async function claimResultPage(lang,form,onGenerated=null){
   lang=getLang(lang);
   const documentType=DOCUMENT_TYPES.find(x=>x.id===String(form.document_type||form.type||""))||DOCUMENT_TYPES[0];
   const L=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
@@ -8485,6 +8492,9 @@ QAT’IY QOIDALAR:
     return appLayout(lang,"documents",
       '<section class="surface surfacePad"><h2>Da’vo arizasi hozir yaratilmagan</h2><p>Generatsiya bajarilmadi. Texnik xatoni sudga topshiriladigan hujjat sifatida yuklab olmang.</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta urinish</a></section>',
       "Da’vo arizasi yaratilmagan","Hujjatni qayta yaratish zarur.");
+  }
+  if(typeof onGenerated==="function"){
+    try { onGenerated(localized(documentType.title,lang),answer); } catch(e){ console.error("ACCOUNT DOCUMENT SAVE ERROR",e.message); }
   }
   return appLayout(lang,"documents",`
     <div class="surface surfacePad">
@@ -13197,6 +13207,31 @@ function accountClearSession(req,res){
   const token=accountCookies(req).hq_session; const db=accountLoadDb(); db.sessions=db.sessions.filter(s=>s.token!==token); accountSaveDb(db);
   res.setHeader("Set-Cookie","hq_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0");
 }
+function accountStoreHistory(userId,kind,title,content,requestedCaseId=""){
+  const db=accountLoadDb();
+  const user=db.users.find(u=>u.id===userId && u.status==="active");
+  if(!user) return false;
+  const caseId=String(requestedCaseId||"");
+  const ownedCase=db.cases.find(c=>c.id===caseId && c.userId===userId);
+  const createdAt=accountNow();
+  const record={id:accountId(kind==="document"?"DOC":"CHT"),userId,caseId:ownedCase?ownedCase.id:null,
+    title:String(title||"").trim().slice(0,140)||"QOMUS",
+    createdAt,updatedAt:createdAt};
+  if(kind==="document"){
+    record.type="Da’vo arizasi";
+    record.text=String(content||"").slice(0,50000);
+    if(!record.text.trim()) return false;
+    db.documents.push(record);
+  } else if(kind==="conversation"){
+    record.question=String(title||"").slice(0,8000);
+    record.answer=String(content||"").slice(0,30000);
+    if(!record.answer.trim()) return false;
+    db.conversations.push(record);
+  } else return false;
+  accountAudit(db,userId,kind+"_saved",{recordId:record.id,caseId:record.caseId});
+  accountSaveDb(db);
+  return true;
+}
 function accountAudit(db,userId,action,meta={}){
   db.auditLogs.unshift({id:accountId("LOG"),userId:userId||null,action,meta,createdAt:accountNow()});
   db.auditLogs=db.auditLogs.slice(0,5000);
@@ -13534,13 +13569,23 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     if(req.method==="POST" && pathname==="/account/case/update"){
       const f=await readForm(req),db=accountLoadDb(),c=db.cases.find(x=>x.id===f.id&&x.userId===user.id); if(c){c.status=String(f.status||c.status);c.progress=Math.max(0,Math.min(100,Number(f.progress||0)));c.updatedAt=accountNow();accountAudit(db,user.id,"case_updated",{caseId:c.id,status:c.status,progress:c.progress});accountSaveDb(db);} accountRedirect(res,`/account/case?lang=${lang}&id=${encodeURIComponent(f.id||"")}`); return true;
     }
-    if(req.method==="GET" && pathname==="/account/documents"){const db=accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3>${esc(d.title)}</h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
-    if(req.method==="GET" && pathname==="/account/chats"){const db=accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"chats",at(lang,"chats"),items,c=>`<div class="accountCard"><h3>${esc(c.title||"AI suhbat")}</h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/documents"){const db=accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/chats"){const db=accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"chats",at(lang,"chats"),items,c=>`<div class="accountCard"><h3><a href="/account/chat?id=${encodeURIComponent(c.id)}&lang=${lang}">${esc(c.title||"AI suhbat")}</a></h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/document"){
+      const d=accountLoadDb().documents.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
+      if(!d){sendHtml(res,accountAppPage(lang,user,"documents","Hujjat topilmadi",accountMessage("Hujjat topilmadi.","error")),404);return true;}
+      sendHtml(res,accountAppPage(lang,user,"documents",d.title,`<section class="accountPanel"><h1>${esc(d.title)}</h1><p class="accountMuted">${esc(d.type||"Hujjat")} · ${esc(d.createdAt||"")}</p><div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7">${esc(d.text||"")}</div><a class="accountButton" href="/account/documents?lang=${lang}">← Hujjatlar</a></section>`));return true;
+    }
+    if(req.method==="GET" && pathname==="/account/chat"){
+      const c=accountLoadDb().conversations.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
+      if(!c){sendHtml(res,accountAppPage(lang,user,"chats","Suhbat topilmadi",accountMessage("Suhbat topilmadi.","error")),404);return true;}
+      sendHtml(res,accountAppPage(lang,user,"chats",c.title||"AI suhbat",`<section class="accountPanel"><h1>${esc(c.title||"AI suhbat")}</h1><p class="accountMuted">${esc(c.createdAt||"")}</p><h3>Savol</h3><div style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(c.question||"")}</div><h3>Javob</h3><div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7">${esc(c.answer||"")}</div><a class="accountButton" href="/account/chats?lang=${lang}">← AI suhbatlar</a></section>`));return true;
+    }
     if(req.method==="GET" && pathname==="/account/notifications"){const db=accountLoadDb(),items=db.notifications.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"notifications",at(lang,"notifications"),items,n=>`<div class="accountCard"><b>${esc(n.title)}</b><p>${esc(n.text||"")}</p></div>`,"Yangi bildirishnoma yo‘q."));return true;}
     if(req.method==="GET" && pathname==="/account/profile"){sendHtml(res,accountProfilePage(lang,user));return true;}
     if(req.method==="POST" && pathname==="/account/profile"){const f=await readForm(req),db=accountLoadDb(),u=db.users.find(x=>x.id===user.id);u.firstName=String(f.firstName||u.firstName).trim();u.lastName=String(f.lastName||u.lastName).trim();u.updatedAt=accountNow();accountAudit(db,u.id,"profile_updated",{});accountSaveDb(db);sendHtml(res,accountProfilePage(lang,u,(lang==="ru"?"Профиль сохранён.":lang==="en"?"Profile saved.":"Profil saqlandi.")));return true;}
     if(req.method==="GET" && pathname==="/account/security"){sendHtml(res,accountSecurityPage(lang,user));return true;}
-    if(req.method==="POST" && pathname==="/account/security"){const f=await readForm(req),db=accountLoadDb(),u=db.users.find(x=>x.id===user.id);let msg="Parol yangilandi.";if(!accountVerifyPassword(f.currentPassword,u.passwordHash)||String(f.newPassword||"").length<8||f.newPassword!==f.newPassword2){msg="Joriy parol yoki yangi parol ma’lumotlarida xato.";}else{u.passwordHash=accountHashPassword(f.newPassword);db.sessions=db.sessions.filter(s=>s.userId===u.id);accountAudit(db,u.id,"password_changed",{});accountSaveDb(db);accountSetSession(res,u.id);}sendHtml(res,accountSecurityPage(lang,u,msg));return true;}
+    if(req.method==="POST" && pathname==="/account/security"){const f=await readForm(req),db=accountLoadDb(),u=db.users.find(x=>x.id===user.id);let msg="Parol yangilandi.";if(!accountVerifyPassword(f.currentPassword,u.passwordHash)||String(f.newPassword||"").length<8||f.newPassword!==f.newPassword2){msg="Joriy parol yoki yangi parol ma’lumotlarida xato.";}else{u.passwordHash=accountHashPassword(f.newPassword);db.sessions=db.sessions.filter(s=>s.userId!==u.id);accountAudit(db,u.id,"password_changed",{});accountSaveDb(db);accountSetSession(res,u.id);}sendHtml(res,accountSecurityPage(lang,u,msg));return true;}
     if(req.method==="GET" && pathname==="/account/settings"){sendHtml(res,accountSettingsPage(lang,user));return true;}
   }
 
@@ -13662,10 +13707,12 @@ const server =
             await readForm(req);
 
 
+          const aiAuth=accountSession(req);
           const html =
             await aiResultPage(
               lang,
-              form
+              form,
+              aiAuth ? (question,answer)=>accountStoreHistory(aiAuth.user.id,"conversation",question,answer,url.searchParams.get("case")||form.case) : null
             );
 
 
@@ -13839,10 +13886,12 @@ const server =
             await readForm(req);
 
 
+          const docAuth=accountSession(req);
           const html =
             await claimResultPage(
               lang,
-              form
+              form,
+              docAuth ? (title,answer)=>accountStoreHistory(docAuth.user.id,"document",title,answer,url.searchParams.get("case")||form.case) : null
             );
 
 
