@@ -20,4 +20,6 @@ jobs:
       - run: node --check security-alerts.js
       - run: node --check secure-vault.js
       - run: node --check ai-privacy.js
+      - run: node --check database/neon-encrypted-store.js
+      - run: node --check test/neon-encrypted-store.test.js
       - run: npm run test:security
