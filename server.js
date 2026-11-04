@@ -512,53 +512,59 @@ ${lexEvidence.notes}
 Use only provisions actually visible in these excerpts for precise article-number claims. Other claims must be marked unverified. Do not claim the entire code or current amendment status has been fully checked.`
     : `LIVE LEXUZ CHECK FAILED. Do not state that any article number, deadline or provision was checked against LexUZ. Clearly say official text could not be fetched and provide relevant document link for manual verification. Prefer not to give precise article numbers or deadlines without evidence.`;
 
-  // OpenRouter: bepul model, chiqish tokenlari cheklangan.
+  // Try the configured model first. On a credit-only HTTP 402 response,
+  // retry once through OpenRouter's documented zero-priced free-model router.
+  // Free models are rate limited, may be unavailable and must not be trusted
+  // to invent judicial reasoning or legal citations.
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 45000);
-  let response;
+  const timeout = setTimeout(() => controller.abort(), 55000);
+  const messages = [
+    { role: "system", content: systemPrompt },
+    { role: "system", content: accuracyInstruction },
+    { role: "system", content: lexInstruction },
+    { role: "system", content: courtEvidence.instruction },
+    ...(context ? [{ role: "system", content: "Collected case information:\n" + context }] : []),
+    { role: "user", content: question }
+  ];
+  let response, data;
+  let usedFreeFallback = false;
   try {
-    response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      signal: controller.signal,
-      headers: {
-        Authorization: "Bearer " + OPENROUTER_API_KEY,
-        "Content-Type": "application/json",
-        "HTTP-Referer": process.env.SITE_URL || "https://QOMUS-backend.onrender.com",
-        "X-Title": "QOMUS"
-      },
-      body: JSON.stringify({
-        model: AI_MODEL,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "system", content: accuracyInstruction },
-          { role: "system", content: lexInstruction },
-           { role: "system", content: courtEvidence.instruction },
-          ...(context ? [{ role: "system", content: "Collected case information:\n" + context }] : []),
-          { role: "user", content: question }
-        ],
-        temperature: 0.2,
-        max_tokens: 450
-      })
-    });
+    for (const model of [...new Set([AI_MODEL, "openrouter/free"])]) {
+      response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          Authorization: "Bearer " + OPENROUTER_API_KEY,
+          "Content-Type": "application/json",
+          "HTTP-Referer": process.env.SITE_URL || "https://huquqiy-ai-backend.onrender.com",
+          "X-Title": "QOMUS"
+        },
+        body: JSON.stringify({ model, messages, temperature: 0.2, max_tokens: 450 })
+      });
+      try { data = await response.json(); }
+      catch (_) { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
+      if (response.ok) {
+        usedFreeFallback = model === "openrouter/free" && AI_MODEL !== model;
+        break;
+      }
+      const metadata = data?.error?.metadata || {};
+      console.error("OpenRouter request failed:", response.status,
+        metadata.limit_source || "unspecified", model === "openrouter/free" ? "free_fallback" : "primary");
+      // Retry only if primary failed because of credit/budget restriction.
+      // Other errors are surfaced rather than silently changing models.
+      if (response.status === 402 && model !== "openrouter/free" && AI_MODEL !== "openrouter/free") continue;
+      if (response.status === 402) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
+      if (response.status === 401) throw new Error("OPENROUTER_AUTH_FAILED");
+      if (response.status === 429) throw new Error("OPENROUTER_RATE_LIMIT");
+      throw new Error("OPENROUTER_HTTP_" + response.status);
+    }
   } catch (error) {
-    if (error?.name === "AbortError") throw new Error("OpenRouter javobi 45 soniyada kelmadi (timeout).");
-    throw new Error("OpenRouter bilan tarmoq aloqasi uzildi: " + (error?.message || "unknown"));
+    if (error?.name === "AbortError") throw new Error("OpenRouter javobi 55 soniyada kelmadi (timeout).");
+    throw error;
   } finally {
     clearTimeout(timeout);
   }
-
-  let data;
-  try { data = await response.json(); }
-  catch { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
-
-  if (!response.ok) {
-    const details = data?.error?.message || "Unknown API error";
-    console.error("OpenRouter API error:", response.status, response.status === 402 ? "credits_or_key_limit" : "provider_failure");
-    if (response.status === 402) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
-    if (response.status === 401) throw new Error("OpenRouter API kaliti noto‘g‘ri yoki bekor qilingan (401).");
-    if (response.status === 429) throw new Error("OpenRouter bepul model limiti (429): " + details);
-    throw new Error("OpenRouter API HTTP " + response.status + ": " + details);
-  }
+  if (!response?.ok) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
   let content = data?.choices?.[0]?.message?.content;
   if (!content) throw new Error("OpenRouter bo‘sh javob qaytardi.");
   // A fetched excerpt is evidence, NOT full article-by-article verification.
@@ -567,6 +573,9 @@ Use only provisions actually visible in these excerpts for precise article-numbe
     ? {uz:'\n\n📚 LexUZ: rasmiy sahifadan qonun matnining ayrim parchalari olindi. Barcha moddalar va amaldagi tahrir to‘liq tekshirilmagan.', ru:'\n\n📚 LexUZ: получены фрагменты текста с официального сайта. Не все статьи и редакции проверены.', en:'\n\n📚 LexUZ: excerpts were retrieved from the official website. Not all articles or amendments were verified.'}
     : {uz:'\n\n⚠️ LexUZ bilan jonli tekshiruv amalga oshmadi. Modda va muddatlarni rasmiy saytda tekshiring.',ru:'\n\n⚠️ Не удалось проверить данные на LexUZ в реальном времени. Проверьте статьи и сроки на официальном сайте.',en:'\n\n⚠️ Live LexUZ verification was unavailable. Check article numbers and deadlines on the official website.'};
   content += (evidenceStatus[lang] || evidenceStatus.uz);
+  if (usedFreeFallback) {
+    content += {uz:"\n\nℹ️ Asosiy AI modelining kredit limiti yetmagani sababli vaqtincha bepul zaxira model ishlatildi. Muhim huquqiy xulosalarni rasmiy manbadan tekshiring.",ru:"\n\nℹ️ Из-за лимита основного сервиса использована бесплатная резервная модель. Проверьте важные выводы по официальным источникам.",en:"\n\nℹ️ A free backup model was used because the primary model had insufficient credits. Verify material legal conclusions against official sources."}[lang];
+  }
   if (!courtEvidence.found) {
     const courtNotice={uz:"\n\n⚖️ Sud amaliyoti: ushbu savolga mos, matni tekshirilgan sud qarori bazada hozircha mavjud emas. Sudlar qanday qaror chiqarganiga doir xulosa berilmadi.",ru:"\n\n⚖️ Судебная практика: проверенные тексты аналогичных решений пока недоступны. Выводы о прежних судебных решениях не делались.",en:"\n\n⚖️ Court practice: no reviewed comparable judgment texts are available. No claims about prior rulings are made."};
     content+=(courtNotice[lang]||courtNotice.uz);
@@ -7151,7 +7160,9 @@ async function aiResultPage(
     );
 
 
-    answer = error?.message === "OPENROUTER_CREDITS_EXHAUSTED"
+    answer = error?.message === "OPENROUTER_RATE_LIMIT" ? (lang === "uz" ? "OpenRouter bepul modelining so‘rov limiti tugagan (HTTP 429). Keyinroq urinib ko‘ring yoki hisobingizdagi limitni tekshiring." : lang === "ru" ? "Превышен лимит бесплатной модели OpenRouter (HTTP 429)." : "OpenRouter free model rate limit exceeded (HTTP 429).")
+      : error?.message === "OPENROUTER_AUTH_FAILED" ? (lang === "uz" ? "OpenRouter API kaliti noto‘g‘ri yoki bekor qilingan (HTTP 401)." : lang === "ru" ? "Ключ OpenRouter недействителен (HTTP 401)." : "OpenRouter API key invalid (HTTP 401).")
+      : error?.message === "OPENROUTER_CREDITS_EXHAUSTED"
       ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Javob token limiti vaqtincha 450 ga tushirildi, lekin bu kredit tugagan bo‘lsa yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
       : lang === "uz"
         ? "AI xizmatiga ulanishda xatolik yuz berdi. OPENROUTER_API_KEY va server sozlamalarini tekshiring."
