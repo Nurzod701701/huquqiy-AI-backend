@@ -1,6 +1,7 @@
 "use strict";
 
 // QOMUS security pilot. Protects auth endpoints without storing any credentials.
+const { alertEvent } = require("./security-alerts");
 const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 12;
 const MAX_TRACKED_ADDRESSES = 20000;
@@ -73,18 +74,21 @@ function guardSensitiveRequest(req, res) {
   const route = requestedPath(req);
   const fetchSite = String(req.headers["sec-fetch-site"] || "").toLowerCase();
   if (fetchSite === "cross-site" && (/^\/account(?:\/|$)/.test(route) || /^\/admin(?:\/|$)/.test(route))) {
+    alertEvent("CROSS_SITE_POST", addressKey(req), route);
     deny(res, 403, "Cross-site request rejected.");
     return true;
   }
   // Browser forms that modify an authenticated account must originate on QOMUS.
   if ((/^\/account(?:\/|$)/.test(route) || route === "/admin/user-status") &&
       /(?:^|;\s*)hq_session=/.test(String(req.headers.cookie || "")) && !sameOrigin(req)) {
+    alertEvent("INVALID_ORIGIN", addressKey(req), route);
     deny(res, 403, "Request origin could not be verified.");
     return true;
   }
   if (AUTH_POST_ROUTES.has(route)) {
     const retryAfter = tooManyAttempts(req);
     if (retryAfter) {
+      alertEvent("AUTH_RATE_LIMIT", addressKey(req), route);
       deny(res, 429, "Too many attempts. Please try again later.", retryAfter);
       return true;
     }
