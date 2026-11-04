@@ -18,7 +18,7 @@ module.exports=function(language,pathname,html){
  '</style>';
  const toolbar='<nav class="advokatLanguageBar" aria-label="'+label+'"><span>'+label+':</span>'+links+'</nav>';
  const output=String(html);
- const headAt=output.toLowerCase().lastIndexOf("</head>");
+ const headAt=output.toLowerCase().indexOf("</head>");
  const withStyle=headAt<0?output:output.slice(0,headAt)+style+output.slice(headAt);
  const bodyAt=withStyle.toLowerCase().lastIndexOf("</body>");
  return bodyAt<0?withStyle:withStyle.slice(0,bodyAt)+toolbar+withStyle.slice(bodyAt);
