@@ -394,6 +394,7 @@ async function callAI(question, lang = "uz", context = "") {
   lang = getLang(lang);
 
   const lexEvidence = await getLexuzEvidence(question + " " + context.slice(0, 400));
+  const courtEvidence = require("./court-practice-reasoning").evidence(question + " " + context.slice(0, 1200));
 
   const languageInstruction = {
     uz: "Faqat o‘zbek tilida javob ber.",
@@ -419,6 +420,8 @@ IMPORTANT RULES:
    - information that needs verification.
 
 4. Do not promise a court outcome.
+
+4a. When reviewed court-practice evidence is provided, explain how the judge reasoned, which legally material facts were comparable, which were different, and why the outcome may differ. Never invent a judge, a decision, case number, quotation, or judicial trend. If no verified judgment was retrieved, say that court practice could not be confirmed and rely on legislation.
 
 5. Whenever mentioning a law article, write the law name immediately before its article number, e.g. "Oila kodeksining 99-moddasi". The interface makes the article text clickable. Every substantive legal answer MUST cite relevant official legal documents with clickable full LexUZ URLs (https://lex.uz/docs/-ID). Do not merely write "LexUZ" without a URL. Cite exact article numbers only if confidently supported; never invent an article number, paragraph anchor, or legal act. If the precise provision is uncertain, cite the correct law document URL and state that the article requires confirmation. Put a short "Normativ manbalar / Правовые источники / Legal sources" section at the end. Known official document URLs:
 - Mehnat kodeksi: https://lex.uz/docs/-6257288
@@ -517,6 +520,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
           { role: "system", content: systemPrompt },
           { role: "system", content: accuracyInstruction },
           { role: "system", content: lexInstruction },
+           { role: "system", content: courtEvidence.instruction },
           ...(context ? [{ role: "system", content: "Collected case information:\n" + context }] : []),
           { role: "user", content: question }
         ],
@@ -550,6 +554,10 @@ Use only provisions actually visible in these excerpts for precise article-numbe
     ? {uz:'\n\n📚 LexUZ: rasmiy sahifadan qonun matnining ayrim parchalari olindi. Barcha moddalar va amaldagi tahrir to‘liq tekshirilmagan.', ru:'\n\n📚 LexUZ: получены фрагменты текста с официального сайта. Не все статьи и редакции проверены.', en:'\n\n📚 LexUZ: excerpts were retrieved from the official website. Not all articles or amendments were verified.'}
     : {uz:'\n\n⚠️ LexUZ bilan jonli tekshiruv amalga oshmadi. Modda va muddatlarni rasmiy saytda tekshiring.',ru:'\n\n⚠️ Не удалось проверить данные на LexUZ в реальном времени. Проверьте статьи и сроки на официальном сайте.',en:'\n\n⚠️ Live LexUZ verification was unavailable. Check article numbers and deadlines on the official website.'};
   content += (evidenceStatus[lang] || evidenceStatus.uz);
+  if (!courtEvidence.found) {
+    const courtNotice={uz:"\n\n⚖️ Sud amaliyoti: ushbu savolga mos, matni tekshirilgan sud qarori bazada hozircha mavjud emas. Sudlar qanday qaror chiqarganiga doir xulosa berilmadi.",ru:"\n\n⚖️ Судебная практика: проверенные тексты аналогичных решений пока недоступны. Выводы о прежних судебных решениях не делались.",en:"\n\n⚖️ Court practice: no reviewed comparable judgment texts are available. No claims about prior rulings are made."};
+    content+=(courtNotice[lang]||courtNotice.uz);
+  }
   // Hech bir modelning javobi qonun matni bilan avtomatik solishtirilmaydi.
   // Aniq aniqlangan noto'g'ri umumiy qoida bo'lsa, ogohlantirish qo'shamiz.
   const employmentQuestion = /mehnat shartnoma|трудов(ого|ой) договор|employment contract/i.test(question);
