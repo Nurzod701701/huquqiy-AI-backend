@@ -3152,6 +3152,53 @@ body{background:var(--bg);color:var(--ink)}
 @media(prefers-reduced-motion:no-preference){
   .serviceCard,.sourceCard,.btn{transition:transform .19s ease,box-shadow .19s ease,border-color .19s ease}
 }
+
+/* QOMUS MOTION STUDIO — restrained, GPU-friendly interactive depth. */
+:root{--q-ease:cubic-bezier(.22,1,.36,1)}
+@keyframes q-fade-rise{from{opacity:.72;transform:translate3d(0,14px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes q-gold-pulse{0%,100%{box-shadow:0 7px 20px rgba(197,161,106,.12)}50%{box-shadow:0 11px 28px rgba(197,161,106,.2)}}
+@media(prefers-reduced-motion:no-preference){
+ .q-reveal{animation:q-fade-rise .75s var(--q-ease) both}
+ .q-reveal:nth-child(2){animation-delay:.06s}
+ .q-reveal:nth-child(3){animation-delay:.11s}
+ .q-reveal:nth-child(4){animation-delay:.16s}
+ .serviceCard,.sourceCard,.accountCard,.accountStat,.coreItem{
+   transition:transform .55s var(--q-ease),box-shadow .55s var(--q-ease),border-color .4s ease;
+   will-change:auto;
+ }
+ .q-motion-tilt{
+   --qrx:0deg;--qry:0deg;
+   transform:perspective(950px) rotateX(var(--qrx)) rotateY(var(--qry)) translate3d(0,0,0);
+   transform-style:preserve-3d;
+   backface-visibility:hidden;
+ }
+ .q-motion-tilt:hover{
+   transform:perspective(950px) rotateX(var(--qrx)) rotateY(var(--qry)) translate3d(0,-6px,0);
+   box-shadow:0 24px 52px rgba(15,31,48,.14),0 8px 18px rgba(197,161,106,.10);
+ }
+ .q-motion-tilt :is(.serviceIcon,.serviceArrow,.accountBadge){
+   transition:transform .55s var(--q-ease);
+ }
+ .q-motion-tilt:hover :is(.serviceIcon,.serviceArrow,.accountBadge){transform:translate3d(0,-2px,14px)}
+ .btn,.accountButton,.navlinks a,.sideLink,.accountSide a{
+   transition:transform .35s var(--q-ease),box-shadow .35s var(--q-ease),background-color .25s ease,border-color .25s ease,color .25s ease;
+ }
+ .btn:active,.accountButton:active{transform:translate3d(0,1px,0) scale(.985)}
+ .brandMark{transition:transform .6s var(--q-ease),box-shadow .6s var(--q-ease)}
+ .brand:hover .brandMark{transform:translate3d(0,-2px,0) rotate(-3deg);box-shadow:0 12px 24px rgba(15,31,48,.19)}
+ .btnGold:hover{animation:q-gold-pulse 2.4s ease-in-out infinite}
+ .nav{transition:box-shadow .45s ease,background-color .45s ease}
+ .nav.q-nav-scrolled{box-shadow:0 10px 26px rgba(14,32,50,.105);background-color:rgba(255,253,250,.98)}
+}
+@media(hover:none),(pointer:coarse){
+ .q-motion-tilt,.q-motion-tilt:hover{transform:none!important}
+ .serviceCard,.sourceCard,.accountCard,.accountStat{will-change:auto!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .q-reveal{animation:none!important}
+ .q-motion-tilt,.q-motion-tilt:hover{transform:none!important}
+ .btnGold:hover{animation:none!important}
+}
 `;
 // ======================================================
 // PART 2/4
@@ -5725,6 +5772,60 @@ function footer(lang = "uz") {
 // ======================================================
 // ASOSIY HTML PAGE WRAPPER
 // ======================================================
+
+const QOMUS_MOTION_SCRIPT = `<script>
+(function(){
+  "use strict";
+  if(!window.matchMedia || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var finePointer=window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+  var revealSelectors=".heroCopy,.heroVisual,.sectionHead,.quickBox,.serviceCard,.sourceCard,.coreItem,.accountHero,.accountStat,.accountCard";
+  var elements=Array.prototype.slice.call(document.querySelectorAll(revealSelectors));
+  if("IntersectionObserver" in window){
+    var observer=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add("q-reveal");
+          observer.unobserve(entry.target);
+        }
+      });
+    },{rootMargin:"0px 0px -35px 0px",threshold:.08});
+    elements.forEach(function(el){observer.observe(el);});
+  }
+  if(finePointer){
+    Array.prototype.slice.call(document.querySelectorAll(".serviceCard,.sourceCard,.accountCard,.accountStat")).forEach(function(card){
+      var frame=0,point=null;
+      card.classList.add("q-motion-tilt");
+      function update(){
+        frame=0;
+        if(!point)return;
+        var b=card.getBoundingClientRect();
+        var x=(point.x-b.left)/Math.max(1,b.width)-.5;
+        var y=(point.y-b.top)/Math.max(1,b.height)-.5;
+        card.style.setProperty("--qrx",(-y*5).toFixed(2)+"deg");
+        card.style.setProperty("--qry",(x*5).toFixed(2)+"deg");
+      }
+      card.addEventListener("pointermove",function(e){
+        if(e.pointerType!=="mouse")return;
+        point={x:e.clientX,y:e.clientY};
+        if(!frame)frame=requestAnimationFrame(update);
+      },{passive:true});
+      card.addEventListener("pointerleave",function(){
+        if(frame)cancelAnimationFrame(frame);
+        frame=0;point=null;
+        card.style.setProperty("--qrx","0deg");card.style.setProperty("--qry","0deg");
+      },{passive:true});
+    });
+  }
+  var nav=document.querySelector(".nav");
+  if(nav){
+    var ticking=false;
+    function refresh(){ticking=false;nav.classList.toggle("q-nav-scrolled",window.scrollY>18);}
+    refresh();
+    window.addEventListener("scroll",function(){if(!ticking){ticking=true;requestAnimationFrame(refresh);}}, {passive:true});
+  }
+})();
+<\/script>`;
+
 function page({ lang = "uz", title = "QOMUS", content = "" } = {}) {
   lang = getLang(lang);
 
@@ -5741,6 +5842,7 @@ function page({ lang = "uz", title = "QOMUS", content = "" } = {}) {
   ${navigation(lang)}
   <main>${content || ""}</main>
   ${footer(lang)}
+  ${QOMUS_MOTION_SCRIPT}
 </body>
 </html>`;
 }
@@ -13407,6 +13509,12 @@ const ACCOUNT_CSS = `
 .accountForm :is(input,select,textarea):focus{border-color:#c5a16a;box-shadow:0 0 0 4px rgba(197,161,106,.14)}
 .accountStat strong,.accountPanel h1,.accountAuth h1{color:#15283b}
 .accountCard:hover,.accountStat:hover{border-color:#d3b788}
+
+/* Delicate 3D motion for account cards, without moving forms or tables. */
+.accountCard,.accountStat{transform-origin:center center}
+@media(prefers-reduced-motion:no-preference) and (hover:hover){
+ .accountCard:not(.q-motion-tilt):hover,.accountStat:not(.q-motion-tilt):hover{transform:translateY(-4px)}
+}
 `;
 
 
@@ -13482,7 +13590,7 @@ function at(lang, key){
 // ===================== ACCOUNT I18N END =====================
 
 function accountPublicPage(lang,title,body){
-  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body>${navigation(lang)}<main class="accountWrap">${body}</main>${footer(lang)}</body></html>`;
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body>${navigation(lang)}<main class="accountWrap">${body}</main>${footer(lang)}${QOMUS_MOTION_SCRIPT}</body></html>`;
 }
 
 const ACCOUNT_EXTRA_TRANSLATIONS = {"QOMUS shaxsiy ish maydoni": ["Личный кабинет QOMUS", "QOMUS personal workspace"], "Dashboard": ["Главная", "Dashboard"], "ADMIN PANEL": ["ПАНЕЛЬ АДМИНИСТРАТОРА", "ADMIN PANEL"], "Owner / Admin panel": ["Панель владельца / администратора", "Owner / Admin panel"], "QOMUS boshqaruv markazi": ["Центр управления QOMUS", "QOMUS Management Center"], "Foydalanuvchilar, huquqiy ishlar, hujjatlar va audit faoliyatini boshqaring.": ["Управляйте пользователями, юридическими делами, документами и аудитом.", "Manage users, legal cases, documents and audit activity."], "Foydalanuvchilar": ["Пользователи", "Users"], "Faol account": ["Активные аккаунты", "Active accounts"], "Huquqiy ishlar": ["Юридические дела", "Legal cases"], "Hujjatlar": ["Документы", "Documents"], "Accountlar va statuslarni boshqarish.": ["Управление аккаунтами и статусами.", "Manage accounts and statuses."], "Cases": ["Дела", "Cases"], "Platformadagi huquqiy ishlar metadata-si.": ["Метаданные юридических дел платформы.", "Platform legal-case metadata."], "Audit log": ["Журнал аудита", "Audit log"], "Muhim boshqaruv va account hodisalari.": ["Важные события управления и аккаунтов.", "Important management and account events."], "Xush kelibsiz, ": ["Добро пожаловать, ", "Welcome, "], "Huquqiy ishlaringiz, hujjatlaringiz va AI maslahatlaringiz shu yerda boshqariladi.": ["Здесь вы управляете юридическими делами, документами и консультациями.", "Manage your legal cases, documents and consultations here."], "Faol ishlar": ["Активные дела", "Active cases"], "AI suhbatlar": ["Чаты с помощником", "Assistant chats"], "Yakunlangan": ["Завершено", "Completed"], "Oxirgi huquqiy ishlar": ["Последние юридические дела", "Recent legal cases"], "Davom ettirish uchun ishni tanlang.": ["Выберите дело для продолжения.", "Select a case to continue."], "＋ Yangi ish": ["＋ Новое дело", "＋ New case"], "Yo‘nalish": ["Направление", "Area"], "Masala": ["Вопрос", "Matter"], "Ochish": ["Открыть", "Open"], "Hali huquqiy ish ochilmagan.": ["Юридических дел пока нет.", "No legal cases yet."], "Mening huquqiy ishlarim": ["Мои юридические дела", "My legal cases"], "Har bir masala alohida Case ID bilan saqlanadi.": ["Каждое дело сохраняется с отдельным идентификатором.", "Each case is saved with a unique case ID."], "Nomi": ["Название", "Title"], "Sana": ["Дата", "Date"], "Hali ish yo‘q.": ["Дел пока нет.", "No cases yet."], "Yangi ish ochish": ["Создать новое дело", "Create new case"], "Muammoni tanlang. Keyin mavjud QOMUS modullaridan davom etishingiz mumkin.": ["Выберите вопрос, затем продолжите в модулях QOMUS.", "Choose an issue, then continue in QOMUS modules."], "Huquq sohasi": ["Область права", "Area of law"], "Masala nomi": ["Название дела", "Case title"], "Qisqa tavsif": ["Краткое описание", "Short description"], "Ishni yaratish": ["Создать дело", "Create case"], "Oila huquqi": ["Семейное право", "Family law"], "Mehnat huquqi": ["Трудовое право", "Employment law"], "Biznes huquqi": ["Предпринимательское право", "Business law"], "Fuqarolik huquqi": ["Гражданское право", "Civil law"], "Boshqa": ["Другое", "Other"], "Ish tafsilotlari": ["Сведения о деле", "Case details"], "Tavsif kiritilmagan.": ["Описание не добавлено.", "No description provided."], "Huquqiy modulni ochish": ["Открыть юридический модуль", "Open legal module"], "AI maslahat": ["Юридическая консультация", "Legal consultation"], "Hujjat yaratish": ["Создать документ", "Create document"], "Case hujjatlari": ["Документы дела", "Case documents"], "Hali hujjat biriktirilmagan.": ["Документы пока не прикреплены.", "No documents attached yet."], "Statusni yangilash": ["Обновить статус", "Update status"], "Saqlash": ["Сохранить", "Save"], "AI faoliyati": ["Активность помощника", "Assistant activity"], "shu ishga bog‘langan suhbat": ["чатов по этому делу", "chats linked to this case"], "Shaxsiy profilingizga bog‘langan ma’lumotlar.": ["Данные, связанные с вашим профилем.", "Data linked to your profile."], "ma’lumotlari": [" — данные", " details"], "Ism": ["Имя", "First name"], "Familiya": ["Фамилия", "Last name"], "Rol": ["Роль", "Role"], "Email holati": ["Статус почты", "Email status"], "Tasdiqlangan": ["Подтверждён", "Verified"], "Tasdiqlanmagan": ["Не подтверждён", "Not verified"], "Parol va sessiyalar": ["Пароль и сеансы", "Password and sessions"], "Joriy parol": ["Текущий пароль", "Current password"], "Yangi parol": ["Новый пароль", "New password"], "Yangi parolni takrorlang": ["Повторите новый пароль", "Confirm new password"], "Parolni almashtirish": ["Изменить пароль", "Change password"], "Til": ["Язык", "Language"], "Interfeys tili URL orqali UZ/RU/EN ishlaydi.": ["Язык интерфейса выбирается через UZ/RU/EN.", "Choose the interface language using UZ/RU/EN."], "Maxfiylik": ["Конфиденциальность", "Privacy"], "Rozilik va account faoliyati audit jurnalida qayd etiladi.": ["Согласия и действия аккаунта записываются в журнал аудита.", "Consent and account activity are recorded in the audit log."], "Admin uchun zarur account metadata. Maxfiy AI matnlari bu jadvalda ko‘rsatilmaydi.": ["Метаданные аккаунтов для администратора. Частные чаты здесь не показываются.", "Account metadata for administrators. Private chats are not shown."], "Ro‘yxat": ["Регистрация", "Registered"], "Amal": ["Действие", "Action"], "Ha": ["Да", "Yes"], "Yo‘q": ["Нет", "No"], "Owner": ["Владелец", "Owner"], "Barcha huquqiy ishlar": ["Все юридические дела", "All legal cases"], "Boshqaruv metadata-si. Foydalanuvchining maxfiy AI yozishmasi avtomatik ochilmaydi.": ["Метаданные управления. Частные переписки пользователей не раскрываются.", "Management metadata. Private user chats are not automatically disclosed."], "Foydalanuvchi": ["Пользователь", "User"], "Case yo‘q.": ["Дел нет.", "No cases."], "Vaqt": ["Время", "Time"], "Hodisa": ["Событие", "Event"], "Ish topilmadi": ["Дело не найдено", "Case not found"], "Bu ish topilmadi.": ["Дело не найдено.", "This case was not found."]};
