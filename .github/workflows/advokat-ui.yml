@@ -1,0 +1,21 @@
+name: Advokat PRO UI regression checks
+on:
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'advokat-*.js'
+      - 'advokat-ui.test.js'
+      - '.github/workflows/advokat-ui.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check server.js
+      - name: Advocate language and buttons regression
+        run: node advokat-ui.test.js
