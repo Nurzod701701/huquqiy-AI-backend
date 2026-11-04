@@ -3085,95 +3085,173 @@ body{
 }
 
 
-/* QOMUS ORIGINAL DESIGN POLISH — preserves palette, structure, routes and content. */
-:root{--qomus-focus:rgba(166,125,66,.80);--qomus-soft-shadow:0 12px 34px rgba(6,17,31,.065)}
-:where(a,button,input,select,textarea,[tabindex]):focus-visible{
-  outline:3px solid var(--qomus-focus);
+/* CLASSIC QOMUS — subtle dimensional finish; original geometry and colors retained. */
+:root{--qomus-classic-gold:#c9a86a;--qomus-classic-shadow:0 12px 30px rgba(6,17,31,.075)}
+:where(.serviceCard,.sourceCard,.quickBox){
+  transform:translateZ(0);
+  backface-visibility:hidden;
+}
+:where(.serviceCard,.sourceCard):hover{
+  box-shadow:0 19px 40px rgba(6,17,31,.11),0 2px 7px rgba(6,17,31,.035);
+}
+:where(.btnPrimary,.btnGold):hover{
+  box-shadow:0 12px 28px rgba(6,17,31,.16),inset 0 1px 0 rgba(255,255,255,.14);
+}
+:where(.serviceIcon,.brandMark){
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.42),0 7px 15px rgba(6,17,31,.055);
+}
+:where(a,button,input,select,textarea):focus-visible{
+  outline:2px solid var(--qomus-classic-gold);
   outline-offset:3px;
-}
-:where(button,.btn,.serviceCard,.sideLink,.navlinks a,.accountButton){
-  touch-action:manipulation;
-}
-:where(input,select,textarea){
-  accent-color:#a67d42;
-}
-:where(.serviceCard,.sourceCard,.appPanel,.panel,.surface){
-  box-shadow:var(--qomus-soft-shadow);
-}
-:where(.serviceCard,.sourceCard,.appPanel,.panel,.surface):hover{
-  border-color:rgba(166,125,66,.35);
-}
-:where(.btn,.sideLink,.navlinks a,.appHomeButton){
-  transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease;
-}
-:where(.btn,.accountButton):active{transform:translateY(1px)}
-:where(.appMain,.appPage,.accountMain){min-width:0}
-:where(.appMain,.accountMain) :where(img,video,svg){max-width:100%}
-:where(.appMain,.accountMain) :where(p,li){overflow-wrap:break-word}
-@media(max-width:760px){
-  :where(.btn,.mobileMenu,.mobileAccountDirect){min-height:44px}
-  :where(.serviceCard,.sourceCard){height:auto}
-  :where(.appMain,.accountMain){overflow-wrap:anywhere}
-  :where(.appMain,.accountMain) :where(table){max-width:100%}
 }
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 
-/* QOMUS DESIGN HARMONY V2: classic editorial elegance + contemporary readability.
-   Preserves existing routes, content, layout and established navy/gold colors. */
+/* QOMUS PEARL NAVY 2026 — refined palette only, existing layout unchanged. */
 :root{
-  --qomus-heading:Georgia,"Times New Roman",serif;
-  --qomus-ui:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  --qomus-radius:16px;
-  --qomus-line:#e1e7ed;
-  --qomus-accent:#c9a86a;
-  --qomus-elevation:0 13px 36px rgba(6,17,31,.065);
+  --navy:#0b192b;
+  --navy2:#152d46;
+  --navy3:#21435f;
+  --gold:#c5a16a;
+  --gold2:#e5cb9b;
+  --gold3:#a27a44;
+  --goldSoft:#faf3e7;
+  --ink:#18293a;
+  --muted:#647589;
+  --bg:#f6f5f2;
+  --surface:#fffdfb;
+  --line:#e6e2db;
+  --line2:#d8d1c7;
+  --shadow:0 16px 40px rgba(14,32,50,.075);
+  --shadowStrong:0 24px 56px rgba(14,32,50,.12);
 }
-body{font-family:var(--qomus-ui);font-size:16px;line-height:1.62;letter-spacing:-.006em}
-.hero h1,.sectionTitle,.quickBox h2,.roadmapHeader strong,
-.serviceCard h3,.sourceCard h3{
-  font-family:var(--qomus-heading);
-  font-weight:600;
-  letter-spacing:-.024em;
+body{background:var(--bg);color:var(--ink)}
+.nav{background:rgba(255,253,250,.96);border-bottom-color:rgba(197,161,106,.23);box-shadow:0 5px 20px rgba(15,31,48,.045)}
+.brandMark{background:linear-gradient(145deg,#0b192b,#22415d);border-color:rgba(229,203,155,.5)}
+.navlinks a{color:#495c70}
+.navlinks a:hover{background:#f3eee5;color:var(--navy)}
+.languages{background:#f9f6f1;border-color:#e7ded2}
+.hero{background:radial-gradient(circle at 81% 14%,rgba(197,161,106,.105),transparent 31%),linear-gradient(175deg,#fffdfa 0%,#f6f5f2 100%)}
+.hero h1 span{color:#365f79}
+.heroDescription,.sectionText{color:#617387}
+.eyebrow{background:linear-gradient(110deg,#fcf7ef,#f8eddb);border-color:#e8d5b5;color:#876239}
+.btnPrimary{background:linear-gradient(145deg,#0b192b,#1b3b55);border-color:rgba(229,203,155,.38)}
+.btnGold{background:linear-gradient(145deg,#f0dab1,#caa36b);color:#172838;border-color:#d4b47f;box-shadow:0 10px 24px rgba(162,122,68,.15),inset 0 1px 0 rgba(255,255,255,.55)}
+.btnOutline{background:#fffdfa;border-color:#dfd6ca;color:#23384a}
+.quickBox{background:radial-gradient(circle at 89% 8%,rgba(229,203,155,.12),transparent 36%),linear-gradient(135deg,#0b192b,#173550);border-color:rgba(229,203,155,.31)}
+.serviceCard,.sourceCard,.coreItem{background:#fffdfb;border-color:#e7e1d7}
+.serviceCard{box-shadow:0 10px 26px rgba(14,32,50,.055),0 1px 0 rgba(255,255,255,.8) inset}
+.serviceCard:hover{border-color:#d2b17e;box-shadow:0 18px 40px rgba(14,32,50,.09)}
+.serviceIcon{background:linear-gradient(150deg,#fbf4e8,#f3f1ec);border-color:#e7dac8;color:#21425d}
+.roadNumber{background:#f9f3e9;border-color:#e8dccb;color:#5c5143}
+.roadStep{border-bottom-color:#e9e5de}
+.coreSection{background:#f1efeb;border-color:#e6e0d6}
+.coreGrid{background:#e3ddd4;border-color:#e3ddd4}
+@media(prefers-reduced-motion:no-preference){
+  .serviceCard,.sourceCard,.btn{transition:transform .19s ease,box-shadow .19s ease,border-color .19s ease}
 }
-.hero h1{font-size:clamp(42px,5.1vw,70px);line-height:1.09;letter-spacing:-.038em}
-.heroDescription{font-size:clamp(16px,1.4vw,18px);line-height:1.75}
-.sectionTitle{font-size:clamp(30px,3.5vw,44px);line-height:1.18}
-.quickBox h2{font-size:clamp(25px,2.6vw,32px)}
-.serviceCard h3{font-size:clamp(19px,1.6vw,22px);line-height:1.28}
-.sourceCard h3{font-size:20px;line-height:1.32}
-.brandText strong{font-family:var(--qomus-heading);font-size:23px;font-weight:700;letter-spacing:-.035em}
-.brandText small{font-size:9px;letter-spacing:.11em}
-.navlinks{gap:2px;min-width:0}
-.navlinks a{font-size:clamp(12px,.95vw,14px);padding:10px 9px;line-height:1.3}
-.languages a{font-size:11px}
-.eyebrow{font-size:11px;letter-spacing:.085em;line-height:1.45}
-.sectionText,.quickBox p,.serviceCard p,.coreItem p,.sourceCard p{line-height:1.7}
-.serviceCard p,.coreItem p,.sourceCard p{font-size:14px}
-.btn{font-family:var(--qomus-ui);font-size:14px;font-weight:750;line-height:1.4;min-height:48px;border-radius:11px}
-.serviceCard,.sourceCard{border-color:var(--qomus-line);border-radius:var(--qomus-radius)}
-.serviceCard{min-height:230px;padding:25px;box-shadow:var(--qomus-elevation)}
-.serviceIcon{border-radius:12px}
-.serviceCard:hover{transform:translateY(-3px);box-shadow:0 20px 42px rgba(6,17,31,.095)}
-.quickBox{border-radius:20px}
-:where(.sidebar,.accountSide) :where(a,button):focus-visible{
-  outline:3px solid var(--gold2);outline-offset:3px
+
+/* QOMUS MOTION STUDIO — restrained, GPU-friendly interactive depth. */
+:root{--q-ease:cubic-bezier(.22,1,.36,1)}
+@keyframes q-fade-rise{from{opacity:.72;transform:translate3d(0,14px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes q-gold-pulse{0%,100%{box-shadow:0 7px 20px rgba(197,161,106,.12)}50%{box-shadow:0 11px 28px rgba(197,161,106,.2)}}
+@media(prefers-reduced-motion:no-preference){
+ .q-reveal{animation:q-fade-rise .75s var(--q-ease) both}
+ .q-reveal:nth-child(2){animation-delay:.06s}
+ .q-reveal:nth-child(3){animation-delay:.11s}
+ .q-reveal:nth-child(4){animation-delay:.16s}
+ .serviceCard,.sourceCard,.accountCard,.accountStat,.coreItem{
+   transition:transform .55s var(--q-ease),box-shadow .55s var(--q-ease),border-color .4s ease;
+   will-change:auto;
+ }
+ .q-motion-tilt{
+   --qrx:0deg;--qry:0deg;
+   transform:perspective(950px) rotateX(var(--qrx)) rotateY(var(--qry)) translate3d(0,0,0);
+   transform-style:preserve-3d;
+   backface-visibility:hidden;
+ }
+ .q-motion-tilt:hover{
+   transform:perspective(950px) rotateX(var(--qrx)) rotateY(var(--qry)) translate3d(0,-6px,0);
+   box-shadow:0 24px 52px rgba(15,31,48,.14),0 8px 18px rgba(197,161,106,.10);
+ }
+ .q-motion-tilt :is(.serviceIcon,.serviceArrow,.accountBadge){
+   transition:transform .55s var(--q-ease);
+ }
+ .q-motion-tilt:hover :is(.serviceIcon,.serviceArrow,.accountBadge){transform:translate3d(0,-2px,14px)}
+ .btn,.accountButton,.navlinks a,.sideLink,.accountSide a{
+   transition:transform .35s var(--q-ease),box-shadow .35s var(--q-ease),background-color .25s ease,border-color .25s ease,color .25s ease;
+ }
+ .btn:active,.accountButton:active{transform:translate3d(0,1px,0) scale(.985)}
+ .brandMark{transition:transform .6s var(--q-ease),box-shadow .6s var(--q-ease)}
+ .brand:hover .brandMark{transform:translate3d(0,-2px,0) rotate(-3deg);box-shadow:0 12px 24px rgba(15,31,48,.19)}
+ .btnGold:hover{animation:q-gold-pulse 2.4s ease-in-out infinite}
+ .nav{transition:box-shadow .45s ease,background-color .45s ease}
+ .nav.q-nav-scrolled{box-shadow:0 10px 26px rgba(14,32,50,.105);background-color:rgba(255,253,250,.98)}
 }
+@media(hover:none),(pointer:coarse){
+ .q-motion-tilt,.q-motion-tilt:hover{transform:none!important}
+ .serviceCard,.sourceCard,.accountCard,.accountStat{will-change:auto!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .q-reveal{animation:none!important}
+ .q-motion-tilt,.q-motion-tilt:hover{transform:none!important}
+ .btnGold:hover{animation:none!important}
+}
+
+/* QOMUS MOTION V2 — calmer motion and consistent finishing details. */
+:root{
+  --q-premium-line:rgba(197,161,106,.26);
+  --q-premium-soft:rgba(231,204,154,.16);
+  --q-premium-shadow:0 17px 42px rgba(11,25,43,.09);
+}
+.hero{isolation:isolate}
+.hero::before,.hero::after{pointer-events:none}
+.hero h1{letter-spacing:-.034em;line-height:1.075;text-wrap:balance}
+.heroDescription{line-height:1.78}
+.heroTrust{row-gap:9px}
+.sectionTitle{letter-spacing:-.028em;line-height:1.14;text-wrap:balance}
+.serviceCard,.sourceCard{isolation:isolate;border-color:#e4ddd3;box-shadow:0 7px 22px rgba(11,25,43,.052)}
+.serviceCard h3,.sourceCard h3{letter-spacing:-.017em;line-height:1.34}
+.serviceCard p,.sourceCard p{line-height:1.72}
+.serviceCard::after,.sourceCard::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  opacity:0;transition:opacity .42s ease;
+  background:radial-gradient(190px circle at var(--qlx,50%) var(--qly,50%),rgba(229,203,155,.15),transparent 75%);
+}
+.serviceCard:hover::after,.sourceCard:hover::after,.serviceCard:focus-within::after,.sourceCard:focus-within::after{opacity:1}
+.serviceCard > *,.sourceCard > *{position:relative;z-index:1}
+.serviceCard:hover,.sourceCard:hover{border-color:rgba(197,161,106,.56)}
+.serviceCard:focus-within,.sourceCard:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(197,161,106,.13),var(--q-premium-shadow)}
+.btn,.accountButton{letter-spacing:.005em}
+.btn:focus-visible,.accountButton:focus-visible{outline:2px solid #b89157;outline-offset:3px}
+.btnGold{box-shadow:0 7px 21px rgba(175,130,67,.15),inset 0 1px 0 rgba(255,255,255,.52)}
+.navlinks a{font-size:12px;letter-spacing:.008em}
 @media(min-width:1151px) and (max-width:1320px){
-  .navin{width:min(1400px,97%);gap:12px}
-  .navlinks a{font-size:12px;padding:9px 7px}
-  .navRight{gap:6px}
+ .navin{gap:13px;width:min(1320px,97%)}
+ .navlinks a{padding:10px 8px;font-size:11px}
+}
+@media(prefers-reduced-motion:no-preference) and (hover:hover) and (pointer:fine){
+ .q-motion-tilt{
+   transition:transform .27s cubic-bezier(.2,.75,.24,1),box-shadow .4s var(--q-ease),border-color .35s ease;
+ }
+ .q-motion-tilt:hover{
+   transform:perspective(1050px) rotateX(var(--qrx)) rotateY(var(--qry)) translate3d(0,-4px,0);
+   box-shadow:0 21px 45px rgba(11,25,43,.115),0 5px 12px rgba(197,161,106,.055);
+ }
+ .serviceCard:not(.q-motion-tilt):hover,.sourceCard:not(.q-motion-tilt):hover{transform:translateY(-4px)}
 }
 @media(max-width:760px){
-  .hero h1{font-size:clamp(37px,9vw,54px);line-height:1.11}
-  .heroDescription{font-size:16px}
-  .sectionTitle{font-size:clamp(29px,7vw,38px)}
-  .quickBox h2{font-size:26px}
-  .serviceCard{min-height:0;padding:21px}
-  .serviceCard h3{font-size:20px}
-  .btn{min-height:48px;max-width:100%;white-space:normal;text-align:center}
+ .hero h1{line-height:1.12;letter-spacing:-.028em}
+ .serviceCard,.sourceCard{box-shadow:0 8px 23px rgba(11,25,43,.055)}
+ .serviceCard::after,.sourceCard::after{display:none}
+ .serviceCard:hover,.sourceCard:hover{transform:none;box-shadow:0 8px 23px rgba(11,25,43,.055)}
+ .btn,.accountButton{min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){
+ .serviceCard::after,.sourceCard::after{transition:none}
+ .q-motion-tilt{transform:none!important}
 }
 `;
 // ======================================================
@@ -5748,6 +5826,63 @@ function footer(lang = "uz") {
 // ======================================================
 // ASOSIY HTML PAGE WRAPPER
 // ======================================================
+
+const QOMUS_MOTION_SCRIPT = `<script>
+(function(){
+  "use strict";
+  if(!window.matchMedia || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var finePointer=window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+  var revealSelectors=".heroCopy,.heroVisual,.sectionHead,.quickBox,.serviceCard,.sourceCard,.coreItem,.accountHero,.accountStat,.accountCard";
+  var elements=Array.prototype.slice.call(document.querySelectorAll(revealSelectors));
+  if("IntersectionObserver" in window){
+    var observer=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add("q-reveal");
+          observer.unobserve(entry.target);
+        }
+      });
+    },{rootMargin:"0px 0px -35px 0px",threshold:.08});
+    elements.forEach(function(el){observer.observe(el);});
+  }
+  if(finePointer){
+    Array.prototype.slice.call(document.querySelectorAll(".serviceCard,.sourceCard,.accountCard,.accountStat")).forEach(function(card){
+      var frame=0,point=null;
+      card.classList.add("q-motion-tilt");
+      function update(){
+        frame=0;
+        if(!point)return;
+        var b=card.getBoundingClientRect();
+        var x=(point.x-b.left)/Math.max(1,b.width)-.5;
+        var y=(point.y-b.top)/Math.max(1,b.height)-.5;
+        card.style.setProperty("--qrx",(-y*3.1).toFixed(2)+"deg");
+        card.style.setProperty("--qry",(x*3.1).toFixed(2)+"deg");
+        card.style.setProperty("--qlx",((x+.5)*100).toFixed(1)+"%");
+        card.style.setProperty("--qly",((y+.5)*100).toFixed(1)+"%");
+      }
+      card.addEventListener("pointermove",function(e){
+        if(e.pointerType!=="mouse")return;
+        point={x:e.clientX,y:e.clientY};
+        if(!frame)frame=requestAnimationFrame(update);
+      },{passive:true});
+      card.addEventListener("pointerleave",function(){
+        if(frame)cancelAnimationFrame(frame);
+        frame=0;point=null;
+        card.style.setProperty("--qrx","0deg");card.style.setProperty("--qry","0deg");
+        card.style.setProperty("--qlx","50%");card.style.setProperty("--qly","50%");
+      },{passive:true});
+    });
+  }
+  var nav=document.querySelector(".nav");
+  if(nav){
+    var ticking=false;
+    function refresh(){ticking=false;nav.classList.toggle("q-nav-scrolled",window.scrollY>18);}
+    refresh();
+    window.addEventListener("scroll",function(){if(!ticking){ticking=true;requestAnimationFrame(refresh);}}, {passive:true});
+  }
+})();
+<\/script>`;
+
 function page({ lang = "uz", title = "QOMUS", content = "" } = {}) {
   lang = getLang(lang);
 
@@ -5764,6 +5899,7 @@ function page({ lang = "uz", title = "QOMUS", content = "" } = {}) {
   ${navigation(lang)}
   <main>${content || ""}</main>
   ${footer(lang)}
+  ${QOMUS_MOTION_SCRIPT}
 </body>
 </html>`;
 }
@@ -13402,87 +13538,50 @@ const ACCOUNT_CSS = `
 @media(max-width:980px){.accountSide{height:auto;position:relative}.accountSide a{min-height:42px}}
 
 
-/* Personal cabinet refinement — existing QOMUS structure and colors retained. */
-.accountShell{min-width:0}
-.accountSide a{transition:background-color .18s ease,color .18s ease;min-height:44px}
-.accountSide a:focus-visible{outline:3px solid #e6c98e;outline-offset:2px}
-.accountMain{max-width:100%;min-width:0}
-.accountPanel,.accountCard,.accountStat{transition:border-color .2s ease,box-shadow .2s ease}
-.accountCard:hover,.accountStat:hover{border-color:rgba(185,149,79,.38);box-shadow:0 12px 30px rgba(7,24,39,.08)}
-.accountPanel h1{line-height:1.25;letter-spacing:-.02em}
-.accountMuted{line-height:1.6}
-.accountForm label{line-height:1.5;font-size:14px}
-.accountForm :is(input,select,textarea){min-height:46px}
-.accountButton{min-height:44px;gap:8px}
-.accountActions .accountButton{max-width:100%;white-space:normal;text-align:center}
-.accountStats{min-width:0}
-.accountStat{min-width:0}
-.accountStat span{overflow-wrap:anywhere;line-height:1.45}
-.accountTable th,.accountTable td{line-height:1.55;vertical-align:middle}
-.accountTable a{color:#17517d;text-decoration:underline;text-underline-offset:3px}
-.accountTableWrap{max-width:100%;overscroll-behavior-x:contain;border-radius:10px}
-.accountCode{overflow-wrap:anywhere}
-@media(max-width:980px){
- .accountSide{padding:14px 16px}
- .accountSideBrand{padding-bottom:10px}
- .accountSide a{display:inline-flex;margin:3px;vertical-align:middle}
- .accountSide .accountSideBottom{display:block}
- .accountMain{padding:22px}
+/* ORIGINAL QOMUS CABINET — subtle navy/gold depth, no layout redesign. */
+.accountCard:hover,.accountStat:hover{
+  border-color:rgba(201,168,106,.38);
+  box-shadow:0 14px 34px rgba(7,24,39,.09);
 }
-@media(max-width:620px){
- .accountMain{padding:14px}
- .accountPanel{padding:18px}
- .accountHero{padding:20px}
- .accountStats{gap:10px}
- .accountStat{padding:14px}
- .accountStat strong{font-size:clamp(23px,6vw,30px)}
- .accountStat span{font-size:11px;letter-spacing:.025em}
- .accountCards{grid-template-columns:1fr}
- .accountForm{gap:13px}
- .accountTop{gap:12px}
- .accountActions .accountButton{width:100%}
+.accountPanel,.accountAuth{box-shadow:0 10px 32px rgba(7,24,39,.055),0 1px 2px rgba(7,24,39,.025)}
+.accountButton.gold{box-shadow:inset 0 1px 0 rgba(255,255,255,.34),0 8px 19px rgba(166,125,66,.14)}
+.accountButton:focus-visible,.accountSide a:focus-visible{outline:2px solid #c9a86a;outline-offset:3px}
+.accountMain{min-width:0}
+.accountTableWrap{max-width:100%;overflow-x:auto}
+@media(max-width:620px){.accountActions{flex-wrap:wrap}.accountForm input,.accountForm select,.accountForm textarea{font-size:16px}}
+
+/* QOMUS PEARL NAVY: cabinet color alignment, no layout changes. */
+.accountWrap,.accountShell{background:#f6f5f2}
+.accountSide{background:linear-gradient(180deg,#0b192b 0%,#15334d 100%);border-color:rgba(229,203,155,.22)}
+.accountSide a.active,.accountSide a:hover{background:rgba(229,203,155,.13);color:#f1dab2}
+.accountHero{background:radial-gradient(circle at 90% 0%,rgba(229,203,155,.15),transparent 19rem),linear-gradient(140deg,#0b192b,#1a3b54);border:1px solid rgba(229,203,155,.24)}
+.accountAuth,.accountPanel,.accountStat,.accountCard{background:#fffdfb;border-color:#e7e1d7}
+.accountButton{background:#173550}
+.accountButton.gold{background:linear-gradient(140deg,#f0dab1,#caa36b);color:#172838}
+.accountButton.light{background:#f5efe7;color:#26435a}
+.accountAvatar{background:linear-gradient(135deg,#f0dab1,#be9152);color:#172838}
+.accountMuted{color:#647589}
+.accountAlert{background:#f0f4f6;color:#26435a}
+.accountForm :is(input,select,textarea){background:#fffefc;border-color:#ddd5c9}
+.accountForm :is(input,select,textarea):focus{border-color:#c5a16a;box-shadow:0 0 0 4px rgba(197,161,106,.14)}
+.accountStat strong,.accountPanel h1,.accountAuth h1{color:#15283b}
+.accountCard:hover,.accountStat:hover{border-color:#d3b788}
+
+/* Delicate 3D motion for account cards, without moving forms or tables. */
+.accountCard,.accountStat{transform-origin:center center}
+@media(prefers-reduced-motion:no-preference) and (hover:hover){
+ .accountCard:not(.q-motion-tilt):hover,.accountStat:not(.q-motion-tilt):hover{transform:translateY(-4px)}
 }
 
-/* QOMUS ACCOUNT HARMONY V2 — coherent with the original public site. */
-.accountShell{background:var(--bg,#f4f6f8)}
-.accountSide{background:linear-gradient(180deg,var(--navy,#06111f),#123650);border-right:1px solid rgba(201,168,106,.24)}
-.accountSideBrand{font-family:var(--qomus-heading);font-size:23px;letter-spacing:-.025em}
-.accountSide a{font-family:var(--qomus-ui);font-size:14px;font-weight:650;border-radius:11px}
-.accountSide a.active{background:rgba(201,168,106,.18);color:#f5dfb4}
-.accountMain{font-family:var(--qomus-ui);line-height:1.6}
-.accountHero{border-radius:20px;border:1px solid rgba(201,168,106,.21);box-shadow:0 20px 45px rgba(6,17,31,.1)}
-.accountHero h1{font-family:var(--qomus-heading);font-weight:600;font-size:clamp(27px,3vw,37px);letter-spacing:-.025em;line-height:1.2}
-.accountAuth,.accountPanel,.accountCard,.accountStat{border:1px solid var(--qomus-line,#e1e7ed);border-radius:16px;box-shadow:var(--qomus-elevation,0 12px 32px rgba(7,24,39,.05))}
-.accountPanel h1,.accountPanel h2,.accountCard h3,.accountAuth h1{font-family:var(--qomus-heading);font-weight:600;letter-spacing:-.024em;line-height:1.25}
-.accountPanel h1{font-size:clamp(25px,2.7vw,34px)}
-.accountPanel h2{font-size:clamp(21px,2.2vw,27px)}
-.accountCard h3{font-size:20px}
-.accountStat strong{font-family:var(--qomus-ui);font-size:clamp(26px,2.8vw,34px);font-weight:800}
-.accountStat span{font-size:12px;letter-spacing:.035em}
-.accountMuted{color:#617385;line-height:1.65}
-.accountButton{font-size:14px;line-height:1.4;min-height:46px;border-radius:11px}
-.accountButton.gold{background:linear-gradient(135deg,#e7cc91,#c39a54);color:#071827}
-.accountForm :is(input,select,textarea){background:#fff;border:1px solid #cbd6df;border-radius:11px}
-.accountTable th{color:#52677b;font-weight:800;font-size:12px}
-.accountTable td{font-size:14px}
-.accountTable tbody tr:hover{background:#f7f9fa}
-@media(max-width:980px){
-  .accountSide{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:15px}
-  .accountSideBrand{width:100%;padding:5px 10px 10px}
-  .accountSide a{margin:2px;min-height:44px}
-  .accountSideBottom{width:100%;margin-top:4px!important}
-}
-@media(max-width:620px){
-  .accountMain{padding:15px}
-  .accountHero{padding:20px}
-  .accountHero h1{font-size:29px}
-  .accountPanel{padding:19px}
-  .accountStat{padding:15px}
-  .accountTop{align-items:stretch}
-  .accountTop .accountButton{width:100%;text-align:center}
-  .accountTableWrap{overflow-x:auto}
-  .accountForm :is(input,select,textarea){font-size:16px}
-}
+/* QOMUS cabinet polish V2 — same layout, clearer form hierarchy. */
+.accountPanel,.accountAuth,.accountCard,.accountStat{border-color:#e5ded4;box-shadow:0 8px 26px rgba(11,25,43,.055)}
+.accountPanel h1,.accountPanel h2,.accountAuth h1{letter-spacing:-.022em}
+.accountMuted{line-height:1.68}
+.accountForm label{line-height:1.4}
+.accountForm :is(input,textarea,select){transition:border-color .22s ease,box-shadow .22s ease;background:#fffdfb}
+.accountButton:active{filter:brightness(.98)}
+.accountSide a:focus-visible{outline-color:#e5cb9b}
+@media(max-width:620px){.accountPanel,.accountCard{max-width:100%;min-width:0}.accountTableWrap{overflow-x:auto}}
 `;
 
 
@@ -13558,7 +13657,7 @@ function at(lang, key){
 // ===================== ACCOUNT I18N END =====================
 
 function accountPublicPage(lang,title,body){
-  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body>${navigation(lang)}<main class="accountWrap">${body}</main>${footer(lang)}</body></html>`;
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body>${navigation(lang)}<main class="accountWrap">${body}</main>${footer(lang)}${QOMUS_MOTION_SCRIPT}</body></html>`;
 }
 
 const ACCOUNT_EXTRA_TRANSLATIONS = {"QOMUS shaxsiy ish maydoni": ["Личный кабинет QOMUS", "QOMUS personal workspace"], "Dashboard": ["Главная", "Dashboard"], "ADMIN PANEL": ["ПАНЕЛЬ АДМИНИСТРАТОРА", "ADMIN PANEL"], "Owner / Admin panel": ["Панель владельца / администратора", "Owner / Admin panel"], "QOMUS boshqaruv markazi": ["Центр управления QOMUS", "QOMUS Management Center"], "Foydalanuvchilar, huquqiy ishlar, hujjatlar va audit faoliyatini boshqaring.": ["Управляйте пользователями, юридическими делами, документами и аудитом.", "Manage users, legal cases, documents and audit activity."], "Foydalanuvchilar": ["Пользователи", "Users"], "Faol account": ["Активные аккаунты", "Active accounts"], "Huquqiy ishlar": ["Юридические дела", "Legal cases"], "Hujjatlar": ["Документы", "Documents"], "Accountlar va statuslarni boshqarish.": ["Управление аккаунтами и статусами.", "Manage accounts and statuses."], "Cases": ["Дела", "Cases"], "Platformadagi huquqiy ishlar metadata-si.": ["Метаданные юридических дел платформы.", "Platform legal-case metadata."], "Audit log": ["Журнал аудита", "Audit log"], "Muhim boshqaruv va account hodisalari.": ["Важные события управления и аккаунтов.", "Important management and account events."], "Xush kelibsiz, ": ["Добро пожаловать, ", "Welcome, "], "Huquqiy ishlaringiz, hujjatlaringiz va AI maslahatlaringiz shu yerda boshqariladi.": ["Здесь вы управляете юридическими делами, документами и консультациями.", "Manage your legal cases, documents and consultations here."], "Faol ishlar": ["Активные дела", "Active cases"], "AI suhbatlar": ["Чаты с помощником", "Assistant chats"], "Yakunlangan": ["Завершено", "Completed"], "Oxirgi huquqiy ishlar": ["Последние юридические дела", "Recent legal cases"], "Davom ettirish uchun ishni tanlang.": ["Выберите дело для продолжения.", "Select a case to continue."], "＋ Yangi ish": ["＋ Новое дело", "＋ New case"], "Yo‘nalish": ["Направление", "Area"], "Masala": ["Вопрос", "Matter"], "Ochish": ["Открыть", "Open"], "Hali huquqiy ish ochilmagan.": ["Юридических дел пока нет.", "No legal cases yet."], "Mening huquqiy ishlarim": ["Мои юридические дела", "My legal cases"], "Har bir masala alohida Case ID bilan saqlanadi.": ["Каждое дело сохраняется с отдельным идентификатором.", "Each case is saved with a unique case ID."], "Nomi": ["Название", "Title"], "Sana": ["Дата", "Date"], "Hali ish yo‘q.": ["Дел пока нет.", "No cases yet."], "Yangi ish ochish": ["Создать новое дело", "Create new case"], "Muammoni tanlang. Keyin mavjud QOMUS modullaridan davom etishingiz mumkin.": ["Выберите вопрос, затем продолжите в модулях QOMUS.", "Choose an issue, then continue in QOMUS modules."], "Huquq sohasi": ["Область права", "Area of law"], "Masala nomi": ["Название дела", "Case title"], "Qisqa tavsif": ["Краткое описание", "Short description"], "Ishni yaratish": ["Создать дело", "Create case"], "Oila huquqi": ["Семейное право", "Family law"], "Mehnat huquqi": ["Трудовое право", "Employment law"], "Biznes huquqi": ["Предпринимательское право", "Business law"], "Fuqarolik huquqi": ["Гражданское право", "Civil law"], "Boshqa": ["Другое", "Other"], "Ish tafsilotlari": ["Сведения о деле", "Case details"], "Tavsif kiritilmagan.": ["Описание не добавлено.", "No description provided."], "Huquqiy modulni ochish": ["Открыть юридический модуль", "Open legal module"], "AI maslahat": ["Юридическая консультация", "Legal consultation"], "Hujjat yaratish": ["Создать документ", "Create document"], "Case hujjatlari": ["Документы дела", "Case documents"], "Hali hujjat biriktirilmagan.": ["Документы пока не прикреплены.", "No documents attached yet."], "Statusni yangilash": ["Обновить статус", "Update status"], "Saqlash": ["Сохранить", "Save"], "AI faoliyati": ["Активность помощника", "Assistant activity"], "shu ishga bog‘langan suhbat": ["чатов по этому делу", "chats linked to this case"], "Shaxsiy profilingizga bog‘langan ma’lumotlar.": ["Данные, связанные с вашим профилем.", "Data linked to your profile."], "ma’lumotlari": [" — данные", " details"], "Ism": ["Имя", "First name"], "Familiya": ["Фамилия", "Last name"], "Rol": ["Роль", "Role"], "Email holati": ["Статус почты", "Email status"], "Tasdiqlangan": ["Подтверждён", "Verified"], "Tasdiqlanmagan": ["Не подтверждён", "Not verified"], "Parol va sessiyalar": ["Пароль и сеансы", "Password and sessions"], "Joriy parol": ["Текущий пароль", "Current password"], "Yangi parol": ["Новый пароль", "New password"], "Yangi parolni takrorlang": ["Повторите новый пароль", "Confirm new password"], "Parolni almashtirish": ["Изменить пароль", "Change password"], "Til": ["Язык", "Language"], "Interfeys tili URL orqali UZ/RU/EN ishlaydi.": ["Язык интерфейса выбирается через UZ/RU/EN.", "Choose the interface language using UZ/RU/EN."], "Maxfiylik": ["Конфиденциальность", "Privacy"], "Rozilik va account faoliyati audit jurnalida qayd etiladi.": ["Согласия и действия аккаунта записываются в журнал аудита.", "Consent and account activity are recorded in the audit log."], "Admin uchun zarur account metadata. Maxfiy AI matnlari bu jadvalda ko‘rsatilmaydi.": ["Метаданные аккаунтов для администратора. Частные чаты здесь не показываются.", "Account metadata for administrators. Private chats are not shown."], "Ro‘yxat": ["Регистрация", "Registered"], "Amal": ["Действие", "Action"], "Ha": ["Да", "Yes"], "Yo‘q": ["Нет", "No"], "Owner": ["Владелец", "Owner"], "Barcha huquqiy ishlar": ["Все юридические дела", "All legal cases"], "Boshqaruv metadata-si. Foydalanuvchining maxfiy AI yozishmasi avtomatik ochilmaydi.": ["Метаданные управления. Частные переписки пользователей не раскрываются.", "Management metadata. Private user chats are not automatically disclosed."], "Foydalanuvchi": ["Пользователь", "User"], "Case yo‘q.": ["Дел нет.", "No cases."], "Vaqt": ["Время", "Time"], "Hodisa": ["Событие", "Event"], "Ish topilmadi": ["Дело не найдено", "Case not found"], "Bu ish topilmadi.": ["Дело не найдено.", "This case was not found."]};
@@ -13572,7 +13671,7 @@ function accountSidebar(lang,user,active){
 }
 function accountAppPage(lang,user,active,title,body){
   const initials=(user.firstName?.[0]||"U")+(user.lastName?.[0]||"");
-  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body><div class="accountShell">${accountSidebar(lang,user,active)}<main class="accountMain"><div class="accountTop"><div><b>${esc(title)}</b><div class="accountMuted">${accountLocale(lang,'QOMUS shaxsiy ish maydoni')}</div></div><div class="accountIdentity"><div class="accountLanguage" style="display:flex;gap:6px;margin-right:12px">${["uz","ru","en"].map(code=>`<a href="?lang=${code}" style="padding:7px 9px;border:1px solid #c9a86a;border-radius:7px;font-weight:700;${code===lang?'background:#c9a86a;color:#06111f;':''}">${code.toUpperCase()}</a>`).join('')}</div><div><b>${esc(user.firstName)} ${esc(user.lastName)}</b><div class="accountMuted">${esc(user.email)}</div></div><div class="accountAvatar">${esc(initials)}</div></div></div>${body}</main></div></body></html>`;
+  return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body><div class="accountShell">${accountSidebar(lang,user,active)}<main class="accountMain"><div class="accountTop"><div><b>${esc(title)}</b><div class="accountMuted">${accountLocale(lang,'QOMUS shaxsiy ish maydoni')}</div></div><div class="accountIdentity"><div class="accountLanguage" style="display:flex;gap:6px;margin-right:12px">${["uz","ru","en"].map(code=>`<a href="?lang=${code}" style="padding:7px 9px;border:1px solid #c9a86a;border-radius:7px;font-weight:700;${code===lang?'background:#c9a86a;color:#06111f;':''}">${code.toUpperCase()}</a>`).join('')}</div><div><b>${esc(user.firstName)} ${esc(user.lastName)}</b><div class="accountMuted">${esc(user.email)}</div></div><div class="accountAvatar">${esc(initials)}</div></div></div>${body}</main></div>${QOMUS_MOTION_SCRIPT}</body></html>`;
 }
 function accountRequire(req,res,lang,roles=null){
   const auth=accountSession(req);
