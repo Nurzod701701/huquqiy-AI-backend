@@ -17,5 +17,9 @@ module.exports=function(language,pathname,html){
  '@media(max-width:600px){.advokatLanguageBar{bottom:9px;right:9px;padding:5px;gap:3px}.advokatLanguageBar span{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}.advokatLanguageBar a{padding:7px 8px}}'+
  '</style>';
  const toolbar='<nav class="advokatLanguageBar" aria-label="'+label+'"><span>'+label+':</span>'+links+'</nav>';
- return String(html).replace(/<\/head>/i,style+'</head>').replace(/<\/body>/i,toolbar+'</body>');
+ const output=String(html);
+ const headAt=output.toLowerCase().lastIndexOf("</head>");
+ const withStyle=headAt<0?output:output.slice(0,headAt)+style+output.slice(headAt);
+ const bodyAt=withStyle.toLowerCase().lastIndexOf("</body>");
+ return bodyAt<0?withStyle:withStyle.slice(0,bodyAt)+toolbar+withStyle.slice(bodyAt);
 };
