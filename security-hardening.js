@@ -85,7 +85,9 @@ function guardSensitiveRequest(req, res) {
     deny(res, 403, "Request origin could not be verified.");
     return true;
   }
-  if (AUTH_POST_ROUTES.has(route)) {
+  // Enable only after configuring a trusted reverse-proxy identity and shared limiter.
+  // Render may present the same socket IP for many genuine users.
+  if (process.env.QOMUS_PILOT_AUTH_LIMIT === "enabled" && AUTH_POST_ROUTES.has(route)) {
     const retryAfter = tooManyAttempts(req);
     if (retryAfter) {
       alertEvent("AUTH_RATE_LIMIT", addressKey(req), route);
