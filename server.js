@@ -3120,6 +3120,61 @@ body{
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+/* QOMUS DESIGN HARMONY V2: classic editorial elegance + contemporary readability.
+   Preserves existing routes, content, layout and established navy/gold colors. */
+:root{
+  --qomus-heading:Georgia,"Times New Roman",serif;
+  --qomus-ui:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  --qomus-radius:16px;
+  --qomus-line:#e1e7ed;
+  --qomus-accent:#c9a86a;
+  --qomus-elevation:0 13px 36px rgba(6,17,31,.065);
+}
+body{font-family:var(--qomus-ui);font-size:16px;line-height:1.62;letter-spacing:-.006em}
+.hero h1,.sectionTitle,.quickBox h2,.roadmapHeader strong,
+.serviceCard h3,.sourceCard h3{
+  font-family:var(--qomus-heading);
+  font-weight:600;
+  letter-spacing:-.024em;
+}
+.hero h1{font-size:clamp(42px,5.1vw,70px);line-height:1.09;letter-spacing:-.038em}
+.heroDescription{font-size:clamp(16px,1.4vw,18px);line-height:1.75}
+.sectionTitle{font-size:clamp(30px,3.5vw,44px);line-height:1.18}
+.quickBox h2{font-size:clamp(25px,2.6vw,32px)}
+.serviceCard h3{font-size:clamp(19px,1.6vw,22px);line-height:1.28}
+.sourceCard h3{font-size:20px;line-height:1.32}
+.brandText strong{font-family:var(--qomus-heading);font-size:23px;font-weight:700;letter-spacing:-.035em}
+.brandText small{font-size:9px;letter-spacing:.11em}
+.navlinks{gap:2px;min-width:0}
+.navlinks a{font-size:clamp(12px,.95vw,14px);padding:10px 9px;line-height:1.3}
+.languages a{font-size:11px}
+.eyebrow{font-size:11px;letter-spacing:.085em;line-height:1.45}
+.sectionText,.quickBox p,.serviceCard p,.coreItem p,.sourceCard p{line-height:1.7}
+.serviceCard p,.coreItem p,.sourceCard p{font-size:14px}
+.btn{font-family:var(--qomus-ui);font-size:14px;font-weight:750;line-height:1.4;min-height:48px;border-radius:11px}
+.serviceCard,.sourceCard{border-color:var(--qomus-line);border-radius:var(--qomus-radius)}
+.serviceCard{min-height:230px;padding:25px;box-shadow:var(--qomus-elevation)}
+.serviceIcon{border-radius:12px}
+.serviceCard:hover{transform:translateY(-3px);box-shadow:0 20px 42px rgba(6,17,31,.095)}
+.quickBox{border-radius:20px}
+:where(.sidebar,.accountSide) :where(a,button):focus-visible{
+  outline:3px solid var(--gold2);outline-offset:3px
+}
+@media(min-width:1151px) and (max-width:1320px){
+  .navin{width:min(1400px,97%);gap:12px}
+  .navlinks a{font-size:12px;padding:9px 7px}
+  .navRight{gap:6px}
+}
+@media(max-width:760px){
+  .hero h1{font-size:clamp(37px,9vw,54px);line-height:1.11}
+  .heroDescription{font-size:16px}
+  .sectionTitle{font-size:clamp(29px,7vw,38px)}
+  .quickBox h2{font-size:26px}
+  .serviceCard{min-height:0;padding:21px}
+  .serviceCard h3{font-size:20px}
+  .btn{min-height:48px;max-width:100%;white-space:normal;text-align:center}
+}
 `;
 // ======================================================
 // PART 2/4
@@ -13386,6 +13441,47 @@ const ACCOUNT_CSS = `
  .accountForm{gap:13px}
  .accountTop{gap:12px}
  .accountActions .accountButton{width:100%}
+}
+
+/* QOMUS ACCOUNT HARMONY V2 — coherent with the original public site. */
+.accountShell{background:var(--bg,#f4f6f8)}
+.accountSide{background:linear-gradient(180deg,var(--navy,#06111f),#123650);border-right:1px solid rgba(201,168,106,.24)}
+.accountSideBrand{font-family:var(--qomus-heading);font-size:23px;letter-spacing:-.025em}
+.accountSide a{font-family:var(--qomus-ui);font-size:14px;font-weight:650;border-radius:11px}
+.accountSide a.active{background:rgba(201,168,106,.18);color:#f5dfb4}
+.accountMain{font-family:var(--qomus-ui);line-height:1.6}
+.accountHero{border-radius:20px;border:1px solid rgba(201,168,106,.21);box-shadow:0 20px 45px rgba(6,17,31,.1)}
+.accountHero h1{font-family:var(--qomus-heading);font-weight:600;font-size:clamp(27px,3vw,37px);letter-spacing:-.025em;line-height:1.2}
+.accountAuth,.accountPanel,.accountCard,.accountStat{border:1px solid var(--qomus-line,#e1e7ed);border-radius:16px;box-shadow:var(--qomus-elevation,0 12px 32px rgba(7,24,39,.05))}
+.accountPanel h1,.accountPanel h2,.accountCard h3,.accountAuth h1{font-family:var(--qomus-heading);font-weight:600;letter-spacing:-.024em;line-height:1.25}
+.accountPanel h1{font-size:clamp(25px,2.7vw,34px)}
+.accountPanel h2{font-size:clamp(21px,2.2vw,27px)}
+.accountCard h3{font-size:20px}
+.accountStat strong{font-family:var(--qomus-ui);font-size:clamp(26px,2.8vw,34px);font-weight:800}
+.accountStat span{font-size:12px;letter-spacing:.035em}
+.accountMuted{color:#617385;line-height:1.65}
+.accountButton{font-size:14px;line-height:1.4;min-height:46px;border-radius:11px}
+.accountButton.gold{background:linear-gradient(135deg,#e7cc91,#c39a54);color:#071827}
+.accountForm :is(input,select,textarea){background:#fff;border:1px solid #cbd6df;border-radius:11px}
+.accountTable th{color:#52677b;font-weight:800;font-size:12px}
+.accountTable td{font-size:14px}
+.accountTable tbody tr:hover{background:#f7f9fa}
+@media(max-width:980px){
+  .accountSide{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:15px}
+  .accountSideBrand{width:100%;padding:5px 10px 10px}
+  .accountSide a{margin:2px;min-height:44px}
+  .accountSideBottom{width:100%;margin-top:4px!important}
+}
+@media(max-width:620px){
+  .accountMain{padding:15px}
+  .accountHero{padding:20px}
+  .accountHero h1{font-size:29px}
+  .accountPanel{padding:19px}
+  .accountStat{padding:15px}
+  .accountTop{align-items:stretch}
+  .accountTop .accountButton{width:100%;text-align:center}
+  .accountTableWrap{overflow-x:auto}
+  .accountForm :is(input,select,textarea){font-size:16px}
 }
 `;
 
