@@ -48,6 +48,7 @@ test("permits same-origin authenticated form submission",()=>{
 });
 
 test("rate limits repeated authentication requests",()=>{
+  process.env.QOMUS_PILOT_AUTH_LIMIT="enabled";
   const ip="unit-rate-" + process.pid;
   for(let i=0;i<12;i++){
     const res=response();
@@ -57,4 +58,16 @@ test("rate limits repeated authentication requests",()=>{
   assert.equal(guardSensitiveRequest(request("/login",ip),res),true);
   assert.equal(res.status,429);
   assert.ok(Number(res.headers["Retry-After"])>0);
+  delete process.env.QOMUS_PILOT_AUTH_LIMIT;
+});
+
+ test("isolated vault encryption detects tampering",()=>{
+  const { encrypt,decrypt }=require("../secure-vault");
+  const key=require("node:crypto").randomBytes(32);
+  const original={caseId:"CAS-TEST",note:"confidential test only"};
+  const box=encrypt(original,key);
+  assert.deepEqual(decrypt(box,key),original);
+  const altered=JSON.parse(box);
+  altered.tag=Buffer.alloc(16).toString("base64");
+  assert.throws(()=>decrypt(JSON.stringify(altered),key));
 });
