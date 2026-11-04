@@ -3084,6 +3084,42 @@ body{
   font-size:11px;
 }
 
+
+/* QOMUS ORIGINAL DESIGN POLISH — preserves palette, structure, routes and content. */
+:root{--qomus-focus:rgba(166,125,66,.80);--qomus-soft-shadow:0 12px 34px rgba(6,17,31,.065)}
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{
+  outline:3px solid var(--qomus-focus);
+  outline-offset:3px;
+}
+:where(button,.btn,.serviceCard,.sideLink,.navlinks a,.accountButton){
+  touch-action:manipulation;
+}
+:where(input,select,textarea){
+  accent-color:#a67d42;
+}
+:where(.serviceCard,.sourceCard,.appPanel,.panel,.surface){
+  box-shadow:var(--qomus-soft-shadow);
+}
+:where(.serviceCard,.sourceCard,.appPanel,.panel,.surface):hover{
+  border-color:rgba(166,125,66,.35);
+}
+:where(.btn,.sideLink,.navlinks a,.appHomeButton){
+  transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+:where(.btn,.accountButton):active{transform:translateY(1px)}
+:where(.appMain,.appPage,.accountMain){min-width:0}
+:where(.appMain,.accountMain) :where(img,video,svg){max-width:100%}
+:where(.appMain,.accountMain) :where(p,li){overflow-wrap:break-word}
+@media(max-width:760px){
+  :where(.btn,.mobileMenu,.mobileAccountDirect){min-height:44px}
+  :where(.serviceCard,.sourceCard){height:auto}
+  :where(.appMain,.accountMain){overflow-wrap:anywhere}
+  :where(.appMain,.accountMain) :where(table){max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
 `;
 // ======================================================
 // PART 2/4
@@ -13310,6 +13346,47 @@ const ACCOUNT_CSS = `
 .accountAuth h1,.accountPanel h1{font-family:Georgia,'Times New Roman',serif}
 @media(max-width:980px){.accountSide{height:auto;position:relative}.accountSide a{min-height:42px}}
 
+
+/* Personal cabinet refinement — existing QOMUS structure and colors retained. */
+.accountShell{min-width:0}
+.accountSide a{transition:background-color .18s ease,color .18s ease;min-height:44px}
+.accountSide a:focus-visible{outline:3px solid #e6c98e;outline-offset:2px}
+.accountMain{max-width:100%;min-width:0}
+.accountPanel,.accountCard,.accountStat{transition:border-color .2s ease,box-shadow .2s ease}
+.accountCard:hover,.accountStat:hover{border-color:rgba(185,149,79,.38);box-shadow:0 12px 30px rgba(7,24,39,.08)}
+.accountPanel h1{line-height:1.25;letter-spacing:-.02em}
+.accountMuted{line-height:1.6}
+.accountForm label{line-height:1.5;font-size:14px}
+.accountForm :is(input,select,textarea){min-height:46px}
+.accountButton{min-height:44px;gap:8px}
+.accountActions .accountButton{max-width:100%;white-space:normal;text-align:center}
+.accountStats{min-width:0}
+.accountStat{min-width:0}
+.accountStat span{overflow-wrap:anywhere;line-height:1.45}
+.accountTable th,.accountTable td{line-height:1.55;vertical-align:middle}
+.accountTable a{color:#17517d;text-decoration:underline;text-underline-offset:3px}
+.accountTableWrap{max-width:100%;overscroll-behavior-x:contain;border-radius:10px}
+.accountCode{overflow-wrap:anywhere}
+@media(max-width:980px){
+ .accountSide{padding:14px 16px}
+ .accountSideBrand{padding-bottom:10px}
+ .accountSide a{display:inline-flex;margin:3px;vertical-align:middle}
+ .accountSide .accountSideBottom{display:block}
+ .accountMain{padding:22px}
+}
+@media(max-width:620px){
+ .accountMain{padding:14px}
+ .accountPanel{padding:18px}
+ .accountHero{padding:20px}
+ .accountStats{gap:10px}
+ .accountStat{padding:14px}
+ .accountStat strong{font-size:clamp(23px,6vw,30px)}
+ .accountStat span{font-size:11px;letter-spacing:.025em}
+ .accountCards{grid-template-columns:1fr}
+ .accountForm{gap:13px}
+ .accountTop{gap:12px}
+ .accountActions .accountButton{width:100%}
+}
 `;
 
 
