@@ -525,7 +525,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
           { role: "user", content: question }
         ],
         temperature: 0.2,
-        max_tokens: 1200
+        max_tokens: 450
       })
     });
   } catch (error) {
@@ -541,7 +541,8 @@ Use only provisions actually visible in these excerpts for precise article-numbe
 
   if (!response.ok) {
     const details = data?.error?.message || "Unknown API error";
-    console.error("OpenRouter API error:", response.status, details);
+    console.error("OpenRouter API error:", response.status, response.status === 402 ? "credits_or_key_limit" : "provider_failure");
+    if (response.status === 402) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
     if (response.status === 401) throw new Error("OpenRouter API kaliti noto‘g‘ri yoki bekor qilingan (401).");
     if (response.status === 429) throw new Error("OpenRouter bepul model limiti (429): " + details);
     throw new Error("OpenRouter API HTTP " + response.status + ": " + details);
@@ -7138,8 +7139,9 @@ async function aiResultPage(
     );
 
 
-    answer =
-      lang === "uz"
+    answer = error?.message === "OPENROUTER_CREDITS_EXHAUSTED"
+      ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Javob token limiti vaqtincha 450 ga tushirildi, lekin bu kredit tugagan bo‘lsa yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
+      : lang === "uz"
         ? "AI xizmatiga ulanishda xatolik yuz berdi. OPENROUTER_API_KEY va server sozlamalarini tekshiring."
         : lang === "ru"
         ? "Произошла ошибка подключения к AI. Проверьте OPENROUTER_API_KEY и настройки сервера."
