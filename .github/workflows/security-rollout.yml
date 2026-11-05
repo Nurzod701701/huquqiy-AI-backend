@@ -23,7 +23,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm ci --ignore-scripts
       - run: npm run check
       - run: node --check security-hardening.js
       - run: node --check security-alerts.js
