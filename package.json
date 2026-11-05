@@ -5,7 +5,20 @@
   "description": "QOMUS legal assistant backend",
   "main": "server.js",
   "type": "commonjs",
-  "scripts": {"start": "node server.js", "check": "node --check server.js"},
-  "engines": {"node": ">=20"},
-  "dependencies": {"busboy": "^1.6.0", "docx": "^9.5.1", "dotenv": "^16.4.7", "mammoth": "^1.9.0", "nodemailer": "^6.10.1", "pdf-parse": "^1.1.1"}
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js",
+    "test:security": "node --test test/security-hardening.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "docx": "^9.5.1",
+    "dotenv": "^16.4.7",
+    "mammoth": "^1.9.0",
+    "nodemailer": "^6.10.1",
+    "pdf-parse": "^1.1.1"
+  }
 }

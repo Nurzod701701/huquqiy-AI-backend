@@ -1,0 +1,30 @@
+name: QOMUS Security Rollout Checks
+on:
+  push:
+    branches:
+      - security/qomus-safe-rollout-20261105
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'security-*.js'
+      - 'ai-privacy.js'
+      - 'test/security-hardening.test.js'
+      - 'package.json'
+      - '.github/workflows/security-rollout.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  security-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run check
+      - run: node --check security-hardening.js
+      - run: node --check security-alerts.js
+      - run: node --check ai-privacy.js
+      - run: npm run test:security
