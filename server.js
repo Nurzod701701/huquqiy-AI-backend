@@ -8994,7 +8994,14 @@ function courtCostsResultPage(lang,form){
  else if(selected==='labor') {fee=0;formula='Mehnat huquqiy munosabatlaridan kelib chiqadigan talablar bo‘yicha da’vogar ozod etiladi.';note='Qonunning 8-moddasi. Da’vogarning maqomi va talab turini tekshiring.';}
  else if(form.exemption==='yes'||form.exemption==='unknown') {note='Imtiyoz mavjudligi noma’lum yoki ko‘rsatilgan. Imtiyozning huquqiy asosi tasdiqlanmaguncha to‘lanadigan summa chiqarilmaydi.';}
  else if(selected==='divorce') {if(bhm>0){const repeat=String(form.repeat_divorce||'no')==='yes';fee=bhm*(repeat?4:2);formula='BHM × '+(repeat?4:2);note='Faqat nikohdan ajratish talabi uchun. Mol-mulk talabi qo‘shilsa, uning boji alohida hisoblanadi.';}else note='BHM konfiguratsiyasi tekshirilishi kerak.';}
- else if(selected==='property') {if(bhm>0&&amount>0){fee=Math.max(amount*.04,bhm);formula='max(da’vo qiymati × 4%, 1 BHM)';note='Fuqarolik sudidagi mulkiy da’vo uchun dastlabki hisob. Mol-mulkning tegishli ulushi va qo‘shimcha talablar tekshiriladi.';}else note='Hisoblash uchun da’vo qiymatini kiriting.';}
+ else if(selected==='property'||(selected==='business'&&parties==='entrepreneurs')){
+   const rules=require("./court-fee-rules").calculateCourtFee({claim:selected,amount,exemption:'no',businessParties:parties},bhm);
+   fee=rules.fee;
+   formula=rules.fee!==null?(selected==='business'?'max(da’vo qiymati × 2%, 1 BHM)':'max(da’vo qiymati × 4%, 1 BHM)'):'';
+   note=rules.fee===null?'Hisoblash uchun haqiqiy da’vo qiymatini kiriting.':
+      selected==='business'?'Iqtisodiy sudda mulkiy da’vo uchun dastlabki stavka. Sudga tegishlilik, imtiyoz va talab turi tekshiriladi.':
+      'Fuqarolik sudidagi mulkiy da’vo uchun dastlabki hisob. Mol-mulkning tegishli ulushi va qo‘shimcha talablar tekshiriladi.';
+ }
  else note='Ushbu da’vo turining amaldagi stavkasi va imtiyozlari alohida tekshirilishi kerak. Tasdiqlanmagan raqam chiqarilmaydi.';
  const show=fee!==null&&valid(fee);
  const extraTypes=[['postal','Pochta orqali jo‘natish'],['expert','Ekspertiza'],['translator','Tarjimon'],['representative','Advokat yoki boshqa vakil']];
