@@ -8,9 +8,10 @@
 
 const empty=()=>({users:[],sessions:[],cases:[],documents:[],conversations:[],notifications:[],consents:[],auditLogs:[],settings:{createdAt:new Date().toISOString()}});
 function createAccountPgStore(opts={}){
+ const isLocalTest=process.env.NODE_ENV==="test" && process.env.QOMUS_PG_INSECURE_LOCAL_TEST==="yes" && /^postgres(?:ql)?:\/\/[^@]+@(?:localhost|127\\.0\\.0\\.1):/.test(process.env.DATABASE_URL||"");
  const pool=opts.pool||new (require("pg").Pool)({
    connectionString:process.env.DATABASE_URL,
-   ssl: {rejectUnauthorized:true},
+   ssl: isLocalTest ? false : {rejectUnauthorized:true},
    max:4, connectionTimeoutMillis:7000, idleTimeoutMillis:30000
  });
  const versions=new WeakMap();
