@@ -63,7 +63,7 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
   }
   // Compile the actual inline script delivered to browsers, not merely Node server.js.
   const pensionHtml=await (await fetch("http://127.0.0.1:"+port+"/pension?lang=uz")).text();
-  const inlineScripts=[...pensionHtml.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/gi)].map(m=>m[1]);
+  const inlineScripts=[...pensionHtml.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
   assert.ok(inlineScripts.length>0,"Pension browser JavaScript must be present");
   for(const js of inlineScripts){
     if(js.trim())new (require("node:vm").Script)(js,{filename:"pension-browser-inline.js"});
