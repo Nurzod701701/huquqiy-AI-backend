@@ -21,6 +21,7 @@ jobs:
         run: |
           node --check server.js
           node --check scripts/audit-account-data-readonly.js
+          node --check scripts/check-account-storage-readonly.js
       - name: Run auth and baseline tests
         run: node --test test/security-hardening.test.js test/auth-data-qa.test.js
       - name: Validate synthetic backup without reading production
@@ -31,3 +32,11 @@ jobs:
           printf '%s\n' '{"users":[],"sessions":[],"cases":[],"documents":[],"conversations":[],"notifications":[],"consents":[],"auditLogs":[]}' > "$tmpdir/account-synthetic.json"
           chmod 600 "$tmpdir/account-synthetic.json"
           node scripts/audit-account-data-readonly.js "$tmpdir/account-synthetic.json"
+      - name: Storage diagnostic rejects ephemeral test path
+        shell: bash
+        run: |
+          if ACCOUNT_DATA_FILE=/tmp/ephemeral-do-not-use.json node scripts/check-account-storage-readonly.js; then
+            echo 'ERROR: ephemeral storage incorrectly accepted'
+            exit 1
+          fi
+          echo 'Ephemeral storage correctly marked unsafe'
