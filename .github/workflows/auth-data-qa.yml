@@ -4,6 +4,9 @@ on:
     paths:
       - 'test/auth-data-qa.test.js'
       - 'scripts/audit-account-data-readonly.js'
+      - 'scripts/migrate-qomus-json-to-neon.js'
+      - 'test/neon-migration.test.js'
+      - 'package.json'
       - '.github/workflows/auth-data-qa.yml'
   workflow_dispatch:
 permissions:
@@ -22,8 +25,9 @@ jobs:
           node --check server.js
           node --check scripts/audit-account-data-readonly.js
           node --check scripts/check-account-storage-readonly.js
+          node --check scripts/migrate-qomus-json-to-neon.js
       - name: Run auth and baseline tests
-        run: node --test test/security-hardening.test.js test/auth-data-qa.test.js
+        run: node --test test/security-hardening.test.js test/auth-data-qa.test.js test/neon-migration.test.js
       - name: Validate synthetic backup without reading production
         shell: bash
         run: |
@@ -32,6 +36,7 @@ jobs:
           printf '%s\n' '{"users":[],"sessions":[],"cases":[],"documents":[],"conversations":[],"notifications":[],"consents":[],"auditLogs":[]}' > "$tmpdir/account-synthetic.json"
           chmod 600 "$tmpdir/account-synthetic.json"
           node scripts/audit-account-data-readonly.js "$tmpdir/account-synthetic.json"
+          node scripts/migrate-qomus-json-to-neon.js "$tmpdir/account-synthetic.json"
       - name: Storage diagnostic rejects ephemeral test path
         shell: bash
         run: |
