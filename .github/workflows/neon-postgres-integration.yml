@@ -1,0 +1,40 @@
+name: QOMUS Neon PostgreSQL Integration QA
+on:
+  pull_request:
+    paths:
+      - 'account-pg-store.js'
+      - 'server.js'
+      - 'package.json'
+      - 'test/account-pg-integration.test.js'
+      - '.github/workflows/neon-postgres-integration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  postgres-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: qomus_qa
+          POSTGRES_USER: qomus_qa
+          POSTGRES_PASSWORD: local-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U qomus_qa -d qomus_qa"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      QOMUS_TEST_DATABASE_URL: postgresql://qomus_qa:local-ci-only@localhost:5432/qomus_qa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: node --check server.js
+      - run: node --test test/account-pg-store.test.js test/account-pg-integration.test.js
