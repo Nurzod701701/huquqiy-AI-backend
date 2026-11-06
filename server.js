@@ -8994,7 +8994,14 @@ function courtCostsResultPage(lang,form){
  else if(selected==='labor') {fee=0;formula='Mehnat huquqiy munosabatlaridan kelib chiqadigan talablar bo‘yicha da’vogar ozod etiladi.';note='Qonunning 8-moddasi. Da’vogarning maqomi va talab turini tekshiring.';}
  else if(form.exemption==='yes'||form.exemption==='unknown') {note='Imtiyoz mavjudligi noma’lum yoki ko‘rsatilgan. Imtiyozning huquqiy asosi tasdiqlanmaguncha to‘lanadigan summa chiqarilmaydi.';}
  else if(selected==='divorce') {if(bhm>0){const repeat=String(form.repeat_divorce||'no')==='yes';fee=bhm*(repeat?4:2);formula='BHM × '+(repeat?4:2);note='Faqat nikohdan ajratish talabi uchun. Mol-mulk talabi qo‘shilsa, uning boji alohida hisoblanadi.';}else note='BHM konfiguratsiyasi tekshirilishi kerak.';}
- else if(selected==='property') {if(bhm>0&&amount>0){fee=Math.max(amount*.04,bhm);formula='max(da’vo qiymati × 4%, 1 BHM)';note='Fuqarolik sudidagi mulkiy da’vo uchun dastlabki hisob. Mol-mulkning tegishli ulushi va qo‘shimcha talablar tekshiriladi.';}else note='Hisoblash uchun da’vo qiymatini kiriting.';}
+ else if(selected==='property'||(selected==='business'&&parties==='entrepreneurs')){
+   const rules=require("./court-fee-rules").calculateCourtFee({claim:selected,amount,exemption:'no',businessParties:parties},bhm);
+   fee=rules.fee;
+   formula=rules.fee!==null?(selected==='business'?'max(da’vo qiymati × 2%, 1 BHM)':'max(da’vo qiymati × 4%, 1 BHM)'):'';
+   note=rules.fee===null?'Hisoblash uchun haqiqiy da’vo qiymatini kiriting.':
+      selected==='business'?'Iqtisodiy sudda mulkiy da’vo uchun dastlabki stavka. Sudga tegishlilik, imtiyoz va talab turi tekshiriladi.':
+      'Fuqarolik sudidagi mulkiy da’vo uchun dastlabki hisob. Mol-mulkning tegishli ulushi va qo‘shimcha talablar tekshiriladi.';
+ }
  else note='Ushbu da’vo turining amaldagi stavkasi va imtiyozlari alohida tekshirilishi kerak. Tasdiqlanmagan raqam chiqarilmaydi.';
  const show=fee!==null&&valid(fee);
  const extraTypes=[['postal','Pochta orqali jo‘natish'],['expert','Ekspertiza'],['translator','Tarjimon'],['representative','Advokat yoki boshqa vakil']];
@@ -9756,7 +9763,7 @@ function pensionPage(lang) {
       <h1 style="font-size:clamp(29px,4vw,42px);margin:16px 0 8px">${esc(t.title)}</h1>
       <p style="font-size:16px;line-height:1.7">${esc(t.sub)}</p>
       <div class="notice noticeGold" style="margin:18px 0"><span class="noticeIcon">!</span><span>${esc(t.warning)}</span></div>
-      <details style="margin:15px 0;padding:13px 16px;border:1px solid #d8dfe6;border-radius:12px"><summary style="cursor:pointer;font-weight:700">${lang==='uz'?'Rasmiy miqdorlar va qonuniy asoslar':lang==='ru'?'Официальные суммы и правовые основания':'Official rates and legal basis'}</summary><p style="line-height:1.6">${lang==='uz'?'Pensiya va nafaqa turli to‘lovlar. Eng kam miqdorlar va sanalarni rasmiy manbadan tekshiring.':lang==='ru'?'Пенсии и пособия регулируются отдельно. Проверяйте актуальные суммы.':'Pensions and allowances are separate. Check current official rates.'}</p><a href="https://lex.uz/uz/acts/-112314" target="_blank" rel="noopener">Pensiya qonuni ↗</a> · <a href="https://lex.uz/uz/acts/-6411319" target="_blank" rel="noopener">119-son nizom ↗</a> · <a href="https://lex.uz/uz/acts/-6236060" target="_blank" rel="noopener">592-son nizom ↗</a></details>
+      <details style="margin:15px 0;padding:13px 16px;border:1px solid #d8dfe6;border-radius:12px"><summary style="cursor:pointer;font-weight:700">${lang==='uz'?'Rasmiy miqdorlar va qonuniy asoslar':lang==='ru'?'Официальные суммы и правовые основания':'Official rates and legal basis'}</summary><p style="line-height:1.6">${lang==='uz'?'Pensiya va nafaqa turli to‘lovlar. Eng kam miqdorlar va sanalarni rasmiy manbadan tekshiring.':lang==='ru'?'Пенсии и пособия регулируются отдельно. Проверяйте актуальные суммы.':'Pensions and allowances are separate. Check current official rates.'}</p><a href="https://lex.uz/uz/acts/-112314" target="_blank" rel="noopener">Pensiya qonuni ↗</a> · <a href="https://lex.uz/uz/acts/-6411319" target="_blank" rel="noopener">119-son nizom ↗</a> · <a href="https://lex.uz/uz/acts/-6236060" target="_blank" rel="noopener">592-son nizom ↗</a> · <a href="https://lex.uz/uz/docs/-8283656" target="_blank" rel="noopener">PF–115 ↗</a><p style="line-height:1.65;margin-top:10px">${lang==='uz'?'2026-yil 1-iyuldan: eng kam yoshga doir pensiya 983 000 so‘m, eng kam nogironlik pensiyasi 1 083 000 so‘m, hisoblashning bazaviy miqdori 504 000 so‘m. Bu qiymatlar sizga tayinlanadigan to‘lov emas.':lang==='ru'?'С 1 июля 2026 года: минимальная пенсия по возрасту 983 000 сум, минимальная пенсия по инвалидности 1 083 000 сум, базовая расчётная величина 504 000 сум. Это не назначенная сумма.':'From 1 July 2026: minimum old-age pension 983,000 UZS, minimum disability pension 1,083,000 UZS, base pension calculation amount 504,000 UZS. These are not your awarded benefits.'}</p></details>
       <form id="pensionForm" autocomplete="off">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
         <div class="formGroup" style="grid-column:1/-1"><label for="pKind" style="font-size:18px;font-weight:800">${esc(t.kind)} — 1 / 3</label>
@@ -9974,6 +9981,8 @@ function pensionPage(lang) {
 }
 
 function calculatorsPage(lang) {
+  const alimentRates=require('./legal-calculator-rules');
+  const minPerChild=alimentRates.MHTEKM.amount*0.265;
 
   lang = getLang(lang);
 
@@ -9995,7 +10004,7 @@ function calculatorsPage(lang) {
       result: "Dastlabki hisob",
       legal: "Huquqiy asos",
       legalText: "Oila kodeksi 99-moddasi: kelishuv bo‘lmasa, odatda bir bola uchun daromadning 1/4 qismi, ikki bola uchun 1/3 qismi, uch va undan ortiq bola uchun 1/2 qismi undiriladi. Sud taraflarning moddiy yoki oilaviy ahvoli va boshqa e’tiborga loyiq holatlarni hisobga olib miqdorni kamaytirishi yoki ko‘paytirishi mumkin.",
-      minText: "Shuningdek, har bir bola uchun qonunda belgilangan eng kam miqdor talabi mavjud. Aniq yakuniy miqdor uchun amaldagi MHEKM va ish holatini tekshirish kerak.",
+      minText: "Oila kodeksi 99-moddasi bo‘yicha har bir bola uchun aliment MHTEKMning 26,5 foizidan kam bo‘lmaydi. Summa va kuchga kirgan sanani rasmiy manbadan tekshiring.",
       property: "Mol-mulk ulushi",
       propertyText: "Mol-mulk qiymatidan matematik ulushni hisoblash uchun yordamchi vosita.",
       value: "Mol-mulk qiymati",
@@ -10095,6 +10104,11 @@ function calculatorsPage(lang) {
             </select>
           </div>
 
+          <div class="formGroup" style="margin-top:12px">
+            <label for="alimentMonths">${lang==='uz'?'Hisoblash davri (matematik prognoz)':lang==='ru'?'Период (математический прогноз)':'Projection period'}</label>
+            <select id="alimentMonths"><option value="1">1 ${lang==='uz'?'oy':lang==='ru'?'месяц':'month'}</option><option value="3">3 ${lang==='uz'?'oy':lang==='ru'?'месяца':'months'}</option><option value="6">6 ${lang==='uz'?'oy':lang==='ru'?'месяцев':'months'}</option><option value="12">12 ${lang==='uz'?'oy':lang==='ru'?'месяцев':'months'}</option></select>
+            <small style="display:block;margin-top:7px;color:#596a78">${lang==='uz'?'Faqat oylik ko‘rsatkich o‘zgarmaydi degan shartli prognoz. Qarz yoki sud belgilagan summa emas.':lang==='ru'?'Только условный прогноз при неизменном ежемесячном размере, не долг.':'Illustrative projection at a constant monthly amount, not arrears or a court award.'}</small>
+          </div>
           <button type="button" class="btn btnPrimary" style="margin-top:15px;" onclick="calculateAliment()">
             ∑ ${esc(t.calculate)}
           </button>
@@ -10208,31 +10222,52 @@ function calculatorsPage(lang) {
             '<a href="https://lex.uz/docs/-104720" target="_blank" rel="noopener noreferrer" title="Oila kodeksi (hujjat sahifasi)" style="color:#1763aa;text-decoration:underline;font-weight:700">$1</a>');
         }
         function calculateAliment(){
-          const children = Math.max(1, Number(document.getElementById("childrenCount").value || 1));
-          const income = Math.max(0, Number(document.getElementById("alimentIncome").value || 0));
-          const status = document.getElementById("incomeStatus").value;
-          const agreement = document.getElementById("alimentAgreement").value;
-
-          let share = children === 1 ? 0.25 : children === 2 ? (1/3) : 0.50;
-          const result = income * share;
-          const percent = share * 100;
-
-          let extra = "";
-          if(status === "variable"){
-            extra += " ${lang === "uz" ? "Daromad o‘zgaruvchan bo‘lsa, aniq undirish tartibi ish holatiga qarab alohida baholanishi kerak." : lang === "ru" ? "При переменном доходе порядок взыскания требует отдельной оценки обстоятельств дела." : "Where income is variable, the method of recovery requires separate assessment of the case."}";
+          const children=Number(document.getElementById("childrenCount").value);
+          const income=Number(document.getElementById("alimentIncome").value);
+          const output=document.getElementById("alimentResult");
+          if(!Number.isInteger(children)||children<1||children>30||
+             !document.getElementById("alimentIncome").value.trim()||
+             !Number.isFinite(income)||income<0||income>1e12){
+            output.textContent="${lang==='ru'?'Введите действительное число детей и доход.':lang==='en'?'Enter a valid child count and income.':'Farzandlar soni va daromadni to‘g‘ri kiriting.'}";
+            return;
           }
-          if(agreement === "yes"){
-            extra += " ${lang === "uz" ? "Aliment bo‘yicha mavjud kelishuv shartlari ham tekshirilishi kerak." : lang === "ru" ? "Также необходимо проверить условия существующего соглашения об алиментах." : "The terms of any existing child-support agreement should also be checked."}";
-          }
+          const status=document.getElementById("incomeStatus").value;
+          const agreement=document.getElementById("alimentAgreement").value;
+          const share=children===1?0.25:children===2?(1/3):0.5;
+          const proportional=income*share;
+          const minimumPerChild=${minPerChild};
+          const minimumTotal=minimumPerChild*children;
+          const indicative=Math.max(proportional,minimumTotal);
+          const months=Number(document.getElementById("alimentMonths").value);
+          const projected=indicative*months;
+          const percent=share*100;
+          let extra="";
+          if(status==="variable")extra+=" ${lang==='uz'?'Daromad o‘zgaruvchan bo‘lsa, sud qat’iy summani yoki aralash undirish tartibini belgilashi mumkin.':lang==='ru'?'При нестабильном доходе суд может определить твёрдую денежную сумму.':'With variable income, the court may set a fixed amount.'}";
+          if(agreement==="yes")extra+=" ${lang==='uz'?'Mavjud notarial kelishuv shartlari alohida baholanadi.':lang==='ru'?'Условия нотариального соглашения требуют проверки.':'Review any existing notarized agreement.'}";
+          output.textContent=
+            "${t.result}: "+formatNumber(indicative)+" so‘m. "+
+            "${lang==='uz'?'Daromaddan ulush':lang==='ru'?'Доля от дохода':'Income share'}: "+formatNumber(proportional)+" ("+formatNumber(percent)+"%). "+
+            "${lang==='uz'?'Qonuniy eng kam chegara':lang==='ru'?'Законный минимум':'Statutory floor'}: "+
+            formatNumber(minimumTotal)+" ("+children+" × "+formatNumber(minimumPerChild)+"). "+
+            "${lang==='uz'?'MHTEKM':lang==='ru'?'МРОТ':'Minimum wage'}: "+
+            formatNumber(${alimentRates.MHTEKM.amount})+
+            " (${alimentRates.MHTEKM.effectiveFrom}). "+
+            "${lang==='uz'?'Tanlangan davr':lang==='ru'?'Выбранный период':'Selected period'}: "+months+
+            " ${lang==='uz'?'oy':lang==='ru'?'мес.':'months'} × "+formatNumber(indicative)+
+            " = "+formatNumber(projected)+" so‘m. "+
+            "${lang==='uz'?'Bu qarzdorlik yoki ijro hujjati hisobi emas; oylik daromad va me’yor o‘zgarmasligi taxmin qilingan.':lang==='ru'?'Это не расчёт долга: предполагается неизменный доход и норма.':'This is not an arrears calculation: income and rates are assumed unchanged.'} "+
 
-          document.getElementById("alimentResult").textContent =
-            "${t.result}: " + formatNumber(result) +
-            " (${lang === "uz" ? "daromadning" : lang === "ru" ? "от дохода" : "of income"} " +
-            formatNumber(percent) + "%)." + extra;
+            "${lang==='uz'?'Bu dastlabki matematik hisob, sud belgilaydigan yakuniy summa emas.':lang==='ru'?'Предварительный расчёт, не окончательная сумма суда.':'Illustrative calculation, not a court award.'}"+extra;
         }
 
         function analyzeProperty(){
-          const value = Math.max(0, Number(document.getElementById("propertyValue").value || 0));
+          const rawValue=document.getElementById("propertyValue").value.trim();
+          const value=rawValue===""?0:Number(rawValue);
+          if(!Number.isFinite(value)||value<0||value>1e15){
+            document.getElementById("propertyResult").textContent=
+              "${lang==='uz'?'Mol-mulk qiymatini musbat va haqiqiy summa shaklida kiriting.':lang==='ru'?'Введите корректную неотрицательную стоимость имущества.':'Enter a valid nonnegative property value.'}";
+            return;
+          }
           const when = document.getElementById("propertyWhen").value;
           const gift = document.getElementById("propertyGift").value;
           const prenup = document.getElementById("propertyPrenup").value;
@@ -14006,6 +14041,35 @@ const server =
 
         }
 
+
+        // Account-scoped Advokat PRO calendar (anonymous visitors retain session-only pilot).
+        if(pathname==="/advokat-pro/workspace"){
+          const auth=await accountSession(req);
+          if(!auth){return sendJson(res,{ok:false,error:"LOGIN_REQUIRED"},401);}
+          if(req.method==="GET"){
+            const db=await accountLoadDb();
+            const mine=db.settings?.advokatWorkspaces?.[auth.user.id]||{v:1,cases:[],tasks:[]};
+            return sendJson(res,{ok:true,workspace:mine});
+          }
+          if(req.method==="POST"){
+            const input=await readForm(req);
+            let workspace;
+            try{workspace=require("./advokat-workspace-store").parseAdvokatWorkspaceJson(input.data);}
+            catch(_){return sendJson(res,{ok:false,error:"INVALID_WORKSPACE"},400);}
+            const db=await accountLoadDb();
+            if(!db.settings||typeof db.settings!=="object")db.settings={};
+            if(!db.settings.advokatWorkspaces)db.settings.advokatWorkspaces={};
+            db.settings.advokatWorkspaces[auth.user.id]=workspace;
+            accountAudit(db,auth.user.id,"advokat_workspace_saved",{cases:workspace.cases.length,tasks:workspace.tasks.length});
+            try{await accountSaveDb(db);}
+            catch(err){
+              if(err.message==="QOMUS_PG_WRITE_CONFLICT")return sendJson(res,{ok:false,error:"WRITE_CONFLICT"},409);
+              throw err;
+            }
+            return sendJson(res,{ok:true,cases:workspace.cases.length,tasks:workspace.tasks.length});
+          }
+          return sendJson(res,{ok:false,error:"METHOD_NOT_ALLOWED"},405);
+        }
 
         // Advokat PRO: separate landing page and preserved document constructor.
         if(req.method === "GET" && pathname === "/advokat-pro"){

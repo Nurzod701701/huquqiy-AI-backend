@@ -73,13 +73,13 @@ function guardSensitiveRequest(req, res) {
   if (req.method !== "POST") return false;
   const route = requestedPath(req);
   const fetchSite = String(req.headers["sec-fetch-site"] || "").toLowerCase();
-  if (fetchSite === "cross-site" && (/^\/account(?:\/|$)/.test(route) || /^\/admin(?:\/|$)/.test(route))) {
+  if (fetchSite === "cross-site" && (/^\/account(?:\/|$)/.test(route) || /^\/admin(?:\/|$)/.test(route) || route==="/advokat-pro/workspace")) {
     alertEvent("CROSS_SITE_POST", addressKey(req), route);
     deny(res, 403, "Cross-site request rejected.");
     return true;
   }
   // Browser forms that modify an authenticated account must originate on QOMUS.
-  if ((/^\/account(?:\/|$)/.test(route) || route === "/admin/user-status") &&
+  if ((/^\/account(?:\/|$)/.test(route) || route === "/admin/user-status" || route==="/advokat-pro/workspace") &&
       /(?:^|;\s*)hq_session=/.test(String(req.headers.cookie || "")) && !sameOrigin(req)) {
     alertEvent("INVALID_ORIGIN", addressKey(req), route);
     deny(res, 403, "Request origin could not be verified.");
