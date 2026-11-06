@@ -14017,6 +14017,35 @@ const server =
         }
 
 
+        // Account-scoped Advokat PRO calendar (anonymous visitors retain session-only pilot).
+        if(pathname==="/advokat-pro/workspace"){
+          const auth=await accountSession(req);
+          if(!auth){return sendJson(res,{ok:false,error:"LOGIN_REQUIRED"},401);}
+          if(req.method==="GET"){
+            const db=await accountLoadDb();
+            const mine=db.settings?.advokatWorkspaces?.[auth.user.id]||{v:1,cases:[],tasks:[]};
+            return sendJson(res,{ok:true,workspace:mine});
+          }
+          if(req.method==="POST"){
+            const input=await readForm(req);
+            let workspace;
+            try{workspace=require("./advokat-workspace-store").parseAdvokatWorkspaceJson(input.data);}
+            catch(_){return sendJson(res,{ok:false,error:"INVALID_WORKSPACE"},400);}
+            const db=await accountLoadDb();
+            if(!db.settings||typeof db.settings!=="object")db.settings={};
+            if(!db.settings.advokatWorkspaces)db.settings.advokatWorkspaces={};
+            db.settings.advokatWorkspaces[auth.user.id]=workspace;
+            accountAudit(db,auth.user.id,"advokat_workspace_saved",{cases:workspace.cases.length,tasks:workspace.tasks.length});
+            try{await accountSaveDb(db);}
+            catch(err){
+              if(err.message==="QOMUS_PG_WRITE_CONFLICT")return sendJson(res,{ok:false,error:"WRITE_CONFLICT"},409);
+              throw err;
+            }
+            return sendJson(res,{ok:true,cases:workspace.cases.length,tasks:workspace.tasks.length});
+          }
+          return sendJson(res,{ok:false,error:"METHOD_NOT_ALLOWED"},405);
+        }
+
         // Advokat PRO: separate landing page and preserved document constructor.
         if(req.method === "GET" && pathname === "/advokat-pro"){
           return sendHtml(res, require("./advokat-home")(lang));
