@@ -1,0 +1,33 @@
+name: QOMUS Auth and Account Data QA
+on:
+  pull_request:
+    paths:
+      - 'test/auth-data-qa.test.js'
+      - 'scripts/audit-account-data-readonly.js'
+      - '.github/workflows/auth-data-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-security-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax
+        run: |
+          node --check server.js
+          node --check scripts/audit-account-data-readonly.js
+      - name: Run auth and baseline tests
+        run: node --test test/security-hardening.test.js test/auth-data-qa.test.js
+      - name: Validate synthetic backup without reading production
+        shell: bash
+        run: |
+          tmpdir="$(mktemp -d)"
+          trap 'rm -rf "$tmpdir"' EXIT
+          printf '%s\n' '{"users":[],"sessions":[],"cases":[],"documents":[],"conversations":[],"notifications":[],"consents":[],"auditLogs":[]}' > "$tmpdir/account-synthetic.json"
+          chmod 600 "$tmpdir/account-synthetic.json"
+          node scripts/audit-account-data-readonly.js "$tmpdir/account-synthetic.json"
