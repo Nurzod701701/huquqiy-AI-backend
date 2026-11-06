@@ -23,6 +23,7 @@ const tables=[
 ];
 function inspect(data){
  assert(data&&typeof data==="object"&&!Array.isArray(data),"Invalid JSON root");
+ assert(!data.settings||typeof data.settings==="object"&&!Array.isArray(data.settings),"Invalid settings object");
  for(const name of ["users","sessions",...tables.map(t=>t.source)]) assert(Array.isArray(data[name]),"Invalid collection: "+name);
  const users=new Set();const cases=new Set();
  const errors=[];
@@ -37,7 +38,7 @@ function inspect(data){
    if(record&&["documents","conversations"].includes(table.source)&&record.caseId&&!cases.has(record.caseId))errors.push(table.source+" orphan case");
   }
  }
- return {counts:Object.fromEntries(tables.map(t=>[t.source,data[t.source].length])),sessionsSkipped:data.sessions.length,errors};
+ return {counts:Object.fromEntries(tables.map(t=>[t.source,data[t.source].length])),sessionsSkipped:data.sessions.length,settingsCount:Object.keys(data.settings||{}).length,errors};
 }
 async function run(argv=process.argv.slice(2)){
  const source=argv.find(x=>x!=="--apply");
@@ -48,7 +49,7 @@ async function run(argv=process.argv.slice(2)){
  const report=inspect(data);
  // Never print personal data, tokens, email, document texts, DB credentials, or paths.
  console.log(JSON.stringify({mode:argv.includes("--apply")?"apply":"dry-run",counts:report.counts,
-   sessionsSkipped:report.sessionsSkipped,preflightErrors:report.errors.slice(0,30)},null,2));
+   sessionsSkipped:report.sessionsSkipped,settingsCount:report.settingsCount,preflightErrors:report.errors.slice(0,30)},null,2));
  assert(report.errors.length===0,"Preflight failed, database unchanged");
  if(!argv.includes("--apply"))return;
  assert(process.env.QOMUS_MIGRATION_APPROVED==="yes","Explicit migration gate not set");
@@ -64,6 +65,9 @@ async function run(argv=process.argv.slice(2)){
    for(const record of data[def.source]){
     await client.query("INSERT INTO "+def.table+" ("+columns+") VALUES ("+vals+") ON CONFLICT (id) DO NOTHING",def.map(record));
    }
+  }
+  for(const [key,value] of Object.entries(data.settings||{})){
+   await client.query("INSERT INTO app_settings (key,value) VALUES ($1,$2::jsonb) ON CONFLICT (key) DO NOTHING",[key,JSON.stringify(value)]);
   }
   await client.query("COMMIT");
   console.log(JSON.stringify({migrationCommitted:true,countsAttempted:report.counts,sessionsSkipped:report.sessionsSkipped}));
