@@ -27,7 +27,15 @@ function inspect(data){
  for(const name of ["users","sessions",...tables.map(t=>t.source)]) assert(Array.isArray(data[name]),"Invalid collection: "+name);
  const users=new Set();const cases=new Set();
  const errors=[];
- for(const u of data.users){if(!u||!u.id||!u.email)errors.push("User ID/email missing");else if(users.has(u.id))errors.push("Duplicate user ID");else users.add(u.id);}
+ const emails=new Set();
+ for(const u of data.users){
+  if(!u||!u.id||!u.email){errors.push("User ID/email missing");continue;}
+  if(users.has(u.id))errors.push("Duplicate user ID"); else users.add(u.id);
+  const email=text(u.email).toLowerCase();
+  if(emails.has(email))errors.push("Duplicate user email"); else emails.add(email);
+  if(!["user","admin","owner"].includes(u.role||"user"))errors.push("Unsupported user role");
+  if(!["active","blocked","inactive"].includes(u.status||"active"))errors.push("Unsupported user status; schema reconciliation required");
+ }
  for(const c of data.cases){if(!c||!c.id||!c.userId)errors.push("Case ID/userID missing");else{if(cases.has(c.id))errors.push("Duplicate case ID");cases.add(c.id);}}
  for(const table of tables){
   const ids=new Set();
