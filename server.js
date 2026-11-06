@@ -9974,6 +9974,8 @@ function pensionPage(lang) {
 }
 
 function calculatorsPage(lang) {
+  const alimentRates=require('./legal-calculator-rules');
+  const minPerChild=alimentRates.MHTEKM.amount*0.265;
 
   lang = getLang(lang);
 
@@ -9995,7 +9997,7 @@ function calculatorsPage(lang) {
       result: "Dastlabki hisob",
       legal: "Huquqiy asos",
       legalText: "Oila kodeksi 99-moddasi: kelishuv bo‘lmasa, odatda bir bola uchun daromadning 1/4 qismi, ikki bola uchun 1/3 qismi, uch va undan ortiq bola uchun 1/2 qismi undiriladi. Sud taraflarning moddiy yoki oilaviy ahvoli va boshqa e’tiborga loyiq holatlarni hisobga olib miqdorni kamaytirishi yoki ko‘paytirishi mumkin.",
-      minText: "Shuningdek, har bir bola uchun qonunda belgilangan eng kam miqdor talabi mavjud. Aniq yakuniy miqdor uchun amaldagi MHEKM va ish holatini tekshirish kerak.",
+      minText: "Oila kodeksi 99-moddasi bo‘yicha har bir bola uchun aliment MHTEKMning 26,5 foizidan kam bo‘lmaydi. Summa va kuchga kirgan sanani rasmiy manbadan tekshiring.",
       property: "Mol-mulk ulushi",
       propertyText: "Mol-mulk qiymatidan matematik ulushni hisoblash uchun yordamchi vosita.",
       value: "Mol-mulk qiymati",
@@ -10208,27 +10210,35 @@ function calculatorsPage(lang) {
             '<a href="https://lex.uz/docs/-104720" target="_blank" rel="noopener noreferrer" title="Oila kodeksi (hujjat sahifasi)" style="color:#1763aa;text-decoration:underline;font-weight:700">$1</a>');
         }
         function calculateAliment(){
-          const children = Math.max(1, Number(document.getElementById("childrenCount").value || 1));
-          const income = Math.max(0, Number(document.getElementById("alimentIncome").value || 0));
-          const status = document.getElementById("incomeStatus").value;
-          const agreement = document.getElementById("alimentAgreement").value;
-
-          let share = children === 1 ? 0.25 : children === 2 ? (1/3) : 0.50;
-          const result = income * share;
-          const percent = share * 100;
-
-          let extra = "";
-          if(status === "variable"){
-            extra += " ${lang === "uz" ? "Daromad o‘zgaruvchan bo‘lsa, aniq undirish tartibi ish holatiga qarab alohida baholanishi kerak." : lang === "ru" ? "При переменном доходе порядок взыскания требует отдельной оценки обстоятельств дела." : "Where income is variable, the method of recovery requires separate assessment of the case."}";
+          const children=Number(document.getElementById("childrenCount").value);
+          const income=Number(document.getElementById("alimentIncome").value);
+          const output=document.getElementById("alimentResult");
+          if(!Number.isInteger(children)||children<1||children>30||
+             !document.getElementById("alimentIncome").value.trim()||
+             !Number.isFinite(income)||income<0||income>1e12){
+            output.textContent="${lang==='ru'?'Введите действительное число детей и доход.':lang==='en'?'Enter a valid child count and income.':'Farzandlar soni va daromadni to‘g‘ri kiriting.'}";
+            return;
           }
-          if(agreement === "yes"){
-            extra += " ${lang === "uz" ? "Aliment bo‘yicha mavjud kelishuv shartlari ham tekshirilishi kerak." : lang === "ru" ? "Также необходимо проверить условия существующего соглашения об алиментах." : "The terms of any existing child-support agreement should also be checked."}";
-          }
-
-          document.getElementById("alimentResult").textContent =
-            "${t.result}: " + formatNumber(result) +
-            " (${lang === "uz" ? "daromadning" : lang === "ru" ? "от дохода" : "of income"} " +
-            formatNumber(percent) + "%)." + extra;
+          const status=document.getElementById("incomeStatus").value;
+          const agreement=document.getElementById("alimentAgreement").value;
+          const share=children===1?0.25:children===2?(1/3):0.5;
+          const proportional=income*share;
+          const minimumPerChild=${minPerChild};
+          const minimumTotal=minimumPerChild*children;
+          const indicative=Math.max(proportional,minimumTotal);
+          const percent=share*100;
+          let extra="";
+          if(status==="variable")extra+=" ${lang==='uz'?'Daromad o‘zgaruvchan bo‘lsa, sud qat’iy summani yoki aralash undirish tartibini belgilashi mumkin.':lang==='ru'?'При нестабильном доходе суд может определить твёрдую денежную сумму.':'With variable income, the court may set a fixed amount.'}";
+          if(agreement==="yes")extra+=" ${lang==='uz'?'Mavjud notarial kelishuv shartlari alohida baholanadi.':lang==='ru'?'Условия нотариального соглашения требуют проверки.':'Review any existing notarized agreement.'}";
+          output.textContent=
+            "${t.result}: "+formatNumber(indicative)+" so‘m. "+
+            "${lang==='uz'?'Daromaddan ulush':lang==='ru'?'Доля от дохода':'Income share'}: "+formatNumber(proportional)+" ("+formatNumber(percent)+"%). "+
+            "${lang==='uz'?'Qonuniy eng kam chegara':lang==='ru'?'Законный минимум':'Statutory floor'}: "+
+            formatNumber(minimumTotal)+" ("+children+" × "+formatNumber(minimumPerChild)+"). "+
+            "${lang==='uz'?'MHTEKM':lang==='ru'?'МРОТ':'Minimum wage'}: "+
+            formatNumber(${alimentRates.MHTEKM.amount})+
+            " (${alimentRates.MHTEKM.effectiveFrom}). "+
+            "${lang==='uz'?'Bu dastlabki matematik hisob, sud belgilaydigan yakuniy summa emas.':lang==='ru'?'Предварительный расчёт, не окончательная сумма суда.':'Illustrative calculation, not a court award.'}"+extra;
         }
 
         function analyzeProperty(){
