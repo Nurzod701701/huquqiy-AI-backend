@@ -14394,7 +14394,7 @@ const server =
 // START SERVER
 // ======================================================
 
-server.listen(
+const startServer = () => server.listen(
   PORT,
   "0.0.0.0",
   () => {
@@ -14438,6 +14438,24 @@ server.listen(
 
   }
 );
+
+// Fail closed: in PostgreSQL mode, do not serve requests until the remote
+// database and expected schema are reachable and readable.
+if(accountPgStore){
+  (async()=>{
+    try{
+      await accountPgStore.load();
+      console.log("QOMUS_POSTGRES_READY");
+      startServer();
+    }catch(err){
+      console.error("QOMUS_POSTGRES_STARTUP_FAILED",err.code||err.message);
+      await accountPgStore.close().catch(()=>{});
+      process.exitCode=1;
+    }
+  })();
+}else{
+  startServer();
+}
 
 
 // ======================================================
