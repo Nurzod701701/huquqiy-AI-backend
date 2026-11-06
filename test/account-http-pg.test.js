@@ -56,6 +56,39 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
   assert.ok(committed.rows[0].data.cases.some(x=>x.userId===fakeUser.id&&x.title==="Synthetic QA case"));
   const ownerRead=await fetch("http://127.0.0.1:"+port+"/account/cases",{headers:{cookie:uCookie}});
   assert.equal(ownerRead.status,200);
+  // The anonymous visitor may view calculators; raw HTML includes explicit input checks.
+  for(const route of ["/fuqarolar","/calculators","/pension","/court-costs","/advokat-pro","/advokat-pro/cases"]){
+   const page=await fetch("http://127.0.0.1:"+port+route);
+   assert.equal(page.status,200,route);
+  }
+  const alimentHtml=await (await fetch("http://127.0.0.1:"+port+"/calculators")).text();
+  assert.match(alimentHtml,/360400/);
+  assert.match(alimentHtml,/minimumPerChild/);
+  const feeResponse=await fetch("http://127.0.0.1:"+port+"/court-costs-result",{
+   method:"POST",headers:{"content-type":"application/x-www-form-urlencoded","origin":"http://127.0.0.1:"+port},
+   body:new URLSearchParams({claim:"business",amount:"50000000",business_parties:"entrepreneurs",exemption:"no"})
+  });
+  assert.equal(feeResponse.status,200);
+  assert.match(await feeResponse.text(),/1\\s?000\\s?000/);
+  // Each signed-in user gets an isolated persistent Neon workspace.
+  const workspace={v:1,cases:[{id:"case12345",title:"Synthetic private case"}],tasks:[]};
+  const workspaceSave=await fetch("http://127.0.0.1:"+port+"/advokat-pro/workspace",{
+   method:"POST",headers:{"content-type":"application/x-www-form-urlencoded","origin":"http://127.0.0.1:"+port,cookie:uCookie},
+   body:new URLSearchParams({data:JSON.stringify(workspace)})});
+  assert.equal(workspaceSave.status,200);
+  const mine=await fetch("http://127.0.0.1:"+port+"/advokat-pro/workspace",{headers:{cookie:uCookie}});
+  assert.equal(mine.status,200);
+  assert.deepEqual((await mine.json()).workspace,workspace);
+  const differentOwner=await fetch("http://127.0.0.1:"+port+"/advokat-pro/workspace",{headers:{cookie:cookie.split(";")[0]}});
+  assert.equal(differentOwner.status,200);
+  assert.equal((await differentOwner.json()).workspace.cases.length,0);
+  const crossSiteWorkspace=await fetch("http://127.0.0.1:"+port+"/advokat-pro/workspace",{
+   method:"POST",headers:{"content-type":"application/x-www-form-urlencoded","origin":"https://bad.invalid","sec-fetch-site":"cross-site",cookie:uCookie},
+   body:new URLSearchParams({data:JSON.stringify({v:1,cases:[],tasks:[]})})});
+  assert.equal(crossSiteWorkspace.status,403);
+  const anonymousWorkspace=await fetch("http://127.0.0.1:"+port+"/advokat-pro/workspace");
+  assert.equal(anonymousWorkspace.status,401);
+
   // A regular user must never gain administrative privileges.
   const forbiddenAdmin=await fetch("http://127.0.0.1:"+port+"/admin/users",
     {headers:{cookie:uCookie},redirect:"manual"});
