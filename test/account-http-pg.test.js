@@ -61,6 +61,17 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
    const page=await fetch("http://127.0.0.1:"+port+route);
    assert.equal(page.status,200,route);
   }
+  // Compile the actual inline script delivered to browsers, not merely Node server.js.
+  for(const lang of ["uz","ru","en"]){
+    const response=await fetch("http://127.0.0.1:"+port+"/pension?lang="+lang);
+    assert.equal(response.status,200,"Pension HTTP route "+lang);
+    const pensionHtml=await response.text();
+    const inlineScripts=[...pensionHtml.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
+    assert.ok(inlineScripts.length>0,"Pension browser JavaScript must be present "+lang);
+    for(const js of inlineScripts)if(js.trim())new (require("node:vm").Script)(js,{filename:"pension-"+lang+".js"});
+    assert.match(pensionHtml,/pensionResult/);
+    assert.match(pensionHtml,/pensionForm/);
+  }
   const alimentHtml=await (await fetch("http://127.0.0.1:"+port+"/calculators")).text();
   assert.match(alimentHtml,/360400/);
   assert.match(alimentHtml,/minimumPerChild/);
