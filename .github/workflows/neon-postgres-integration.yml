@@ -4,6 +4,8 @@ on:
     paths:
       - 'account-pg-store.js'
       - 'server.js'
+      - 'backup/neon-daily.js'
+      - 'test/neon-daily-backup.test.js'
       - 'package.json'
       - 'test/account-pg-integration.test.js'
       - 'test/account-http-pg.test.js'
@@ -38,5 +40,7 @@ jobs:
           node-version: '22'
       - run: npm install --no-audit --no-fund
       - run: node --check server.js
+      - run: node --check backup/neon-daily.js
+      - run: node --test test/neon-daily-backup.test.js
       - run: node --test test/account-pg-store.test.js test/account-pg-integration.test.js
       - run: node --test test/account-http-pg.test.js

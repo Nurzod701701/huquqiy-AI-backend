@@ -14447,6 +14447,9 @@ if(accountPgStore){
       await accountPgStore.load();
       console.log("QOMUS_POSTGRES_READY");
       startServer();
+      if(process.env.QOMUS_BACKUP_ENABLED==="yes"){
+        require("./backup/neon-daily").startDailyBackup();
+      }
     }catch(err){
       console.error("QOMUS_POSTGRES_STARTUP_FAILED",err.code||err.message);
       await accountPgStore.close().catch(()=>{});
