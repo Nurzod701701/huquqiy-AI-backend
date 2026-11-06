@@ -56,6 +56,26 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
   assert.ok(committed.rows[0].data.cases.some(x=>x.userId===fakeUser.id&&x.title==="Synthetic QA case"));
   const ownerRead=await fetch("http://127.0.0.1:"+port+"/account/cases",{headers:{cookie:uCookie}});
   assert.equal(ownerRead.status,200);
+  // A regular user must never gain administrative privileges.
+  const forbiddenAdmin=await fetch("http://127.0.0.1:"+port+"/admin/users",
+    {headers:{cookie:uCookie},redirect:"manual"});
+  assert.equal(forbiddenAdmin.status,403);
+  // Reject cross-site state-changing requests even with a valid session cookie.
+  const crossSite=await fetch("http://127.0.0.1:"+port+"/account/profile",
+    {method:"POST",headers:{"content-type":"application/x-www-form-urlencoded",
+      origin:"https://malicious.invalid","sec-fetch-site":"cross-site",cookie:uCookie},
+      body:new URLSearchParams({firstName:"Malicious",lastName:"Tamper"})});
+  assert.equal(crossSite.status,403);
+  const afterAttack=await pool.query("SELECT data FROM qomus_account_state WHERE id=1");
+  assert.equal(afterAttack.rows[0].data.users.find(x=>x.id===fakeUser.id).firstName,"Updated QA");
+  const anonAdmin=await fetch("http://127.0.0.1:"+port+"/admin",
+    {redirect:"manual"});
+  assert.equal(anonAdmin.status,302);
+  // User's confidential case must not be exposed to an unauthenticated browser.
+  const privateCaseId=committed.rows[0].data.cases.find(x=>x.userId===fakeUser.id).id;
+  const anonymousCase=await fetch("http://127.0.0.1:"+port+"/account/case?id="+encodeURIComponent(privateCaseId),
+    {redirect:"manual"});
+  assert.equal(anonymousCase.status,302);
  } finally {
   child.kill("SIGTERM");await pool.end();
  }
