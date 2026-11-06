@@ -10104,6 +10104,11 @@ function calculatorsPage(lang) {
             </select>
           </div>
 
+          <div class="formGroup" style="margin-top:12px">
+            <label for="alimentMonths">${lang==='uz'?'Hisoblash davri (matematik prognoz)':lang==='ru'?'Период (математический прогноз)':'Projection period'}</label>
+            <select id="alimentMonths"><option value="1">1 ${lang==='uz'?'oy':lang==='ru'?'месяц':'month'}</option><option value="3">3 ${lang==='uz'?'oy':lang==='ru'?'месяца':'months'}</option><option value="6">6 ${lang==='uz'?'oy':lang==='ru'?'месяцев':'months'}</option><option value="12">12 ${lang==='uz'?'oy':lang==='ru'?'месяцев':'months'}</option></select>
+            <small style="display:block;margin-top:7px;color:#596a78">${lang==='uz'?'Faqat oylik ko‘rsatkich o‘zgarmaydi degan shartli prognoz. Qarz yoki sud belgilagan summa emas.':lang==='ru'?'Только условный прогноз при неизменном ежемесячном размере, не долг.':'Illustrative projection at a constant monthly amount, not arrears or a court award.'}</small>
+          </div>
           <button type="button" class="btn btnPrimary" style="margin-top:15px;" onclick="calculateAliment()">
             ∑ ${esc(t.calculate)}
           </button>
@@ -10233,6 +10238,8 @@ function calculatorsPage(lang) {
           const minimumPerChild=${minPerChild};
           const minimumTotal=minimumPerChild*children;
           const indicative=Math.max(proportional,minimumTotal);
+          const months=Number(document.getElementById("alimentMonths").value);
+          const projected=indicative*months;
           const percent=share*100;
           let extra="";
           if(status==="variable")extra+=" ${lang==='uz'?'Daromad o‘zgaruvchan bo‘lsa, sud qat’iy summani yoki aralash undirish tartibini belgilashi mumkin.':lang==='ru'?'При нестабильном доходе суд может определить твёрдую денежную сумму.':'With variable income, the court may set a fixed amount.'}";
@@ -10245,6 +10252,11 @@ function calculatorsPage(lang) {
             "${lang==='uz'?'MHTEKM':lang==='ru'?'МРОТ':'Minimum wage'}: "+
             formatNumber(${alimentRates.MHTEKM.amount})+
             " (${alimentRates.MHTEKM.effectiveFrom}). "+
+            "${lang==='uz'?'Tanlangan davr':lang==='ru'?'Выбранный период':'Selected period'}: "+months+
+            " ${lang==='uz'?'oy':lang==='ru'?'мес.':'months'} × "+formatNumber(indicative)+
+            " = "+formatNumber(projected)+" so‘m. "+
+            "${lang==='uz'?'Bu qarzdorlik yoki ijro hujjati hisobi emas; oylik daromad va me’yor o‘zgarmasligi taxmin qilingan.':lang==='ru'?'Это не расчёт долга: предполагается неизменный доход и норма.':'This is not an arrears calculation: income and rates are assumed unchanged.'} "+
+
             "${lang==='uz'?'Bu dastlabki matematik hisob, sud belgilaydigan yakuniy summa emas.':lang==='ru'?'Предварительный расчёт, не окончательная сумма суда.':'Illustrative calculation, not a court award.'}"+extra;
         }
 
