@@ -9763,7 +9763,7 @@ function pensionPage(lang) {
       <h1 style="font-size:clamp(29px,4vw,42px);margin:16px 0 8px">${esc(t.title)}</h1>
       <p style="font-size:16px;line-height:1.7">${esc(t.sub)}</p>
       <div class="notice noticeGold" style="margin:18px 0"><span class="noticeIcon">!</span><span>${esc(t.warning)}</span></div>
-      <details style="margin:15px 0;padding:13px 16px;border:1px solid #d8dfe6;border-radius:12px"><summary style="cursor:pointer;font-weight:700">${lang==='uz'?'Rasmiy miqdorlar va qonuniy asoslar':lang==='ru'?'Официальные суммы и правовые основания':'Official rates and legal basis'}</summary><p style="line-height:1.6">${lang==='uz'?'Pensiya va nafaqa turli to‘lovlar. Eng kam miqdorlar va sanalarni rasmiy manbadan tekshiring.':lang==='ru'?'Пенсии и пособия регулируются отдельно. Проверяйте актуальные суммы.':'Pensions and allowances are separate. Check current official rates.'}</p><a href="https://lex.uz/uz/acts/-112314" target="_blank" rel="noopener">Pensiya qonuni ↗</a> · <a href="https://lex.uz/uz/acts/-6411319" target="_blank" rel="noopener">119-son nizom ↗</a> · <a href="https://lex.uz/uz/acts/-6236060" target="_blank" rel="noopener">592-son nizom ↗</a></details>
+      <details style="margin:15px 0;padding:13px 16px;border:1px solid #d8dfe6;border-radius:12px"><summary style="cursor:pointer;font-weight:700">${lang==='uz'?'Rasmiy miqdorlar va qonuniy asoslar':lang==='ru'?'Официальные суммы и правовые основания':'Official rates and legal basis'}</summary><p style="line-height:1.6">${lang==='uz'?'Pensiya va nafaqa turli to‘lovlar. Eng kam miqdorlar va sanalarni rasmiy manbadan tekshiring.':lang==='ru'?'Пенсии и пособия регулируются отдельно. Проверяйте актуальные суммы.':'Pensions and allowances are separate. Check current official rates.'}</p><a href="https://lex.uz/uz/acts/-112314" target="_blank" rel="noopener">Pensiya qonuni ↗</a> · <a href="https://lex.uz/uz/acts/-6411319" target="_blank" rel="noopener">119-son nizom ↗</a> · <a href="https://lex.uz/uz/acts/-6236060" target="_blank" rel="noopener">592-son nizom ↗</a> · <a href="https://lex.uz/uz/docs/-8283656" target="_blank" rel="noopener">PF–115 ↗</a><p style="line-height:1.65;margin-top:10px">${lang==='uz'?'2026-yil 1-iyuldan: eng kam yoshga doir pensiya 983 000 so‘m, eng kam nogironlik pensiyasi 1 083 000 so‘m, hisoblashning bazaviy miqdori 504 000 so‘m. Bu qiymatlar sizga tayinlanadigan to‘lov emas.':lang==='ru'?'С 1 июля 2026 года: минимальная пенсия по возрасту 983 000 сум, минимальная пенсия по инвалидности 1 083 000 сум, базовая расчётная величина 504 000 сум. Это не назначенная сумма.':'From 1 July 2026: minimum old-age pension 983,000 UZS, minimum disability pension 1,083,000 UZS, base pension calculation amount 504,000 UZS. These are not your awarded benefits.'}</p></details>
       <form id="pensionForm" autocomplete="off">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px">
         <div class="formGroup" style="grid-column:1/-1"><label for="pKind" style="font-size:18px;font-weight:800">${esc(t.kind)} — 1 / 3</label>
@@ -10261,7 +10261,13 @@ function calculatorsPage(lang) {
         }
 
         function analyzeProperty(){
-          const value = Math.max(0, Number(document.getElementById("propertyValue").value || 0));
+          const rawValue=document.getElementById("propertyValue").value.trim();
+          const value=rawValue===""?0:Number(rawValue);
+          if(!Number.isFinite(value)||value<0||value>1e15){
+            document.getElementById("propertyResult").textContent=
+              "${lang==='uz'?'Mol-mulk qiymatini musbat va haqiqiy summa shaklida kiriting.':lang==='ru'?'Введите корректную неотрицательную стоимость имущества.':'Enter a valid nonnegative property value.'}";
+            return;
+          }
           const when = document.getElementById("propertyWhen").value;
           const gift = document.getElementById("propertyGift").value;
           const prenup = document.getElementById("propertyPrenup").value;
