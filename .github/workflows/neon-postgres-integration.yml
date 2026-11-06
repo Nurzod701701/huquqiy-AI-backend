@@ -6,6 +6,7 @@ on:
       - 'server.js'
       - 'package.json'
       - 'test/account-pg-integration.test.js'
+      - 'test/account-http-pg.test.js'
       - '.github/workflows/neon-postgres-integration.yml'
   workflow_dispatch:
 permissions:
@@ -38,3 +39,4 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: node --check server.js
       - run: node --test test/account-pg-store.test.js test/account-pg-integration.test.js
+      - run: node --test test/account-http-pg.test.js
