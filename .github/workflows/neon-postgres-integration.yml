@@ -9,6 +9,11 @@ on:
       - 'package.json'
       - 'test/account-pg-integration.test.js'
       - 'test/account-http-pg.test.js'
+      - 'test/legal-calculator-advokat.test.js'
+      - 'legal-calculator-rules.js'
+      - 'advokat-workspace-store.js'
+      - 'advokat-cases-calendar.js'
+      - 'security-hardening.js'
       - '.github/workflows/neon-postgres-integration.yml'
   workflow_dispatch:
 permissions:
@@ -41,6 +46,10 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: node --check server.js
       - run: node --check backup/neon-daily.js
+      - run: node --check advokat-cases-calendar.js
+      - run: node --check advokat-workspace-store.js
+      - run: node --check legal-calculator-rules.js
+      - run: node --test test/legal-calculator-advokat.test.js
       - run: node --test test/neon-daily-backup.test.js
       - run: node --test test/account-pg-store.test.js test/account-pg-integration.test.js
       - run: node --test test/account-http-pg.test.js
