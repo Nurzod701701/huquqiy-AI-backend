@@ -69,7 +69,7 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
    body:new URLSearchParams({claim:"business",amount:"50000000",business_parties:"entrepreneurs",exemption:"no"})
   });
   assert.equal(feeResponse.status,200);
-  assert.match(await feeResponse.text(),/1\\s?000\\s?000/);
+  assert.match(await feeResponse.text(),/1[\s\u00a0\u202f]?000[\s\u00a0\u202f]?000/);
   // Each signed-in user gets an isolated persistent Neon workspace.
   const workspace={v:1,cases:[{id:"case12345",title:"Synthetic private case"}],tasks:[]};
   const workspaceSave=await fetch("http://127.0.0.1:"+port+"/advokat-pro/workspace",{
