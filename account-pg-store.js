@@ -5,10 +5,10 @@
  * versioned JSONB document atomically in Neon. No plaintext session logs.
  * Never falls back to ephemeral JSON when PostgreSQL is requested.
  */
-const {Pool}=require("pg");
+
 const empty=()=>({users:[],sessions:[],cases:[],documents:[],conversations:[],notifications:[],consents:[],auditLogs:[],settings:{createdAt:new Date().toISOString()}});
 function createAccountPgStore(opts={}){
- const pool=opts.pool||new Pool({
+ const pool=opts.pool||new (require("pg").Pool)({
    connectionString:process.env.DATABASE_URL,
    ssl: {rejectUnauthorized:true},
    max:4, connectionTimeoutMillis:7000, idleTimeoutMillis:30000
