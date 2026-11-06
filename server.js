@@ -7278,7 +7278,7 @@ async function aiResultPage(
 
 
   if(aiSucceeded && typeof onGenerated==="function"){
-    try { onGenerated(question,answer); } catch(e){ console.error("ACCOUNT AI HISTORY SAVE ERROR",e.message); }
+    try { await onGenerated(question,answer); } catch(e){ console.error("ACCOUNT AI HISTORY SAVE ERROR",e.message); }
   }
 
   return appLayout(
@@ -8595,7 +8595,7 @@ QAT’IY QOIDALAR:
       "Da’vo arizasi yaratilmagan","Hujjatni qayta yaratish zarur.");
   }
   if(typeof onGenerated==="function"){
-    try { onGenerated(localized(documentType.title,lang),answer); } catch(e){ console.error("ACCOUNT DOCUMENT SAVE ERROR",e.message); }
+    try { await onGenerated(localized(documentType.title,lang),answer); } catch(e){ console.error("ACCOUNT DOCUMENT SAVE ERROR",e.message); }
   }
   return appLayout(lang,"documents",`
     <div class="surface surfacePad">
@@ -13238,9 +13238,11 @@ try { nodemailer = require("nodemailer"); } catch (_) {}
 // Render: /var/data faqat shu manzilga Persistent Disk ulangan bo'lsa yoziladi.
 // ACCOUNT_DATA_FILE ni Render Environment'da /var/data/... qilib belgilashdan oldin diskni ulang.
 // Disk bo'lmasa /tmp ishlaydi, ammo restart/deploy paytida ma'lumotlar yo'qolishi mumkin.
+const QOMUS_PG_ENABLED = process.env.QOMUS_ACCOUNT_STORE === "postgres";
+const accountPgStore = QOMUS_PG_ENABLED ? require("./account-pg-store").createAccountPgStore() : null;
 const ACCOUNT_DATA_FILE_CONFIGURED = process.env.ACCOUNT_DATA_FILE || path.join(process.cwd(), "QOMUS-data.json");
 let ACCOUNT_DATA_FILE = ACCOUNT_DATA_FILE_CONFIGURED;
-try {
+if(!QOMUS_PG_ENABLED) try {
   fs.mkdirSync(path.dirname(ACCOUNT_DATA_FILE), {recursive:true});
   fs.accessSync(path.dirname(ACCOUNT_DATA_FILE), fs.constants.W_OK);
 } catch (err) {
@@ -13256,14 +13258,16 @@ const OWNER_PASSWORD = String(process.env.OWNER_PASSWORD || "").trim();
 function accountEmptyDb(){
   return { users:[], sessions:[], cases:[], documents:[], conversations:[], notifications:[], consents:[], auditLogs:[], settings:{ createdAt:new Date().toISOString() } };
 }
-function accountLoadDb(){
+async function accountLoadDb(){
+  if(accountPgStore) return accountPgStore.load();
   try {
     if(!fs.existsSync(ACCOUNT_DATA_FILE)) return accountEmptyDb();
     const parsed = JSON.parse(fs.readFileSync(ACCOUNT_DATA_FILE,"utf8"));
     return Object.assign(accountEmptyDb(), parsed || {});
   } catch(err){ console.error("ACCOUNT DB LOAD ERROR",err); return accountEmptyDb(); }
 }
-function accountSaveDb(db){
+async function accountSaveDb(db){
+  if(accountPgStore) return accountPgStore.save(db);
   const temp = ACCOUNT_DATA_FILE + ".tmp";
   fs.mkdirSync(path.dirname(ACCOUNT_DATA_FILE),{recursive:true});
   fs.writeFileSync(temp, JSON.stringify(db,null,2), {encoding:"utf8",mode:0o600});
@@ -13290,26 +13294,26 @@ function accountVerifyPassword(password, stored){
 function accountCookies(req){
   const out={}; String(req.headers.cookie||"").split(";").forEach(x=>{ const i=x.indexOf("="); if(i>0){ try {out[x.slice(0,i).trim()]=decodeURIComponent(x.slice(i+1).trim());}catch(_){/* ignore malformed cookie */} } }); return out;
 }
-function accountSession(req){
+async function accountSession(req){
   const token=accountCookies(req).hq_session; if(!token || !/^[a-f0-9]{64}$/.test(token)) return null;
-  const db=accountLoadDb(); const s=db.sessions.find(x=>x.token===token && new Date(x.expiresAt)>new Date());
+  const db=await accountLoadDb(); const s=db.sessions.find(x=>x.token===token && new Date(x.expiresAt)>new Date());
   if(!s) return null; const user=db.users.find(x=>x.id===s.userId && x.status==="active" && x.emailVerified===true);
   return user ? {db,session:s,user} : null;
 }
-function accountSetSession(res,userId){
-  const db=accountLoadDb();
+async function accountSetSession(res,userId){
+  const db=await accountLoadDb();
   const token=crypto.randomBytes(32).toString("hex");
   db.sessions=db.sessions.filter(s=>new Date(s.expiresAt)>new Date() && s.userId!==userId);
   db.sessions.push({id:accountId("SES"),token,userId,createdAt:accountNow(),expiresAt:new Date(Date.now()+SESSION_TTL_MS).toISOString()});
-  accountSaveDb(db);
+  await accountSaveDb(db);
   res.setHeader("Set-Cookie",`hq_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${Math.floor(SESSION_TTL_MS/1000)}${process.env.NODE_ENV==="production"?"; Secure":""}`);
 }
-function accountClearSession(req,res){
-  const token=accountCookies(req).hq_session; const db=accountLoadDb(); db.sessions=db.sessions.filter(s=>s.token!==token); accountSaveDb(db);
+async function accountClearSession(req,res){
+  const token=accountCookies(req).hq_session; const db=await accountLoadDb(); db.sessions=db.sessions.filter(s=>s.token!==token); await accountSaveDb(db);
   res.setHeader("Set-Cookie","hq_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0");
 }
-function accountStoreHistory(userId,kind,title,content,requestedCaseId=""){
-  const db=accountLoadDb();
+async function accountStoreHistory(userId,kind,title,content,requestedCaseId=""){
+  const db=await accountLoadDb();
   const user=db.users.find(u=>u.id===userId && u.status==="active");
   if(!user) return false;
   const caseId=String(requestedCaseId||"");
@@ -13330,7 +13334,7 @@ function accountStoreHistory(userId,kind,title,content,requestedCaseId=""){
     db.conversations.push(record);
   } else return false;
   accountAudit(db,userId,kind+"_saved",{recordId:record.id,caseId:record.caseId});
-  accountSaveDb(db);
+  await accountSaveDb(db);
   return true;
 }
 function accountAudit(db,userId,action,meta={}){
@@ -13584,8 +13588,8 @@ function accountAppPage(lang,user,active,title,body){
   const initials=(user.firstName?.[0]||"U")+(user.lastName?.[0]||"");
   return `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} — QOMUS</title><style>${CSS}${ACCOUNT_CSS}</style></head><body><div class="accountShell">${accountSidebar(lang,user,active)}<main class="accountMain"><div class="accountTop"><div><b>${esc(title)}</b><div class="accountMuted">${accountLocale(lang,'QOMUS shaxsiy ish maydoni')}</div></div><div class="accountIdentity"><div class="accountLanguage" style="display:flex;gap:6px;margin-right:12px">${["uz","ru","en"].map(code=>`<a href="?lang=${code}" style="padding:7px 9px;border:1px solid #c9a86a;border-radius:7px;font-weight:700;${code===lang?'background:#c9a86a;color:#06111f;':''}">${code.toUpperCase()}</a>`).join('')}</div><div><b>${esc(user.firstName)} ${esc(user.lastName)}</b><div class="accountMuted">${esc(user.email)}</div></div><div class="accountAvatar">${esc(initials)}</div></div></div>${body}</main></div></body></html>`;
 }
-function accountRequire(req,res,lang,roles=null){
-  const auth=accountSession(req);
+async function accountRequire(req,res,lang,roles=null){
+  const auth=await accountSession(req);
   if(!auth){ accountRedirect(res,`/login?lang=${lang}&next=${encodeURIComponent(getUrl(req).pathname)}`); return null; }
   if(roles && !roles.includes(auth.user.role)){ sendHtml(res,accountAppPage(lang,auth.user,"","Ruxsat yo‘q",accountMessage("Bu bo‘lim uchun ruxsatingiz yo‘q.","error")),403); return null; }
   return auth;
@@ -13656,11 +13660,11 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     accountRedirect(res,`/admin/login?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/admin/login"){
-    const auth=accountSession(req); if(auth && ["owner","admin"].includes(auth.user.role)){ accountRedirect(res,`/admin?lang=${lang}`); return true; }
+    const auth=await accountSession(req); if(auth && ["owner","admin"].includes(auth.user.role)){ accountRedirect(res,`/admin?lang=${lang}`); return true; }
     sendHtml(res,ownerLoginPage(lang)); return true;
   }
   if(req.method==="POST" && pathname==="/admin/login"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb();
+    const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb();
     if(!OWNER_EMAIL || !OWNER_PASSWORD){ sendHtml(res,ownerLoginPage(lang,"Render Environment’da OWNER_EMAIL va OWNER_PASSWORD o‘rnatilmagan."),500); return true; }
     if(email!==OWNER_EMAIL || !crypto.timingSafeEqual(crypto.createHash("sha256").update(String(f.password||"")).digest(),crypto.createHash("sha256").update(OWNER_PASSWORD).digest())){ sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
     let user=db.users.find(u=>u.email===OWNER_EMAIL);
@@ -13670,19 +13674,19 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     } else {
       user.role="owner"; user.status="active"; user.emailVerified=true; user.passwordHash=accountHashPassword(OWNER_PASSWORD); user.updatedAt=accountNow();
     }
-    user.lastLoginAt=accountNow(); accountAudit(db,user.id,"admin_login",{}); accountSaveDb(db); accountSetSession(res,user.id); accountRedirect(res,`/admin?lang=${lang}`); return true;
+    user.lastLoginAt=accountNow(); accountAudit(db,user.id,"admin_login",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/admin?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/login"){ sendHtml(res,accountLoginPage(lang)); return true; }
   if(req.method==="POST" && pathname==="/login"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email);
+    const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
     if(email===OWNER_EMAIL){ accountRedirect(res,`/admin/login?lang=${lang}`); return true; }
     if(!user || user.role!=="user" || !accountVerifyPassword(f.password,user.passwordHash) || user.status!=="active"){ sendHtml(res,accountLoginPage(lang,"Email yoki parol noto‘g‘ri, yoki account faol emas."),401); return true; }
     if(!user.emailVerified){ accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`); return true; }
-    user.lastLoginAt=accountNow(); accountAudit(db,user.id,"login",{}); accountSaveDb(db); accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
+    user.lastLoginAt=accountNow(); accountAudit(db,user.id,"login",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/register"){ sendHtml(res,accountRegisterPage(lang)); return true; }
   if(req.method==="POST" && pathname==="/register"){
-    const f=await readForm(req), email=accountEmail(f.email); const db=accountLoadDb();
+    const f=await readForm(req), email=accountEmail(f.email); const db=await accountLoadDb();
     if(!f.firstName||!f.lastName||!email.includes("@")||String(f.password||"").length<8||f.password!==f.password2||f.terms!=="yes"){ sendHtml(res,accountRegisterPage(lang,"Ma’lumotlarni tekshiring. Parol kamida 8 belgi va ikki parol bir xil bo‘lishi kerak."),400); return true; }
     if(email===OWNER_EMAIL){ sendHtml(res,accountRegisterPage(lang,"Bu email platforma OWNER akkaunti uchun ajratilgan. /admin/login orqali kiring."),403); return true; }
     const existing=db.users.find(u=>u.email===email);
@@ -13699,11 +13703,11 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     // Email jo‘natilishi tasdiqlangandan keyingina akkauntni bazaga kiritamiz.
     db.users.push(user);
     db.consents.push({id:accountId("CNS"),userId:user.id,type:"terms_privacy",version:"2026-09-25-v1",acceptedAt:accountNow()});
-    accountAudit(db,user.id,"register",{email});accountSaveDb(db);
+    accountAudit(db,user.id,"register",{email});await accountSaveDb(db);
     accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`);return true;
   }
   if(req.method==="POST" && pathname==="/resend-verification"){
-    const f=await readForm(req),email=accountEmail(f.email),db=accountLoadDb(),user=db.users.find(u=>u.email===email);
+    const f=await readForm(req),email=accountEmail(f.email),db=await accountLoadDb(),user=db.users.find(u=>u.email===email);
     if(!user || user.emailVerified){sendHtml(res,accountVerifyPage(lang,email,"Bu email uchun tasdiqlash kutilmayapti."),400);return true;}
     if(!accountCanSendCode(user)){sendHtml(res,accountVerifyPage(lang,email,"Qayta yuborishdan oldin 60 soniya kuting."),429);return true;}
     const code=accountSixDigitCode();
@@ -13714,71 +13718,71 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     user.verificationCodeHash=accountHashPassword(code);
     user.verificationExpiresAt=new Date(Date.now()+VERIFY_TTL_MS).toISOString();
     user.verificationSentAt=accountNow();user.updatedAt=accountNow();
-    accountAudit(db,user.id,"verification_resent",{});accountSaveDb(db);
+    accountAudit(db,user.id,"verification_resent",{});await accountSaveDb(db);
     sendHtml(res,accountVerifyPage(lang,email,"Yangi tasdiqlash kodi emailingizga yuborildi."));return true;
   }
   if(req.method==="GET" && pathname==="/verify-email"){ sendHtml(res,accountVerifyPage(lang,accountEmail(url.searchParams.get("email")))); return true; }
   if(req.method==="POST" && pathname==="/verify-email"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email);
+    const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
     if(!user||!user.verificationCodeHash||new Date(user.verificationExpiresAt)<new Date()||!accountVerifyPassword(f.code,user.verificationCodeHash)){ sendHtml(res,accountVerifyPage(lang,email,"Kod noto‘g‘ri yoki muddati tugagan."),400); return true; }
-    user.emailVerified=true; delete user.verificationCodeHash; delete user.verificationExpiresAt; user.updatedAt=accountNow(); accountAudit(db,user.id,"email_verified",{}); accountSaveDb(db); accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
+    user.emailVerified=true; delete user.verificationCodeHash; delete user.verificationExpiresAt; user.updatedAt=accountNow(); accountAudit(db,user.id,"email_verified",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/forgot-password"){
     sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
   }
   if(req.method==="POST" && pathname==="/forgot-password"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email); if(user && user.role==="user" && user.status==="active"){if(user.resetSentAt && Date.now()-Date.parse(user.resetSentAt)<60000){accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`);return true;}const code=accountSixDigitCode();try{const sent=await accountSendEmail(email,"QOMUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true; }user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();user.resetSentAt=accountNow();accountAudit(db,user.id,"password_reset_requested",{});accountSaveDb(db);} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
+    const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email); if(user && user.role==="user" && user.status==="active"){if(user.resetSentAt && Date.now()-Date.parse(user.resetSentAt)<60000){accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`);return true;}const code=accountSixDigitCode();try{const sent=await accountSendEmail(email,"QOMUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true; }user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();user.resetSentAt=accountNow();accountAudit(db,user.id,"password_reset_requested",{});await accountSaveDb(db);} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
   }
   if(req.method==="GET" && pathname==="/reset-password"){
     const email=accountEmail(url.searchParams.get("email")); sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" required maxlength="6"></label><label>Yangi parol<input name="password" type="password" minlength="8" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" required></label><button class="accountButton">Parolni yangilash</button></form></section>`)); return true;
   }
   if(req.method==="POST" && pathname==="/reset-password"){
-    const f=await readForm(req), email=accountEmail(f.email), db=accountLoadDb(), user=db.users.find(u=>u.email===email);
+    const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
     if(!user||!user.resetCodeHash||new Date(user.resetExpiresAt)<new Date()||!accountVerifyPassword(f.code,user.resetCodeHash)||String(f.password||"").length<8||f.password!==f.password2){ sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Kod yoki yangi parol ma’lumotlari noto‘g‘ri.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),400); return true; }
-    user.passwordHash=accountHashPassword(f.password); delete user.resetCodeHash; delete user.resetExpiresAt; delete user.resetSentAt; db.sessions=db.sessions.filter(s=>s.userId!==user.id); accountAudit(db,user.id,"password_reset_completed",{}); accountSaveDb(db); accountRedirect(res,`/login?lang=${lang}`); return true;
+    user.passwordHash=accountHashPassword(f.password); delete user.resetCodeHash; delete user.resetExpiresAt; delete user.resetSentAt; db.sessions=db.sessions.filter(s=>s.userId!==user.id); accountAudit(db,user.id,"password_reset_completed",{}); await accountSaveDb(db); accountRedirect(res,`/login?lang=${lang}`); return true;
   }
-  if(req.method==="GET" && pathname==="/logout"){ accountClearSession(req,res); accountRedirect(res,`/login?lang=${lang}`); return true; }
+  if(req.method==="GET" && pathname==="/logout"){ await accountClearSession(req,res); accountRedirect(res,`/login?lang=${lang}`); return true; }
 
   if(pathname.startsWith("/account")){
-    const auth=accountRequire(req,res,lang); if(!auth) return true; const {user}=auth;
-    if(req.method==="GET" && pathname==="/account"){ sendHtml(res,accountDashboard(lang,user,accountLoadDb())); return true; }
-    if(req.method==="GET" && pathname==="/account/cases"){ sendHtml(res,accountCasesPage(lang,user,accountLoadDb())); return true; }
+    const auth=await accountRequire(req,res,lang); if(!auth) return true; const {user}=auth;
+    if(req.method==="GET" && pathname==="/account"){ sendHtml(res,accountDashboard(lang,user,await accountLoadDb())); return true; }
+    if(req.method==="GET" && pathname==="/account/cases"){ sendHtml(res,accountCasesPage(lang,user,await accountLoadDb())); return true; }
     if(req.method==="GET" && pathname==="/account/cases/new"){ sendHtml(res,accountNewCasePage(lang,user)); return true; }
     if(req.method==="POST" && pathname==="/account/cases/new"){
-      const f=await readForm(req), db=accountLoadDb(); if(!f.area||!f.title){sendHtml(res,accountNewCasePage(lang,user,"Yo‘nalish va masala nomini kiriting."),400);return true;}
-      const c={id:accountId("CAS"),caseNo:accountCaseNo(db),userId:user.id,area:String(f.area),title:String(f.title).trim(),description:String(f.description||"").trim(),status:"started",progress:10,createdAt:accountNow(),updatedAt:accountNow()}; db.cases.push(c); accountAudit(db,user.id,"case_created",{caseId:c.id,caseNo:c.caseNo}); accountSaveDb(db); accountRedirect(res,`/account/case?lang=${lang}&id=${encodeURIComponent(c.id)}`); return true;
+      const f=await readForm(req), db=await accountLoadDb(); if(!f.area||!f.title){sendHtml(res,accountNewCasePage(lang,user,"Yo‘nalish va masala nomini kiriting."),400);return true;}
+      const c={id:accountId("CAS"),caseNo:accountCaseNo(db),userId:user.id,area:String(f.area),title:String(f.title).trim(),description:String(f.description||"").trim(),status:"started",progress:10,createdAt:accountNow(),updatedAt:accountNow()}; db.cases.push(c); accountAudit(db,user.id,"case_created",{caseId:c.id,caseNo:c.caseNo}); await accountSaveDb(db); accountRedirect(res,`/account/case?lang=${lang}&id=${encodeURIComponent(c.id)}`); return true;
     }
-    if(req.method==="GET" && pathname==="/account/case"){ sendHtml(res,accountCasePage(lang,user,accountLoadDb(),url.searchParams.get("id"))); return true; }
+    if(req.method==="GET" && pathname==="/account/case"){ sendHtml(res,accountCasePage(lang,user,await accountLoadDb(),url.searchParams.get("id"))); return true; }
     if(req.method==="POST" && pathname==="/account/case/update"){
-      const f=await readForm(req),db=accountLoadDb(),c=db.cases.find(x=>x.id===f.id&&x.userId===user.id); if(c){c.status=String(f.status||c.status);c.progress=Math.max(0,Math.min(100,Number(f.progress||0)));c.updatedAt=accountNow();accountAudit(db,user.id,"case_updated",{caseId:c.id,status:c.status,progress:c.progress});accountSaveDb(db);} accountRedirect(res,`/account/case?lang=${lang}&id=${encodeURIComponent(f.id||"")}`); return true;
+      const f=await readForm(req),db=await accountLoadDb(),c=db.cases.find(x=>x.id===f.id&&x.userId===user.id); if(c){c.status=String(f.status||c.status);c.progress=Math.max(0,Math.min(100,Number(f.progress||0)));c.updatedAt=accountNow();accountAudit(db,user.id,"case_updated",{caseId:c.id,status:c.status,progress:c.progress});await accountSaveDb(db);} accountRedirect(res,`/account/case?lang=${lang}&id=${encodeURIComponent(f.id||"")}`); return true;
     }
-    if(req.method==="GET" && pathname==="/account/documents"){const db=accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
-    if(req.method==="GET" && pathname==="/account/chats"){const db=accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"chats",at(lang,"chats"),items,c=>`<div class="accountCard"><h3><a href="/account/chat?id=${encodeURIComponent(c.id)}&lang=${lang}">${esc(c.title||"AI suhbat")}</a></h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/documents"){const db=await accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/chats"){const db=await accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"chats",at(lang,"chats"),items,c=>`<div class="accountCard"><h3><a href="/account/chat?id=${encodeURIComponent(c.id)}&lang=${lang}">${esc(c.title||"AI suhbat")}</a></h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
     if(req.method==="GET" && pathname==="/account/document"){
-      const d=accountLoadDb().documents.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
+      const d=await accountLoadDb().documents.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
       if(!d){sendHtml(res,accountAppPage(lang,user,"documents","Hujjat topilmadi",accountMessage("Hujjat topilmadi.","error")),404);return true;}
       sendHtml(res,accountAppPage(lang,user,"documents",d.title,`<section class="accountPanel"><h1>${esc(d.title)}</h1><p class="accountMuted">${esc(d.type||"Hujjat")} · ${esc(d.createdAt||"")}</p><div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7">${esc(d.text||"")}</div><a class="accountButton" href="/account/documents?lang=${lang}">← Hujjatlar</a></section>`));return true;
     }
     if(req.method==="GET" && pathname==="/account/chat"){
-      const c=accountLoadDb().conversations.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
+      const c=await accountLoadDb().conversations.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
       if(!c){sendHtml(res,accountAppPage(lang,user,"chats","Suhbat topilmadi",accountMessage("Suhbat topilmadi.","error")),404);return true;}
       sendHtml(res,accountAppPage(lang,user,"chats",c.title||"AI suhbat",`<section class="accountPanel"><h1>${esc(c.title||"AI suhbat")}</h1><p class="accountMuted">${esc(c.createdAt||"")}</p><h3>Savol</h3><div style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(c.question||"")}</div><h3>Javob</h3><div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7">${esc(c.answer||"")}</div><a class="accountButton" href="/account/chats?lang=${lang}">← AI suhbatlar</a></section>`));return true;
     }
-    if(req.method==="GET" && pathname==="/account/notifications"){const db=accountLoadDb(),items=db.notifications.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"notifications",at(lang,"notifications"),items,n=>`<div class="accountCard"><b>${esc(n.title)}</b><p>${esc(n.text||"")}</p></div>`,"Yangi bildirishnoma yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/notifications"){const db=await accountLoadDb(),items=db.notifications.filter(x=>x.userId===user.id);sendHtml(res,accountSimpleListPage(lang,user,"notifications",at(lang,"notifications"),items,n=>`<div class="accountCard"><b>${esc(n.title)}</b><p>${esc(n.text||"")}</p></div>`,"Yangi bildirishnoma yo‘q."));return true;}
     if(req.method==="GET" && pathname==="/account/profile"){sendHtml(res,accountProfilePage(lang,user));return true;}
-    if(req.method==="POST" && pathname==="/account/profile"){const f=await readForm(req),db=accountLoadDb(),u=db.users.find(x=>x.id===user.id);u.firstName=String(f.firstName||u.firstName).trim();u.lastName=String(f.lastName||u.lastName).trim();u.updatedAt=accountNow();accountAudit(db,u.id,"profile_updated",{});accountSaveDb(db);sendHtml(res,accountProfilePage(lang,u,(lang==="ru"?"Профиль сохранён.":lang==="en"?"Profile saved.":"Profil saqlandi.")));return true;}
+    if(req.method==="POST" && pathname==="/account/profile"){const f=await readForm(req),db=await accountLoadDb(),u=db.users.find(x=>x.id===user.id);u.firstName=String(f.firstName||u.firstName).trim();u.lastName=String(f.lastName||u.lastName).trim();u.updatedAt=accountNow();accountAudit(db,u.id,"profile_updated",{});await accountSaveDb(db);sendHtml(res,accountProfilePage(lang,u,(lang==="ru"?"Профиль сохранён.":lang==="en"?"Profile saved.":"Profil saqlandi.")));return true;}
     if(req.method==="GET" && pathname==="/account/security"){sendHtml(res,accountSecurityPage(lang,user));return true;}
-    if(req.method==="POST" && pathname==="/account/security"){const f=await readForm(req),db=accountLoadDb(),u=db.users.find(x=>x.id===user.id);let msg="Parol yangilandi.";if(!accountVerifyPassword(f.currentPassword,u.passwordHash)||String(f.newPassword||"").length<8||f.newPassword!==f.newPassword2){msg="Joriy parol yoki yangi parol ma’lumotlarida xato.";}else{u.passwordHash=accountHashPassword(f.newPassword);db.sessions=db.sessions.filter(s=>s.userId!==u.id);accountAudit(db,u.id,"password_changed",{});accountSaveDb(db);accountSetSession(res,u.id);}sendHtml(res,accountSecurityPage(lang,u,msg));return true;}
+    if(req.method==="POST" && pathname==="/account/security"){const f=await readForm(req),db=await accountLoadDb(),u=db.users.find(x=>x.id===user.id);let msg="Parol yangilandi.";if(!accountVerifyPassword(f.currentPassword,u.passwordHash)||String(f.newPassword||"").length<8||f.newPassword!==f.newPassword2){msg="Joriy parol yoki yangi parol ma’lumotlarida xato.";}else{u.passwordHash=accountHashPassword(f.newPassword);db.sessions=db.sessions.filter(s=>s.userId!==u.id);accountAudit(db,u.id,"password_changed",{});await accountSaveDb(db);await accountSetSession(res,u.id);}sendHtml(res,accountSecurityPage(lang,u,msg));return true;}
     if(req.method==="GET" && pathname==="/account/settings"){sendHtml(res,accountSettingsPage(lang,user));return true;}
   }
 
   if(pathname.startsWith("/admin")){
-    const auth=accountRequire(req,res,lang,["owner","admin"]); if(!auth) return true; const user=auth.user;
-    if(req.method==="GET" && pathname==="/admin"){sendHtml(res,adminDashboardPage(lang,user,accountLoadDb()));return true;}
-    if(req.method==="GET" && pathname==="/admin/users"){sendHtml(res,adminUsersPage(lang,user,accountLoadDb()));return true;}
-    if(req.method==="GET" && pathname==="/admin/cases"){sendHtml(res,adminCasesPage(lang,user,accountLoadDb()));return true;}
-    if(req.method==="GET" && pathname==="/admin/audit"){sendHtml(res,adminAuditPage(lang,user,accountLoadDb()));return true;}
-    if(req.method==="POST" && pathname==="/admin/user-status"){const f=await readForm(req),db=accountLoadDb(),target=db.users.find(x=>x.id===f.id);if(target&&target.id!==user.id&&["active","suspended","blocked"].includes(f.status)){target.status=f.status;accountAudit(db,user.id,"admin_user_status_changed",{targetUserId:target.id,status:f.status});accountSaveDb(db);}accountRedirect(res,`/admin/users?lang=${lang}`);return true;}
+    const auth=await accountRequire(req,res,lang,["owner","admin"]); if(!auth) return true; const user=auth.user;
+    if(req.method==="GET" && pathname==="/admin"){sendHtml(res,adminDashboardPage(lang,user,await accountLoadDb()));return true;}
+    if(req.method==="GET" && pathname==="/admin/users"){sendHtml(res,adminUsersPage(lang,user,await accountLoadDb()));return true;}
+    if(req.method==="GET" && pathname==="/admin/cases"){sendHtml(res,adminCasesPage(lang,user,await accountLoadDb()));return true;}
+    if(req.method==="GET" && pathname==="/admin/audit"){sendHtml(res,adminAuditPage(lang,user,await accountLoadDb()));return true;}
+    if(req.method==="POST" && pathname==="/admin/user-status"){const f=await readForm(req),db=await accountLoadDb(),target=db.users.find(x=>x.id===f.id);if(target&&target.id!==user.id&&["active","suspended","blocked"].includes(f.status)){target.status=f.status;accountAudit(db,user.id,"admin_user_status_changed",{targetUserId:target.id,status:f.status});await accountSaveDb(db);}accountRedirect(res,`/admin/users?lang=${lang}`);return true;}
   }
   return false;
 }
@@ -13891,7 +13895,7 @@ const server =
             await readForm(req);
 
 
-          const aiAuth=accountSession(req);
+          const aiAuth=await accountSession(req);
           const html =
             await aiResultPage(
               lang,
@@ -14078,7 +14082,7 @@ const server =
             await readForm(req);
 
 
-          const docAuth=accountSession(req);
+          const docAuth=await accountSession(req);
           const html =
             await claimResultPage(
               lang,
