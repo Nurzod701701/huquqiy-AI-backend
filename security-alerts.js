@@ -55,7 +55,12 @@ function alertEvent(category, address, path) {
     headers,
     body: JSON.stringify(payload),
     signal: controller.signal
-  })).catch(() => {
+  })).then(response => {
+    if (!response.ok) {
+      // Do not log response bodies: providers can return sensitive details.
+      console.warn("SECURITY_ALERT_DELIVERY_FAILED", category, "HTTP", response.status);
+    }
+  }).catch(() => {
     console.warn("SECURITY_ALERT_DELIVERY_FAILED", category);
   }).finally(() => clearTimeout(timeout));
 }
