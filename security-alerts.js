@@ -9,7 +9,7 @@ const recentEvents = [];
 const MAX_RECENT_EVENTS = 100;
 const MIN_ALERT_INTERVAL_MS = 10 * 60 * 1000;
 const processSecret = crypto.randomBytes(32);
-const ALLOWED = new Set(["AUTH_RATE_LIMIT", "CROSS_SITE_POST", "INVALID_ORIGIN"]);
+const ALLOWED = new Set(["AUTH_RATE_LIMIT", "CROSS_SITE_POST", "INVALID_ORIGIN", "FAILED_LOGIN", "FAILED_ADMIN_LOGIN"]);
 
 function alertEvent(category, address, path) {
   if (!ALLOWED.has(category)) return;
