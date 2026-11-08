@@ -5,9 +5,11 @@ const crypto = require("node:crypto");
 // Configure SECURITY_ALERT_WEBHOOK only with a trusted, private HTTPS receiver.
 // SECURITY_EVENT_HASH_KEY must be an independently generated secret.
 const lastAlerts = new Map();
+const recentEvents = [];
+const MAX_RECENT_EVENTS = 100;
 const MIN_ALERT_INTERVAL_MS = 10 * 60 * 1000;
 const processSecret = crypto.randomBytes(32);
-const ALLOWED = new Set(["AUTH_RATE_LIMIT", "CROSS_SITE_POST", "INVALID_ORIGIN"]);
+const ALLOWED = new Set(["AUTH_RATE_LIMIT", "CROSS_SITE_POST", "INVALID_ORIGIN", "FAILED_LOGIN", "FAILED_ADMIN_LOGIN"]);
 
 function alertEvent(category, address, path) {
   if (!ALLOWED.has(category)) return;
@@ -25,7 +27,10 @@ function alertEvent(category, address, path) {
   const safePath = String(path || "/").slice(0, 120).replace(/[^a-zA-Z0-9/_-]/g, "");
   // Persistent application logs can feed Render alert integrations.
   // No raw addresses or user secrets are ever logged.
-  console.warn("QOMUS_SECURITY_EVENT", JSON.stringify({category,sourceId:id,path:safePath,at:new Date(now).toISOString()}));
+  const safeEvent = {category,sourceId:id,path:safePath,at:new Date(now).toISOString()};
+  recentEvents.unshift(safeEvent);
+  if (recentEvents.length > MAX_RECENT_EVENTS) recentEvents.length = MAX_RECENT_EVENTS;
+  console.warn("QOMUS_SECURITY_EVENT", JSON.stringify(safeEvent));
   let target = "";
   let payload;
   let headers = {"Content-Type":"application/json"};
@@ -60,4 +65,9 @@ function alertEvent(category, address, path) {
   }).finally(() => clearTimeout(timeout));
 }
 
-module.exports = { alertEvent };
+function getRecentSecurityEvents() {
+  // Ephemeral process-local events only, never raw network addresses or credentials.
+  return recentEvents.map(e => ({...e}));
+}
+
+module.exports = { alertEvent, getRecentSecurityEvents };
