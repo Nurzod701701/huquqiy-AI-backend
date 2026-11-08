@@ -13299,7 +13299,7 @@ async function accountLoadDb(){
     if(!fs.existsSync(ACCOUNT_DATA_FILE)) return accountEmptyDb();
     const parsed = JSON.parse(fs.readFileSync(ACCOUNT_DATA_FILE,"utf8"));
     return Object.assign(accountEmptyDb(), parsed || {});
-  } catch(err){ console.error("ACCOUNT DB LOAD ERROR",err); return accountEmptyDb(); }
+  } catch(err){ console.error("ACCOUNT DB LOAD ERROR",err); throw err; }
 }
 async function accountSaveDb(db){
   if(accountPgStore) return accountPgStore.save(db);
