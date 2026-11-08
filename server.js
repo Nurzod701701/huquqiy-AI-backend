@@ -5225,6 +5225,10 @@ function navigation(lang) {
             ${tr(lang, "home")}
           </a>
 
+          <a href="/fuqarolar${q(lang)}">
+            ${lang === "ru" ? "Гражданам" : lang === "en" ? "Citizens" : "Fuqarolar"}
+          </a>
+
           <a href="/ai${q(lang)}">
             ${tr(lang, "assistant")}
           </a>
@@ -5329,6 +5333,8 @@ function navigation(lang) {
            SHAXSIY KABINET BU YERDA EMAS.
            U HEADERNING O'ZIDA TURADI. -->
       <div id="mobileNav" class="mobileNavPanel">
+
+        <a href="/fuqarolar${q(lang)}">${lang === "ru" ? "Гражданам" : lang === "en" ? "Citizens" : "Fuqarolar"}</a>
 
         <a href="/${q(lang)}">
           ${tr(lang, "home")}
@@ -5640,6 +5646,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "QOMUS", desc
   lang = getLang(lang);
 
   const items = [
+    ["citizens", "/fuqarolar", "⌂", lang === "ru" ? "Гражданам" : lang === "en" ? "Citizens" : "Fuqarolar"],
     ["ai", "/ai", "✦", tr(lang, "assistant")],
     ["documents", "/documents", "▣", tr(lang, "documents")],
     ["legal-review", "/legal-review", "✓", lang === "ru" ? "Проверка документа" : lang === "en" ? "Document review" : "Hujjatni tekshirish"],
@@ -5769,7 +5776,7 @@ function page({ lang = "uz", title = "QOMUS", content = "" } = {}) {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#06111f">
   <title>${esc(title)}</title>
-  <style>${CSS}${CSS_APP}</style>
+  <style>${CSS}${CSS_APP}${require("./fuqarolar-ui").styles}</style>
 </head>
 <body>
   ${navigation(lang)}
@@ -14133,6 +14140,11 @@ const server =
             return sendJson(res,{ok:true,cases:workspace.cases.length,tasks:workspace.tasks.length});
           }
           return sendJson(res,{ok:false,error:"METHOD_NOT_ALLOWED"},405);
+        }
+
+        // Fuqarolar: unified premium hub; existing calculator and document routes preserved.
+        if(req.method === "GET" && pathname === "/fuqarolar"){
+          return sendHtml(res, require("./fuqarolar-ui").render(lang, page, appLayout));
         }
 
         // Advokat PRO: separate landing page and preserved document constructor.
