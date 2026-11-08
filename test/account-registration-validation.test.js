@@ -13,6 +13,6 @@ test("registration validates trimmed names and length bounds before saving", () 
 });
 test("registration requires structured email and limits its size", () => {
   assert.match(registration, /email\.length>254/);
-  assert.match(registration, /\^\[\^\\s@\]\+@\[\^\\s@\]\+\\\.\[\^\\s@\]\+\$/);
+  assert.ok(registration.includes(String.raw`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`), "expected strict email-format pattern");
   assert.doesNotMatch(registration, /email\.includes\("@"\)/);
 });
