@@ -15,6 +15,11 @@ function redactForAI(input) {
   replace(/\b\d{14}\b/g,"14_RAQAM");
   // Passport identifiers preceded by an explicit label.
   replace(/\b(?:pasport|passport|паспорт)\s*(?:raqami|number|серия|№|:)?\s*[A-Z]{2}\s*\d{7}\b/giu,"PASPORT");
+  // Unlabelled Uzbek passport series also appear in copied case materials.
+  replace(/\b[A-Z]{2}\s?\d{7}\b/giu,"PASPORT");
+  // Financial identifiers may appear in uploaded legal documents.
+  replace(/(?<!\d)(?:\d[ -]?){15}\d(?!\d)/g,"KARTA");
+  replace(/(?<!\d)\d{20}(?!\d)/g,"HISOB");
   // Email and Uzbek-format phone numbers.
   replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/giu,"EMAIL");
   replace(/(?<!\d)(?:\+?998[\s().-]*)?(?:\d{2}[\s().-]*)\d{3}[\s().-]*\d{2}[\s().-]*\d{2}(?!\d)/g,"TELEFON");

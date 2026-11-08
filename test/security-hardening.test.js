@@ -72,3 +72,27 @@ test("removes common personal identifiers from outbound AI prompts",()=>{
   assert.ok(!messages[0].content.includes("12345678901234"));
   assert.equal(messages[1].content,"Public source");
 });
+
+test("redacts unlabelled passport and financial identifiers without altering ordinary legal references",()=>{
+  const {redactForAI}=require("../ai-privacy");
+  const input="Pasport AA1234567; karta 8600 1234 5678 9012; hisob 20208000123456789012; Oila kodeksi 99-modda";
+  const masked=redactForAI(input);
+  assert.ok(!masked.text.includes("AA1234567"));
+  assert.ok(!masked.text.includes("8600 1234 5678 9012"));
+  assert.ok(!masked.text.includes("20208000123456789012"));
+  assert.ok(masked.text.includes("99-modda"));
+  assert.ok(masked.categories.includes("PASPORT"));
+  assert.ok(masked.categories.includes("KARTA"));
+  assert.ok(masked.categories.includes("HISOB"));
+});
+
+test("does not send previously sanitized case details unchanged to the AI",()=>{
+  const {minimizeMessages}=require("../ai-privacy");
+  const messages=minimizeMessages([
+    {role:"user", content:"Mijozning PINFL raqami 12345678901234 va pasporti AB7654321"},
+    {role:"system", content:"Public legal instructions"}
+  ]);
+  assert.ok(!messages[0].content.includes("12345678901234"));
+  assert.ok(!messages[0].content.includes("AB7654321"));
+  assert.equal(messages[1].content,"Public legal instructions");
+});
