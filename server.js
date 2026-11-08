@@ -13688,6 +13688,15 @@ function adminSecurityPage(lang,user,db){
   const blocked=db.users.filter(x=>x.status==="blocked"||x.status==="suspended").length;
   const verified=db.users.filter(x=>x.emailVerified===true).length;
   const events=getRecentSecurityEvents();
+  const sessionCounts=new Map();
+  for(const row of sessions) sessionCounts.set(row.userId,(sessionCounts.get(row.userId)||0)+1);
+  const sessionRows=[...sessionCounts].map(([userId,count])=>{
+    const target=db.users.find(x=>x.id===userId);
+    if(!target) return "";
+    const manageable=target.id!==user.id&&(user.role==="owner"||target.role==="user");
+    const button=manageable?'<form method="post" action="/admin/security/revoke-sessions?lang='+encodeURIComponent(lang)+'"><input type="hidden" name="userId" value="'+esc(target.id)+'"><button class="accountButton small danger" type="submit">Sessiyalarni tugatish</button></form>':"Himoyalangan";
+    return '<tr><td>'+esc(target.firstName+" "+target.lastName)+'</td><td>'+esc(target.role)+'</td><td>'+count+'</td><td>'+button+'</td></tr>';
+  }).join("");
   const alertsReady=!!((process.env.SECURITY_ALERT_EMAIL&&process.env.EMAIL_FROM&&process.env.RESEND_API_KEY) || process.env.SECURITY_ALERT_WEBHOOK);
   const authLimit=process.env.QOMUS_PILOT_AUTH_LIMIT==="enabled";
   const eventRows=events.map(e=>'<tr><td>'+esc(e.at)+'</td><td><b>'+esc(e.category)+'</b></td><td>'+esc(e.path)+'</td><td><code>'+esc(e.sourceId)+'</code></td></tr>').join("");
@@ -13703,6 +13712,7 @@ function adminSecurityPage(lang,user,db){
     state("AI shaxsiy ma’lumotlari",true,"Evristik JSHSHIR, pasport, email va telefon maskalanadi. To‘liq PII kafolati yo‘q.")+
     '</div></section>'+
     '<section class="accountPanel"><div class="accountTop"><div><h2>Oxirgi xavfsizlik signallari</h2><p class="accountMuted">Anonim manba ID; IP, parol va tokenlar chiqarilmaydi. Faqat joriy Node jarayoni.</p></div><a class="accountButton light" href="/admin/security?lang='+encodeURIComponent(lang)+'">Yangilash</a></div><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Vaqt</th><th>Tur</th><th>Yo‘l</th><th>Anonim manba</th></tr></thead><tbody>'+(eventRows||'<tr><td colspan="4">Joriy jarayonda signal qayd etilmagan. Bu hujum bo‘lmaganini anglatmaydi.</td></tr>')+'</tbody></table></div></section>'+
+    '<section class="accountPanel"><h2>Faol sessiyalar nazorati</h2><p class="accountMuted">Har bir akkaunt uchun faol sessiyalar soni. Sessiyani tugatish foydalanuvchini barcha qurilmalardan chiqaradi. Parollar va tokenlar ko‘rsatilmaydi.</p><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Foydalanuvchi</th><th>Rol</th><th>Sessiyalar</th><th>Amal</th></tr></thead><tbody>'+(sessionRows||'<tr><td colspan="4">Faol sessiyalar yo‘q.</td></tr>')+'</tbody></table></div></section>'+
     '<section class="accountPanel"><h2>Akkaunt xavfsizligi auditi</h2><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Vaqt</th><th>Hodisa</th><th>Foydalanuvchi ID</th></tr></thead><tbody>'+(auditRows||'<tr><td colspan="3">Audit yozuvlari hali yo‘q.</td></tr>')+'</tbody></table></div><div class="accountActions" style="margin-top:16px"><a class="accountButton" href="/admin/users?lang='+encodeURIComponent(lang)+'">Akkauntlarni boshqarish</a><a class="accountButton light" href="/admin/audit?lang='+encodeURIComponent(lang)+'">To‘liq audit log</a></div></section>';
   return accountAppPage(lang,user,"admin-security","Admin xavfsizlik",body);
 }
@@ -13860,7 +13870,18 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     if(req.method==="GET" && pathname==="/admin/cases"){sendHtml(res,adminCasesPage(lang,user,await accountLoadDb()));return true;}
     if(req.method==="GET" && pathname==="/admin/audit"){sendHtml(res,adminAuditPage(lang,user,await accountLoadDb()));return true;}
     if(req.method==="GET" && pathname==="/admin/security"){sendHtml(res,adminSecurityPage(lang,user,await accountLoadDb()));return true;}
-    if(req.method==="POST" && pathname==="/admin/user-status"){const f=await readForm(req),db=await accountLoadDb(),target=db.users.find(x=>x.id===f.id);if(target&&target.id!==user.id&&["active","suspended","blocked"].includes(f.status)){target.status=f.status;accountAudit(db,user.id,"admin_user_status_changed",{targetUserId:target.id,status:f.status});await accountSaveDb(db);}accountRedirect(res,`/admin/users?lang=${lang}`);return true;}
+    if(req.method==="POST" && pathname==="/admin/security/revoke-sessions"){
+      const f=await readForm(req),db=await accountLoadDb(),target=db.users.find(x=>x.id===String(f.userId||""));
+      if(!target||target.id===user.id||(user.role!=="owner"&&target.role!=="user")){
+        sendHtml(res,accountAppPage(lang,user,"admin-security","Ruxsat yo‘q",accountMessage("Sessiyani bekor qilishga ruxsat yo‘q.","error")),403);return true;
+      }
+      const before=db.sessions.length;
+      db.sessions=db.sessions.filter(x=>x.userId!==target.id);
+      accountAudit(db,user.id,"admin_sessions_revoked",{targetUserId:target.id,count:before-db.sessions.length});
+      await accountSaveDb(db);
+      accountRedirect(res,`/admin/security?lang=${lang}`);return true;
+    }
+    if(req.method==="POST" && pathname==="/admin/user-status"){const f=await readForm(req),db=await accountLoadDb(),target=db.users.find(x=>x.id===f.id);if(target&&target.id!==user.id&&(user.role==="owner"||target.role==="user")&&["active","suspended","blocked"].includes(f.status)){target.status=f.status;accountAudit(db,user.id,"admin_user_status_changed",{targetUserId:target.id,status:f.status});await accountSaveDb(db);}accountRedirect(res,`/admin/users?lang=${lang}`);return true;}
   }
   return false;
 }
