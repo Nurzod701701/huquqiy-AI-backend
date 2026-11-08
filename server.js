@@ -13785,7 +13785,8 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     if(req.method==="GET" && pathname==="/account/cases/new"){ sendHtml(res,accountNewCasePage(lang,user)); return true; }
     if(req.method==="POST" && pathname==="/account/cases/new"){
       const f=await readForm(req), db=await accountLoadDb();
-      const area=String(f.area||"");
+      const rawArea=String(f.area||"");
+      const area=({civil:"Fuqarolik huquqi",family:"Oila huquqi",labor:"Mehnat huquqi",business:"Biznes huquqi",other:"Boshqa"})[rawArea]||rawArea;
       const title=String(f.title||"").trim();
       const description=String(f.description||"").trim();
       if(!["Oila huquqi","Mehnat huquqi","Biznes huquqi","Fuqarolik huquqi","Boshqa"].includes(area)||!title||title.length>140||description.length>1500){sendHtml(res,accountNewCasePage(lang,user,"Yo‘nalish, masala nomi yoki tavsif noto‘g‘ri."),400);return true;}
