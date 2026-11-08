@@ -13723,7 +13723,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="POST" && pathname==="/register"){
     const f=await readForm(req), email=accountEmail(f.email); const db=await accountLoadDb();
     const firstName=String(f.firstName||"").trim(), lastName=String(f.lastName||"").trim();
-    if(!firstName||!lastName||firstName.length>60||lastName.length>60||email.length>254||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)||String(f.password||"").length<8||f.password!==f.password2||f.terms!=="yes"){ sendHtml(res,accountRegisterPage(lang,"Ism va familiya 1–60 belgi, email to‘g‘ri formatda, parol esa kamida 8 belgi bo‘lishi kerak."),400); return true; }
+    if(!firstName||!lastName||firstName.length>60||lastName.length>60||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||String(f.password||"").length<8||f.password!==f.password2||f.terms!=="yes"){ sendHtml(res,accountRegisterPage(lang,"Ism va familiya 1–60 belgi, email to‘g‘ri formatda, parol esa kamida 8 belgi bo‘lishi kerak."),400); return true; }
     if(email===OWNER_EMAIL){ sendHtml(res,accountRegisterPage(lang,"Bu email platforma OWNER akkaunti uchun ajratilgan. /admin/login orqali kiring."),403); return true; }
     const existing=db.users.find(u=>u.email===email);
     if(existing){
