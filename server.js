@@ -5221,7 +5221,7 @@ function navigation(lang) {
         <!-- DESKTOP MENU -->
         <nav class="navlinks">
 
-          <a href="/${q(lang)}">
+          <a href="/fuqarolar${q(lang)}">
             ${tr(lang, "home")}
           </a>
 
@@ -5252,6 +5252,8 @@ function navigation(lang) {
           <a href="/employment${q(lang)}">
             ${employmentText}
           </a>
+
+          <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokat PRO"}</a>
 
           <a
             class="desktopAccountLink"
@@ -5330,7 +5332,7 @@ function navigation(lang) {
            U HEADERNING O'ZIDA TURADI. -->
       <div id="mobileNav" class="mobileNavPanel">
 
-        <a href="/${q(lang)}">
+        <a href="/fuqarolar${q(lang)}">
           ${tr(lang, "home")}
         </a>
 
@@ -5361,6 +5363,8 @@ function navigation(lang) {
         <a href="/employment${q(lang)}">
           ${employmentText}
         </a>
+
+        <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokat PRO"}</a>
 
       </div>
 
