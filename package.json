@@ -9,7 +9,8 @@
     "start": "node server.js",
     "check": "node --check server.js",
     "test:security": "node --test test/security-hardening.test.js test/account-registration-validation.test.js test/account-data-integrity.test.js test/admin-security-dashboard.test.js",
-    "test:migration": "node --test test/neon-migration.test.js"
+    "test:migration": "node --test test/neon-migration.test.js",
+    "test:citizens": "node --test test/citizen-parity.test.js"
   },
   "engines": {
     "node": ">=20"

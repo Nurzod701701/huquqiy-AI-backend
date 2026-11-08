@@ -1,0 +1,28 @@
+name: QOMUS Citizen Navigation Parity QA
+on:
+  pull_request:
+    paths:
+      - 'citizen-home.js'
+      - 'server.js'
+      - 'test/citizen-parity.test.js'
+      - 'package.json'
+      - '.github/workflows/citizen-navigation-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'citizen-home.js'
+      - 'server.js'
+      - 'test/citizen-parity.test.js'
+      - 'package.json'
+      - '.github/workflows/citizen-navigation-qa.yml'
+jobs:
+  citizen-navigation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check server.js
+      - run: node --check citizen-home.js
+      - run: npm run test:citizens
