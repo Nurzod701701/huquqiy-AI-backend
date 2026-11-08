@@ -13794,12 +13794,14 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     if(req.method==="GET" && pathname==="/account/documents"){const db=await accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
     if(req.method==="GET" && pathname==="/account/chats"){const db=await accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"chats",at(lang,"chats"),items,c=>`<div class="accountCard"><h3><a href="/account/chat?id=${encodeURIComponent(c.id)}&lang=${lang}">${esc(c.title||"AI suhbat")}</a></h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
     if(req.method==="GET" && pathname==="/account/document"){
-      const d=await accountLoadDb().documents.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
+      const db=await accountLoadDb();
+      const d=db.documents.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
       if(!d){sendHtml(res,accountAppPage(lang,user,"documents","Hujjat topilmadi",accountMessage("Hujjat topilmadi.","error")),404);return true;}
       sendHtml(res,accountAppPage(lang,user,"documents",d.title,`<section class="accountPanel"><h1>${esc(d.title)}</h1><p class="accountMuted">${esc(d.type||"Hujjat")} · ${esc(d.createdAt||"")}</p><div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7">${esc(d.text||"")}</div><a class="accountButton" href="/account/documents?lang=${lang}">← Hujjatlar</a></section>`));return true;
     }
     if(req.method==="GET" && pathname==="/account/chat"){
-      const c=await accountLoadDb().conversations.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
+      const db=await accountLoadDb();
+      const c=db.conversations.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
       if(!c){sendHtml(res,accountAppPage(lang,user,"chats","Suhbat topilmadi",accountMessage("Suhbat topilmadi.","error")),404);return true;}
       sendHtml(res,accountAppPage(lang,user,"chats",c.title||"AI suhbat",`<section class="accountPanel"><h1>${esc(c.title||"AI suhbat")}</h1><p class="accountMuted">${esc(c.createdAt||"")}</p><h3>Savol</h3><div style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(c.question||"")}</div><h3>Javob</h3><div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7">${esc(c.answer||"")}</div><a class="accountButton" href="/account/chats?lang=${lang}">← AI suhbatlar</a></section>`));return true;
     }
