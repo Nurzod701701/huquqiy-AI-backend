@@ -5707,7 +5707,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "QOMUS", desc
               <strong>${esc(title || "QOMUS")}</strong>
             </div>
             <div class="appTopRight">
-              ${appLanguageMenu(lang, active ? "/" + active : "/")}
+              ${appLanguageMenu(lang, active === "citizens" ? "/fuqarolar" : active ? "/" + active : "/")}
               <a class="appHomeButton" href="/${q(lang)}" title="${esc(tr(lang, "home"))}">⌂</a>
             </div>
           </div>
