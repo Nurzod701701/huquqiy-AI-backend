@@ -5640,6 +5640,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "QOMUS", desc
   lang = getLang(lang);
 
   const items = [
+    ["citizens", "/fuqarolar", "⌂", lang==="ru"?"Гражданам":lang==="en"?"Citizens":"Fuqarolar bosh sahifasi"],
     ["ai", "/ai", "✦", tr(lang, "assistant")],
     ["documents", "/documents", "▣", tr(lang, "documents")],
     ["legal-review", "/legal-review", "✓", lang === "ru" ? "Проверка документа" : lang === "en" ? "Document review" : "Hujjatni tekshirish"],
@@ -5682,6 +5683,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "QOMUS", desc
           <div class="sidebarMenu">
             <div class="sidebarLabel">${lang === "ru" ? "РАЗДЕЛЫ" : lang === "en" ? "SECTIONS" : "BO‘LIMLAR"}</div>
             ${sideLinks}
+            <a class="sideLink" href="/advokat-pro${q(lang)}"><span class="sideIcon">§</span><span>${lang==="ru"?"Адвокатам":lang==="en"?"For advocates":"Advokatlar bo‘limi"}</span></a>
           </div>
 
           <div class="sidebarBottom">
@@ -5695,13 +5697,13 @@ function appLayout(lang = "uz", active = "", content = "", title = "QOMUS", desc
         <section class="appMain">
           <div class="appTop">
             <div class="appBreadcrumb">
-              <a href="/${q(lang)}">${esc(tr(lang, "home"))}</a>
+              <a href="/fuqarolar${q(lang)}">${lang==="ru"?"Гражданам":lang==="en"?"Citizens":"Fuqarolar"}</a>
               <span>›</span>
               <strong>${esc(title || "QOMUS")}</strong>
             </div>
             <div class="appTopRight">
               ${appLanguageMenu(lang, active ? "/" + active : "/")}
-              <a class="appHomeButton" href="/${q(lang)}" title="${esc(tr(lang, "home"))}">⌂</a>
+              <a class="appHomeButton" href="/fuqarolar${q(lang)}" title="${esc(tr(lang, "home"))}">⌂</a>
             </div>
           </div>
 
@@ -13959,12 +13961,12 @@ const server =
         // QOMUS entry selector; the original citizen homePage() remains unchanged.
         if(req.method === "GET" && pathname === "/"){
           if(url.searchParams.get("portal") === "fuqarolar"){
-            return sendHtml(res, homePage(lang));
+            return sendHtml(res, require("./citizen-home")(lang));
           }
           return sendHtml(res, require("./portal-choice")(lang));
         }
         if(req.method === "GET" && pathname === "/fuqarolar"){
-          return sendHtml(res, homePage(lang));
+          return sendHtml(res, url.searchParams.get("classic")==="1" ? homePage(lang) : require("./citizen-home")(lang));
         }
 
 
