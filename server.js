@@ -13722,7 +13722,8 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="GET" && pathname==="/register"){ sendHtml(res,accountRegisterPage(lang)); return true; }
   if(req.method==="POST" && pathname==="/register"){
     const f=await readForm(req), email=accountEmail(f.email); const db=await accountLoadDb();
-    if(!f.firstName||!f.lastName||!email.includes("@")||String(f.password||"").length<8||f.password!==f.password2||f.terms!=="yes"){ sendHtml(res,accountRegisterPage(lang,"Ma’lumotlarni tekshiring. Parol kamida 8 belgi va ikki parol bir xil bo‘lishi kerak."),400); return true; }
+    const firstName=String(f.firstName||"").trim(), lastName=String(f.lastName||"").trim();
+    if(!firstName||!lastName||firstName.length>60||lastName.length>60||email.length>254||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)||String(f.password||"").length<8||f.password!==f.password2||f.terms!=="yes"){ sendHtml(res,accountRegisterPage(lang,"Ism va familiya 1–60 belgi, email to‘g‘ri formatda, parol esa kamida 8 belgi bo‘lishi kerak."),400); return true; }
     if(email===OWNER_EMAIL){ sendHtml(res,accountRegisterPage(lang,"Bu email platforma OWNER akkaunti uchun ajratilgan. /admin/login orqali kiring."),403); return true; }
     const existing=db.users.find(u=>u.email===email);
     if(existing){
@@ -13730,7 +13731,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
       accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`);return true;
     }
     const code=accountSixDigitCode();
-    const user={id:accountId("USR"),firstName:String(f.firstName).trim(),lastName:String(f.lastName).trim(),email,passwordHash:accountHashPassword(f.password),role:"user",status:"active",emailVerified:false,verificationCodeHash:accountHashPassword(code),verificationExpiresAt:new Date(Date.now()+VERIFY_TTL_MS).toISOString(),verificationSentAt:accountNow(),createdAt:accountNow(),updatedAt:accountNow()};
+    const user={id:accountId("USR"),firstName:firstName,lastName:lastName,email,passwordHash:accountHashPassword(f.password),role:"user",status:"active",emailVerified:false,verificationCodeHash:accountHashPassword(code),verificationExpiresAt:new Date(Date.now()+VERIFY_TTL_MS).toISOString(),verificationSentAt:accountNow(),createdAt:accountNow(),updatedAt:accountNow()};
     try {
       const sent=await accountSendEmail(email,"QOMUS — emailni tasdiqlash",`Tasdiqlash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
       if(!sent){sendHtml(res,accountRegisterPage(lang,"Email xizmati sozlanmagan. Render Environment’da RESEND_API_KEY va EMAIL_FROM yoki SMTP sozlamalarini kiriting."),503);return true;}
