@@ -27,10 +27,14 @@ function auditOutbound(messages) {
    if(message.content.includes("[FAYL_TARKIBI_TEKSHIRILMAGAN]") ||
       message.content.includes("[XABAR_TARKIBI_TEKSHIRILMAGAN]") ||
       message.content.includes("[XABAR_TEKSHiRILMAGAN]"))throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
+   // Do not send raw data URIs, PEM keys, or large opaque binary strings.
+   if(/data:(?:image|application)\/[^\s;,]+;base64,|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/i.test(message.content) ||
+      /(?:^|[^A-Za-z0-9+/])[A-Za-z0-9+/]{500,}={0,2}(?:$|[^A-Za-z0-9+/])/m.test(message.content))
+     throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
    // These are not validated by pattern-based redaction. Reject high-risk secret fields.
    if(/(?:api[_ -]?key|authorization\s*:\s*bearer|private[_ -]?key|password|parol|cvv|cvc|pin\s*code)\s*[:=]\s*\S{3,}/i.test(message.content))throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
  }
- return sanitized;
+ return sanitized.map(message=>({role:["system","user","assistant"].includes(message.role)?message.role:"user",content:message.content}));
 }
 function consentPanel(lang,route,payload,description) {
  const t={
