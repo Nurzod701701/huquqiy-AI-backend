@@ -5,7 +5,7 @@ try {
 }
 
 const http = require("http");
-const { applySecurityHeaders, guardSensitiveRequest } = require("./security-hardening");
+const { applySecurityHeaders, guardSensitiveRequest, getLoginBlockSeconds, recordLoginFailure, clearLoginFailures } = require("./security-hardening");
 const { minimizeMessages } = require("./ai-privacy");
 const { alertEvent, getRecentSecurityEvents } = require("./security-alerts");
 const querystring = require("querystring");
@@ -13744,7 +13744,10 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="POST" && pathname==="/admin/login"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb();
     if(!OWNER_EMAIL || !OWNER_PASSWORD){ sendHtml(res,ownerLoginPage(lang,"Render Environment’da OWNER_EMAIL va OWNER_PASSWORD o‘rnatilmagan."),500); return true; }
-    if(email!==OWNER_EMAIL || !crypto.timingSafeEqual(crypto.createHash("sha256").update(String(f.password||"")).digest(),crypto.createHash("sha256").update(OWNER_PASSWORD).digest())){ alertEvent("FAILED_ADMIN_LOGIN",req.socket.remoteAddress,"/admin/login"); sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
+    const adminRetry=getLoginBlockSeconds("admin",email);
+    if(adminRetry){res.setHeader("Retry-After",String(adminRetry));sendHtml(res,ownerLoginPage(lang,"Ko‘p urinish. Birozdan so‘ng qayta urinib ko‘ring."),429);return true;}
+    if(email!==OWNER_EMAIL || !crypto.timingSafeEqual(crypto.createHash("sha256").update(String(f.password||"")).digest(),crypto.createHash("sha256").update(OWNER_PASSWORD).digest())){ recordLoginFailure("admin",email); alertEvent("FAILED_ADMIN_LOGIN",req.socket.remoteAddress,"/admin/login"); sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
+    clearLoginFailures("admin",email);
     let user=db.users.find(u=>u.email===OWNER_EMAIL);
     if(!user){
       user={id:accountId("OWN"),firstName:"Nurzod",lastName:"Ziyodullayev",email:OWNER_EMAIL,passwordHash:accountHashPassword(OWNER_PASSWORD),role:"owner",status:"active",emailVerified:true,createdAt:accountNow(),updatedAt:accountNow(),ownerCreated:true};
@@ -13758,8 +13761,11 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="POST" && pathname==="/login"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
     if(email===OWNER_EMAIL){ accountRedirect(res,`/admin/login?lang=${lang}`); return true; }
-    if(!user || user.role!=="user" || !accountVerifyPassword(f.password,user.passwordHash) || user.status!=="active"){ alertEvent("FAILED_LOGIN",req.socket.remoteAddress,"/login"); sendHtml(res,accountLoginPage(lang,"Email yoki parol noto‘g‘ri, yoki account faol emas."),401); return true; }
+    const loginRetry=getLoginBlockSeconds("user",email);
+    if(loginRetry){res.setHeader("Retry-After",String(loginRetry));sendHtml(res,accountLoginPage(lang,"Ko‘p urinish. Birozdan so‘ng qayta urinib ko‘ring."),429);return true;}
+    if(!user || user.role!=="user" || !accountVerifyPassword(f.password,user.passwordHash) || user.status!=="active"){ recordLoginFailure("user",email); alertEvent("FAILED_LOGIN",req.socket.remoteAddress,"/login"); sendHtml(res,accountLoginPage(lang,"Email yoki parol noto‘g‘ri, yoki account faol emas."),401); return true; }
     if(!user.emailVerified){ accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`); return true; }
+    clearLoginFailures("user",email);
     user.lastLoginAt=accountNow(); accountAudit(db,user.id,"login",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/register"){ sendHtml(res,accountRegisterPage(lang)); return true; }
