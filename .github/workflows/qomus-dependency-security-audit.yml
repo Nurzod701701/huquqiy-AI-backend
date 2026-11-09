@@ -1,0 +1,25 @@
+name: QOMUS dependency security audit
+on:
+  push:
+    branches: [qa/security-hardening-phase2-20261109]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  dependency-advisories:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Report direct and transitive dependency vulnerabilities
+        run: |
+          npm audit --json > "$RUNNER_TEMP/qomus-audit.json" || true
+          node -e "const a=require(process.env.RUNNER_TEMP+'/qomus-audit.json'); for(const [name,v] of Object.entries(a.vulnerabilities||{})) console.log(name,v.severity,'via',v.via.filter(x=>typeof x==='object').map(x=>x.title).join('; '),'fix',JSON.stringify(v.fixAvailable)); console.log('total',JSON.stringify(a.metadata?.vulnerabilities))"
+      - name: Mark high or critical risk for manual QA review
+        run: |
+          node -e "const a=require(process.env.RUNNER_TEMP+'/qomus-audit.json');if((a.metadata?.vulnerabilities?.high||0)+(a.metadata?.vulnerabilities?.critical||0)) process.exit(1)"
