@@ -26,9 +26,9 @@
 
 ## Buyruqlar
 ```powershell
-git fetch origin qa/qomus-lexuz-evidence-20261109
-git worktree add ..\qomus-lexuz-qa origin/qa/qomus-lexuz-evidence-20261109
-cd ..\qomus-lexuz-qa
-npm.cmd install --no-audit --no-fund
+cd C:\Users\user
+git clone --branch qa/qomus-lexuz-evidence-20261109 https://github.com/Nurzod701701/huquqiy-AI-backend.git qomus-lexuz-qa
+cd .\qomus-lexuz-qa
+npm.cmd install --no-package-lock --no-audit --no-fund
 npm.cmd run test:lexuz
 ```
