@@ -29,7 +29,10 @@ function saveEvent(event) {
   if (!connectionString) return;
   if (!pool) {
     const {Pool} = require("pg");
-    pool = new Pool({connectionString,ssl:{rejectUnauthorized:true},max:2,connectionTimeoutMillis:5000});
+    const localTest = process.env.NODE_ENV === "test" &&
+      process.env.QOMUS_PG_INSECURE_LOCAL_TEST === "yes" &&
+      /^postgres(?:ql)?:\/\/[^@]+@(?:localhost|127\\.0\\.0\\.1):/.test(connectionString);
+    pool = new Pool({connectionString,ssl:localTest ? false : {rejectUnauthorized:true},max:2,connectionTimeoutMillis:5000});
     // Production schema is migrated separately. Least-privilege writer must not do DDL.
     schemaReady = pool.query("SELECT to_regclass('public.qomus_security_events') AS table_name").then(rs=>{
       if (!rs.rows[0]?.table_name) throw new Error("SECURITY_AUDIT_SCHEMA_MISSING");
