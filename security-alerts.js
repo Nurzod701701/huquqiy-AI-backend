@@ -49,7 +49,7 @@ function alertEvent(category, address, path) {
     headers.Authorization = "Bearer " + process.env.RESEND_API_KEY;
     payload = {from:process.env.EMAIL_FROM,to:[process.env.SECURITY_ALERT_EMAIL],
       subject:"QOMUS xavfsizlik ogohlantirishi: " + category,
-      text:"Event: " + category + "\\nPath: " + safePath + "\\nAnonymous source: " + id + "\\nTime: " + new Date(now).toISOString()};
+      text:"Event: " + category + "\nPath: " + safePath + "\nAnonymous source: " + id + "\nTime: " + new Date(now).toISOString()};
   }
   if (!target) return;
   // Never block the HTTP response waiting for notification delivery.
@@ -60,7 +60,9 @@ function alertEvent(category, address, path) {
     headers,
     body: JSON.stringify(payload),
     signal: controller.signal
-  })).catch(() => {
+  })).then(response => {
+    if (!response.ok) console.warn("SECURITY_ALERT_DELIVERY_FAILED", category, response.status);
+  }).catch(() => {
     console.warn("SECURITY_ALERT_DELIVERY_FAILED", category);
   }).finally(() => clearTimeout(timeout));
 }
