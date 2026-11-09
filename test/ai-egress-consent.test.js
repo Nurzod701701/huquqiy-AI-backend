@@ -14,6 +14,10 @@ test("signed preview expires, rejects altered content and requires opt-in",()=>{
 test("external egress rejects unverified media and high-risk secrets",()=>{
  assert.throws(()=>auditOutbound([{role:"user",content:[{type:"image_url",image_url:{url:"data:private"}}]}]),/AI_PRIVACY_UNVERIFIED_CONTENT/);
  assert.throws(()=>auditOutbound([{role:"user",content:"password: myVerySecretPassword"}]),/AI_PRIVACY_UNVERIFIED_CONTENT/);
+ assert.throws(()=>auditOutbound([{role:"user",content:"data:image/png;base64,PRIVATE"}]),/AI_PRIVACY_UNVERIFIED_CONTENT/);
+ assert.throws(()=>auditOutbound([{role:"system",content:"-----BEGIN PRIVATE KEY-----"}]),/AI_PRIVACY_UNVERIFIED_CONTENT/);
+ const filtered=auditOutbound([{role:"user",content:"Safe legal question",metadata:{secret:"SECRET-METADATA"}}]);
+ assert.equal(filtered[0].metadata,undefined);
  const checked=auditOutbound([{role:"user",content:"AB1234567 is my passport"}]);
  assert.doesNotMatch(checked[0].content,/AB1234567/);
 });
