@@ -348,53 +348,9 @@ function legalSourceFooter(text, lang) {
   return `<div style="margin-top:18px;padding:16px;border:1px solid #d7e1eb;border-radius:12px;background:#f8fafc"><strong>${label}</strong><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:9px">${items.map(x => `<a href="${x.url}" target="_blank" rel="noopener noreferrer" style="color:#145b96;text-decoration:underline">${esc(x.name)} ↗</a>`).join('')}</div></div>`;
 }
 
-// LexUZ public document pages: best-effort retrieval, not an official API.
-// No page content is treated as instructions. If verification fails, fail visibly.
-const LEXUZ_DOCS = [
-  { name: "Mehnat kodeksi", url: "https://lex.uz/docs/-6257288", test: /mehnat|ishdan|xodim|ish beruvchi|ish haqi|ta.til|employment|labou?r|dismiss|увольнен|труд|зарплат/i },
-  { name: "Oila kodeksi", url: "https://lex.uz/docs/-104720", test: /oila|nikoh|aliment|ajra|farzand|bola|divorc|marriage|family|семь|брак/i },
-  { name: "Fuqarolik kodeksi I", url: "https://lex.uz/docs/-111189", test: /mulk|qarz|meros|shartnoma|fuqarolik|contract|property|debt|наслед|договор|имуществ/i },
-  { name: "Fuqarolik kodeksi II", url: "https://lex.uz/docs/-180552", test: /ijara|oldi.sotdi|pudrat|xizmat ko.rsatish|lease|sale|аренд|купл/i },
-  { name: "Iqtisodiy protsessual kodeks", url: "https://lex.uz/docs/-3523891", test: /iqtisodiy sud|economic court|экономическ.{0,20}суд/i }
-];
-function lexPlainText(html) {
-  return String(html).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;|&#160;/gi, ' ').replace(/&quot;/gi, '"')
-    .replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
-    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Math.min(Number(n), 0x10ffff)))
-    .replace(/\s+/g, ' ').trim();
-}
-async function getLexuzEvidence(question) {
-  const matched = LEXUZ_DOCS.filter(d => d.test.test(question)).slice(0, 2);
-  if (!matched.length) return { verified: false, notes: 'No matching legal document was selected.' };
-  const pieces = [];
-  for (const doc of matched) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 9000);
-    try {
-      const r = await fetch(doc.url, { signal: controller.signal, headers: { 'Accept': 'text/html', 'User-Agent': 'QOMUS-LegalResearch/1.0' }, redirect: 'follow' });
-      if (!r.ok || !/text\/html/i.test(r.headers.get('content-type') || '')) continue;
-      const html = (await r.text()).slice(0, 1800000);
-      const txt = lexPlainText(html);
-      // Reject SPA shells, error pages, and pages without actual legal article text.
-      if (txt.length < 4000 || !/(?:\d{1,4}\s*[-–.]?\s*(?:modda|модда|статья)|(?:modda|статья)\s*\d{1,4})/i.test(txt)) continue;
-      const terms = question.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(x => x.length >= 5).slice(0, 12);
-      const sections = [];
-      for (const term of terms) {
-        const idx = txt.toLowerCase().indexOf(term);
-        if (idx >= 0 && !sections.some(x => Math.abs(x.idx - idx) < 500)) sections.push({idx, text:txt.slice(Math.max(0,idx-450), Math.min(txt.length,idx+1350))});
-        if (sections.length >= 3) break;
-      }
-      if (!sections.length) sections.push({idx:0,text:txt.slice(0,3200)});
-      pieces.push({ doc, excerpts: sections.map(x => x.text).join('\n---\n').slice(0, 5500) });
-    } catch (e) { console.warn('LexUZ retrieval unavailable:', doc.name, e.message); }
-    finally { clearTimeout(timer); }
-  }
-  return pieces.length ? { verified: true, notes: pieces.map(p => `${p.doc.name}: ${p.doc.url}\n${p.excerpts}`).join('\n\n') } :
-    { verified: false, notes: 'LexUZ document text could not be retrieved or validated.' };
-}
+// QA LexUZ retrieval is isolated for source-provenance and fail-closed unit tests.
+// It is NOT a LexUZ API integration or proof of an act's effective edition.
+const { getLexuzEvidence } = require("./lexuz-evidence");
 
 async function callAI(question, lang = "uz", context = "") {
   if (!OPENROUTER_API_KEY) {
