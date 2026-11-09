@@ -46,10 +46,11 @@ function alertEvent(category, address, path) {
     } catch (_) {}
   }
   // Resend fallback only when the owner has explicitly configured sender and receiver.
-  if (!target && process.env.SECURITY_ALERT_EMAIL && process.env.EMAIL_FROM && process.env.RESEND_API_KEY) {
+  const alertFrom = process.env.SECURITY_ALERT_FROM || process.env.EMAIL_FROM;
+  if (!target && process.env.SECURITY_ALERT_EMAIL && alertFrom && process.env.RESEND_API_KEY) {
     target = "https://api.resend.com/emails";
     headers.Authorization = "Bearer " + process.env.RESEND_API_KEY;
-    payload = {from:process.env.EMAIL_FROM,to:[process.env.SECURITY_ALERT_EMAIL],
+    payload = {from:alertFrom,to:[process.env.SECURITY_ALERT_EMAIL],
       subject:"QOMUS xavfsizlik ogohlantirishi: " + category,
       text:"Event: " + category + "\nPath: " + safePath + "\nAnonymous source: " + id + "\nTime: " + new Date(now).toISOString()};
   }
