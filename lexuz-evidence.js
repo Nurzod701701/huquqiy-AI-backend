@@ -11,6 +11,7 @@ const LEXUZ_DOCS=Object.freeze([
  {name:'Iqtisodiy protsessual kodeks',url:'https://lex.uz/docs/-3523891',test:/iqtisodiy sud|economic court|экономическ.{0,20}суд/i}
 ]);
 const ARTICLE_RE=/(?:\d{1,4}\s*[-–.]?\s*(?:modda|модда|статья)|(?:modda|модда|статья)\s*\d{1,4})/iu;
+const ARTICLE_SCAN_RE=/(?:\d{1,4}\s*[-–.]?\s*(?:modda|модда|статья)|(?:modda|модда|статья)\s*\d{1,4})/giu;
 function isExpectedLexuzDocument(actualUrl,expectedUrl){
  try{
   const actual=new URL(actualUrl),expected=new URL(expectedUrl);
@@ -43,6 +44,9 @@ function relevantExcerpts(text,question){
    if(locations.some(x=>Math.abs(idx-x)<500))continue;
    const excerpt=text.slice(Math.max(0,idx-1000),Math.min(text.length,idx+1600));
    if(!ARTICLE_RE.test(excerpt))continue;
+   // A LexUZ table of contents can list dozens of article headings without
+   // containing any operative legal provisions. Never treat such a list as evidence.
+   if((excerpt.match(ARTICLE_SCAN_RE)||[]).length>6)continue;
    sections.push(excerpt);locations.push(idx);
    if(sections.length>=3)return sections;
   }
