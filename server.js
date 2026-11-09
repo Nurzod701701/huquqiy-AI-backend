@@ -7,6 +7,7 @@ try {
 const http = require("http");
 const { applySecurityHeaders, guardSensitiveRequest, getEffectiveLoginBlockSeconds, recordEffectiveLoginFailure, clearEffectiveLoginFailures } = require("./security-hardening");
 const { minimizeMessages } = require("./ai-privacy");
+const {sanitizeText,auditOutbound,checkToken,consentPanel} = require("./ai-egress-consent");
 const { alertEvent, getRecentSecurityEvents } = require("./security-alerts");
 const querystring = require("querystring");
 
@@ -176,7 +177,7 @@ async function readBody(req, maxBytes = 2 * 1024 * 1024) {
 }
 
 async function readForm(req) {
-  const raw = await readBody(req);
+  const raw = req._aiPreparedBody === undefined ? await readBody(req) : req._aiPreparedBody;
   return querystring.parse(raw);
 }
 
@@ -550,7 +551,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
           "HTTP-Referer": process.env.SITE_URL || "https://huquqiy-ai-backend.onrender.com",
           "X-Title": "QOMUS"
         },
-        body: JSON.stringify({ model, messages: minimizeMessages(messages), temperature: 0.2, max_tokens: 450 })
+        body: JSON.stringify({ model, messages: auditOutbound(messages), temperature: 0.2, max_tokens: 450 })
       });
       try { data = await response.json(); }
       catch (_) { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
@@ -6986,7 +6987,7 @@ function aiPage(lang) {
 
           <form
             method="POST"
-            action="/ai-result${q(lang)}"
+            action="/ai-preview${q(lang)}"
           >
 
             <div class="aiInputWrap">
@@ -8001,7 +8002,7 @@ function legalReviewPage(lang){
   return appLayout(lang,'legal-review',`
   <section class="hero" style="max-width:900px;margin:0 auto 20px"><h1>${t.title}</h1><p>${t.sub}</p></section>
   <section class="panel" style="max-width:850px;margin:0 auto 22px;padding:clamp(20px,4vw,40px);border:1px solid #bd9858;border-radius:18px">
-    <form method="post" enctype="multipart/form-data" action="/legal-review-result?lang=${lang}" id="simpleReviewForm">
+    <form method="post" enctype="multipart/form-data" action="/legal-review-preview?lang=${lang}" id="simpleReviewForm">
       <h2 style="margin:0 0 14px;font-size:23px">${t.step}</h2>
       <label for="reviewFile" style="display:block;font-weight:700;margin-bottom:9px">${t.file}</label>
       <input id="reviewFile" type="file" name="documentFile" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:block;width:100%;padding:17px;border:2px dashed #bd9858;border-radius:12px;margin-bottom:9px" />
@@ -13947,6 +13948,37 @@ const server =
           );
 
 
+        // Gate every additional AI-generating form through a redacted, signed
+        // preview. The request body is replayed only after consent is validated.
+        const previewedAiRoutes=new Set([
+          "/questionnaire-result","/claim-result","/business-result","/employment-result"
+        ]);
+        if(req.method==="POST" && previewedAiRoutes.has(pathname)) {
+          const provided=await readForm(req);
+          const payload={};
+          let total=0;
+          for(const [key,value] of Object.entries(provided)){
+            if(key==="aiConsent"||key==="aiConsentToken")continue;
+            if(!/^[a-zA-Z_][a-zA-Z0-9_-]{0,80}$/.test(key))continue;
+            const clean=sanitizeText(String(value||"").slice(0,45000));
+            total+=clean.length;
+            if(total>65000 || Object.keys(payload).length>=100)
+              return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>AI uchun matn juda katta.</h2></section>',"Maxfiylik",""),413);
+            payload[key]=clean;
+          }
+          const preview=Object.entries(payload).map(([key,value])=>key+": "+value).join("\n");
+          try{auditOutbound([{role:"user",content:preview}]);}
+          catch(_){return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>Maxfiy tarkibni tekshirib bo‘lmadi. Iltimos, ma’lumotlarni qayta ko‘ring.</h2></section>',"AI himoyasi",""),422);}
+          if(provided.aiConsent!=="yes" ||
+             !checkToken(payload,provided.aiConsentToken) ||
+             Object.keys(payload).some(key=>String(provided[key]||"")!==payload[key])){
+            if(provided.aiConsent||provided.aiConsentToken)
+              return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>Rozilik noto‘g‘ri yoki matn o‘zgargan. Yuborish rad etildi.</h2></section>',"AI himoyasi",""),403);
+            return sendHtml(res,appLayout(lang,"ai",consentPanel(lang,pathname,payload,preview),"AI yuborishni tasdiqlash",""),200);
+          }
+          req._aiPreparedBody=querystring.stringify(payload);
+        }
+
         // ------------------------------------------------
         // ACCOUNT / PERSONAL CABINET / ADMIN ROUTES
         // ------------------------------------------------
@@ -13997,6 +14029,14 @@ const server =
         }
 
 
+        if(req.method==="POST" && pathname==="/ai-preview"){
+          const fields=await readForm(req);
+          const question=sanitizeText(String(fields.question||"").trim().slice(0,12000));
+          if(!question)return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>Savol kiritilmagan</h2></section>',"AI",""),400);
+          try { auditOutbound([{role:"user",content:question}]); }
+          catch(_) { return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>Maxfiy matn xavfsiz tekshirilmadi. Maxfiy qismlarni olib tashlang.</h2></section>',"Maxfiylik nazorati",""),422); }
+          return sendHtml(res,appLayout(lang,"ai",consentPanel(lang,"/ai-result",{question},question),"AI yuborishni tasdiqlash",""),200);
+        }
         if(
           req.method === "POST" &&
           pathname === "/ai-result"
@@ -14006,6 +14046,11 @@ const server =
             await readForm(req);
 
 
+          const approvedPayload={question:sanitizeText(String(form.question||"").trim().slice(0,12000))};
+          if(form.aiConsent!=="yes"||!checkToken(approvedPayload,form.aiConsentToken) ||
+             String(form.question||"")!==approvedPayload.question) {
+            return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>AI roziligi yo‘q yoki yuborilayotgan matn o‘zgartirilgan. Iltimos, avval matnni ko‘ring.</h2></section>',"AI roziligi",""),403);
+          }
           const aiAuth=await accountSession(req);
           const html =
             await aiResultPage(
@@ -14089,10 +14134,35 @@ const server =
           return sendHtml(res, legalReviewPage(lang));
         }
 
+        if(req.method==="POST" && pathname==="/legal-review-preview"){
+          let fields;
+          try {fields=String(req.headers["content-type"]||"").includes("multipart/form-data")?await readLegalUpload(req):await readForm(req);}
+          catch(_) {return sendHtml(res,appLayout(lang,"legal-review",'<section class="panel"><h2>Hujjatni o‘qib bo‘lmadi. PDF yoki DOCX tarkibini tekshiring.</h2></section>',"Hujjat xatosi",""),400);}
+          const payload={
+            documentText:sanitizeText(String(fields.documentText||"").slice(0,45000)),
+            documentType:String(fields.documentType||"other").slice(0,60),
+            legalArea:String(fields.legalArea||"other").slice(0,60),
+            extraContext:sanitizeText(String(fields.extraContext||"").slice(0,10000))
+          };
+          if(payload.documentText.trim().length<80)return sendHtml(res,appLayout(lang,"legal-review",'<section class="panel"><h2>Hujjat matni yetarli emas.</h2></section>',"Hujjat xatosi",""),400);
+          try {auditOutbound([{role:"user",content:payload.documentText},{role:"user",content:payload.extraContext}]);}
+          catch(_) {return sendHtml(res,appLayout(lang,"legal-review",'<section class="panel"><h2>Maxfiy ma’lumotni xavfsiz tozalab bo‘lmadi. Hujjatni qayta tekshiring.</h2></section>',"Maxfiylik nazorati",""),422);}
+          return sendHtml(res,appLayout(lang,"legal-review",consentPanel(lang,"/legal-review-result",payload,payload.documentText+"\n\n"+payload.extraContext),"AI hujjat yuborish tasdig‘i",""),200);
+        }
         if(req.method === "POST" && pathname === "/legal-review-result") {
           let form;
           try {form=String(req.headers['content-type']||'').includes('multipart/form-data')?await readLegalUpload(req):await readForm(req);}
           catch(e){const messages={UPLOAD_DEPENDENCIES_MISSING:'Fayl yuklash kutubxonalari o‘rnatilmagan. npm install bajaring.',UNSUPPORTED_FORMAT:'Faqat PDF yoki DOCX yuklang.',FILE_TOO_LARGE:'Fayl 8 MB dan oshmasligi kerak.',NO_EXTRACTABLE_TEXT:'Hujjatdan matn ajratilmadi. Skanerlangan PDF bo‘lsa, matnni qo‘lda kiriting.'};return sendHtml(res,appLayout(lang,'legal-review',`<section class="panel"><h2>${esc(messages[e.message]||'Faylni o‘qishda xatolik yuz berdi.')}</h2><a href="/legal-review${q(lang)}" class="btn btnGold">Orqaga</a></section>`,'Hujjat yuklash xatosi',''),400);}
+          const approved={
+            documentText:sanitizeText(String(form.documentText||"").slice(0,45000)),
+            documentType:String(form.documentType||"other").slice(0,60),
+            legalArea:String(form.legalArea||"other").slice(0,60),
+            extraContext:sanitizeText(String(form.extraContext||"").slice(0,10000))
+          };
+          if(form.aiConsent!=="yes" || !checkToken(approved,form.aiConsentToken) ||
+             Object.keys(approved).some(key=>String(form[key]||"")!==approved[key])) {
+            return sendHtml(res,appLayout(lang,"legal-review",'<section class="panel"><h2>Hujjat uchun rozilik yo‘q yoki mazmun o‘zgargan. Qayta tasdiqlang.</h2></section>',"AI roziligi",""),403);
+          }
           return sendHtml(res, await legalReviewResultPage(lang, form));
         }
 
