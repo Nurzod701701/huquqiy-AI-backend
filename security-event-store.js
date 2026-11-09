@@ -30,14 +30,10 @@ function saveEvent(event) {
   if (!pool) {
     const {Pool} = require("pg");
     pool = new Pool({connectionString,ssl:{rejectUnauthorized:true},max:2,connectionTimeoutMillis:5000});
-    schemaReady = pool.query(`CREATE TABLE IF NOT EXISTS qomus_security_events (
-      id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      event_time TIMESTAMPTZ NOT NULL,
-      category VARCHAR(40) NOT NULL,
-      source_id VARCHAR(16) NOT NULL,
-      route VARCHAR(120) NOT NULL
-    )`);
+    // Production schema is migrated separately. Least-privilege writer must not do DDL.
+    schemaReady = pool.query("SELECT to_regclass('public.qomus_security_events') AS table_name").then(rs=>{
+      if (!rs.rows[0]?.table_name) throw new Error("SECURITY_AUDIT_SCHEMA_MISSING");
+    });
   }
   Promise.resolve(schemaReady).then(()=>pool.query(
     "INSERT INTO qomus_security_events (event_time,category,source_id,route) VALUES ($1,$2,$3,$4)",
