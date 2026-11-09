@@ -3,6 +3,9 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const {spawn}=require("node:child_process");
 const crypto=require("node:crypto");
+const fs=require("node:fs");
+const os=require("node:os");
+const path=require("node:path");
 const {setTimeout:delay}=require("node:timers/promises");
 const {Pool}=require("pg");
 const uri=process.env.QOMUS_TEST_DATABASE_URL;
@@ -10,8 +13,10 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
  const port=43871, owner="owner-qa@example.invalid",pass="OnlySynthetic!QA2026";
  const pool=new Pool({connectionString:uri});
  await pool.query("CREATE TABLE IF NOT EXISTS qomus_account_state(id smallint PRIMARY KEY, revision bigint NOT NULL DEFAULT 0, data jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now())");
+ await pool.query("CREATE TABLE IF NOT EXISTS qomus_security_events(id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,created_at timestamptz NOT NULL DEFAULT now(),event_time timestamptz NOT NULL,category varchar(40) NOT NULL,source_id varchar(16) NOT NULL,route varchar(120) NOT NULL)");
  await pool.query("INSERT INTO qomus_account_state(id,revision,data) VALUES (1,0,'{}'::jsonb) ON CONFLICT(id) DO UPDATE SET revision=0,data='{}'::jsonb");
- const child=spawn(process.execPath,["server.js"],{cwd:process.cwd(),env:{...process.env,PORT:String(port),NODE_ENV:"test",QOMUS_PG_INSECURE_LOCAL_TEST:"yes",DATABASE_URL:uri,QOMUS_ACCOUNT_STORE:"postgres",OWNER_EMAIL:owner,OWNER_PASSWORD:pass},stdio:"ignore"});
+ const auditFile=path.join(fs.mkdtempSync(path.join(os.tmpdir(),"qomus-http-audit-")),"events.jsonl");
+ const child=spawn(process.execPath,["server.js"],{cwd:process.cwd(),env:{...process.env,PORT:String(port),NODE_ENV:"test",QOMUS_PG_INSECURE_LOCAL_TEST:"yes",DATABASE_URL:uri,QOMUS_ACCOUNT_STORE:"postgres",OWNER_EMAIL:owner,OWNER_PASSWORD:pass,SECURITY_AUDIT_FILE:auditFile,SECURITY_AUDIT_DATABASE_URL:uri},stdio:"ignore"});
  try{
   let ok=false;
   for(let i=0;i<50;i++){
@@ -31,6 +36,38 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
   assert.equal(snapshot.rows[0].data.users.length,1);
   assert.equal(snapshot.rows[0].data.sessions.length,1);
   assert.equal(snapshot.rows[0].data.users[0].email,owner);
+  // Real HTTP negative-login flow, using only synthetic accounts in an isolated test DB.
+  const blockedEmail="qa-attack-"+process.pid+"@example.invalid";
+  for(let attempt=0;attempt<8;attempt++){
+    const response=await fetch("http://127.0.0.1:"+port+"/login",{method:"POST",redirect:"manual",
+      headers:{"content-type":"application/x-www-form-urlencoded","origin":"http://127.0.0.1:"+port},
+      body:new URLSearchParams({email:blockedEmail,password:"WrongSyntheticPassword"})});
+    assert.equal(response.status,401);
+  }
+  const rateLimited=await fetch("http://127.0.0.1:"+port+"/login",{method:"POST",redirect:"manual",
+    headers:{"content-type":"application/x-www-form-urlencoded","origin":"http://127.0.0.1:"+port},
+    body:new URLSearchParams({email:blockedEmail,password:"WrongSyntheticPassword"})});
+  assert.equal(rateLimited.status,429);
+  assert.ok(Number(rateLimited.headers.get("retry-after"))>0);
+  assert.ok(fs.existsSync(auditFile),"anonymized security evidence must be written to a durable file");
+  const storedAudit=fs.readFileSync(auditFile,"utf8");
+  assert.match(storedAudit,/FAILED_LOGIN/);
+  assert.ok(!storedAudit.includes(blockedEmail),"audit must not expose raw email addresses");
+  let remoteEvents=[];
+  for(let attempt=0;attempt<30;attempt++){
+    const rs=await pool.query("SELECT category,source_id,route FROM qomus_security_events WHERE category='FAILED_LOGIN' ORDER BY created_at DESC LIMIT 3");
+    remoteEvents=rs.rows;
+    if(remoteEvents.length)break;
+    await delay(150);
+  }
+  assert.ok(remoteEvents.length,"real HTTP security event must arrive in independent PostgreSQL audit table");
+  assert.equal(remoteEvents[0].route,"/login");
+  assert.match(remoteEvents[0].source_id,/^[a-f0-9]{16}$/);
+
+  const forgotPage=await fetch("http://127.0.0.1:"+port+"/forgot-password");
+  assert.equal(forgotPage.status,200);
+  const resetPage=await fetch("http://127.0.0.1:"+port+"/reset-password");
+  assert.equal(resetPage.status,200);
   // Real HTTP registration/login-compatible data flow using a fully synthetic verified user.
   const salt=crypto.randomBytes(16).toString("hex");
   const passHash=salt+":"+crypto.scryptSync("SyntheticPass-2026!",salt,64).toString("hex");

@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const {saveEvent,readRecentEvents} = require("./security-event-store");
 
 // Security alerts never contain passwords, tokens, document text or full IP addresses.
 // Configure SECURITY_ALERT_WEBHOOK only with a trusted, private HTTPS receiver.
@@ -28,6 +29,7 @@ function alertEvent(category, address, path) {
   // Persistent application logs can feed Render alert integrations.
   // No raw addresses or user secrets are ever logged.
   const safeEvent = {category,sourceId:id,path:safePath,at:new Date(now).toISOString()};
+  saveEvent(safeEvent);
   recentEvents.unshift(safeEvent);
   if (recentEvents.length > MAX_RECENT_EVENTS) recentEvents.length = MAX_RECENT_EVENTS;
   console.warn("QOMUS_SECURITY_EVENT", JSON.stringify(safeEvent));
@@ -44,12 +46,13 @@ function alertEvent(category, address, path) {
     } catch (_) {}
   }
   // Resend fallback only when the owner has explicitly configured sender and receiver.
-  if (!target && process.env.SECURITY_ALERT_EMAIL && process.env.EMAIL_FROM && process.env.RESEND_API_KEY) {
+  const alertFrom = process.env.SECURITY_ALERT_FROM || process.env.EMAIL_FROM;
+  if (!target && process.env.SECURITY_ALERT_EMAIL && alertFrom && process.env.RESEND_API_KEY) {
     target = "https://api.resend.com/emails";
     headers.Authorization = "Bearer " + process.env.RESEND_API_KEY;
-    payload = {from:process.env.EMAIL_FROM,to:[process.env.SECURITY_ALERT_EMAIL],
+    payload = {from:alertFrom,to:[process.env.SECURITY_ALERT_EMAIL],
       subject:"QOMUS xavfsizlik ogohlantirishi: " + category,
-      text:"Event: " + category + "\\nPath: " + safePath + "\\nAnonymous source: " + id + "\\nTime: " + new Date(now).toISOString()};
+      text:"Event: " + category + "\nPath: " + safePath + "\nAnonymous source: " + id + "\nTime: " + new Date(now).toISOString()};
   }
   if (!target) return;
   // Never block the HTTP response waiting for notification delivery.
@@ -60,14 +63,17 @@ function alertEvent(category, address, path) {
     headers,
     body: JSON.stringify(payload),
     signal: controller.signal
-  })).catch(() => {
+  })).then(response => {
+    if (!response.ok) console.warn("SECURITY_ALERT_DELIVERY_FAILED", category, response.status);
+  }).catch(() => {
     console.warn("SECURITY_ALERT_DELIVERY_FAILED", category);
   }).finally(() => clearTimeout(timeout));
 }
 
 function getRecentSecurityEvents() {
   // Ephemeral process-local events only, never raw network addresses or credentials.
-  return recentEvents.map(e => ({...e}));
+  const persisted = readRecentEvents(MAX_RECENT_EVENTS);
+  return persisted.length ? persisted : recentEvents.map(e => ({...e}));
 }
 
 module.exports = { alertEvent, getRecentSecurityEvents };
