@@ -1,0 +1,32 @@
+name: QOMUS single-use shared login limiter production smoke
+on:
+  push:
+    branches: [qa/shared-lockout-prod-smoke-20261109]
+permissions:
+  contents: read
+jobs:
+  synthetic-login:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify shared limiter with a disposable nonexistent login only
+        run: |
+          node <<'NODE'
+          (async () => {
+            const target='https://verius.uz/login';
+            const identity='qomus-limiter-smoke-20261109@example.invalid';
+            for(let i=1;i<=9;i++) {
+              const response=await fetch(target,{
+                method:'POST',
+                redirect:'manual',
+                headers:{'content-type':'application/x-www-form-urlencoded','origin':'https://verius.uz'},
+                body:new URLSearchParams({email:identity,password:'SyntheticWrongPassword2026'}),
+                signal:AbortSignal.timeout(16000)
+              });
+              console.log('QOMUS_SHARED_LIMIT_SMOKE_ATTEMPT',i,'STATUS',response.status);
+              const expected=i<=8?401:429;
+              if(response.status!==expected) throw new Error('Unexpected status on attempt '+i+': '+response.status+', expected '+expected);
+            }
+            console.log('QOMUS_SHARED_LIMIT_SMOKE_SUCCESS');
+          })().catch(err=>{console.error(String(err));process.exitCode=1;});
+          NODE
