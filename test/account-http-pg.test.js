@@ -17,7 +17,7 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
  await pool.query("CREATE TABLE IF NOT EXISTS qomus_auth_rate_limit(identity_hash varchar(64) PRIMARY KEY, failures integer NOT NULL, expires_at timestamptz NOT NULL)");
  await pool.query("INSERT INTO qomus_account_state(id,revision,data) VALUES (1,0,'{}'::jsonb) ON CONFLICT(id) DO UPDATE SET revision=0,data='{}'::jsonb");
  const auditFile=path.join(fs.mkdtempSync(path.join(os.tmpdir(),"qomus-http-audit-")),"events.jsonl");
- const child=spawn(process.execPath,["server.js"],{cwd:process.cwd(),env:{...process.env,PORT:String(port),NODE_ENV:"test",QOMUS_PG_INSECURE_LOCAL_TEST:"yes",DATABASE_URL:uri,QOMUS_ACCOUNT_STORE:"postgres",OWNER_EMAIL:owner,OWNER_PASSWORD:pass,SECURITY_AUDIT_FILE:auditFile,SECURITY_AUDIT_DATABASE_URL:uri,QOMUS_LOGIN_LIMIT_DATABASE_URL:uri,QOMUS_LOGIN_HASH_KEY:"synthetic-local-test-key-2026-strong-key-abcdef"},stdio:"ignore"});
+ const child=spawn(process.execPath,["server.js"],{cwd:process.cwd(),env:{...process.env,PORT:String(port),NODE_ENV:"test",QOMUS_PG_INSECURE_LOCAL_TEST:"yes",DATABASE_URL:uri,QOMUS_ACCOUNT_STORE:"postgres",OWNER_EMAIL:owner,OWNER_PASSWORD:pass,SECURITY_AUDIT_FILE:auditFile,SECURITY_AUDIT_DATABASE_URL:uri,QOMUS_LOGIN_LIMIT_DATABASE_URL:uri,QOMUS_LOGIN_HASH_KEY:"synthetic-local-test-key-2026-strong-key-abcdef",SITE_URL:"https://verius.uz"},stdio:"ignore"});
  try{
   let ok=false;
   for(let i=0;i<50;i++){
@@ -30,6 +30,7 @@ test("QOMUS actual HTTP admin login creates durable PostgreSQL session", {skip:!
   assert.equal(result.status,302,"Owner login should redirect after database commit");
   const cookie=result.headers.get("set-cookie")||"";
   assert.match(cookie,/hq_session=/);
+  assert.match(cookie,/; Secure/,"HTTPS SITE_URL session cookie must have Secure flag");
   const dashboard=await fetch("http://127.0.0.1:"+port+"/admin",{headers:{cookie:cookie.split(";")[0]}});
   assert.equal(dashboard.status,200);
   const snapshot=await pool.query("SELECT revision,data FROM qomus_account_state WHERE id=1");
