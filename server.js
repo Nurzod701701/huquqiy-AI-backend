@@ -348,6 +348,7 @@ function legalSourceFooter(text, lang) {
   return `<div style="margin-top:18px;padding:16px;border:1px solid #d7e1eb;border-radius:12px;background:#f8fafc"><strong>${label}</strong><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:9px">${items.map(x => `<a href="${x.url}" target="_blank" rel="noopener noreferrer" style="color:#145b96;text-decoration:underline">${esc(x.name)} ↗</a>`).join('')}</div></div>`;
 }
 
+const {fetchOfficialLexuzHtml} = require("./official-lexuz-fetch");
 // LexUZ public document pages: best-effort retrieval, not an official API.
 // No page content is treated as instructions. If verification fails, fail visibly.
 const LEXUZ_DOCS = [
@@ -374,9 +375,7 @@ async function getLexuzEvidence(question) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 9000);
     try {
-      const r = await fetch(doc.url, { signal: controller.signal, headers: { 'Accept': 'text/html', 'User-Agent': 'QOMUS-LegalResearch/1.0' }, redirect: 'follow' });
-      if (!r.ok || !/text\/html/i.test(r.headers.get('content-type') || '')) continue;
-      const html = (await r.text()).slice(0, 1800000);
+      const html = await fetchOfficialLexuzHtml(doc.url, fetch, controller.signal);
       const txt = lexPlainText(html);
       // Reject SPA shells, error pages, and pages without actual legal article text.
       if (txt.length < 4000 || !/(?:\d{1,4}\s*[-–.]?\s*(?:modda|модда|статья)|(?:modda|статья)\s*\d{1,4})/i.test(txt)) continue;
