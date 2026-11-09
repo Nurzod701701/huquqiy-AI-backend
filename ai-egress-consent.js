@@ -32,7 +32,14 @@ function auditOutbound(messages) {
       /(?:^|[^A-Za-z0-9+/])[A-Za-z0-9+/]{500,}={0,2}(?:$|[^A-Za-z0-9+/])/m.test(message.content))
      throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
    // These are not validated by pattern-based redaction. Reject high-risk secret fields.
-   if(/(?:api[_ -]?key|authorization\s*:\s*bearer|private[_ -]?key|password|parol|cvv|cvc|pin\s*code)\s*[:=]\s*\S{3,}/i.test(message.content))throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
+   if(/(?:api[_ -]?key|authorization\\s*:\\s*bearer|private[_ -]?key|password|parol|cvv|cvc|pin\\s*code)\\s*[:=]\\s*\\S{3,}/i.test(message.content))throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
+   // JSON secrets, bearer tokens, provider credentials and URL query credentials
+   // can otherwise evade the plain "key: value" detector.
+   if(/["'](?:api[_ -]?key|access[_ -]?token|refresh[_ -]?token|client[_ -]?secret|password|parol|private[_ -]?key|cvv|cvc|pin[_ -]?code)["']\\s*:\\s*["'][^"'\\r\\n]{3,}["']/i.test(message.content) ||
+      /\\bBearer\\s+[A-Za-z0-9._~+/-]{12,}/i.test(message.content) ||
+      /\\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16})\\b/.test(message.content) ||
+      /[?&](?:api[_-]?key|access[_-]?token|refresh[_-]?token|token|secret|password)=[^&#\\s]{6,}/i.test(message.content))
+     throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
  }
  return sanitized.map(message=>({role:["system","user","assistant"].includes(message.role)?message.role:"user",content:message.content}));
 }
