@@ -10,6 +10,7 @@ const { minimizeMessages } = require("./ai-privacy");
 const {sanitizeText,auditOutbound,checkToken,consentPanel} = require("./ai-egress-consent");
 const { alertEvent, getRecentSecurityEvents } = require("./security-alerts");
 const querystring = require("querystring");
+const qomusIconUI = require("./qomus-icon-ui");
 
 const PORT = process.env.PORT || 3000;
 
@@ -134,6 +135,7 @@ function sendHtml(res, html, status = 200) {
   const pageHtml = String(html || '');
   let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : appendBeforeFinalBody(pageHtml, GLOBAL_LEXUZ_SCRIPT);
   if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = appendBeforeFinalBody(resultHtml, LANGUAGE_PRESERVE_SCRIPT);
+  if (!resultHtml.includes('id="qomus-service-icons-v1"')) resultHtml = appendBeforeFinalBody(resultHtml, qomusIconUI.css + qomusIconUI.script);
   res.end(resultHtml);
 }
 
@@ -7297,6 +7299,11 @@ async function aiResultPage(
 
     `
 
+      <div class="qomus-legal-source-status" role="note">
+        <strong>${lang === "ru" ? "Статус источника" : lang === "en" ? "Source status" : "Manba holati"}:</strong>
+        <span>${lang === "ru" ? "Точные статьи и действующую редакцию необходимо проверить в LexUZ." : lang === "en" ? "Verify exact provisions and the current version in LexUZ." : "Aniq moddalar va amaldagi tahrirni LexUZ orqali tekshiring."}</span>
+        <a href="https://lex.uz/" target="_blank" rel="noopener noreferrer">LexUZ ↗</a>
+      </div>
       <div class="resultBox" id="claimPrintable">
 
         <div class="resultLabel">
