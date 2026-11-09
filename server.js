@@ -177,7 +177,7 @@ async function readBody(req, maxBytes = 2 * 1024 * 1024) {
 }
 
 async function readForm(req) {
-  const raw = await readBody(req);
+  const raw = req._aiPreparedBody === undefined ? await readBody(req) : req._aiPreparedBody;
   return querystring.parse(raw);
 }
 
@@ -13947,6 +13947,37 @@ const server =
             )
           );
 
+
+        // Gate every additional AI-generating form through a redacted, signed
+        // preview. The request body is replayed only after consent is validated.
+        const previewedAiRoutes=new Set([
+          "/questionnaire-result","/claim-result","/business-result","/employment-result"
+        ]);
+        if(req.method==="POST" && previewedAiRoutes.has(pathname)) {
+          const provided=await readForm(req);
+          const payload={};
+          let total=0;
+          for(const [key,value] of Object.entries(provided)){
+            if(key==="aiConsent"||key==="aiConsentToken")continue;
+            if(!/^[a-zA-Z_][a-zA-Z0-9_-]{0,80}$/.test(key))continue;
+            const clean=sanitizeText(String(value||"").slice(0,45000));
+            total+=clean.length;
+            if(total>65000 || Object.keys(payload).length>=100)
+              return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>AI uchun matn juda katta.</h2></section>',"Maxfiylik",""),413);
+            payload[key]=clean;
+          }
+          const preview=Object.entries(payload).map(([key,value])=>key+": "+value).join("\n");
+          try{auditOutbound([{role:"user",content:preview}]);}
+          catch(_){return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>Maxfiy tarkibni tekshirib bo‘lmadi. Iltimos, ma’lumotlarni qayta ko‘ring.</h2></section>',"AI himoyasi",""),422);}
+          if(provided.aiConsent!=="yes" ||
+             !checkToken(payload,provided.aiConsentToken) ||
+             Object.keys(payload).some(key=>String(provided[key]||"")!==payload[key])){
+            if(provided.aiConsent||provided.aiConsentToken)
+              return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>Rozilik noto‘g‘ri yoki matn o‘zgargan. Yuborish rad etildi.</h2></section>',"AI himoyasi",""),403);
+            return sendHtml(res,appLayout(lang,"ai",consentPanel(lang,pathname,payload,preview),"AI yuborishni tasdiqlash",""),200);
+          }
+          req._aiPreparedBody=querystring.stringify(payload);
+        }
 
         // ------------------------------------------------
         // ACCOUNT / PERSONAL CABINET / ADMIN ROUTES
