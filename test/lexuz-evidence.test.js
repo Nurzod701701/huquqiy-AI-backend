@@ -53,3 +53,9 @@ test('large article page without relevant topic context fails closed',()=>{
  const irrelevant=('Sarlavha va boshqa mazmun. '.repeat(250))+'160-modda fuqarolik tartibi';
  assert.equal(relevantExcerpts(irrelevant,'ishdan bo‘shatish').length,0);
 });
+
+test('LexUZ table of contents alone is not treated as an operative article',async()=>{
+ const titles=Array.from({length:22},(_,i)=>'<p>'+(145+i)+'-modda. Ishdan bo‘shatish va boshqa mehnat mavzulari.</p>').join('');
+ const shell='<html><body>'+('Kodeks bo‘limlari bo‘yicha ma’lumot. '.repeat(130))+titles+'</body></html>';
+ assert.equal((await getLexuzEvidence('ishdan bo‘shatish',{fetchImpl:stub(law,shell)})).verified,false);
+});
