@@ -5,7 +5,7 @@ try {
 }
 
 const http = require("http");
-const { applySecurityHeaders, guardSensitiveRequest, getLoginBlockSeconds, recordLoginFailure, clearLoginFailures } = require("./security-hardening");
+const { applySecurityHeaders, guardSensitiveRequest, getEffectiveLoginBlockSeconds, recordEffectiveLoginFailure, clearEffectiveLoginFailures } = require("./security-hardening");
 const { minimizeMessages } = require("./ai-privacy");
 const { alertEvent, getRecentSecurityEvents } = require("./security-alerts");
 const querystring = require("querystring");
@@ -13342,17 +13342,22 @@ async function accountSession(req){
   if(!s) return null; const user=db.users.find(x=>x.id===s.userId && x.status==="active" && x.emailVerified===true);
   return user ? {db,session:s,user} : null;
 }
+function accountSecureCookieFlag() {
+  return process.env.NODE_ENV==="production" ||
+    process.env.RENDER==="true" ||
+    /^https:\/\//i.test(process.env.SITE_URL||"") ? "; Secure" : "";
+}
 async function accountSetSession(res,userId){
   const db=await accountLoadDb();
   const token=crypto.randomBytes(32).toString("hex");
   db.sessions=db.sessions.filter(s=>new Date(s.expiresAt)>new Date() && s.userId!==userId);
   db.sessions.push({id:accountId("SES"),token,userId,createdAt:accountNow(),expiresAt:new Date(Date.now()+SESSION_TTL_MS).toISOString()});
   await accountSaveDb(db);
-  res.setHeader("Set-Cookie",`hq_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${Math.floor(SESSION_TTL_MS/1000)}${process.env.NODE_ENV==="production"?"; Secure":""}`);
+  res.setHeader("Set-Cookie",`hq_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${Math.floor(SESSION_TTL_MS/1000)}${accountSecureCookieFlag()}`);
 }
 async function accountClearSession(req,res){
   const token=accountCookies(req).hq_session; const db=await accountLoadDb(); db.sessions=db.sessions.filter(s=>s.token!==token); await accountSaveDb(db);
-  res.setHeader("Set-Cookie","hq_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0");
+  res.setHeader("Set-Cookie","hq_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"+accountSecureCookieFlag());
 }
 async function accountStoreHistory(userId,kind,title,content,requestedCaseId=""){
   const db=await accountLoadDb();
@@ -13744,10 +13749,10 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="POST" && pathname==="/admin/login"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb();
     if(!OWNER_EMAIL || !OWNER_PASSWORD){ sendHtml(res,ownerLoginPage(lang,"Render Environment’da OWNER_EMAIL va OWNER_PASSWORD o‘rnatilmagan."),500); return true; }
-    const adminRetry=getLoginBlockSeconds("admin",email);
+    const adminRetry=await getEffectiveLoginBlockSeconds("admin",email);
     if(adminRetry){res.setHeader("Retry-After",String(adminRetry));sendHtml(res,ownerLoginPage(lang,"Ko‘p urinish. Birozdan so‘ng qayta urinib ko‘ring."),429);return true;}
-    if(email!==OWNER_EMAIL || !crypto.timingSafeEqual(crypto.createHash("sha256").update(String(f.password||"")).digest(),crypto.createHash("sha256").update(OWNER_PASSWORD).digest())){ recordLoginFailure("admin",email); alertEvent("FAILED_ADMIN_LOGIN",req.socket.remoteAddress,"/admin/login"); sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
-    clearLoginFailures("admin",email);
+    if(email!==OWNER_EMAIL || !crypto.timingSafeEqual(crypto.createHash("sha256").update(String(f.password||"")).digest(),crypto.createHash("sha256").update(OWNER_PASSWORD).digest())){ await recordEffectiveLoginFailure("admin",email); alertEvent("FAILED_ADMIN_LOGIN",req.socket.remoteAddress,"/admin/login"); sendHtml(res,ownerLoginPage(lang,"Admin email yoki parol noto‘g‘ri."),401); return true; }
+    await clearEffectiveLoginFailures("admin",email);
     let user=db.users.find(u=>u.email===OWNER_EMAIL);
     if(!user){
       user={id:accountId("OWN"),firstName:"Nurzod",lastName:"Ziyodullayev",email:OWNER_EMAIL,passwordHash:accountHashPassword(OWNER_PASSWORD),role:"owner",status:"active",emailVerified:true,createdAt:accountNow(),updatedAt:accountNow(),ownerCreated:true};
@@ -13761,11 +13766,11 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="POST" && pathname==="/login"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
     if(email===OWNER_EMAIL){ accountRedirect(res,`/admin/login?lang=${lang}`); return true; }
-    const loginRetry=getLoginBlockSeconds("user",email);
+    const loginRetry=await getEffectiveLoginBlockSeconds("user",email);
     if(loginRetry){res.setHeader("Retry-After",String(loginRetry));sendHtml(res,accountLoginPage(lang,"Ko‘p urinish. Birozdan so‘ng qayta urinib ko‘ring."),429);return true;}
-    if(!user || user.role!=="user" || !accountVerifyPassword(f.password,user.passwordHash) || user.status!=="active"){ recordLoginFailure("user",email); alertEvent("FAILED_LOGIN",req.socket.remoteAddress,"/login"); sendHtml(res,accountLoginPage(lang,"Email yoki parol noto‘g‘ri, yoki account faol emas."),401); return true; }
+    if(!user || user.role!=="user" || !accountVerifyPassword(f.password,user.passwordHash) || user.status!=="active"){ await recordEffectiveLoginFailure("user",email); alertEvent("FAILED_LOGIN",req.socket.remoteAddress,"/login"); sendHtml(res,accountLoginPage(lang,"Email yoki parol noto‘g‘ri, yoki account faol emas."),401); return true; }
     if(!user.emailVerified){ accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`); return true; }
-    clearLoginFailures("user",email);
+    await clearEffectiveLoginFailures("user",email);
     user.lastLoginAt=accountNow(); accountAudit(db,user.id,"login",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/register"){ sendHtml(res,accountRegisterPage(lang)); return true; }

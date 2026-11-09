@@ -1,0 +1,23 @@
+"use strict";
+const test=require("node:test"),assert=require("node:assert/strict");
+const fs=require("node:fs"),os=require("node:os"),path=require("node:path");
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),"qomus-login-durable-"));
+const auditPath=path.join(tmp,"attempts.json");
+process.env.QOMUS_LOGIN_LIMIT_FILE=auditPath;
+const modulePath=require.resolve("../security-hardening");
+test("lockout counters survive module restart and contain no raw login identifier",()=>{
+ let module=require("../security-hardening");
+ const identity="durable-person@example.invalid";
+ for(let i=0;i<8;i++) module.recordLoginFailure("user",identity);
+ assert.ok(module.getLoginBlockSeconds("user",identity)>0);
+ assert.equal(fs.existsSync(auditPath),true);
+ const raw=fs.readFileSync(auditPath,"utf8");
+ assert.equal(raw.includes(identity),false);
+ delete require.cache[modulePath];
+ module=require("../security-hardening");
+ assert.ok(module.getLoginBlockSeconds("user",identity)>0,"restart must preserve block");
+ module.clearLoginFailures("user",identity);
+ delete require.cache[modulePath];
+ module=require("../security-hardening");
+ assert.equal(module.getLoginBlockSeconds("user",identity),0,"successful login clears persisted block");
+});
