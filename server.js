@@ -540,6 +540,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   ];
   let response, data;
   let usedFreeFallback = false;
+  let primaryCreditsExhausted = false;
   try {
     for (const model of [...new Set([AI_MODEL, "openrouter/free"])]) {
       response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -557,6 +558,17 @@ Use only provisions actually visible in these excerpts for precise article-numbe
       catch (_) { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
       if (response.ok) {
         usedFreeFallback = model === "openrouter/free" && AI_MODEL !== model;
+        // A 200 response with no actual text is not an AI success.
+        // When the paid model first returned 402, report the real billing
+        // cause rather than hiding it behind a generic empty-answer error.
+        const reply = data?.choices?.[0]?.message?.content;
+        const hasText = typeof reply === "string"
+          ? reply.trim().length > 0
+          : Array.isArray(reply) && reply.some(part => typeof part?.text === "string" && part.text.trim());
+        if (!hasText) {
+          if (primaryCreditsExhausted) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
+          throw new Error("OPENROUTER_EMPTY_RESPONSE");
+        }
         break;
       }
       const metadata = data?.error?.metadata || {};
@@ -564,7 +576,10 @@ Use only provisions actually visible in these excerpts for precise article-numbe
         metadata.limit_source || "unspecified", model === "openrouter/free" ? "free_fallback" : "primary");
       // Retry only if primary failed because of credit/budget restriction.
       // Other errors are surfaced rather than silently changing models.
-      if (response.status === 402 && model !== "openrouter/free" && AI_MODEL !== "openrouter/free") continue;
+      if (response.status === 402 && model !== "openrouter/free" && AI_MODEL !== "openrouter/free") {
+        primaryCreditsExhausted = true;
+        continue;
+      }
       if (response.status === 402) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
       if (response.status === 401) throw new Error("OPENROUTER_AUTH_FAILED");
       if (response.status === 429) throw new Error("OPENROUTER_RATE_LIMIT");
@@ -578,7 +593,8 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   }
   if (!response?.ok) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
   let content = data?.choices?.[0]?.message?.content;
-  if (!content) throw new Error("OpenRouter bo‘sh javob qaytardi.");
+  if (Array.isArray(content)) content = content.filter(part => typeof part?.text === "string").map(part => part.text).join("\n");
+  if (typeof content !== "string" || !content.trim()) throw new Error(primaryCreditsExhausted ? "OPENROUTER_CREDITS_EXHAUSTED" : "OPENROUTER_EMPTY_RESPONSE");
   // A fetched excerpt is evidence, NOT full article-by-article verification.
   // Always disclose whether live source material was actually available.
   const evidenceStatus = lexEvidence.verified
@@ -7272,7 +7288,9 @@ async function aiResultPage(
     );
 
 
-    answer = error?.message === "OPENROUTER_RATE_LIMIT" ? (lang === "uz" ? "OpenRouter bepul modelining so‘rov limiti tugagan (HTTP 429). Keyinroq urinib ko‘ring yoki hisobingizdagi limitni tekshiring." : lang === "ru" ? "Превышен лимит бесплатной модели OpenRouter (HTTP 429)." : "OpenRouter free model rate limit exceeded (HTTP 429).")
+    answer = error?.message === "OPENROUTER_EMPTY_RESPONSE"
+      ? (lang === "uz" ? "OpenRouter AI modeli bo‘sh javob qaytardi. Modelni va provayder holatini tekshiring." : lang === "ru" ? "Модель OpenRouter вернула пустой ответ. Проверьте модель и провайдера." : "OpenRouter returned an empty response. Check the model and provider.")
+      : error?.message === "OPENROUTER_RATE_LIMIT" ? (lang === "uz" ? "OpenRouter bepul modelining so‘rov limiti tugagan (HTTP 429). Keyinroq urinib ko‘ring yoki hisobingizdagi limitni tekshiring." : lang === "ru" ? "Превышен лимит бесплатной модели OpenRouter (HTTP 429)." : "OpenRouter free model rate limit exceeded (HTTP 429).")
       : error?.message === "OPENROUTER_AUTH_FAILED" ? (lang === "uz" ? "OpenRouter API kaliti noto‘g‘ri yoki bekor qilingan (HTTP 401)." : lang === "ru" ? "Ключ OpenRouter недействителен (HTTP 401)." : "OpenRouter API key invalid (HTTP 401).")
       : error?.message === "OPENROUTER_CREDITS_EXHAUSTED"
       ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Javob token limiti vaqtincha 450 ga tushirildi, lekin bu kredit tugagan bo‘lsa yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
