@@ -19,6 +19,18 @@ function checkToken(payload,token,now=Date.now()) {
  return crypto.timingSafeEqual(Buffer.from(expected,"hex"),Buffer.from(parts[1],"hex"));
 }
 function sanitizeText(value) {return redactForAI(String(value||"")).text;}
+// Fail closed for credentials and bearer-style tokens not covered by PII masking.
+// This protects the outbound boundary; it does not replace document classification.
+function containsUnreviewedSecret(text) {
+ const value=String(text||"");
+ // Allow separators commonly pasted from forms, including line breaks and em dashes.
+ if(/\b(?:api[\\s_-]*key|authorization|private[\\s_-]*key|password|passphrase|parol|cvv|cvc|pin[\\s_-]*code|secret[\\s_-]*key|access[\\s_-]*token|refresh[\\s_-]*token)\\b[\\s:：=–—-]*(?:bearer\\s+)?\\S{3,}/iu.test(value))return true;
+ // Credential formats may appear without a descriptive label.
+ if(/\b(?:sk-or-v1-[a-f0-9]{20,}|github_pat_[a-zA-Z0-9_]{20,}|gh[pousr]_[a-zA-Z0-9]{20,}|AKIA[0-9A-Z]{16})\b/.test(value))return true;
+ // JWT strings can carry authorization and user data even without a label.
+ if(/\beyJ[A-Za-z0-9_-]{16,}\\.eyJ[A-Za-z0-9_-]{16,}\\.[A-Za-z0-9_-]{8,}\b/.test(value))return true;
+ return false;
+}
 function auditOutbound(messages) {
  const sanitized=minimizeMessages(messages);
  // Refuse any unknown/opaque binary and references instead of sending raw data.
@@ -32,7 +44,7 @@ function auditOutbound(messages) {
       /(?:^|[^A-Za-z0-9+/])[A-Za-z0-9+/]{500,}={0,2}(?:$|[^A-Za-z0-9+/])/m.test(message.content))
      throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
    // These are not validated by pattern-based redaction. Reject high-risk secret fields.
-   if(/(?:api[_ -]?key|authorization\s*:\s*bearer|private[_ -]?key|password|parol|cvv|cvc|pin\s*code)\s*[:=]\s*\S{3,}/i.test(message.content))throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
+   if(containsUnreviewedSecret(message.content))throw Error("AI_PRIVACY_UNVERIFIED_CONTENT");
  }
  return sanitized.map(message=>({role:["system","user","assistant"].includes(message.role)?message.role:"user",content:message.content}));
 }
