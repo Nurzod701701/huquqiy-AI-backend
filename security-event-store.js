@@ -1,7 +1,7 @@
 "use strict";
 const fs = require("node:fs");
 const path = require("node:path");
-const {Pool} = require("pg");
+// Load pg only when an independent PostgreSQL audit sink is configured.
 
 // Separate append-only evidence file on Render Persistent Disk.
 // Optional independent PostgreSQL sink is enabled with SECURITY_AUDIT_DATABASE_URL.
@@ -28,6 +28,7 @@ function saveEvent(event) {
   }
   if (!connectionString) return;
   if (!pool) {
+    const {Pool} = require("pg");
     pool = new Pool({connectionString,ssl:{rejectUnauthorized:true},max:2,connectionTimeoutMillis:5000});
     schemaReady = pool.query(`CREATE TABLE IF NOT EXISTS qomus_security_events (
       id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
