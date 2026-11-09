@@ -13342,17 +13342,22 @@ async function accountSession(req){
   if(!s) return null; const user=db.users.find(x=>x.id===s.userId && x.status==="active" && x.emailVerified===true);
   return user ? {db,session:s,user} : null;
 }
+function accountSecureCookieFlag() {
+  return process.env.NODE_ENV==="production" ||
+    process.env.RENDER==="true" ||
+    /^https:\/\//i.test(process.env.SITE_URL||"") ? "; Secure" : "";
+}
 async function accountSetSession(res,userId){
   const db=await accountLoadDb();
   const token=crypto.randomBytes(32).toString("hex");
   db.sessions=db.sessions.filter(s=>new Date(s.expiresAt)>new Date() && s.userId!==userId);
   db.sessions.push({id:accountId("SES"),token,userId,createdAt:accountNow(),expiresAt:new Date(Date.now()+SESSION_TTL_MS).toISOString()});
   await accountSaveDb(db);
-  res.setHeader("Set-Cookie",`hq_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${Math.floor(SESSION_TTL_MS/1000)}${process.env.NODE_ENV==="production"?"; Secure":""}`);
+  res.setHeader("Set-Cookie",`hq_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${Math.floor(SESSION_TTL_MS/1000)}${accountSecureCookieFlag()}`);
 }
 async function accountClearSession(req,res){
   const token=accountCookies(req).hq_session; const db=await accountLoadDb(); db.sessions=db.sessions.filter(s=>s.token!==token); await accountSaveDb(db);
-  res.setHeader("Set-Cookie","hq_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0");
+  res.setHeader("Set-Cookie","hq_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"+accountSecureCookieFlag());
 }
 async function accountStoreHistory(userId,kind,title,content,requestedCaseId=""){
   const db=await accountLoadDb();
