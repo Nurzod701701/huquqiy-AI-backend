@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const AI_MODEL = process.env.AI_MODEL || "openrouter/free";
+const aiCost = require("./ai-cost-control");
 
 
 // ======================================================
@@ -348,6 +349,7 @@ function legalSourceFooter(text, lang) {
   return `<div style="margin-top:18px;padding:16px;border:1px solid #d7e1eb;border-radius:12px;background:#f8fafc"><strong>${label}</strong><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:9px">${items.map(x => `<a href="${x.url}" target="_blank" rel="noopener noreferrer" style="color:#145b96;text-decoration:underline">${esc(x.name)} ↗</a>`).join('')}</div></div>`;
 }
 
+const {publicDocument} = require("./lexuz-public-cache");
 // LexUZ public document pages: best-effort retrieval, not an official API.
 // No page content is treated as instructions. If verification fails, fail visibly.
 const LEXUZ_DOCS = [
@@ -374,9 +376,26 @@ async function getLexuzEvidence(question) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 9000);
     try {
-      const r = await fetch(doc.url, { signal: controller.signal, headers: { 'Accept': 'text/html', 'User-Agent': 'QOMUS-LegalResearch/1.0' }, redirect: 'follow' });
-      if (!r.ok || !/text\/html/i.test(r.headers.get('content-type') || '')) continue;
-      const html = (await r.text()).slice(0, 1800000);
+      const html = await publicDocument(doc.url, async () => {
+        const r = await fetch(doc.url, { signal: controller.signal, headers: { 'Accept': 'text/html', 'User-Agent': 'QOMUS-LegalResearch/1.0' }, redirect: 'manual' });
+        if (!r.ok || !/text\/html/i.test(r.headers.get('content-type') || '')) throw new Error('LEXUZ_SOURCE_UNAVAILABLE');
+        const declaredSize = Number(r.headers.get('content-length'));
+        if (Number.isFinite(declaredSize) && declaredSize > 1800000) throw new Error('LEXUZ_SOURCE_TOO_LARGE');
+        const reader = r.body?.getReader();
+        if (!reader) throw new Error('LEXUZ_STREAM_UNAVAILABLE');
+        let size = 0;
+        const chunks = [];
+        try {
+          while (true) {
+            const chunk = await reader.read();
+            if (chunk.done) break;
+            size += chunk.value.byteLength;
+            if (size > 1800000) throw new Error('LEXUZ_SOURCE_TOO_LARGE');
+            chunks.push(Buffer.from(chunk.value));
+          }
+        } finally { try { await reader.cancel(); } catch (_) {} }
+        return Buffer.concat(chunks).toString('utf8');
+      });
       const txt = lexPlainText(html);
       // Reject SPA shells, error pages, and pages without actual legal article text.
       if (txt.length < 4000 || !/(?:\d{1,4}\s*[-–.]?\s*(?:modda|модда|статья)|(?:modda|статья)\s*\d{1,4})/i.test(txt)) continue;
@@ -397,13 +416,13 @@ async function getLexuzEvidence(question) {
 }
 
 async function callAI(question, lang = "uz", context = "") {
-  if (!OPENROUTER_API_KEY) {
-    throw new Error(
-      "OPENROUTER_API_KEY topilmadi."
-    );
-  }
-
   lang = getLang(lang);
+  // If the external provider is not configured, the free-only experience
+  // still points users to official legal texts without inventing legal advice.
+  if (!OPENROUTER_API_KEY) {
+    if (aiCost.freeOnly()) return aiCost.offlineAnswer(question,lang,"missing_key");
+    throw new Error("OPENROUTER_API_KEY topilmadi.");
+  }
 
   const lexEvidence = await getLexuzEvidence(question + " " + context.slice(0, 400));
   const courtEvidence = require("./court-practice-reasoning").evidence(question + " " + context.slice(0, 1200));
@@ -540,8 +559,9 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   ];
   let response, data;
   let usedFreeFallback = false;
+  let primaryCreditsExhausted = false;
   try {
-    for (const model of [...new Set([AI_MODEL, "openrouter/free"])]) {
+    for (const model of aiCost.models()) {
       response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         signal: controller.signal,
@@ -557,6 +577,17 @@ Use only provisions actually visible in these excerpts for precise article-numbe
       catch (_) { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
       if (response.ok) {
         usedFreeFallback = model === "openrouter/free" && AI_MODEL !== model;
+        // A 200 response with no actual text is not an AI success.
+        // When the paid model first returned 402, report the real billing
+        // cause rather than hiding it behind a generic empty-answer error.
+        const reply = data?.choices?.[0]?.message?.content;
+        const hasText = typeof reply === "string"
+          ? reply.trim().length > 0
+          : Array.isArray(reply) && reply.some(part => typeof part?.text === "string" && part.text.trim());
+        if (!hasText) {
+          if (primaryCreditsExhausted) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
+          throw new Error("OPENROUTER_EMPTY_RESPONSE");
+        }
         break;
       }
       const metadata = data?.error?.metadata || {};
@@ -564,21 +595,35 @@ Use only provisions actually visible in these excerpts for precise article-numbe
         metadata.limit_source || "unspecified", model === "openrouter/free" ? "free_fallback" : "primary");
       // Retry only if primary failed because of credit/budget restriction.
       // Other errors are surfaced rather than silently changing models.
-      if (response.status === 402 && model !== "openrouter/free" && AI_MODEL !== "openrouter/free") continue;
+      if (response.status === 402 && model !== "openrouter/free" && AI_MODEL !== "openrouter/free") {
+        primaryCreditsExhausted = true;
+        continue;
+      }
       if (response.status === 402) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
       if (response.status === 401) throw new Error("OPENROUTER_AUTH_FAILED");
       if (response.status === 429) throw new Error("OPENROUTER_RATE_LIMIT");
       throw new Error("OPENROUTER_HTTP_" + response.status);
     }
   } catch (error) {
+    if (aiCost.freeOnly()) {
+      console.warn("QOMUS_FREE_AI_UNAVAILABLE", String(error?.message||"UNKNOWN").slice(0,90));
+      return aiCost.offlineAnswer(question,lang,"provider_unavailable");
+    }
     if (error?.name === "AbortError") throw new Error("OpenRouter javobi 55 soniyada kelmadi (timeout).");
     throw error;
   } finally {
     clearTimeout(timeout);
   }
-  if (!response?.ok) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
+  if (!response?.ok) {
+    if (aiCost.freeOnly()) return aiCost.offlineAnswer(question,lang,"provider_unavailable");
+    throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
+  }
   let content = data?.choices?.[0]?.message?.content;
-  if (!content) throw new Error("OpenRouter bo‘sh javob qaytardi.");
+  if (Array.isArray(content)) content = content.filter(part => typeof part?.text === "string").map(part => part.text).join("\n");
+  if (typeof content !== "string" || !content.trim()) {
+    if (aiCost.freeOnly()) return aiCost.offlineAnswer(question,lang,"empty_response");
+    throw new Error(primaryCreditsExhausted ? "OPENROUTER_CREDITS_EXHAUSTED" : "OPENROUTER_EMPTY_RESPONSE");
+  }
   // A fetched excerpt is evidence, NOT full article-by-article verification.
   // Always disclose whether live source material was actually available.
   const evidenceStatus = lexEvidence.verified
@@ -7272,7 +7317,9 @@ async function aiResultPage(
     );
 
 
-    answer = error?.message === "OPENROUTER_RATE_LIMIT" ? (lang === "uz" ? "OpenRouter bepul modelining so‘rov limiti tugagan (HTTP 429). Keyinroq urinib ko‘ring yoki hisobingizdagi limitni tekshiring." : lang === "ru" ? "Превышен лимит бесплатной модели OpenRouter (HTTP 429)." : "OpenRouter free model rate limit exceeded (HTTP 429).")
+    answer = error?.message === "OPENROUTER_EMPTY_RESPONSE"
+      ? (lang === "uz" ? "OpenRouter AI modeli bo‘sh javob qaytardi. Modelni va provayder holatini tekshiring." : lang === "ru" ? "Модель OpenRouter вернула пустой ответ. Проверьте модель и провайдера." : "OpenRouter returned an empty response. Check the model and provider.")
+      : error?.message === "OPENROUTER_RATE_LIMIT" ? (lang === "uz" ? "OpenRouter bepul modelining so‘rov limiti tugagan (HTTP 429). Keyinroq urinib ko‘ring yoki hisobingizdagi limitni tekshiring." : lang === "ru" ? "Превышен лимит бесплатной модели OpenRouter (HTTP 429)." : "OpenRouter free model rate limit exceeded (HTTP 429).")
       : error?.message === "OPENROUTER_AUTH_FAILED" ? (lang === "uz" ? "OpenRouter API kaliti noto‘g‘ri yoki bekor qilingan (HTTP 401)." : lang === "ru" ? "Ключ OpenRouter недействителен (HTTP 401)." : "OpenRouter API key invalid (HTTP 401).")
       : error?.message === "OPENROUTER_CREDITS_EXHAUSTED"
       ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Javob token limiti vaqtincha 450 ga tushirildi, lekin bu kredit tugagan bo‘lsa yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
