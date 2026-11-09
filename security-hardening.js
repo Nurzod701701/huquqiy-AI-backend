@@ -153,4 +153,27 @@ function guardSensitiveRequest(req, res) {
   return false;
 }
 
-module.exports = { applySecurityHeaders, guardSensitiveRequest, getLoginBlockSeconds, recordLoginFailure, clearLoginFailures };
+
+// Shared-DB mode is optional until its schema, role and secret are provisioned.
+// On database outage retain the safe process/disk limiter rather than fail open completely.
+const sharedLimiter=require("./shared-login-limiter");
+async function getEffectiveLoginBlockSeconds(kind,identity){
+  const local=getLoginBlockSeconds(kind,identity);
+  if(!sharedLimiter.enabled())return local;
+  try{return Math.max(local,await sharedLimiter.blockSeconds(kind,identity));}
+  catch(e){console.warn("QOMUS_AUTH_SHARED_LIMIT_READ_FAILED",e.code||"DB_ERROR");return local;}
+}
+async function recordEffectiveLoginFailure(kind,identity){
+  recordLoginFailure(kind,identity);
+  if(!sharedLimiter.enabled())return;
+  try{await sharedLimiter.failure(kind,identity);}
+  catch(e){console.warn("QOMUS_AUTH_SHARED_LIMIT_WRITE_FAILED",e.code||"DB_ERROR");}
+}
+async function clearEffectiveLoginFailures(kind,identity){
+  clearLoginFailures(kind,identity);
+  if(!sharedLimiter.enabled())return;
+  try{await sharedLimiter.clear(kind,identity);}
+  catch(e){console.warn("QOMUS_AUTH_SHARED_LIMIT_CLEAR_FAILED",e.code||"DB_ERROR");}
+}
+
+module.exports = { applySecurityHeaders, guardSensitiveRequest, getLoginBlockSeconds, recordLoginFailure, clearLoginFailures, getEffectiveLoginBlockSeconds, recordEffectiveLoginFailure, clearEffectiveLoginFailures };
