@@ -69,8 +69,11 @@ const AUTH_POST_ROUTES = new Set([
 function applySecurityHeaders(req, res) {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
-  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
+  // Never forward password reset/session URL paths as referrers to external resources.
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   // CSP is not enabled here: existing QOMUS pages contain inline JS/CSS.
   // Add a nonce-based CSP only after migrating and testing those assets.
   if (req.headers["x-forwarded-proto"] === "https" || req.socket.encrypted) {
