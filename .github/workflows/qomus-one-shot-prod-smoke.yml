@@ -1,0 +1,37 @@
+name: QOMUS one-time production security smoke
+on:
+  push:
+    branches:
+      - qa/account-resend-security-20261109
+permissions:
+  contents: read
+jobs:
+  synthetic-invalid-login:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: One safe synthetic user login failure; no real credentials or mutations
+        shell: bash
+        run: |
+          node <<'NODE'
+          const target = 'https://verius.uz/login';
+          const email = 'qomus-security-smoke-20261109@example.invalid';
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+          try {
+            const response = await fetch(target, {
+              method: 'POST',
+              redirect: 'manual',
+              headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                'origin': 'https://verius.uz'
+              },
+              body: new URLSearchParams({email,password:'synthetic-invalid-never-real'}),
+              signal: controller.signal
+            });
+            console.log('QOMUS_PROD_SMOKE_HTTP_STATUS', response.status);
+            if (response.status !== 401) process.exitCode = 1;
+          } finally {
+            clearTimeout(timeout);
+          }
+          NODE
