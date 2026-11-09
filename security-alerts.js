@@ -1,5 +1,6 @@
 "use strict";
 const crypto = require("node:crypto");
+const {saveEvent,readRecentEvents} = require("./security-event-store");
 
 // Security alerts never contain passwords, tokens, document text or full IP addresses.
 // Configure SECURITY_ALERT_WEBHOOK only with a trusted, private HTTPS receiver.
@@ -28,6 +29,7 @@ function alertEvent(category, address, path) {
   // Persistent application logs can feed Render alert integrations.
   // No raw addresses or user secrets are ever logged.
   const safeEvent = {category,sourceId:id,path:safePath,at:new Date(now).toISOString()};
+  saveEvent(safeEvent);
   recentEvents.unshift(safeEvent);
   if (recentEvents.length > MAX_RECENT_EVENTS) recentEvents.length = MAX_RECENT_EVENTS;
   console.warn("QOMUS_SECURITY_EVENT", JSON.stringify(safeEvent));
@@ -69,7 +71,8 @@ function alertEvent(category, address, path) {
 
 function getRecentSecurityEvents() {
   // Ephemeral process-local events only, never raw network addresses or credentials.
-  return recentEvents.map(e => ({...e}));
+  const persisted = readRecentEvents(MAX_RECENT_EVENTS);
+  return persisted.length ? persisted : recentEvents.map(e => ({...e}));
 }
 
 module.exports = { alertEvent, getRecentSecurityEvents };
