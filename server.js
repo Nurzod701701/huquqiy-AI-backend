@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const AI_MODEL = process.env.AI_MODEL || "openrouter/free";
+const aiCost = require("./ai-cost-control");
 
 
 // ======================================================
@@ -397,13 +398,13 @@ async function getLexuzEvidence(question) {
 }
 
 async function callAI(question, lang = "uz", context = "") {
-  if (!OPENROUTER_API_KEY) {
-    throw new Error(
-      "OPENROUTER_API_KEY topilmadi."
-    );
-  }
-
   lang = getLang(lang);
+  // If the external provider is not configured, the free-only experience
+  // still points users to official legal texts without inventing legal advice.
+  if (!OPENROUTER_API_KEY) {
+    if (aiCost.freeOnly()) return aiCost.offlineAnswer(question,lang,"missing_key");
+    throw new Error("OPENROUTER_API_KEY topilmadi.");
+  }
 
   const lexEvidence = await getLexuzEvidence(question + " " + context.slice(0, 400));
   const courtEvidence = require("./court-practice-reasoning").evidence(question + " " + context.slice(0, 1200));
@@ -542,7 +543,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   let usedFreeFallback = false;
   let primaryCreditsExhausted = false;
   try {
-    for (const model of [...new Set([AI_MODEL, "openrouter/free"])]) {
+    for (const model of aiCost.models()) {
       response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         signal: controller.signal,
@@ -586,15 +587,25 @@ Use only provisions actually visible in these excerpts for precise article-numbe
       throw new Error("OPENROUTER_HTTP_" + response.status);
     }
   } catch (error) {
+    if (aiCost.freeOnly()) {
+      console.warn("QOMUS_FREE_AI_UNAVAILABLE", String(error?.message||"UNKNOWN").slice(0,90));
+      return aiCost.offlineAnswer(question,lang,"provider_unavailable");
+    }
     if (error?.name === "AbortError") throw new Error("OpenRouter javobi 55 soniyada kelmadi (timeout).");
     throw error;
   } finally {
     clearTimeout(timeout);
   }
-  if (!response?.ok) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
+  if (!response?.ok) {
+    if (aiCost.freeOnly()) return aiCost.offlineAnswer(question,lang,"provider_unavailable");
+    throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
+  }
   let content = data?.choices?.[0]?.message?.content;
   if (Array.isArray(content)) content = content.filter(part => typeof part?.text === "string").map(part => part.text).join("\n");
-  if (typeof content !== "string" || !content.trim()) throw new Error(primaryCreditsExhausted ? "OPENROUTER_CREDITS_EXHAUSTED" : "OPENROUTER_EMPTY_RESPONSE");
+  if (typeof content !== "string" || !content.trim()) {
+    if (aiCost.freeOnly()) return aiCost.offlineAnswer(question,lang,"empty_response");
+    throw new Error(primaryCreditsExhausted ? "OPENROUTER_CREDITS_EXHAUSTED" : "OPENROUTER_EMPTY_RESPONSE");
+  }
   // A fetched excerpt is evidence, NOT full article-by-article verification.
   // Always disclose whether live source material was actually available.
   const evidenceStatus = lexEvidence.verified
