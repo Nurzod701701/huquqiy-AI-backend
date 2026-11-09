@@ -24,11 +24,11 @@ function sanitizeText(value) {return redactForAI(String(value||"")).text;}
 function containsUnreviewedSecret(text) {
  const value=String(text||"");
  // Allow separators commonly pasted from forms, including line breaks and em dashes.
- if(/\b(?:api[\\s_-]*key|authorization|private[\\s_-]*key|password|passphrase|parol|cvv|cvc|pin[\\s_-]*code|secret[\\s_-]*key|access[\\s_-]*token|refresh[\\s_-]*token)\\b[\\s:：=–—-]*(?:bearer\\s+)?\\S{3,}/iu.test(value))return true;
+ if(/\b(?:api[\s_-]*key|authorization|private[\s_-]*key|password|passphrase|parol|cvv|cvc|pin[\s_-]*code|secret[\s_-]*key|access[\s_-]*token|refresh[\s_-]*token)\b[\s:：=–—-]*(?:bearer\s+)?\S{3,}/iu.test(value))return true;
  // Credential formats may appear without a descriptive label.
  if(/\b(?:sk-or-v1-[a-f0-9]{20,}|github_pat_[a-zA-Z0-9_]{20,}|gh[pousr]_[a-zA-Z0-9]{20,}|AKIA[0-9A-Z]{16})\b/.test(value))return true;
  // JWT strings can carry authorization and user data even without a label.
- if(/\beyJ[A-Za-z0-9_-]{16,}\\.eyJ[A-Za-z0-9_-]{16,}\\.[A-Za-z0-9_-]{8,}\b/.test(value))return true;
+ if(/\beyJ[A-Za-z0-9_-]{16,}\.eyJ[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{8,}\b/.test(value))return true;
  return false;
 }
 function auditOutbound(messages) {
