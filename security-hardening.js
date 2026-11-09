@@ -2,6 +2,25 @@
 
 // QOMUS security pilot. Protects auth endpoints without storing any credentials.
 const { alertEvent } = require("./security-alerts");
+const crypto = require("node:crypto");
+const loginFailures = new Map();
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+function identityKey(kind, identity) {
+  return kind + ":" + crypto.createHash("sha256").update(String(identity||"").trim().toLowerCase()).digest("hex");
+}
+function getLoginBlockSeconds(kind, identity) {
+  const item = loginFailures.get(identityKey(kind, identity));
+  if (!item || item.expiresAt <= Date.now()) return 0;
+  return item.count >= (kind === "admin" ? 6 : 8) ? Math.ceil((item.expiresAt - Date.now()) / 1000) : 0;
+}
+function recordLoginFailure(kind, identity) {
+  const key=identityKey(kind,identity), now=Date.now();
+  if (loginFailures.size > 20000) for (const [k,v] of loginFailures) if(v.expiresAt<=now) loginFailures.delete(k);
+  if (loginFailures.size > 20000) loginFailures.clear();
+  const last=loginFailures.get(key);
+  loginFailures.set(key,{count:(last&&last.expiresAt>now?last.count:0)+1,expiresAt:last&&last.expiresAt>now?last.expiresAt:now+LOGIN_WINDOW_MS});
+}
+function clearLoginFailures(kind,identity) { loginFailures.delete(identityKey(kind,identity)); }
 const ATTEMPT_WINDOW_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 12;
 const MAX_TRACKED_ADDRESSES = 20000;
@@ -98,4 +117,4 @@ function guardSensitiveRequest(req, res) {
   return false;
 }
 
-module.exports = { applySecurityHeaders, guardSensitiveRequest };
+module.exports = { applySecurityHeaders, guardSensitiveRequest, getLoginBlockSeconds, recordLoginFailure, clearLoginFailures };
