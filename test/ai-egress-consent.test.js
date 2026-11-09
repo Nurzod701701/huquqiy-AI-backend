@@ -21,6 +21,22 @@ test("external egress rejects unverified media and high-risk secrets",()=>{
  const checked=auditOutbound([{role:"user",content:"AB1234567 is my passport"}]);
  assert.doesNotMatch(checked[0].content,/AB1234567/);
 });
+test("AI egress rejects credentials in JSON, bearer headers, provider tokens and URLs",()=>{
+ const secrets=[
+  '{"api_key":"secret-value-123456"}',
+  '{"refresh_token":"refresh-value-123456"}',
+  '{"password":"my-private-password"}',
+  "Authorization: Bearer abcdef1234567890.abcdef1234567890",
+  "ghp_abcdefghijklmnopqrstuvwxyz123456",
+  "sk-abcdefghijklmnopqrstuvwxyz123456",
+  "https://example.invalid/?access_token=abcdefghijklmnop",
+  "https://example.invalid/?api_key=abcdefghijklmnop"
+ ];
+ for(const secret of secrets)
+   assert.throws(()=>auditOutbound([{role:"user",content:secret}]),/AI_PRIVACY_UNVERIFIED_CONTENT/,secret.slice(0,25));
+ const normal=auditOutbound([{role:"user",content:"Mehnat kodeksi 123-modda bo'yicha yordam bering."}]);
+ assert.match(normal[0].content,/Mehnat kodeksi/);
+});
 test("AI and document review require signed consent before any external AI call", {timeout:20000},async()=>{
  const port=39000+Math.floor(crypto.randomInt(1,2000));
  const child=spawn(process.execPath,["server.js"],{cwd:process.cwd(),env:{...process.env,PORT:String(port),NODE_ENV:"test",OPENROUTER_API_KEY:"",ACCOUNT_DATA_FILE:"/tmp/qomus-consent-qa-nonexistent-"+port+".json"},stdio:"ignore"});
