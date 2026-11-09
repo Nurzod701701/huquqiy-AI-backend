@@ -48,6 +48,20 @@ test("AI and document review require signed consent before any external AI call"
   assert.equal(tampered.status,403);
   const approved=await post("/ai-result",{question:safe,aiConsent:"yes",aiConsentToken:token});
   assert.equal(approved.status,200,"signed consent should reach the existing AI response handler");
+  // Additional AI forms must not bypass explicit signed approval.
+  for(const route of ["/questionnaire-result","/claim-result","/business-result","/employment-result"]) {
+    const draft={issue:"Mehnat masalasi",facts:"Passport AA1234567",mode:"analysis"};
+    const first=await post(route,draft);
+    assert.equal(first.status,200,"preview on "+route);
+    const firstHtml=await first.text();
+    assert.match(firstHtml,/aiConsentToken/,"signed consent required "+route);
+    assert.doesNotMatch(firstHtml,/AA1234567/,"raw PII absent from preview "+route);
+    const signed=firstHtml.match(/name="aiConsentToken" value="([^"]+)"/)?.[1];
+    const reject=await post(route,{issue:draft.issue,facts:sanitizeText(draft.facts),mode:draft.mode,aiConsent:"yes",aiConsentToken:"invalid"});
+    assert.equal(reject.status,403,"tampered consent rejected "+route);
+    const approved=await post(route,{issue:draft.issue,facts:sanitizeText(draft.facts),mode:draft.mode,aiConsent:"yes",aiConsentToken:signed});
+    assert.equal(approved.status,200,"approved request forwarded "+route);
+  }
   const reviewDirect=await post("/legal-review-result",{documentText:"A".repeat(100)});
   assert.equal(reviewDirect.status,403);
   const docPayload={documentText:"Shartnoma. "+"Mazmun ".repeat(20)+" Passport AA1234567",documentType:"contract",legalArea:"employment",extraContext:""};
