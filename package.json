@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node server.js",
     "check": "node --check server.js",
-    "test:security": "node --test test/security-hardening.test.js test/account-registration-validation.test.js test/account-data-integrity.test.js test/admin-security-dashboard.test.js test/security-account-resend-qa.test.js test/security-durable-audit-throttle.test.js test/security-alert-mail.test.js test/login-durable-restart.test.js test/ai-privacy-five-fixes.test.js test/ai-egress-consent.test.js",
+    "test:security": "node --test test/security-hardening.test.js test/account-registration-validation.test.js test/account-data-integrity.test.js test/admin-security-dashboard.test.js test/security-account-resend-qa.test.js test/security-durable-audit-throttle.test.js test/security-alert-mail.test.js test/login-durable-restart.test.js test/ai-privacy-five-fixes.test.js test/ai-egress-consent.test.js test/lexuz-fetch-security.test.js",
     "test:migration": "node --test test/neon-migration.test.js",
     "test:citizens": "node --test test/citizen-parity.test.js"
   },
