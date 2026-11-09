@@ -79,7 +79,7 @@ function guardSensitiveRequest(req, res) {
     return true;
   }
   // Browser forms that modify an authenticated account must originate on QOMUS.
-  if ((/^\/account(?:\/|$)/.test(route) || route === "/admin/user-status" || route==="/advokat-pro/workspace") &&
+  if ((/^\/account(?:\/|$)/.test(route) || /^\/admin(?:\/|$)/.test(route) && route !== "/admin/login" || route==="/advokat-pro/workspace") &&
       /(?:^|;\s*)hq_session=/.test(String(req.headers.cookie || "")) && !sameOrigin(req)) {
     alertEvent("INVALID_ORIGIN", addressKey(req), route);
     deny(res, 403, "Request origin could not be verified.");
