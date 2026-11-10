@@ -6,6 +6,7 @@ on:
       - 'advokat-pro.js'
       - 'test/functional-calculators-regression.test.js'
       - 'test/advocate-document-export-regression.test.js'
+      - 'test/functional-http-smoke.test.js'
       - 'package.json'
       - '.github/workflows/qomus-functional-qa.yml'
   workflow_dispatch:
@@ -23,3 +24,5 @@ jobs:
       - run: node --check server.js
       - run: node --check advokat-pro.js
       - run: npm run test:functional-qa
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run test:functional-http
