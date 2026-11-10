@@ -14320,6 +14320,11 @@ const server =
           const form=await readForm(req);
           const claimText=String(form.claim_text||"").trim();
           if(!claimText || claimText.length>150000){res.writeHead(400,{"Content-Type":"text/plain; charset=utf-8"});return res.end("Da’vo arizasi matni topilmadi yoki juda katta.");}
+          // Enforce export completeness on the server as well as in browser UI.
+          if(/\[(?:mijoz|taraf|adresat|faktlar|talab|sana|manzil|tekshirilgan normalar|to‘ldiriladi|to‘ldiring)\]/iu.test(claimText)){
+            res.writeHead(422,{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store"});
+            return res.end("Hujjatda to‘ldirilmagan majburiy rekvizit mavjud.");
+          }
           try{
             const buffer=await claimDocxBuffer(claimText);
             res.writeHead(200,{"Content-Type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document","Content-Disposition":"attachment; filename=da_vo_arizasi.docx","Content-Length":buffer.length,"Cache-Control":"no-store"});
