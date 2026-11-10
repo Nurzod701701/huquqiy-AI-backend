@@ -141,7 +141,10 @@ function sendHtml(res, html, status = 200) {
   // Design-only layer: Academy-inspired QOMUS theme, isolated on the QA branch.
   // Keep existing pages, navigation, handlers, and data transformations untouched.
   if (!resultHtml.includes('id="qomus-academy-liquid-glass"')) {
-    resultHtml = appendBeforeFinalBody(resultHtml, QOMUS_ACADEMY_THEME);
+    const headEnd = resultHtml.toLowerCase().indexOf("</head>");
+    resultHtml = headEnd >= 0
+      ? resultHtml.slice(0, headEnd) + QOMUS_ACADEMY_THEME + resultHtml.slice(headEnd)
+      : appendBeforeFinalBody(resultHtml, QOMUS_ACADEMY_THEME);
   }
   res.end(resultHtml);
 }
