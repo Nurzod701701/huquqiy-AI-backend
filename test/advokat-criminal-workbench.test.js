@@ -42,7 +42,7 @@ for(const lang of ["uz","ru","en"]){
   const url="/advokat-pro/criminal/workbench?lang="+lang;
   assert.ok(adv.includes('href="'+url+'"'));
   assert.ok(questions.includes('href="'+url+'"'));
-  assert.ok(citizen.includes('href="/criminal?lang='+lang+'"')===false || citizen.includes('href="/criminal?lang='+lang+'"'));
+  assert.ok(!citizen.includes('href="/advokat-pro/criminal/workbench?lang='+lang+'"'));
   assert.ok(!citizen.includes("advokat-criminal-workbench"));
  });
 }
