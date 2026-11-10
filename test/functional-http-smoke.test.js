@@ -40,6 +40,8 @@ test("QOMUS HTTP functional smoke: navigation, anonymous protection and DOCX dow
   calculate();
   assert.match(values.alimentResult.textContent,/2000000/,"three children at 50% of 4m");
   assert.match(values.alimentResult.textContent,/24000000/,"twelve-month illustrative projection");
+  values.childrenCount.value="2";values.alimentMonths.value="1";calculate();
+  assert.match(values.alimentResult.textContent,/1333333/,"two children at one third of 4m");
   values.childrenCount.value="0";calculate();
   assert.match(values.alimentResult.textContent,/to‘g‘ri kiriting/,"invalid child count rejected");
 
@@ -55,5 +57,7 @@ test("QOMUS HTTP functional smoke: navigation, anonymous protection and DOCX dow
   assert.equal(bytes[1],0x4b,"DOCX zip K");
   const invalid=await fetch(base+"/claim-download",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Origin":base},body:new URLSearchParams({claim_text:""})});
   assert.equal(invalid.status,400,"empty Word document should be rejected");
+  const incomplete=await fetch(base+"/claim-download",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Origin":base},body:new URLSearchParams({claim_text:"Da’vo arizasi — [manzil] \nTalab mavjud"})});
+  assert.equal(incomplete.status,422,"placeholder document must never export");
  }finally{child.kill("SIGTERM")}
 });
