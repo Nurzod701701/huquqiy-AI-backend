@@ -30,6 +30,12 @@ test("missing case identifiers or lawyer identity prevent generation",()=>{
  const r=draftDocument({facts:"Hodisaga oid savollar"});
  assert.equal(r.ok,false);assert.ok(r.missing.includes("authority"));
 });
+test("future document date is flagged for counsel review",()=>{
+ const r=draftDocument({...sample,date:"2099-12-06"});
+ assert.equal(r.ok,true);
+ assert.equal(r.readyForSignature,false);
+ assert.ok(r.warnings.some(w=>w.includes("kelajakda")));
+});
 test("unsigned and incomplete case does not claim court readiness",()=>{
  const r=draftDocument({type:"admissibility",authority:"Sud",lawyer:"Advokat",caseReference:"QA",facts:"Asoslar",evidence:"Dalil",relevance:"Ahamiyati",action:"So‘rov"});
  assert.ok(r.ok);assert.equal(r.readyForSignature,false);
