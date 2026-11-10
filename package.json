@@ -13,7 +13,8 @@
     "test:citizens": "node --test test/citizen-parity.test.js",
     "test:calculators": "node --test test/functional-calculators-regression.test.js",
     "test:advocate": "node --test test/advocate-document-export-regression.test.js",
-    "test:functional-qa": "node --test test/functional-calculators-regression.test.js test/advocate-document-export-regression.test.js"
+    "test:functional-qa": "node --test test/functional-calculators-regression.test.js test/advocate-document-export-regression.test.js",
+    "test:functional-http": "node --test test/functional-http-smoke.test.js"
   },
   "engines": {
     "node": ">=20"
