@@ -15,7 +15,7 @@ function draftDocument(raw){
  if(missing.length)return {ok:false,missing};
  const date=normalize(f.date)||"________________";
  const lines=[
-  normalize(f.authority)+"ga",
+  normalize(f.authority),
   "Himoyachi (advokat): "+normalize(f.lawyer),
   "Ishning shartli raqami / identifikatori: "+normalize(f.caseReference),
   "Tegishli shaxsning protsessual maqomi: "+(normalize(f.proceduralRole)||"aniqlashtirilishi kerak"),
