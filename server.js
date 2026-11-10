@@ -14223,6 +14223,14 @@ const server =
           return sendHtml(res, require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role));
         }
 
+        // Deterministic evidence document review and browser-local motion drafting.
+        if(req.method === "GET" && pathname === "/advokat-pro/criminal/evidence-review"){
+          return sendHtml(res, require("./advokat-evidence-review").evidenceReviewPage(lang));
+        }
+        if(req.method === "GET" && pathname === "/advokat-pro/criminal/draft"){
+          return sendHtml(res, require("./advokat-criminal-draft-page").criminalDraftPage(lang));
+        }
+
         // Professional criminal-case checklist workspace; no client data stored.
         if(req.method === "GET" && pathname === "/advokat-pro/criminal/workbench"){
           return sendHtml(res, require("./advokat-criminal-workbench").advocateCriminalWorkbench(lang));
