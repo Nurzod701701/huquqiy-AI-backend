@@ -3145,6 +3145,11 @@ body{
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 
+.veriusSkipLink{position:fixed;top:-80px;left:16px;z-index:9999;padding:12px 16px;color:#fff;background:#071f36;border:2px solid #c9a86a;border-radius:10px}
+.veriusSkipLink:focus{top:12px}
+html{scroll-padding-top:80px}
+:where(a,button,input,select,textarea,summary):focus-visible{outline:3px solid #c9a86a;outline-offset:3px}
+@media(max-width:760px){:where(.mobileNavPanel a,.mobileTopLanguages a,.veriusMobileServices>summary){min-height:44px;font-size:14px}}
 /* VERIUS DESIGN HARMONY V2: classic editorial elegance + contemporary readability.
    Preserves existing routes, content, layout and established navy/gold colors. */
 :root{
@@ -5651,8 +5656,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "VERIUS", des
     ["family", "/family", "⚖", lang === "ru" ? "Семейное право" : lang === "en" ? "Family law" : "Oila huquqi"],
     ["employment", "/employment", "▤", lang === "ru" ? "Трудовое право" : lang === "en" ? "Employment law" : "Mehnat huquqi"],
     ["business", "/business", "◇", lang === "ru" ? "Бизнес-право" : lang === "en" ? "Business law" : "Biznes huquqi"],
-    ["sources", "/sources", "§", tr(lang, "sources")],
-    ["court", "/court", "⌖", tr(lang, "court")]
+    ["sources", "/sources", "§", tr(lang, "sources")]
   ];
 
   const sideLinks = items.map(([key, href, icon, label]) => `
@@ -5774,11 +5778,13 @@ function page({ lang = "uz", title = "VERIUS", content = "" } = {}) {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#06111f">
   <title>${esc(title)}</title>
+  <meta name="description" content="${esc(lang==="ru"?"VERIUS — цифровые правовые инструменты для граждан и адвокатов.":lang==="en"?"VERIUS — digital legal tools for citizens and advocates.":"VERIUS — fuqarolar va advokatlar uchun huquqiy ma’lumot va raqamli xizmatlar.")}">
   <style>${CSS}${CSS_APP}</style>
 </head>
 <body>
+  <a class="veriusSkipLink" href="#verius-main">${lang==="ru"?"К основному содержимому":lang==="en"?"Skip to main content":"Asosiy kontentga o‘tish"}</a>
   ${navigation(lang)}
-  <main>${content || ""}</main>
+  <main id="verius-main">${content || ""}</main>
   ${footer(lang)}
 </body>
 </html>`;
