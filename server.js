@@ -13281,15 +13281,15 @@ try { nodemailer = require("nodemailer"); } catch (_) {}
 // Render: /var/data faqat shu manzilga Persistent Disk ulangan bo'lsa yoziladi.
 // ACCOUNT_DATA_FILE ni Render Environment'da /var/data/... qilib belgilashdan oldin diskni ulang.
 // Disk bo'lmasa /tmp ishlaydi, ammo restart/deploy paytida ma'lumotlar yo'qolishi mumkin.
-const VERIUS_PG_ENABLED = process.env.VERIUS_ACCOUNT_STORE === "postgres";
-const accountPgStore = VERIUS_PG_ENABLED ? require("./account-pg-store").createAccountPgStore() : null;
-const ACCOUNT_DATA_FILE_CONFIGURED = process.env.ACCOUNT_DATA_FILE || path.join(process.cwd(), "VERIUS-data.json");
+const QOMUS_PG_ENABLED = process.env.QOMUS_ACCOUNT_STORE === "postgres";
+const accountPgStore = QOMUS_PG_ENABLED ? require("./account-pg-store").createAccountPgStore() : null;
+const ACCOUNT_DATA_FILE_CONFIGURED = process.env.ACCOUNT_DATA_FILE || path.join(process.cwd(), "qomus-data.json");
 let ACCOUNT_DATA_FILE = ACCOUNT_DATA_FILE_CONFIGURED;
-if(!VERIUS_PG_ENABLED) try {
+if(!QOMUS_PG_ENABLED) try {
   fs.mkdirSync(path.dirname(ACCOUNT_DATA_FILE), {recursive:true});
   fs.accessSync(path.dirname(ACCOUNT_DATA_FILE), fs.constants.W_OK);
 } catch (err) {
-  ACCOUNT_DATA_FILE = path.join(require('os').tmpdir(), 'VERIUS-data.json');
+  ACCOUNT_DATA_FILE = path.join(require('os').tmpdir(), 'qomus-data.json');
   console.error('ACCOUNT STORAGE WARNING: ' + ACCOUNT_DATA_FILE_CONFIGURED + ' yozib bo‘lmaydi (' + err.code + '). Vaqtincha ' + ACCOUNT_DATA_FILE + ' ishlatiladi. Doimiy saqlash uchun Render Persistent Disk yoki tashqi DB sozlang!');
 }
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
@@ -13705,7 +13705,7 @@ function adminSecurityPage(lang,user,db){
     return '<tr><td>'+esc(target.firstName+" "+target.lastName)+'</td><td>'+esc(target.role)+'</td><td>'+count+'</td><td>'+button+'</td></tr>';
   }).join("");
   const alertsReady=!!((process.env.SECURITY_ALERT_EMAIL&&process.env.EMAIL_FROM&&process.env.RESEND_API_KEY) || process.env.SECURITY_ALERT_WEBHOOK);
-  const authLimit=process.env.VERIUS_PILOT_AUTH_LIMIT==="enabled";
+  const authLimit=process.env.QOMUS_PILOT_AUTH_LIMIT==="enabled";
   const eventRows=events.map(e=>'<tr><td>'+esc(e.at)+'</td><td><b>'+esc(e.category)+'</b></td><td>'+esc(e.path)+'</td><td><code>'+esc(e.sourceId)+'</code></td></tr>').join("");
   const auditRows=db.auditLogs.filter(x=>["login","admin_login","email_verified","password_reset_requested","password_reset_completed","password_changed","admin_user_status_changed"].includes(x.action)).slice(0,35).map(x=>'<tr><td>'+esc(x.createdAt)+'</td><td>'+esc(x.action)+'</td><td>'+esc(x.userId||"system")+'</td></tr>').join("");
   const card=(name,value,note)=>'<div class="accountStat"><span>'+name+'</span><strong>'+value+'</strong><small class="accountMuted">'+note+'</small></div>';
@@ -14209,7 +14209,7 @@ const server =
             accountAudit(db,auth.user.id,"advokat_workspace_saved",{cases:workspace.cases.length,tasks:workspace.tasks.length});
             try{await accountSaveDb(db);}
             catch(err){
-              if(err.message==="VERIUS_PG_WRITE_CONFLICT")return sendJson(res,{ok:false,error:"WRITE_CONFLICT"},409);
+              if(err.message==="QOMUS_PG_WRITE_CONFLICT")return sendJson(res,{ok:false,error:"WRITE_CONFLICT"},409);
               throw err;
             }
             return sendJson(res,{ok:true,cases:workspace.cases.length,tasks:workspace.tasks.length});
@@ -14657,7 +14657,7 @@ if(accountPgStore){
       await accountPgStore.load();
       console.log("VERIUS_POSTGRES_READY");
       startServer();
-      if(process.env.VERIUS_BACKUP_ENABLED==="yes"){
+      if(process.env.QOMUS_BACKUP_ENABLED==="yes"){
         require("./backup/neon-daily").startDailyBackup();
       }
     }catch(err){
