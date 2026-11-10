@@ -28,6 +28,7 @@ function validateDraft(f){
  if(!normalize(f?.signature))warnings.push("Imzo qo‘yilmagan — elektron shablon hali tasdiqlanmagan.");
  if(!normalize(f?.date))warnings.push("Hujjat sanasi ko‘rsatilmagan.");
  if(normalize(f?.date) && !/^\d{4}-\d{2}-\d{2}$/.test(normalize(f.date)))warnings.push("Sana YYYY-MM-DD shaklida qayta tekshirilishi kerak.");
+ if(/^\d{4}-\d{2}-\d{2}$/.test(normalize(f?.date)) && normalize(f.date)>new Date().toISOString().slice(0,10))warnings.push("Hujjat sanasi kelajakda: topshirish vaqtiga mosligini tekshiring.");
  return {missing,warnings};
 }
 function draftDocument(raw){
@@ -62,7 +63,7 @@ function draftDocument(raw){
   "",
   "HUQUQIY ASOS",
   "O‘zbekiston Respublikasi Jinoyat-protsessual kodeksining "+spec.refs.map(n=>n+"-moddasi").join(", ")+" bilan tartibga solinadigan himoyachi huquqlari, dalillarni to‘plash va baholash qoidalari inobatga olinishi so‘raladi.",
-  "JPK 95¹-moddasi faqat dalilning maqbul emasligiga oid qonuniy asoslar aniq ko‘rsatilgan va tekshirilgan holatlarda qo‘llanishi mumkin.",
+  ...(kind==="admissibility"?["JPK 95¹-moddasi faqat dalilning maqbul emasligiga oid qonuniy asoslar aniq ko‘rsatilgan va tekshirilgan holatlarda qo‘llanishi mumkin."]:[]),
   ...(kind==="additional_check"?["JPK 172-moddasiga ko‘ra maxsus bilim zarurati mavjud bo‘lsa ekspertiza tayinlash masalasi ko‘rib chiqiladi."]:[]),
   "",
   "YUQORIDAGILARGA ASOSAN SO‘RAYMAN:",
