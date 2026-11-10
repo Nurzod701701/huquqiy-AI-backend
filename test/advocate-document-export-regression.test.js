@@ -11,3 +11,11 @@ test("export blocks missing destination and legal reference placeholders",()=>{
  assert.match(source,/if\(!documentReady\(\)\)return/);
  assert.match(source,/form\.action="\/claim-download"/);
 });
+
+test("court-practice empty results offer only official report fallback",()=>{
+ const court=fs.readFileSync(path.join(__dirname,"..","advokat-court-practice.js"),"utf8");
+ assert.match(court,/data\.sourceUrl/);
+ assert.match(court,/u\.hostname===\\?"public\.sud\.uz\\?"/);
+ assert.match(court,/u\.pathname\.startsWith\(\\?"\/report\/\\?"\)/);
+ assert.match(court,/Rasmiy portaldagi ushbu toifani ochish/);
+});
