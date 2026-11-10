@@ -51,7 +51,7 @@ function alertEvent(category, address, path) {
     target = "https://api.resend.com/emails";
     headers.Authorization = "Bearer " + process.env.RESEND_API_KEY;
     payload = {from:alertFrom,to:[process.env.SECURITY_ALERT_EMAIL],
-      subject:"QOMUS xavfsizlik ogohlantirishi: " + category,
+      subject:"VERIUS xavfsizlik ogohlantirishi: " + category,
       text:"Event: " + category + "\nPath: " + safePath + "\nAnonymous source: " + id + "\nTime: " + new Date(now).toISOString()};
   }
   if (!target) return;

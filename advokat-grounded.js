@@ -1,12 +1,12 @@
 "use strict";
-/* QOMUS grounded-source comparison pilot. Runs in the browser; does not send case data. */
+/* VERIUS grounded-source comparison pilot. Runs in the browser; does not send case data. */
 module.exports=function(lang){
   lang=["uz","ru","en"].includes(lang)?lang:"uz";
   const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const ui={
-    uz:["Manbali huquqiy tahlil","Ish faktlarini LexUZ normasi va ochiq sud qarori matni bilan solishtirish","Vaziyat (shaxsiy maʼlumotlarsiz)","LexUZ hujjat havolasi","LexUZ normasidan parcha","Sud qarori havolasi","Sud qarori matnidan parcha","Tahlil qilish","Tozalash","Dastlabki tahlil","Nusxalash","Matn va havolalar faqat shu brauzerda qayta ishlanadi. Maxfiy maʼlumot kiritmang.","QOMUS Advokat PRO"],
-    ru:["Анализ с источниками","Сопоставление фактов с текстом LexUZ и судебного решения","Обезличенные факты","Ссылка на LexUZ","Фрагмент правовой нормы","Ссылка на судебное решение","Фрагмент судебного акта","Сопоставить","Очистить","Предварительный результат","Копировать","Все данные обрабатываются только в браузере. Не вводите конфиденциальную информацию.","QOMUS Адвокат PRO"],
-    en:["Source-based case comparison","Compare facts with LexUZ legislation and a public judgment","Anonymized case facts","LexUZ URL","Legal excerpt","Public judgment URL","Judgment excerpt","Compare","Clear","Preliminary report","Copy","Data is processed only in your browser. Do not enter confidential information.","QOMUS Advocate PRO"]
+    uz:["Manbali huquqiy tahlil","Ish faktlarini LexUZ normasi va ochiq sud qarori matni bilan solishtirish","Vaziyat (shaxsiy maʼlumotlarsiz)","LexUZ hujjat havolasi","LexUZ normasidan parcha","Sud qarori havolasi","Sud qarori matnidan parcha","Tahlil qilish","Tozalash","Dastlabki tahlil","Nusxalash","Matn va havolalar faqat shu brauzerda qayta ishlanadi. Maxfiy maʼlumot kiritmang.","VERIUS Advokat PRO"],
+    ru:["Анализ с источниками","Сопоставление фактов с текстом LexUZ и судебного решения","Обезличенные факты","Ссылка на LexUZ","Фрагмент правовой нормы","Ссылка на судебное решение","Фрагмент судебного акта","Сопоставить","Очистить","Предварительный результат","Копировать","Все данные обрабатываются только в браузере. Не вводите конфиденциальную информацию.","VERIUS Адвокат PRO"],
+    en:["Source-based case comparison","Compare facts with LexUZ legislation and a public judgment","Anonymized case facts","LexUZ URL","Legal excerpt","Public judgment URL","Judgment excerpt","Compare","Clear","Preliminary report","Copy","Data is processed only in your browser. Do not enter confidential information.","VERIUS Advocate PRO"]
   }[lang];
   const css=[
     "*{box-sizing:border-box}body{margin:0;color:#172b3e;background:#f6f5f2;font:15px/1.6 Inter,system-ui,Arial,sans-serif}a{color:inherit;text-decoration:none}button,textarea,input{font:inherit}.top{background:#fffdfa;border-bottom:1px solid #e4ddd1;position:sticky;top:0;z-index:10}.wrap{max-width:1170px;padding:0 20px;margin:0 auto}.top .wrap{min-height:70px;display:flex;align-items:center;justify-content:space-between}.brand{font:25px Georgia,serif;color:#0b192b}.brand span{color:#ae8550}.back{font-size:13px;font-weight:800;color:#21435f}",
@@ -21,9 +21,9 @@ module.exports=function(lang){
   '<details id="extra"><summary>Manbalarim bor — qo‘shimcha kiritish (ixtiyoriy)</summary>'+
   field("lex",ui[3],"url","https://lex.uz/uz/docs/...")+field("law",ui[4],"text","Norma matni")+
   field("court",ui[5],"url","https://public.sud.uz/...")+field("decision",ui[6],"text","Qaror matni")+'</details>';
-    return '<!doctype html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QOMUS — '+esc(ui[0])+'</title><style>'+css+'</style></head><body>'+
-  '<header class="top"><div class="wrap"><a class="brand" href="/advokat-pro?lang='+lang+'">§ QOMUS<span> PRO</span></a><a class="back" href="/advokat-pro?lang='+lang+'">← '+esc(ui[12])+'</a></div></header>'+
-  '<section class="hero"><div class="wrap"><small>QOMUS · LEGAL EVIDENCE WORKSPACE</small><h1>'+esc(ui[0])+'</h1><p>'+esc(ui[1])+'</p></div></section>'+
+    return '<!doctype html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VERIUS — '+esc(ui[0])+'</title><style>'+css+'</style></head><body>'+
+  '<header class="top"><div class="wrap"><a class="brand" href="/advokat-pro?lang='+lang+'">§ VERIUS<span> PRO</span></a><a class="back" href="/advokat-pro?lang='+lang+'">← '+esc(ui[12])+'</a></div></header>'+
+  '<section class="hero"><div class="wrap"><small>VERIUS · LEGAL EVIDENCE WORKSPACE</small><h1>'+esc(ui[0])+'</h1><p>'+esc(ui[1])+'</p></div></section>'+
   '<main class="wrap layout"><section class="panel"><h2>'+esc(ui[0])+'</h2><div class="note">'+esc(ui[11])+'</div>'+fields+
   '</section>'+
   '<div><section class="panel"><h2>'+esc(ui[9])+'</h2><div id="out" class="report" aria-live="polite">'+esc(ui[11])+'</div><div class="actions"><button type="button" id="copy" class="alt" disabled>'+esc(ui[10])+'</button></div></section>'+
