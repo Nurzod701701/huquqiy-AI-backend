@@ -39,7 +39,8 @@ test("three procedural drafting variants require factual fields and preserve unc
   assert.ok(output.text.includes(info.evidence));
   assert.ok(output.text.includes(info.action));
   assert.ok(output.sourceLinks.some(link=>link.url.startsWith("https://lex.uz/docs/-111460")));
-  assert.match(output.text,/LOYIHA/);
+  assert.equal(output.readyForSignature,false);
+  assert.ok(output.warnings.length>0);
  }
 });
 for(const lang of ["uz","ru","en"]){
