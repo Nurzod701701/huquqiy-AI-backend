@@ -41,7 +41,7 @@ for(const lang of ["uz","ru","en"]){
   });
   test("existing criminal questions page opens interactive assistant "+role+" "+lang,()=>{
    const html=criminalQuestionsPage(lang,role);
-   const url=role==="citizen"?"/criminal/advisor":"/advokat-pro/criminal/advisor";
+   const url=role==="citizen"?"/criminal/advisor":"/advokat-pro/criminal/workbench";
    assert.ok(html.includes('href="'+url+'?lang='+lang+'"'));
    assert.equal((html.match(/<details class="qa">/g)||[]).length,8);
   });
