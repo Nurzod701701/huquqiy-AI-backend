@@ -5232,50 +5232,23 @@ function navigation(lang) {
 
 
         <!-- DESKTOP MENU -->
-        <nav class="navlinks">
-
-          <a href="/fuqarolar${q(lang)}">
-            ${tr(lang, "home")}
-          </a>
-
-          <a href="/ai${q(lang)}">
-            ${tr(lang, "assistant")}
-          </a>
-
-          <a href="/questionnaire${q(lang)}">
-            ${tr(lang, "questionnaire")}
-          </a>
-
-          <a href="/sources${q(lang)}">
-            ${tr(lang, "sources")}
-          </a>
-
-          <a href="/documents${q(lang)}">
-            ${tr(lang, "documents")}
-          </a>
-
-          <a href="/court${q(lang)}">
-            ${tr(lang, "court")}
-          </a>
-
-          <a href="/calculators${q(lang)}">
-            ${tr(lang, "calculators")}
-          </a>
-
-          <a href="/employment${q(lang)}">
-            ${employmentText}
-          </a>
-
-          <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokat PRO"}</a>
-
-          <a
-            class="desktopAccountLink"
-            href="/login${q(lang)}"
-          >
-            <span>◉</span>
-            ${accountText}
-          </a>
-
+        <nav class="navlinks" aria-label="Asosiy navigatsiya">
+          <a href="/fuqarolar${q(lang)}">${lang==="ru"?"Гражданам":lang==="en"?"Citizens":"Fuqarolar"}</a>
+          <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokatlar"}</a>
+          <details class="veriusServiceMenu">
+            <summary>${lang==="ru"?"Услуги":lang==="en"?"Services":"Xizmatlar"} ▾</summary>
+            <div class="veriusServicePanel">
+              <a href="/ai${q(lang)}">${tr(lang,"assistant")}</a>
+              <a href="/questionnaire${q(lang)}">${tr(lang,"questionnaire")}</a>
+              <a href="/documents${q(lang)}">${tr(lang,"documents")}</a>
+              <a href="/legal-review${q(lang)}">${lang==="ru"?"Проверка документов":lang==="en"?"Document review":"Hujjat tekshirish"}</a>
+              <a href="/calculators${q(lang)}">${tr(lang,"calculators")}</a>
+              <a href="/employment${q(lang)}">${employmentText}</a>
+              <a href="/sources${q(lang)}">${tr(lang,"sources")}</a>
+              <a href="/court${q(lang)}">${lang==="ru"?"Судебные инструменты":lang==="en"?"Court tools":"Sudga oid vositalar"}</a>
+            </div>
+          </details>
+          <a class="desktopAccountLink" href="/login${q(lang)}"><span aria-hidden="true">◉</span>${accountText}</a>
         </nav>
 
 
