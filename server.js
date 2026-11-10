@@ -125,6 +125,10 @@ function appendBeforeFinalBody(html, injected) {
   return at < 0 ? source + injected : source.slice(0, at) + injected + source.slice(at);
 }
 
+const QOMUS_ACADEMY_THEME = '<style id="qomus-academy-liquid-glass">' +
+  require("fs").readFileSync(require("path").join(__dirname, "qomus-academy-theme.css"), "utf8") +
+  '</style>';
+
 function sendHtml(res, html, status = 200) {
   res.writeHead(status, {
     "Content-Type": "text/html; charset=utf-8",
@@ -134,6 +138,14 @@ function sendHtml(res, html, status = 200) {
   const pageHtml = String(html || '');
   let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : appendBeforeFinalBody(pageHtml, GLOBAL_LEXUZ_SCRIPT);
   if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = appendBeforeFinalBody(resultHtml, LANGUAGE_PRESERVE_SCRIPT);
+  // Design-only layer: Academy-inspired QOMUS theme, isolated on the QA branch.
+  // Keep existing pages, navigation, handlers, and data transformations untouched.
+  if (!resultHtml.includes('id="qomus-academy-liquid-glass"')) {
+    const headEnd = resultHtml.toLowerCase().indexOf("</head>");
+    resultHtml = headEnd >= 0
+      ? resultHtml.slice(0, headEnd) + QOMUS_ACADEMY_THEME + resultHtml.slice(headEnd)
+      : appendBeforeFinalBody(resultHtml, QOMUS_ACADEMY_THEME);
+  }
   res.end(resultHtml);
 }
 
