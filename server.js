@@ -14223,6 +14223,11 @@ const server =
           return sendHtml(res, require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role));
         }
 
+        // Professional criminal-case checklist workspace; no client data stored.
+        if(req.method === "GET" && pathname === "/advokat-pro/criminal/workbench"){
+          return sendHtml(res, require("./advokat-criminal-workbench").advocateCriminalWorkbench(lang));
+        }
+
         // VERIUS criminal-law question hubs: informative, source-linked, no case data stored.
         if(req.method === "GET" && (pathname === "/criminal" || pathname === "/advokat-pro/criminal")){
           const role=pathname === "/criminal" ? "citizen" : "advocate";
