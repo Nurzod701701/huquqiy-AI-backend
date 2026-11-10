@@ -14,8 +14,8 @@ test("security alert sends redacted payload through configured Resend HTTPS API 
   try{
     process.env.SECURITY_AUDIT_FILE=path.join(dir,"security.jsonl");
     process.env.SECURITY_ALERT_EMAIL="security-recipient@example.invalid";
-    process.env.EMAIL_FROM="QOMUS Account <account@verius.uz>";
-    process.env.SECURITY_ALERT_FROM="QOMUS Security <security@verius.uz>";
+    process.env.EMAIL_FROM="VERIUS Account <account@verius.uz>";
+    process.env.SECURITY_ALERT_FROM="VERIUS Security <security@verius.uz>";
     process.env.RESEND_API_KEY="synthetic-mock-only";
     delete process.env.SECURITY_ALERT_WEBHOOK;
     let request;
@@ -28,7 +28,7 @@ test("security alert sends redacted payload through configured Resend HTTPS API 
     const body=JSON.parse(request.opts.body);
     assert.equal(body.to[0],process.env.SECURITY_ALERT_EMAIL);
     assert.equal(body.from,process.env.SECURITY_ALERT_FROM);
-    assert.equal(body.subject,"QOMUS xavfsizlik ogohlantirishi: FAILED_ADMIN_LOGIN");
+    assert.equal(body.subject,"VERIUS xavfsizlik ogohlantirishi: FAILED_ADMIN_LOGIN");
     assert.equal(body.text.includes("192.0.2.250"),false);
     assert.equal(body.text.includes("password=secret"),false);
     assert.equal(body.text.includes("/admin/login"),true);
