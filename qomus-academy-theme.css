@@ -1,96 +1,54 @@
-/* QOMUS — Academy-inspired University Navy + Liquid Glass.
-   Visual-only layer. No markup, workflows, or business logic changed.
-   Enable on QA branch only until desktop/mobile regression is complete. */
-:root {
-  --navy:#071a35;
-  --navy2:#0a2850;
-  --navy3:#164779;
-  --gold:#77b8ff;
-  --gold2:#d6ebff;
-  --gold3:#286bb8;
-  --goldSoft:#eaf4ff;
-  --ink:#11294a;
-  --muted:#637895;
-  --bg:#edf3fa;
-  --surface:#fff;
-  --line:#dce7f2;
-  --line2:#cbdceb;
-  --shadow:0 18px 54px rgba(16,49,91,.10);
-  --shadowStrong:0 30px 80px rgba(11,42,85,.16);
+/* VERIUS premium refresh: original navy + champagne-gold palette.
+   Inspired by Academy's polish, not a copy of its identity.
+   Visual-only QA theme. Do not merge without responsive verification. */
+:root{
+ --navy:#06111f;--navy2:#0a223a;--navy3:#0d3150;
+ --gold:#c9a86a;--gold2:#e6c98e;--gold3:#a67d42;--goldSoft:#fff7e8;
+ --ink:#12263a;--muted:#6f7f91;--bg:#f4f6f8;--surface:#fff;
+ --line:#e2e7eb;--line2:#d5dde4;
+ --shadow:0 18px 50px rgba(6,17,31,.08);
+ --shadowStrong:0 30px 80px rgba(6,17,31,.13);
 }
-body {
-  background:radial-gradient(ellipse 85% 36% at 90% 2%,rgba(129,192,255,.19),transparent 75%),linear-gradient(160deg,#f3f8fd,#eaf1fa 65%,#f7faff);
-  color:var(--ink);
+body{background:radial-gradient(ellipse 76% 38% at 93% 1%,rgba(201,168,106,.085),transparent 72%),linear-gradient(155deg,#f7f8fa,#f1f4f6 70%,#fffdf9);color:var(--ink)}
+.nav,.huquqiyMainNav{
+ background:rgba(255,255,255,.88)!important;
+ border-bottom:1px solid rgba(213,221,228,.85)!important;
+ box-shadow:0 7px 25px rgba(6,17,31,.045)!important;
+ -webkit-backdrop-filter:blur(20px) saturate(130%);backdrop-filter:blur(20px) saturate(130%);
 }
-.nav,.huquqiyMainNav {
-  background:rgba(250,253,255,.82)!important;
-  border-bottom:1px solid rgba(176,207,238,.48)!important;
-  box-shadow:0 10px 35px rgba(15,42,84,.07)!important;
-  -webkit-backdrop-filter:blur(22px) saturate(150%);
-  backdrop-filter:blur(22px) saturate(150%);
-}
-.brandMark,.sidebarBrandMark {
-  background:linear-gradient(145deg,#103e78,#081c38)!important;
-  color:#e1f0ff!important;
-  border-color:rgba(185,220,255,.38)!important;
-  box-shadow:0 10px 24px rgba(28,76,139,.20)!important;
-}
-.brandText strong{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;font-weight:850!important;letter-spacing:-.65px;color:#102b52!important}
-.navlinks a,.languages a,.appLang a{border-radius:12px}
-.navlinks a:hover,.sideLink:hover{background:rgba(103,169,238,.12)}
-.languages,.mobileMenu{background:rgba(240,248,255,.75)!important;border-color:#d0e3f4!important}
-.languages a.active,.mobileTopLanguages a.active{background:linear-gradient(125deg,#103f80,#2373b6)!important;color:#fff!important;border-color:#6facdf!important}
-.desktopAccountLink,.mobileAccountDirect{background:linear-gradient(125deg,#103f80,#2373b6)!important;border-color:rgba(139,199,255,.55)!important;color:#fff!important;box-shadow:0 9px 25px rgba(29,82,144,.17)!important}
-.desktopAccountLink span,.mobileAccountDirectIcon{color:#dceeff!important}
-.hero{isolation:isolate}
-.hero::before{pointer-events:none}
-.heroInner{position:relative}
+.brandMark,.sidebarBrandMark{background:linear-gradient(145deg,#06111f,#103654)!important;color:var(--gold2)!important;border-color:rgba(201,168,106,.3)!important;box-shadow:0 10px 25px rgba(6,17,31,.17)!important}
+.brandText strong{font-family:Georgia,"Times New Roman",serif!important;font-weight:700!important;letter-spacing:-.5px!important;color:#0c243b!important}
+.navlinks a,.languages a,.appLang a{border-radius:11px}
+.navlinks a:hover{background:rgba(201,168,106,.11)!important}
+.languages,.mobileMenu{background:rgba(252,250,246,.82)!important;border-color:#e6dece!important}
+.languages a.active,.mobileTopLanguages a.active{background:linear-gradient(135deg,#06111f,#12334f)!important;color:#fff!important;border-color:#c9a86a!important}
+.desktopAccountLink,.mobileAccountDirect{background:linear-gradient(135deg,#06111f,#12334f)!important;border-color:rgba(201,168,106,.65)!important;color:#fff!important;box-shadow:0 9px 23px rgba(6,17,31,.16)!important}
+.desktopAccountLink span,.mobileAccountDirectIcon{color:var(--gold2)!important}
+.hero{isolation:isolate}.hero::before{pointer-events:none}.heroInner{position:relative}
 .heroCopy h1,.sectionTitle,.appHeader h1{letter-spacing:-.035em}
-.eyebrow,.smartHubLabel{color:#2876bd!important}
-.btnPrimary,.btnGold,.smartAsk button,.locControls button{
-  background:linear-gradient(125deg,#1655a0,#338edf)!important;
-  color:#fff!important;
-  border:1px solid rgba(186,223,255,.35)!important;
-  box-shadow:0 12px 25px rgba(25,90,163,.18)!important;
-}
-.btnPrimary:hover,.btnGold:hover,.smartAsk button:hover{filter:brightness(1.06);transform:translateY(-2px)}
-.btnOutline{border-color:#aacbea!important;color:#174b82!important;background:rgba(255,255,255,.68)!important}
+.eyebrow,.smartHubLabel{color:var(--gold3)!important}
+.btnPrimary,.btnGold,.smartAsk button,.locControls button{background:linear-gradient(135deg,#c6a05a,#e1c486)!important;color:#091e31!important;border:1px solid rgba(143,105,48,.23)!important;box-shadow:0 12px 27px rgba(155,115,58,.17)!important}
+.btnPrimary:hover,.btnGold:hover,.smartAsk button:hover{filter:brightness(1.04);transform:translateY(-2px)}
+.btnOutline{background:rgba(255,255,255,.78)!important;border-color:#d6c4a5!important;color:#17324a!important}
 .serviceCard,.sourceCard,.surface,.quickBox,.coreItem,.locShell,.popularLink,.trustStrip{
-  background:rgba(255,255,255,.78)!important;
-  border:1px solid rgba(186,211,238,.60)!important;
-  border-radius:22px!important;
-  box-shadow:0 16px 45px rgba(19,59,110,.07)!important;
-  -webkit-backdrop-filter:blur(14px);
-  backdrop-filter:blur(14px);
+ background:rgba(255,255,255,.81)!important;
+ border:1px solid rgba(215,220,224,.76)!important;border-radius:20px!important;
+ box-shadow:0 16px 42px rgba(8,33,54,.065)!important;
+ -webkit-backdrop-filter:blur(13px);backdrop-filter:blur(13px);
 }
-.serviceCard:hover,.sourceCard:hover,.popularLink:hover{transform:translateY(-3px);box-shadow:0 24px 55px rgba(19,59,110,.12)!important;border-color:#95c7f5!important}
-.serviceIcon,.sourceIcon,.popularIcon{background:linear-gradient(135deg,#eaf5ff,#d7eaff)!important;color:#1a63a6!important;border-color:#c4e0f9!important;border-radius:14px!important}
-.homeLongCard{border-radius:26px!important;box-shadow:0 18px 46px rgba(12,49,103,.10)!important}
-.homeLongCard.review,.homeLongCard.pension{
-  background:linear-gradient(120deg,#091b38 0%,#133965 66%,#225d97 100%)!important;
-  border:1px solid rgba(129,191,255,.55)!important;
-  box-shadow:0 22px 52px rgba(11,44,91,.22)!important;
-}
-.homeLongCard.review .homeLongIcon,.homeLongCard.pension .homeLongIcon{background:#cbe7ff!important;color:#174a83!important}
-.homeLongCard.review .homeLongEnter,.homeLongCard.pension .homeLongEnter,.homeLongCard.family .homeLongEnter,.homeLongCard.employment .homeLongEnter,.homeLongCard.business .homeLongEnter{background:linear-gradient(120deg,#2076c2,#55a8ee)!important;color:#fff!important}
-.homeLongCard.family,.homeLongCard.employment,.homeLongCard.business{background:linear-gradient(140deg,rgba(255,255,255,.97),rgba(234,245,255,.90))!important;border-color:#cadeef!important}
-.family .homeLongIcon,.employment .homeLongIcon,.business .homeLongIcon{background:linear-gradient(145deg,#0e376c,#1b659f)!important;color:#e6f3ff!important}
-.smartHubBox{background:radial-gradient(circle at 85% 15%,rgba(87,166,235,.23),transparent 40%),linear-gradient(120deg,#071831,#164979)!important;border:1px solid rgba(153,207,252,.3)!important;box-shadow:0 25px 65px rgba(10,42,89,.20)!important}
-.sidebar{background:linear-gradient(170deg,#071a35 0%,#0a2b55 100%)!important;border-color:rgba(153,204,255,.26)!important;border-radius:22px!important}
-.appPage{background:linear-gradient(155deg,#eff7ff,#e7eff9)!important}
-.appLayout{gap:24px}
-.appTop,.appHeader,.aiShell{border-radius:20px}
-.sideLink{border-radius:12px!important}
-.sideLink.active,.sideLink[aria-current="page"]{background:linear-gradient(110deg,rgba(65,145,218,.28),rgba(132,195,254,.11))!important;color:#fff!important;border-color:rgba(138,202,255,.4)!important}
-input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #65abf4!important;outline-offset:2px}
-@media(max-width:760px){
-  .nav,.huquqiyMainNav{border-radius:0!important}
-  .homeLongCard{border-radius:20px!important}
-  .serviceCard,.sourceCard,.surface,.quickBox,.locShell{border-radius:17px!important}
-  .appLayout{width:min(100%,96%);gap:14px}
-  .mobileNavPanel.show{background:rgba(247,252,255,.95);border:1px solid #d5e5f6;border-radius:18px;padding:12px!important;box-shadow:0 20px 50px rgba(17,56,111,.12)}
-  .mobileNavPanel a{border-radius:12px!important;background:#fff!important;color:#174273!important}
-}
-@media(prefers-reduced-motion:reduce){
- .serviceCard,.sourceCard,.popularLink,.btnPrimary,.btnGold{transition:none!important;transform:none!important}
-}
+.serviceCard:hover,.sourceCard:hover,.popularLink:hover{transform:translateY(-3px);box-shadow:0 22px 52px rgba(8,33,54,.11)!important;border-color:#d3b47a!important}
+.serviceIcon,.sourceIcon,.popularIcon{background:linear-gradient(140deg,#fff9ef,#f4e8d2)!important;color:#977037!important;border:1px solid #edddc1!important;border-radius:14px!important}
+.homeLongCard{border-radius:24px!important;box-shadow:0 18px 44px rgba(9,37,59,.095)!important}
+.homeLongCard.review,.homeLongCard.pension{background:linear-gradient(117deg,#071b2e 0%,#123751 67%,#1d4a63 100%)!important;border:1px solid rgba(208,174,104,.70)!important;box-shadow:0 20px 49px rgba(6,28,45,.19)!important}
+.homeLongCard.review .homeLongIcon,.homeLongCard.pension .homeLongIcon{background:#d7b576!important;color:#0b2235!important}
+.homeLongCard.review .homeLongEnter,.homeLongCard.pension .homeLongEnter,.homeLongCard.family .homeLongEnter,.homeLongCard.employment .homeLongEnter,.homeLongCard.business .homeLongEnter{background:linear-gradient(125deg,#c9a86a,#e1c487)!important;color:#0b2235!important}
+.homeLongCard.family,.homeLongCard.employment,.homeLongCard.business{background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(252,248,240,.93))!important;border-color:#ded8cc!important}
+.family .homeLongIcon,.employment .homeLongIcon,.business .homeLongIcon{background:linear-gradient(145deg,#071b2e,#123751)!important;color:#d8b77b!important}
+.smartHubBox{background:radial-gradient(circle at 89% 12%,rgba(201,168,106,.16),transparent 43%),linear-gradient(120deg,#06111f,#123751)!important;border:1px solid rgba(218,183,113,.32)!important;box-shadow:0 24px 62px rgba(6,27,43,.19)!important}
+.sidebar{background:linear-gradient(170deg,#06111f 0%,#102d46 100%)!important;border-color:rgba(201,168,106,.23)!important;border-radius:21px!important}
+.appPage{background:linear-gradient(160deg,#f5f7f9,#eef2f5)!important}
+.appLayout{gap:23px}.appTop,.appHeader,.aiShell{border-radius:19px}.sideLink{border-radius:11px!important}
+.sideLink.active,.sideLink[aria-current="page"]{background:linear-gradient(110deg,rgba(207,175,110,.22),rgba(255,255,255,.035))!important;color:#fff!important;border-color:rgba(201,168,106,.38)!important}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #bf9450!important;outline-offset:2px}
+@media(max-width:760px){.nav,.huquqiyMainNav{border-radius:0!important}.homeLongCard{border-radius:19px!important}.serviceCard,.sourceCard,.surface,.quickBox,.locShell{border-radius:17px!important}.appLayout{width:min(100%,96%);gap:14px}.mobileNavPanel.show{background:rgba(255,253,249,.97);border:1px solid #e7dfd1;border-radius:17px;padding:12px!important;box-shadow:0 20px 48px rgba(9,36,56,.13)}.mobileNavPanel a{border-radius:11px!important;background:#fff!important;color:#15344a!important}}
+@media(prefers-reduced-motion:reduce){.serviceCard,.sourceCard,.popularLink,.btnPrimary,.btnGold{transition:none!important;transform:none!important}}
