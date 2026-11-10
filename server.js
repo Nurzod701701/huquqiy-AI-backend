@@ -3145,6 +3145,11 @@ body{
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
 
+.veriusSkipLink{position:fixed;top:-80px;left:16px;z-index:9999;padding:12px 16px;color:#fff;background:#071f36;border:2px solid #c9a86a;border-radius:10px}
+.veriusSkipLink:focus{top:12px}
+html{scroll-padding-top:80px}
+:where(a,button,input,select,textarea,summary):focus-visible{outline:3px solid #c9a86a;outline-offset:3px}
+@media(max-width:760px){:where(.mobileNavPanel a,.mobileTopLanguages a,.veriusMobileServices>summary){min-height:44px;font-size:14px}}
 /* VERIUS DESIGN HARMONY V2: classic editorial elegance + contemporary readability.
    Preserves existing routes, content, layout and established navy/gold colors. */
 :root{
@@ -5232,50 +5237,23 @@ function navigation(lang) {
 
 
         <!-- DESKTOP MENU -->
-        <nav class="navlinks">
-
-          <a href="/fuqarolar${q(lang)}">
-            ${tr(lang, "home")}
-          </a>
-
-          <a href="/ai${q(lang)}">
-            ${tr(lang, "assistant")}
-          </a>
-
-          <a href="/questionnaire${q(lang)}">
-            ${tr(lang, "questionnaire")}
-          </a>
-
-          <a href="/sources${q(lang)}">
-            ${tr(lang, "sources")}
-          </a>
-
-          <a href="/documents${q(lang)}">
-            ${tr(lang, "documents")}
-          </a>
-
-          <a href="/court${q(lang)}">
-            ${tr(lang, "court")}
-          </a>
-
-          <a href="/calculators${q(lang)}">
-            ${tr(lang, "calculators")}
-          </a>
-
-          <a href="/employment${q(lang)}">
-            ${employmentText}
-          </a>
-
-          <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokat PRO"}</a>
-
-          <a
-            class="desktopAccountLink"
-            href="/login${q(lang)}"
-          >
-            <span>◉</span>
-            ${accountText}
-          </a>
-
+        <nav class="navlinks" aria-label="Asosiy navigatsiya">
+          <a href="/fuqarolar${q(lang)}">${lang==="ru"?"Гражданам":lang==="en"?"Citizens":"Fuqarolar"}</a>
+          <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokatlar"}</a>
+          <details class="veriusServiceMenu">
+            <summary>${lang==="ru"?"Услуги":lang==="en"?"Services":"Xizmatlar"} ▾</summary>
+            <div class="veriusServicePanel">
+              <a href="/ai${q(lang)}">${tr(lang,"assistant")}</a>
+              <a href="/questionnaire${q(lang)}">${tr(lang,"questionnaire")}</a>
+              <a href="/documents${q(lang)}">${tr(lang,"documents")}</a>
+              <a href="/legal-review${q(lang)}">${lang==="ru"?"Проверка документов":lang==="en"?"Document review":"Hujjat tekshirish"}</a>
+              <a href="/calculators${q(lang)}">${tr(lang,"calculators")}</a>
+              <a href="/employment${q(lang)}">${employmentText}</a>
+              <a href="/sources${q(lang)}">${tr(lang,"sources")}</a>
+              <a href="/court${q(lang)}">${lang==="ru"?"Судебные инструменты":lang==="en"?"Court tools":"Sudga oid vositalar"}</a>
+            </div>
+          </details>
+          <a class="desktopAccountLink" href="/login${q(lang)}"><span aria-hidden="true">◉</span>${accountText}</a>
         </nav>
 
 
@@ -5303,7 +5281,7 @@ function navigation(lang) {
             type="button"
             aria-label="${menuText}"
             title="${menuText}"
-            onclick="document.getElementById('mobileNav').classList.toggle('show')"
+            aria-controls="mobileNav" aria-expanded="false"
           >
             ☰
           </button>
@@ -5344,41 +5322,21 @@ function navigation(lang) {
            SHAXSIY KABINET BU YERDA EMAS.
            U HEADERNING O'ZIDA TURADI. -->
       <div id="mobileNav" class="mobileNavPanel">
-
-        <a href="/fuqarolar${q(lang)}">
-          ${tr(lang, "home")}
-        </a>
-
-        <a href="/ai${q(lang)}">
-          ${tr(lang, "assistant")}
-        </a>
-
-        <a href="/questionnaire${q(lang)}">
-          ${tr(lang, "questionnaire")}
-        </a>
-
-        <a href="/sources${q(lang)}">
-          ${tr(lang, "sources")}
-        </a>
-
-        <a href="/documents${q(lang)}">
-          ${tr(lang, "documents")}
-        </a>
-
-        <a href="/court${q(lang)}">
-          ${tr(lang, "court")}
-        </a>
-
-        <a href="/calculators${q(lang)}">
-          ${tr(lang, "calculators")}
-        </a>
-
-        <a href="/employment${q(lang)}">
-          ${employmentText}
-        </a>
-
-        <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokat PRO"}</a>
-
+        <a class="veriusMobilePrimary" href="/fuqarolar${q(lang)}">${lang==="ru"?"Гражданам":lang==="en"?"Citizens":"Fuqarolar"}</a>
+        <a class="veriusMobilePrimary" href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokatlar"}</a>
+        <details class="veriusMobileServices">
+          <summary>${lang==="ru"?"Все услуги":lang==="en"?"All services":"Barcha xizmatlar"} ▾</summary>
+          <div class="veriusMobileServicesList">
+            <a href="/ai${q(lang)}">${tr(lang,"assistant")}</a>
+            <a href="/questionnaire${q(lang)}">${tr(lang,"questionnaire")}</a>
+            <a href="/documents${q(lang)}">${tr(lang,"documents")}</a>
+            <a href="/legal-review${q(lang)}">${lang==="ru"?"Проверка документов":lang==="en"?"Document review":"Hujjat tekshirish"}</a>
+            <a href="/calculators${q(lang)}">${tr(lang,"calculators")}</a>
+            <a href="/employment${q(lang)}">${employmentText}</a>
+            <a href="/sources${q(lang)}">${tr(lang,"sources")}</a>
+            <a href="/court${q(lang)}">${lang==="ru"?"Судебные инструменты":lang==="en"?"Court tools":"Sudga oid vositalar"}</a>
+          </div>
+        </details>
       </div>
 
     </header>
@@ -5643,8 +5601,41 @@ function navigation(lang) {
 
       }
 
+
+      .veriusServiceMenu{position:relative;align-self:center;color:#fff}
+      .veriusServiceMenu>summary{cursor:pointer;list-style:none;display:flex;align-items:center;min-height:44px;padding:8px 12px;font-weight:750;font-size:14px;border-radius:9px}
+      .veriusServiceMenu>summary::-webkit-details-marker,.veriusMobileServices>summary::-webkit-details-marker{display:none}
+      .veriusServiceMenu[open]>summary,.veriusServiceMenu>summary:hover{background:rgba(201,168,106,.15)}
+      .veriusServicePanel{position:absolute;top:calc(100% + 10px);right:0;z-index:100;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:330px;padding:12px;border:1px solid #e1e7ed;background:#fff;border-radius:14px;box-shadow:0 20px 45px rgba(6,17,31,.18)}
+      .navlinks .veriusServicePanel a{color:#132c43!important;padding:11px;border-radius:9px;font-size:13px;white-space:normal}
+      .navlinks .veriusServicePanel a:hover,.navlinks .veriusServicePanel a:focus-visible{background:#f1f5f7;color:#06111f!important}
+      .veriusMobilePrimary{font-size:14px!important;font-weight:850!important;background:#f4f7f8!important}
+      .veriusMobileServices{grid-column:1/-1}
+      .veriusMobileServices>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:44px;cursor:pointer;padding:12px 14px;background:#fff;border:1px solid #dce5eb;border-radius:10px;color:#12344b;font-size:14px;font-weight:750}
+      .veriusMobileServicesList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding-top:10px}
+      :where(.veriusServiceMenu>summary,.veriusMobileServices>summary,.mobileMenu,.navlinks a,.mobileNavPanel a):focus-visible{outline:3px solid #c9a86a;outline-offset:3px}
+      @media(max-width:480px){.veriusMobileServicesList{grid-template-columns:1fr}}
+      @media(max-width:370px){.mobileAccountDirectText{display:none!important}.mobileAccountDirect{min-width:44px;min-height:44px}}
     </style>
 
+  <script>
+  (function(){
+    const button=document.querySelector(".huquqiyMainNav .mobileMenu");
+    const panel=document.getElementById("mobileNav");
+    if(!button||!panel)return;
+    const close=()=>{panel.classList.remove("show");button.setAttribute("aria-expanded","false")};
+    button.addEventListener("click",()=>{
+      const opened=panel.classList.toggle("show");
+      button.setAttribute("aria-expanded",String(opened));
+    });
+    document.addEventListener("keydown",event=>{
+      if(event.key==="Escape" && panel.classList.contains("show")){close();button.focus();}
+    });
+    document.addEventListener("click",event=>{
+      if(!button.contains(event.target)&&!panel.contains(event.target))close();
+    });
+  })();
+  </script>
   `;
 }
 
@@ -5665,8 +5656,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "VERIUS", des
     ["family", "/family", "⚖", lang === "ru" ? "Семейное право" : lang === "en" ? "Family law" : "Oila huquqi"],
     ["employment", "/employment", "▤", lang === "ru" ? "Трудовое право" : lang === "en" ? "Employment law" : "Mehnat huquqi"],
     ["business", "/business", "◇", lang === "ru" ? "Бизнес-право" : lang === "en" ? "Business law" : "Biznes huquqi"],
-    ["sources", "/sources", "§", tr(lang, "sources")],
-    ["court", "/court", "⌖", tr(lang, "court")]
+    ["sources", "/sources", "§", tr(lang, "sources")]
   ];
 
   const sideLinks = items.map(([key, href, icon, label]) => `
@@ -5767,7 +5757,7 @@ function footer(lang = "uz") {
         <div class="footerLinks" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:14px">
           <a href="/${q(lang)}">${esc(tr(lang,"home"))}</a>
           <a href="/sources${q(lang)}">${esc(tr(lang,"sources"))}</a>
-          <a href="/court${q(lang)}">${esc(tr(lang,"court"))}</a>
+          <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokatlar"}</a>
           <a href="/login${q(lang)}">${lang === "ru" ? "Войти" : lang === "en" ? "Sign in" : "Kirish"}</a>
         </div>
         <div class="footerBottom" style="margin-top:18px">© ${new Date().getFullYear()} VERIUS</div>
@@ -5788,11 +5778,13 @@ function page({ lang = "uz", title = "VERIUS", content = "" } = {}) {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#06111f">
   <title>${esc(title)}</title>
+  <meta name="description" content="${esc(lang==="ru"?"VERIUS — цифровые правовые инструменты для граждан и адвокатов.":lang==="en"?"VERIUS — digital legal tools for citizens and advocates.":"VERIUS — fuqarolar va advokatlar uchun huquqiy ma’lumot va raqamli xizmatlar.")}">
   <style>${CSS}${CSS_APP}</style>
 </head>
 <body>
+  <a class="veriusSkipLink" href="#verius-main">${lang==="ru"?"К основному содержимому":lang==="en"?"Skip to main content":"Asosiy kontentga o‘tish"}</a>
   ${navigation(lang)}
-  <main>${content || ""}</main>
+  <main id="verius-main">${content || ""}</main>
   ${footer(lang)}
 </body>
 </html>`;
