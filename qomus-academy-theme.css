@@ -52,3 +52,29 @@ body{background:radial-gradient(ellipse 76% 38% at 93% 1%,rgba(201,168,106,.085)
 input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #bf9450!important;outline-offset:2px}
 @media(max-width:760px){.nav,.huquqiyMainNav{border-radius:0!important}.homeLongCard{border-radius:19px!important}.serviceCard,.sourceCard,.surface,.quickBox,.locShell{border-radius:17px!important}.appLayout{width:min(100%,96%);gap:14px}.mobileNavPanel.show{background:rgba(255,253,249,.97);border:1px solid #e7dfd1;border-radius:17px;padding:12px!important;box-shadow:0 20px 48px rgba(9,36,56,.13)}.mobileNavPanel a{border-radius:11px!important;background:#fff!important;color:#15344a!important}}
 @media(prefers-reduced-motion:reduce){.serviceCard,.sourceCard,.popularLink,.btnPrimary,.btnGold{transition:none!important;transform:none!important}}
+
+/* Original VERIUS dark-navy identity: stronger header, dark primary panels,
+   champagne-gold highlights. Text areas remain bright for readability. */
+.nav,.huquqiyMainNav{
+  background:rgba(6,17,31,.96)!important;
+  border-bottom:1px solid rgba(201,168,106,.28)!important;
+  box-shadow:0 12px 32px rgba(6,17,31,.22)!important;
+}
+.navlinks a{color:#d9e1e9!important}
+.navlinks a:hover{color:#f0d6a1!important;background:rgba(201,168,106,.13)!important}
+.brandText strong{color:#fff!important}
+.brandText small{color:#d4b780!important}
+.languages{background:rgba(255,255,255,.08)!important;border-color:rgba(201,168,106,.24)!important}
+.languages a{color:#d3dce4!important}
+.mobileMenu{background:#10283f!important;border-color:#b79a65!important;color:#efd5a2!important}
+.hero,.smartHubBox{background:radial-gradient(circle at 80% 22%,rgba(201,168,106,.16),transparent 40%),linear-gradient(125deg,#06111f,#0b263e 65%,#133b54)!important;color:#fff!important}
+.hero h1,.hero h2,.hero .heroTitle{color:#fff!important}
+.hero .heroDescription,.hero p{color:#d2dce6}
+.sidebar{background:linear-gradient(170deg,#06111f 0%,#091b2c 100%)!important}
+.homeLongCard.review,.homeLongCard.pension{background:linear-gradient(117deg,#06111f,#0b263e 65%,#123a51)!important}
+.footer{background:linear-gradient(135deg,#06111f,#091c2f)!important}
+@media(max-width:1150px){
+ .mobileTopLanguages{background:rgba(6,17,31,.97);border-bottom:1px solid rgba(201,168,106,.15)}
+ .mobileTopLanguages a{background:#12273b!important;color:#ebdfc9!important;border-color:#536077!important}
+ .mobileTopLanguages a.active{background:#c9a86a!important;color:#06111f!important}
+}
