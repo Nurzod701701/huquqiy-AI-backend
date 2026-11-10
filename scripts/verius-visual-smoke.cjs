@@ -46,7 +46,9 @@ async function run(){
         // Pages must not overflow the viewport by more than an incidental 8px.
         assert.ok(overflow<=8, name+" "+route+" horizontal overflow "+overflow+"px");
       }
-      await page.goto(BASE+"/?lang=uz",{waitUntil:"domcontentloaded"});
+      // Root and Fuqarolar portal intentionally use a separate standalone citizen-home shell.
+      // Verify shared VERIUS navigation on the AI service page instead.
+      await page.goto(BASE+"/ai?lang=uz",{waitUntil:"domcontentloaded"});
       if(width>1150){
         assert.ok(await page.locator(".veriusServiceMenu summary").isVisible(),"Desktop services menu missing");
         await page.locator(".veriusServiceMenu summary").click();
