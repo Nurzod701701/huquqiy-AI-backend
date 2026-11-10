@@ -25,3 +25,40 @@ test("citizen modules keep shared sidebar and global navigation",()=>{
  assert.ok(server.includes('href="/advokat-pro'));
  assert.ok(server.includes('href="/fuqarolar'));
 });
+
+test("VERIUS common navigation renders accessible dual-audience structure in all languages",()=>{
+ const start=server.indexOf("function navigation(lang) {");
+ const end=server.indexOf("// ======================================================\\n// APP LAYOUT",start);
+ assert.ok(start>=0 && end>start,"navigation section must exist");
+ const snippet=server.slice(start,end);
+ const nav=new Function("getLang","q","tr","languageMenu",snippet+"\\nreturn navigation;")(
+   x=>x,x=>"?lang="+x,(_lang,key)=>key,()=>"<span>Languages</span>"
+ );
+ for(const lang of ["uz","ru","en"]){
+   const html=nav(lang);
+   assert.match(html,/class="navlinks"/);
+   assert.match(html,/class="veriusServiceMenu"/);
+   assert.match(html,/class="veriusMobileServices"/);
+   assert.match(html,/aria-controls="mobileNav" aria-expanded="false"/);
+   assert.match(html,/panel\.classList\.toggle\("show"\)/);
+   assert.match(html,/event\.key==="Escape"/);
+   for(const route of ["/fuqarolar","/advokat-pro","/ai","/questionnaire","/documents","/legal-review","/calculators","/employment","/sources","/court","/login"]){
+     assert.ok(html.includes('href="'+route+'?lang='+lang+'"'),lang+": missing "+route);
+   }
+   assert.equal((html.match(/<details\\b/g)||[]).length,(html.match(/<\\/details>/g)||[]).length);
+   assert.equal((html.match(/<div\\b/g)||[]).length,(html.match(/<\\/div>/g)||[]).length);
+   const script=html.match(/<script>([\\s\\S]*?)<\\/script>/);
+   assert.ok(script,"menu controller must exist");
+   assert.doesNotThrow(()=>new Function(script[1]));
+ }
+});
+test("VERIUS shared page includes accessibility and no top-level court link",()=>{
+ assert.match(server,/class="veriusSkipLink"/);
+ assert.match(server,/id="verius-main"/);
+ assert.match(server,/<meta name="description"/);
+ const app=server.slice(server.indexOf("function appLayout("),server.indexOf("function footer("));
+ assert.doesNotMatch(app,/\\["court", "\/court", "⌖"/);
+ const footer=server.slice(server.indexOf("function footer("),server.indexOf("function page("));
+ assert.doesNotMatch(footer,/href="\/court/);
+ assert.match(footer,/href="\/advokat-pro/);
+});
