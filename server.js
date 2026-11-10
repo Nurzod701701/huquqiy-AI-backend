@@ -14217,6 +14217,12 @@ const server =
           return sendJson(res,{ok:false,error:"METHOD_NOT_ALLOWED"},405);
         }
 
+        // VERIUS criminal-law question hubs: informative, source-linked, no case data stored.
+        if(req.method === "GET" && (pathname === "/criminal" || pathname === "/advokat-pro/criminal")){
+          const role=pathname === "/criminal" ? "citizen" : "advocate";
+          return sendHtml(res, require("./criminal-questions").criminalQuestionsPage(lang,role));
+        }
+
         // Advokat PRO: separate landing page and preserved document constructor.
         if(req.method === "GET" && pathname === "/advokat-pro"){
           return sendHtml(res, require("./advokat-home")(lang));
