@@ -14217,6 +14217,12 @@ const server =
           return sendJson(res,{ok:false,error:"METHOD_NOT_ALLOWED"},405);
         }
 
+        // Source-linked browser-local case guidance; no AI call or data storage.
+        if(req.method === "GET" && (pathname === "/criminal/advisor" || pathname === "/advokat-pro/criminal/advisor")){
+          const role=pathname === "/criminal/advisor" ? "citizen" : "advocate";
+          return sendHtml(res, require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role));
+        }
+
         // VERIUS criminal-law question hubs: informative, source-linked, no case data stored.
         if(req.method === "GET" && (pathname === "/criminal" || pathname === "/advokat-pro/criminal")){
           const role=pathname === "/criminal" ? "citizen" : "advocate";
