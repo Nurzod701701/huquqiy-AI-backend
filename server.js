@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 3000;
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const AI_MODEL = process.env.AI_MODEL || "openrouter/free";
+// Keep output useful for legal analysis while bounding provider cost.
+const AI_MAX_TOKENS = Math.min(1200, Math.max(450, Number.parseInt(process.env.AI_MAX_TOKENS || "850",10) || 850));
 
 
 // ======================================================
@@ -501,7 +503,7 @@ Only cite documents genuinely relevant to the user's question. Live LexUZ excerp
   **Nima qilish kerak:** 2–3 concrete next steps or essential evidence.
 - If evidence is insufficient, name the missing facts without guessing.
 - Avoid duplicating a long disclaimer; a short limitation is enough.
-- Keep the main body roughly 160–220 words when possible because the provider's temporary output budget is 450 tokens. Never sacrifice correctness or source integrity merely to meet length targets.
+- Keep the main body roughly 160–220 words when possible with a bounded output budget. Never sacrifice correctness or source integrity merely to meet length targets.
 `;
 
   // HUQUQIY ANIQLIK: modelga huquqiy asoslar bo'yicha qo'shimcha qoida.
@@ -551,7 +553,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
           "HTTP-Referer": process.env.SITE_URL || "https://huquqiy-ai-backend.onrender.com",
           "X-Title": "QOMUS"
         },
-        body: JSON.stringify({ model, messages: auditOutbound(messages), temperature: 0.2, max_tokens: 450 })
+        body: JSON.stringify({ model, messages: auditOutbound(messages), temperature: 0.2, max_tokens: AI_MAX_TOKENS })
       });
       try { data = await response.json(); }
       catch (_) { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
@@ -7275,7 +7277,7 @@ async function aiResultPage(
     answer = error?.message === "OPENROUTER_RATE_LIMIT" ? (lang === "uz" ? "OpenRouter bepul modelining so‘rov limiti tugagan (HTTP 429). Keyinroq urinib ko‘ring yoki hisobingizdagi limitni tekshiring." : lang === "ru" ? "Превышен лимит бесплатной модели OpenRouter (HTTP 429)." : "OpenRouter free model rate limit exceeded (HTTP 429).")
       : error?.message === "OPENROUTER_AUTH_FAILED" ? (lang === "uz" ? "OpenRouter API kaliti noto‘g‘ri yoki bekor qilingan (HTTP 401)." : lang === "ru" ? "Ключ OpenRouter недействителен (HTTP 401)." : "OpenRouter API key invalid (HTTP 401).")
       : error?.message === "OPENROUTER_CREDITS_EXHAUSTED"
-      ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Javob token limiti vaqtincha 450 ga tushirildi, lekin bu kredit tugagan bo‘lsa yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
+      ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Token limitini kamaytirish kredit tugaganda yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
       : lang === "uz"
         ? "AI xizmatiga ulanishda xatolik yuz berdi. OPENROUTER_API_KEY va server sozlamalarini tekshiring."
         : lang === "ru"
@@ -9851,7 +9853,11 @@ function pensionPage(lang) {
           '<label style="display:block;margin:7px 0"><input type="radio" style="appearance:auto;-webkit-appearance:radio;width:16px;height:16px;min-width:16px;min-height:16px;margin:0 7px 0 0;vertical-align:middle;accent-color:#a67d42;box-shadow:none;border:0;padding:0;display:inline-block" name="'+name+'" value="no"> '+salaryWords[3]+'</label>';
         guidance.innerHTML='<details style="margin-top:10px;padding:10px;border:1px solid #c9a86a;border-radius:10px"><summary style="cursor:pointer;font-weight:700">'+salaryWords[4]+'</summary><p style="line-height:1.7;margin:9px 0">'+salaryWords[5]+'</p></details><p class="salaryUnknown" style="display:none;line-height:1.7;font-size:14px;padding:10px;background:#fff8e7;border-radius:9px">'+salaryWords[6]+'</p>';
         function update(){const unknown=choices.querySelector('input[value="no"]').checked;input.disabled=unknown;input.required=!unknown&&(!group||!group.hidden);input.style.display=unknown?'none':'';guidance.querySelector('.salaryUnknown').style.display=unknown?'block':'none';}
-        choices.addEventListener('change',update);update();
+        choices.addEventListener('change',update);
+        // Form reset restores radio values asynchronously; refresh the related
+        // salary input state too so it cannot remain hidden or disabled.
+        form.addEventListener('reset',()=>setTimeout(update,0));
+        update();
         return ()=>choices.querySelector('input[value="no"]').checked;
       }
       by('pSalaryLabel').textContent=salaryWords[0];
@@ -9942,7 +9948,7 @@ function pensionPage(lang) {
           if(age<minAge){show(msg('YOSHGA DOIR PENSIYA YOSHI HALI YETMAGAN','ПЕНСИОННЫЙ ВОЗРАСТ НЕ ДОСТИГНУТ','PENSION AGE NOT REACHED'),msg('Umumiy tartib: ','Общий возраст: ','Standard age: ')+minAge);return;}
           if(yrs<7){show(msg('YOSHGA DOIR NAFAQA HUQUQINI TEKSHIRING','ПРОВЕРЬТЕ ПРАВО НА ПОСОБИЕ ПО ВОЗРАСТУ','CHECK OLD-AGE ALLOWANCE'),age>=allowAge?msg('Pensiya uchun kamida 7 yil tegishli staj yo‘q. Nafaqa shartlari tekshiriladi; ish haqi kerak emas.','Стаж менее 7 лет. Проверьте пособие; заработок не требуется.','Service under 7 years. Check allowance; earnings not needed.'):msg('Pensiya uchun kamida 7 yil tegishli staj yo‘q. Nafaqa uchun odatiy yosh: ','Стаж менее 7 лет. Возраст пособия: ','Service under 7 years. Allowance age: ')+allowAge);return;}
           if(yrs<full){show(msg('TO‘LIQSIZ STAJ BILAN PENSIYA','ПЕНСИЯ ПРИ НЕПОЛНОМ СТАЖЕ','PARTIAL-SERVICE PENSION'),msg('Kamida 7 yil staj bor, lekin to‘liq staj yetmaydi. Miqdor stajga mutanosib hisoblanadi; 55% ni to‘liq pensiyadek qo‘llamaymiz.','Стаж от 7 лет, но меньше полного. Размер рассчитывается пропорционально.','Service at least 7 years but below full. Proportional calculation required.'));return;}
-          const salary=Number(by('pSalary').value);
+          const salary=pSalaryUnknown()?NaN:Number(by('pSalary').value);
           if(!Number.isFinite(salary)||salary<=0){show(msg('YOSHGA DOIR PENSIYA HUQUQI — DASTLABKI','ПРАВО НА ПЕНСИЮ ПО ВОЗРАСТУ — ПРЕДВАРИТЕЛЬНО','OLD-AGE PENSION — PRELIMINARY'),msg('To‘liq yosh va staj mezonlari bajarilgan. Hisoblash uchun pensiya hisobiga olinadigan tasdiqlangan o‘rtacha ish haqi kerak.','Условия возраста и стажа выполнены. Нужен подтверждённый заработок.','Age and service met. Verified pensionable earnings needed.'));return;}
           const pct=55+Math.max(0,yrs-full),raw=salary*pct/100;
           show(msg('YOSHGA DOIR PENSIYA — FORMULA NAMUNASI','ПЕНСИЯ ПО ВОЗРАСТУ — ПРИМЕР ФОРМУЛЫ','OLD-AGE PENSION — FORMULA EXAMPLE'),fmt(salary)+' × '+pct+'% = '+fmt(raw)+' '+msg('so‘m','сум','UZS')+'\\n'+msg('Bu yakuniy summa emas: ish haqi chegarasi, eng kam miqdor va ustamalar qo‘llanmagan.','Не итог: не учтены пределы заработка, минимумы и надбавки.','Not final: caps, minimums and supplements excluded.'));return;
@@ -9963,7 +9969,7 @@ function pensionPage(lang) {
           if(yrsText===''||!Number.isInteger(Number(yrsText))||Number(yrsText)<0){show(msg('Boquvchining stajini kiriting (bo‘lmasa 0)','Укажите стаж кормильца (0, если отсутствует)','Enter breadwinner service (0 if none)'),'');return;}
           const yrs=Number(yrsText);
           if(yrs===0&&cause!=='work'){show(msg('BOQUVCHISINI YO‘QOTGANLIK NAFAQASI — HUQUQNI TEKSHIRISH','ПОСОБИЕ ПО ПОТЕРЕ КОРМИЛЬЦА — ПРОВЕРКА','SURVIVOR ALLOWANCE — REVIEW'),msg('Boquvchida staj yo‘q. Oila a’zolarining huquqi tasdiqlansa, nafaqa shartlari tekshiriladi. Ish haqi kiritish shart emas.','Стаж отсутствует: проверьте право членов семьи на пособие. Заработок не обязателен.','No service: check allowance eligibility. Earnings not required.'));return;}
-          const salary=Number(by('surSalary').value);
+          const salary=surSalaryUnknown()?NaN:Number(by('surSalary').value);
           if(!Number.isFinite(salary)||salary<=0){show(msg('BOQUVCHISINI YO‘QOTGANLIK PENSIYASI — TEKSHIRUV','ПЕНСИЯ ПО ПОТЕРЕ КОРМИЛЬЦА — ПРОВЕРКА','SURVIVOR PENSION — REVIEW'),msg('Huquqli oila a’zolari soni: ','Число получателей: ','Eligible recipients: ')+count+'\\n'+msg('Pensiya hisoblash uchun boquvchining tasdiqlangan ish haqi va stajga oid hujjatlar kerak.','Нужны подтверждённые заработок и стаж.','Verified earnings and service required.'));return;}
           const base=salary*.30*count;
           show(msg('BOQUVCHISINI YO‘QOTGANLIK — TAYANCH FORMULA','ПОТЕРЯ КОРМИЛЬЦА — БАЗОВАЯ ФОРМУЛА','SURVIVOR — BASE FORMULA'),fmt(salary)+' × 30% × '+count+' = '+fmt(base)+' '+msg('so‘m','сум','UZS')+'\\n'+msg('Bu faqat tayanch formula: oila a’zolarining huquqi, eng kam miqdor, ortiqcha staj, chin yetimlik va maxsus holatlar qo‘shilmagan.','Только базовая формула: право получателей, минимумы и особые случаи не учтены.','Base only: eligibility, minimums and exceptions not included.'));return;
@@ -14314,6 +14320,11 @@ const server =
           const form=await readForm(req);
           const claimText=String(form.claim_text||"").trim();
           if(!claimText || claimText.length>150000){res.writeHead(400,{"Content-Type":"text/plain; charset=utf-8"});return res.end("Da’vo arizasi matni topilmadi yoki juda katta.");}
+          // Enforce export completeness on the server as well as in browser UI.
+          if(/\[(?:mijoz|taraf|adresat|faktlar|talab|sana|manzil|tekshirilgan normalar|to‘ldiriladi|to‘ldiring)\]/iu.test(claimText)){
+            res.writeHead(422,{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store"});
+            return res.end("Hujjatda to‘ldirilmagan majburiy rekvizit mavjud.");
+          }
           try{
             const buffer=await claimDocxBuffer(claimText);
             res.writeHead(200,{"Content-Type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document","Content-Disposition":"attachment; filename=da_vo_arizasi.docx","Content-Length":buffer.length,"Cache-Control":"no-store"});
