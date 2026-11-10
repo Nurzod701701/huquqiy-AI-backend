@@ -9,6 +9,7 @@ on:
       - 'test/functional-http-smoke.test.js'
       - 'public-judgments.js'
       - 'test/public-judgments-stream-limit.test.js'
+      - 'test/ai-quality-offline-regression.test.js'
       - 'package.json'
       - '.github/workflows/qomus-functional-qa.yml'
   workflow_dispatch:
@@ -27,5 +28,6 @@ jobs:
       - run: node --check advokat-pro.js
       - run: npm run test:functional-qa
       - run: node --test test/public-judgments-stream-limit.test.js
+      - run: node --test test/ai-quality-offline-regression.test.js
       - run: npm install --ignore-scripts --no-audit --no-fund --package-lock=false
       - run: npm run test:functional-http
