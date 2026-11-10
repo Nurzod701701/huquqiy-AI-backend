@@ -18,7 +18,7 @@ function evidenceReviewPage(lang="uz"){
  const linkFor=${linkFor.toString()};
  const analyzeEvidenceText=${analyzeEvidenceText.toString()};
  const $=id=>document.getElementById(id);
- const safe=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;/g,"&quot;");
+ const safe=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
  let last=null;
  function render(result){
   last=result;
