@@ -4,6 +4,7 @@ const assert=require("node:assert/strict");
 const {spawn}=require("node:child_process");
 const {setTimeout:delay}=require("node:timers/promises");
 const crypto=require("node:crypto");
+const vm=require("node:vm");
 
 test("QOMUS HTTP functional smoke: navigation, anonymous protection and DOCX download",{timeout:45000},async()=>{
  const port=39000+crypto.randomInt(1,2000);
@@ -24,6 +25,24 @@ test("QOMUS HTTP functional smoke: navigation, anonymous protection and DOCX dow
    assert.match(r.headers.get("content-type")||"",/text\/html/i,route+" must return HTML");
    assert.ok((await r.text()).length>100,route+" must render content");
   }
+  // Execute the shipped calculator button logic against safe synthetic inputs.
+  const calcHtml=await (await fetch(base+"/calculators?lang=uz")).text();
+  const begin=calcHtml.indexOf("function calculateAliment(){");
+  const finish=calcHtml.indexOf("function analyzeProperty(){",begin);
+  assert.ok(begin>=0&&finish>begin,"shipped alimony calculator function must render");
+  const calcScript=calcHtml.slice(begin,finish);
+  const values={childrenCount:{value:"1"},alimentIncome:{value:"4000000"},incomeStatus:{value:"official"},alimentAgreement:{value:"no"},alimentMonths:{value:"1"},alimentResult:{textContent:""}};
+  const docMock={getElementById:id=>{assert.ok(values[id],id);return values[id]}};
+  const calculate=()=>vm.runInNewContext(calcScript+";calculateAliment();",{document:docMock,formatNumber:n=>String(Math.round(n*100)/100)}, {timeout:1000});
+  calculate();
+  assert.match(values.alimentResult.textContent,/1000000/,"one child at 25% of 4m");
+  values.childrenCount.value="3";values.alimentMonths.value="12";
+  calculate();
+  assert.match(values.alimentResult.textContent,/2000000/,"three children at 50% of 4m");
+  assert.match(values.alimentResult.textContent,/24000000/,"twelve-month illustrative projection");
+  values.childrenCount.value="0";calculate();
+  assert.match(values.alimentResult.textContent,/to‘g‘ri kiriting/,"invalid child count rejected");
+
   const account=await fetch(base+"/account",{redirect:"manual"});
   assert.ok([302,303,401,403].includes(account.status),"anonymous account must be protected");
   const form=new URLSearchParams({claim_text:"QOMUS QA hujjat namuna\nArizachi: Anonim test\nTalab: Test uchun tayyorlangan hujjat"});
