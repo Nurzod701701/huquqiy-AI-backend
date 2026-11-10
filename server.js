@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 3000;
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const AI_MODEL = process.env.AI_MODEL || "openrouter/free";
+// Keep output useful for legal analysis while bounding provider cost.
+const AI_MAX_TOKENS = Math.min(1200, Math.max(450, Number.parseInt(process.env.AI_MAX_TOKENS || "850",10) || 850));
 
 
 // ======================================================
@@ -501,7 +503,7 @@ Only cite documents genuinely relevant to the user's question. Live LexUZ excerp
   **Nima qilish kerak:** 2–3 concrete next steps or essential evidence.
 - If evidence is insufficient, name the missing facts without guessing.
 - Avoid duplicating a long disclaimer; a short limitation is enough.
-- Keep the main body roughly 160–220 words when possible because the provider's temporary output budget is 450 tokens. Never sacrifice correctness or source integrity merely to meet length targets.
+- Keep the main body roughly 160–220 words when possible with a bounded output budget. Never sacrifice correctness or source integrity merely to meet length targets.
 `;
 
   // HUQUQIY ANIQLIK: modelga huquqiy asoslar bo'yicha qo'shimcha qoida.
@@ -551,7 +553,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
           "HTTP-Referer": process.env.SITE_URL || "https://huquqiy-ai-backend.onrender.com",
           "X-Title": "QOMUS"
         },
-        body: JSON.stringify({ model, messages: auditOutbound(messages), temperature: 0.2, max_tokens: 450 })
+        body: JSON.stringify({ model, messages: auditOutbound(messages), temperature: 0.2, max_tokens: AI_MAX_TOKENS })
       });
       try { data = await response.json(); }
       catch (_) { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
@@ -7275,7 +7277,7 @@ async function aiResultPage(
     answer = error?.message === "OPENROUTER_RATE_LIMIT" ? (lang === "uz" ? "OpenRouter bepul modelining so‘rov limiti tugagan (HTTP 429). Keyinroq urinib ko‘ring yoki hisobingizdagi limitni tekshiring." : lang === "ru" ? "Превышен лимит бесплатной модели OpenRouter (HTTP 429)." : "OpenRouter free model rate limit exceeded (HTTP 429).")
       : error?.message === "OPENROUTER_AUTH_FAILED" ? (lang === "uz" ? "OpenRouter API kaliti noto‘g‘ri yoki bekor qilingan (HTTP 401)." : lang === "ru" ? "Ключ OpenRouter недействителен (HTTP 401)." : "OpenRouter API key invalid (HTTP 401).")
       : error?.message === "OPENROUTER_CREDITS_EXHAUSTED"
-      ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Javob token limiti vaqtincha 450 ga tushirildi, lekin bu kredit tugagan bo‘lsa yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
+      ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Token limitini kamaytirish kredit tugaganda yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
       : lang === "uz"
         ? "AI xizmatiga ulanishda xatolik yuz berdi. OPENROUTER_API_KEY va server sozlamalarini tekshiring."
         : lang === "ru"
