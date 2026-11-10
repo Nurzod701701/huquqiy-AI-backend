@@ -1,6 +1,6 @@
 "use strict";
 /**
- * QOMUS court-practice retrieval (read-only, evidence-gated).
+ * VERIUS court-practice retrieval (read-only, evidence-gated).
  * Never infer holdings from a search-results table. Only reviewed public judgment texts
  * in the curated corpus can be used as judicial evidence.
  * Import is deliberately a separate, human-reviewed process.
@@ -42,7 +42,7 @@ function load(){
   const raw=JSON.parse(fs.readFileSync(DATA_FILE,"utf8"));
   if(!raw||raw.version!==1||!Array.isArray(raw.items))return EMPTY;
   return {version:1,items:raw.items.slice(0,MAX_RECORDS).map(validated).filter(Boolean)};
- }catch(e){console.warn("QOMUS court corpus unavailable:",e.message);return EMPTY;}
+ }catch(e){console.warn("VERIUS court corpus unavailable:",e.message);return EMPTY;}
 }
 function similarity(question,record){
  const questionWords=words(question);
@@ -61,7 +61,7 @@ function retrieve(question,{limit=3,minimum=0.12,corpus}={}){
 function evidence(question,options={}){
  const found=retrieve(question,options);
  if(!found.length)return {found:false,count:0,status:"no_verified_similar_judgments",
-  instruction:"No verified similar judicial decision texts are available in the approved QOMUS corpus. Do not imply that courts previously decided this way. Do not invent case numbers, reasoning, court practice trends, or precedent citations. Answer on verified legislation only, explicitly mentioning that comparable verified decisions were not available."};
+  instruction:"No verified similar judicial decision texts are available in the approved VERIUS corpus. Do not imply that courts previously decided this way. Do not invent case numbers, reasoning, court practice trends, or precedent citations. Answer on verified legislation only, explicitly mentioning that comparable verified decisions were not available."};
  const lines=found.map((r,i)=>[
   "CASE "+(i+1),
   "Case number: "+r.caseNumber,
