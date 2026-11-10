@@ -10,10 +10,10 @@
     "check": "node --check server.js",
     "test:security": "node --test test/security-hardening.test.js test/account-registration-validation.test.js test/account-data-integrity.test.js test/admin-security-dashboard.test.js test/security-account-resend-qa.test.js test/security-durable-audit-throttle.test.js test/security-alert-mail.test.js test/login-durable-restart.test.js test/ai-privacy-five-fixes.test.js test/ai-egress-consent.test.js",
     "test:migration": "node --test test/neon-migration.test.js",
-    "test:citizens": "node --test test/citizen-parity.test.js test/verius-core-regression.test.js test/criminal-questions.test.js test/criminal-scenario-advisor.test.js test/criminal-expanded-guides.test.js test/advokat-criminal-workbench.test.js",
+    "test:citizens": "node --test test/citizen-parity.test.js test/verius-core-regression.test.js test/criminal-questions.test.js test/criminal-scenario-advisor.test.js test/criminal-expanded-guides.test.js test/advokat-criminal-workbench.test.js test/criminal-evidence-preflight.test.js",
     "test:core": "node --test test/verius-core-regression.test.js test/ai-privacy-five-fixes.test.js test/citizen-parity.test.js",
     "test:criminal": "node --test test/criminal-questions.test.js test/criminal-scenario-advisor.test.js test/criminal-expanded-guides.test.js",
-    "test:advokat-criminal": "node --test test/advokat-criminal-workbench.test.js"
+    "test:advokat-criminal": "node --test test/advokat-criminal-workbench.test.js test/criminal-evidence-preflight.test.js"
   },
   "engines": {
     "node": ">=20"

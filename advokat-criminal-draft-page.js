@@ -1,0 +1,53 @@
+"use strict";
+const {DOC_TYPES,draftDocument}=require("./criminal-procedural-drafts");
+const COPY={
+ uz:{title:"Jinoyat ishi — iltimosnoma va e’tiroz konstruktori",subtitle:"Ish bo‘yicha faktlarni kiriting, JPKga tayangan tahrirlanadigan hujjat loyihasini tayyorlang.",back:"Advokat ish markazi",type:"Hujjat turi",authority:"Kimga (tergovchi, prokuror yoki sudning aniq nomi)",lawyer:"Advokat F.I.Sh. va rekvizitlari",caseReference:"Ish raqami yoki shartli identifikator",proceduralRole:"Himoya qilinayotgan shaxsning maqomi",facts:"Ish holatlari: faqat ishonchli faktlarni yozing",evidence:"Talab qilinadigan yoki tekshiriladigan dalil/hujjat",relevance:"Dalilning ish uchun ahamiyati",issue:"Jarayonda aniqlangan ehtimoliy muammo (tasdiqlanmagan bo‘lsa, shunday yozing)",action:"Aniq nimani so‘raysiz?",attachments:"Ilovalar",date:"Sana",make:"Hujjat loyihasini tuzish",preview:"Tahrirlanadigan hujjat",download:"Word (.doc) faylini yuklash",copy:"Matnni nusxalash",missing:"Majburiy maydonlar to‘ldirilmagan",warning:"Maxfiy ma’lumotlar brauzerda qoladi; hech narsa serverga yoki AI’ga yuborilmaydi. Faqat nazorat ostida, ish uchun zarur ma’lumotni kiriting.",note:"Hujjat avtomatik tarzda sudga yoki tergov organiga yuborilmaydi. Advokat rekvizitlar, moddalar, amal qiluvchi qonun tahriri, vakolat va protsessual muddatlarni tekshirishi shart.",link:"JK/JPK manbalarini tekshirish",placeholder:"Zarur bo‘lsa o‘zingiz to‘ldiring"},
+ ru:{title:"Конструктор ходатайств и возражений",subtitle:"Заполните обстоятельства дела и получите редактируемый проект процессуального документа.",back:"К рабочему кабинету",type:"Тип документа",authority:"Адресат",lawyer:"Ф.И.О. адвоката и реквизиты",caseReference:"Номер дела или условный код",proceduralRole:"Процессуальный статус",facts:"Проверенные обстоятельства дела",evidence:"Запрашиваемые или проверяемые материалы",relevance:"Значение доказательства",issue:"Предполагаемая процессуальная проблема",action:"Конкретное процессуальное требование",attachments:"Приложения",date:"Дата",make:"Составить проект",preview:"Редактируемый документ",download:"Скачать Word (.doc)",copy:"Копировать текст",missing:"Заполните обязательные поля",warning:"Информация остаётся в браузере, не передаётся на сервер и во внешний AI.",note:"Проект не направляется в государственные органы. Адвокат обязан проверить все реквизиты, статьи и процессуальные сроки.",link:"Проверить УПК",placeholder:"Заполните по необходимости"},
+ en:{title:"Criminal-case motion and objection builder",subtitle:"Enter case facts and produce an editable procedural document draft.",back:"Back to advocate workbench",type:"Document type",authority:"Addressee / competent authority",lawyer:"Counsel identification and credentials",caseReference:"Case number or reference",proceduralRole:"Procedural status",facts:"Verified case circumstances",evidence:"Evidence or document requested/reviewed",relevance:"Relevance to the case",issue:"Potential procedural issue (distinguish unverified allegations)",action:"Specific remedy requested",attachments:"Attachments",date:"Date",make:"Generate draft",preview:"Editable document",download:"Download Word (.doc)",copy:"Copy text",missing:"Required fields are missing",warning:"All typed information remains in your browser. No server or external AI submission.",note:"This draft is not submitted to any authority. Counsel must check addressee, law, applicable edition, deadline and procedural grounds.",link:"Check Criminal Procedure Code",placeholder:"Enter as needed"}
+};
+const TYPE_LABELS={
+ uz:{evidence_request:"Dalillarni talab qilib olish haqida iltimosnoma",admissibility:"Dalil maqbulligi bo‘yicha e’tiroz / iltimosnoma",additional_check:"Qo‘shimcha tekshiruv harakati haqida iltimosnoma"},
+ ru:{evidence_request:"Ходатайство об истребовании доказательств",admissibility:"Возражение о допустимости доказательств",additional_check:"Ходатайство о дополнительном процессуальном действии"},
+ en:{evidence_request:"Motion to obtain evidence",admissibility:"Admissibility objection / motion",additional_check:"Motion for further procedural review"}
+};
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function criminalDraftPage(lang="uz"){
+ lang=Object.hasOwn(COPY,lang)?lang:"uz";
+ const t=COPY[lang],q="?lang="+lang;
+ const spec={authority:true,lawyer:true,caseReference:true,proceduralRole:false,facts:true,evidence:true,relevance:true,issue:false,action:true,attachments:false,date:false};
+ const fields=Object.entries(spec).map(([k,required])=>'<label for="f-'+k+'">'+esc(t[k])+(required?' *':'')+'</label>'+(["facts","evidence","relevance","issue","action","attachments"].includes(k)?'<textarea id="f-'+k+'" data-field="'+k+'" maxlength="3500" '+(required?'required':'')+'></textarea>':'<input id="f-'+k+'" data-field="'+k+'" maxlength="3500" '+(required?'required':'')+' type="'+(k==="date"?"date":"text")+'">')).join("");
+ const options=Object.keys(DOC_TYPES).map(k=>'<option value="'+k+'">'+esc(TYPE_LABELS[lang][k])+'</option>').join("");
+ const js=`(()=>{"use strict";
+ const draftDocument=${draftDocument.toString()};
+ const specs=${JSON.stringify(DOC_TYPES).replace(/</g,"\\u003c")};
+ const ui=${JSON.stringify(t).replace(/</g,"\\u003c")};
+ let latest=null;
+ const $=id=>document.getElementById(id);
+ $("generate").addEventListener("click",()=>{
+  const form={type:$("type").value};
+  for(const input of document.querySelectorAll("[data-field]"))form[input.dataset.field]=input.value;
+  const r=draftDocument.call(null,form);
+  if(!r.ok){$("status").textContent=ui.missing+": "+r.missing.join(", ");return;}
+  $("status").textContent="";
+  latest=r;
+  $("preview").hidden=false;
+  $("editable").value=r.text;
+ });
+ $("copy").addEventListener("click",()=>{if(!$("preview").hidden && $("editable").value)navigator.clipboard?.writeText($("editable").value)});
+ $("word").addEventListener("click",()=>{
+  if($("preview").hidden||!$("editable").value)return;
+  const safe=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:Times New Roman,serif;font-size:14pt;line-height:1.5;white-space:pre-wrap}</style></head><body>'+safe($("editable").value).replace(/\\n/g,"<br>")+'</body></html>';
+  const blob=new Blob(["\\ufeff",html],{type:"application/msword"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="verius-jinoyat-iltimosnoma.doc";a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+ });
+ })();`;
+ // draftDocument references DOC_TYPES and normalize: declare deps inside client script.
+ const dependencies='const DOC_TYPES='+JSON.stringify(DOC_TYPES).replace(/</g,"\\u003c")+';const normalize='+((s)=>String(s||"").replace(/\r/g,"").trim().slice(0,3500)).toString()+';';
+ const script=js.replace('const draftDocument=',dependencies+'const draftDocument=').replace('const specs='+JSON.stringify(DOC_TYPES).replace(/</g,"\\u003c")+';','');
+ const style='*{box-sizing:border-box}body{margin:0;background:#f3f6f8;color:#173248;font-family:Inter,system-ui,Arial,sans-serif}a{color:inherit}header{background:#06111f;color:white;padding:20px}.wrap{max-width:1000px;margin:auto}header a{color:#edcf92}.hero{padding:42px 18px;background:linear-gradient(115deg,#06111f,#1a4560);color:white}.hero h1{font:normal clamp(30px,5vw,46px) Georgia,serif;margin:0 0 15px}.hero p{color:#d4e6ef;line-height:1.6}.main{padding:25px 18px 65px}.card{padding:23px;background:white;border:1px solid #d9e4ea;border-radius:16px;margin-bottom:20px}.card label{font-weight:750;display:block;margin:16px 0 7px}.card select,.card input,.card textarea{width:100%;border:1px solid #b8cbd7;border-radius:9px;padding:12px;font:inherit}.card textarea{min-height:92px;resize:vertical}.card textarea#editable{min-height:460px;line-height:1.65;font-family:Georgia,serif}.actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:20px}button{border:0;background:#15415b;color:white;border-radius:9px;padding:12px 17px;cursor:pointer;font-weight:750}button.secondary{background:#eaf0f3;color:#183b54}.notice{border-left:4px solid #cba96c;background:#fff5e3;padding:16px;line-height:1.7;margin:18px 0}p{line-height:1.6}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #c9a86a;outline-offset:3px}@media(max-width:620px){.main{padding:13px}.card{padding:16px}}';
+ return '<!doctype html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>VERIUS — '+esc(t.title)+'</title><style>'+style+'</style></head><body><header><div class="wrap"><strong>§ VERIUS PRO</strong> · <a href="/advokat-pro/criminal/workbench'+q+'">'+esc(t.back)+'</a></div></header><section class="hero"><div class="wrap"><h1>'+esc(t.title)+'</h1><p>'+esc(t.subtitle)+'</p></div></section><main class="main"><div class="wrap"><section class="card"><label for="type">'+esc(t.type)+'</label><select id="type">'+options+'</select>'+fields+'<div class="actions"><button type="button" id="generate">'+esc(t.make)+'</button></div><p role="status" id="status"></p></section><section class="card" id="preview" hidden><h2>'+esc(t.preview)+'</h2><textarea id="editable" spellcheck="false"></textarea><div class="actions"><button type="button" id="word">'+esc(t.download)+'</button><button type="button" class="secondary" id="copy">'+esc(t.copy)+'</button></div></section><div class="notice">'+esc(t.warning)+'</div><div class="notice">'+esc(t.note)+'</div><p><a target="_blank" rel="noopener noreferrer" href="https://lex.uz/docs/-111460">'+esc(t.link)+' ↗</a></p></div></main><script>'+script+'</script></body></html>';
+}
+module.exports={criminalDraftPage};
