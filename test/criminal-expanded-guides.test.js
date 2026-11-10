@@ -23,7 +23,7 @@ for(const lang of ["uz","ru","en"]){
   test("browser "+lang+"/"+role+" embeds detailed sections and preserves no-upload behavior",()=>{
    const html=scenarioAdvisorPage(lang,role);
    assert.match(html,/advice-section/);
-   assert.match(html,/details:/);
+   assert.match(html,/"details":/);
    assert.match(html,/baseSteps/);
    assert.match(html,/c\.details\[data\.role\]/);
    assert.match(html,/id="result"/);
