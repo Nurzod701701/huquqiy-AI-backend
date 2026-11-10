@@ -34,7 +34,7 @@ for(const lang of ["uz","ru","en"]){
  test("criminal links appear on both main portal pages "+lang,()=>{
    const c=citizen(lang),a=advocate(lang);
    assert.ok(c.includes('href="/criminal?lang='+lang+'"'));
-   assert.ok(a.includes('href="/advokat-pro/criminal?lang='+lang+'"'));
+   assert.ok(a.includes('href="/advokat-pro/criminal/workbench?lang='+lang+'"'));
    assert.equal((c.match(/<article class="card">/g)||[]).length,12,"existing citizen modules retained");
    for(const old of ["/ai","/calculators","/pension","/documents","/login"]){
      assert.ok(c.includes('href="'+old+'?lang='+lang+'"'));
