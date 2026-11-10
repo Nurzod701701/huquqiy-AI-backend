@@ -28,3 +28,8 @@ test("pension considers alternative benefit categories separately",()=>{
   assert.match(server,/if\(kind==='old'\)/);
   assert.match(server,/if\(kind==='dis'\)/);
 });
+
+test("unknown earnings must not reuse an old input value",()=>{
+  assert.match(server,/const salary=pSalaryUnknown\(\)\?NaN:Number\(by\('pSalary'\)\.value\)/);
+  assert.match(server,/const salary=surSalaryUnknown\(\)\?NaN:Number\(by\('surSalary'\)\.value\)/);
+});
