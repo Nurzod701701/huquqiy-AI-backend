@@ -1,8 +1,8 @@
 "use strict";
 const BHM=Object.freeze({amount:440000,effectiveFrom:"2026-09-01",source:"https://lex.uz/uz/acts/-4680944"});
 function calculateCourtFee({claim,amount=0,exemption="unknown",businessParties="unknown",repeatDivorce=false},rate=BHM.amount){
- const money=Number(amount);
- if(!Number.isFinite(rate)||rate<=0||!Number.isFinite(money)||money<0||money>1e15)throw Error("INVALID_FEE_INPUT");
+ const money=(amount===null||amount===undefined||typeof amount==="boolean"||typeof amount==="object"||(typeof amount==="string"&&!amount.trim()))?NaN:Number(amount);
+ if(typeof rate==="boolean"||!Number.isFinite(rate)||rate<=0||!Number.isFinite(money)||money<0||money>1e15)throw Error("INVALID_FEE_INPUT");
  if(claim==="alimony"||claim==="labor")return {fee:0,multiplier:0,formula:"exempt_plaintiff",reason:"plaintiff_exempt_only"};
  if(exemption!=="no")return {fee:null,formula:"exemption_unverified"};
  if(claim==="divorce")return {fee:rate*(repeatDivorce?4:2),formula:repeatDivorce?"BHM × 4":"BHM × 2"};
