@@ -13829,10 +13829,37 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
   }
   if(req.method==="POST" && pathname==="/forgot-password"){
-    const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email); if(user && user.role==="user" && user.status==="active"){if(user.resetSentAt && Date.now()-Date.parse(user.resetSentAt)<60000){accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`);return true;}const code=accountSixDigitCode();try{const sent=await accountSendEmail(email,"VERIUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true; }user.resetCodeHash=accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();user.resetSentAt=accountNow();accountAudit(db,user.id,"password_reset_requested",{});await accountSaveDb(db);} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
+    const f=await readForm(req);
+    const email=accountEmail(f.email);
+    const db=await accountLoadDb();
+    const user=db.users.find(u=>u.email===email);
+    // OWNER_EMAIL uses separate admin credentials: never imply an admin reset email was sent.
+    // Keep identical responses for unknown/ineligible addresses to avoid account enumeration.
+    if(user && user.role==="user" && user.status==="active"){
+      const recentlySent=user.resetSentAt && Date.now()-Date.parse(user.resetSentAt)<60000;
+      if(!recentlySent){
+        const code=accountSixDigitCode();
+        try{
+          await accountSendEmail(email,"VERIUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);
+        }catch(error){
+          console.error("RESET EMAIL SEND ERROR",error);
+          sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodini yuborib bo‘lmadi. Birozdan keyin qayta urinib ko‘ring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);
+          return true;
+        }
+        user.resetCodeHash=accountHashPassword(code);
+        user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();
+        user.resetSentAt=accountNow();
+        accountAudit(db,user.id,"password_reset_requested",{});
+        await accountSaveDb(db);
+      }
+    }
+    accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`);
+    return true;
   }
   if(req.method==="GET" && pathname==="/reset-password"){
-    const email=accountEmail(url.searchParams.get("email")); sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" required maxlength="6"></label><label>Yangi parol<input name="password" type="password" minlength="8" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" required></label><button class="accountButton">Parolni yangilash</button></form></section>`)); return true;
+    const email=accountEmail(url.searchParams.get("email"));
+    sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><p class="accountMuted">Agar ushbu emailga bog‘langan faol foydalanuvchi akkaunti mavjud bo‘lsa, tiklash kodi yuboriladi. Kod kelmasa, Spam papkasini tekshiring yoki 60 soniyadan keyin qayta yuboring.</p><p class="accountMuted">Admin hisobining paroli bu sahifa orqali tiklanmaydi. <a href="/admin/login?lang=${lang}">Admin kirish</a>.</p><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label><label>Yangi parol<input name="password" type="password" minlength="8" autocomplete="new-password" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" autocomplete="new-password" required></label><button class="accountButton">Parolni yangilash</button></form><form method="post" action="/forgot-password?lang=${lang}" style="margin-top:14px"><input type="hidden" name="email" value="${esc(email)}"><button class="accountButton" type="submit">Kodni qayta yuborish (60 soniyadan keyin)</button></form><p class="accountMuted"><a href="/forgot-password?lang=${lang}">Boshqa emailni kiritish</a></p></section>`));
+    return true;
   }
   if(req.method==="POST" && pathname==="/reset-password"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
