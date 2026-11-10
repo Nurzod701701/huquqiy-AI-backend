@@ -5757,7 +5757,7 @@ function footer(lang = "uz") {
         <div class="footerLinks" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:14px">
           <a href="/${q(lang)}">${esc(tr(lang,"home"))}</a>
           <a href="/sources${q(lang)}">${esc(tr(lang,"sources"))}</a>
-          <a href="/court${q(lang)}">${esc(tr(lang,"court"))}</a>
+          <a href="/advokat-pro${q(lang)}">${lang==="ru"?"Адвокатам":lang==="en"?"Advocates":"Advokatlar"}</a>
           <a href="/login${q(lang)}">${lang === "ru" ? "Войти" : lang === "en" ? "Sign in" : "Kirish"}</a>
         </div>
         <div class="footerBottom" style="margin-top:18px">© ${new Date().getFullYear()} VERIUS</div>
