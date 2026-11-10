@@ -43,6 +43,24 @@ function parse(html,category){
  }
  return items;
 }
+// Stream with an enforced byte bound: Content-Length can be absent or misleading.
+async function readBoundedHtml(response,limit=MAX_HTML){
+ const reader=response.body?.getReader?.();
+ if(!reader){const body=await response.text();if(Buffer.byteLength(body,"utf8")>limit)throw Error("Response too large");return body;}
+ const decoder=new TextDecoder("utf-8",{fatal:false}),parts=[];
+ let size=0;
+ try{
+  while(true){
+   const {done,value}=await reader.read();if(done)break;
+   size+=value.byteLength;
+   if(size>limit)throw Error("Response too large");
+   parts.push(decoder.decode(value,{stream:true}));
+  }
+  parts.push(decoder.decode());
+  return parts.join("");
+ }catch(err){try{await reader.cancel()}catch(_){}throw err}
+ finally{reader.releaseLock()}
+}
 function normalizeSearch(value){return String(value||"").trim().slice(0,120).toLocaleLowerCase("uz");}
 function filter(items,search){const term=normalizeSearch(search);if(!term)return items.slice(0,MAX_ITEMS);
  return items.filter(x=>[x.caseNumber,x.court,x.instance,x.subject,x.date,x.outcome,x.documentType].some(v=>String(v).toLocaleLowerCase("uz").includes(term))).slice(0,MAX_ITEMS);}
@@ -58,7 +76,7 @@ async function fetchPublic(category){
   if(!/text\/html/i.test(type))throw new Error("Unexpected content type");
   const len=Number(response.headers.get("content-length")||0);
   if(len>MAX_HTML)throw new Error("Response too large");
-  const body=(await response.text()).slice(0,MAX_HTML);
+  const body=await readBoundedHtml(response);
   const rows=parse(body,category);
   value={ok:true,state:rows.length?"public_rows_found":"public_rows_not_in_html",rows,sourceUrl};
  }catch(_){value={ok:false,state:"source_unavailable",rows:[],sourceUrl};}
@@ -79,4 +97,4 @@ async function list(category,search=""){
  return {ok:result.ok,state:result.state,items,search:normalizeSearch(search),sourceUrl:result.sourceUrl,
   scannedRows:result.rows.length,limitedToFirstPage:true,note};
 }
-module.exports={list,parse,PAGES,filter};
+module.exports={list,parse,PAGES,filter,readBoundedHtml};
