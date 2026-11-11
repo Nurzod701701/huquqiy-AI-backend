@@ -38,9 +38,9 @@ function auditOutbound(messages) {
 }
 function consentPanel(lang,route,payload,description) {
  const t={
-  uz:{title:"AI'ga yuboriladigan matnni tekshiring",description:"Quyida yashirilgan nusxa ko'rsatilgan. Shaxsiy ma'lumotlar to'liq aniqlanishi kafolatlanmaydi. To'g'ri bo'lmasa, orqaga qayting.",consent:"Ko'rsatilgan matn tashqi OpenRouter AI xizmatiga yuborilishiga roziman.",send:"Tasdiqlash va AI'ga yuborish",back:"Orqaga qaytish"},
-  ru:{title:"Проверьте текст для ИИ",description:"Показана скрытая копия. Автоматическая очистка может пропустить данные. При сомнениях вернитесь назад.",consent:"Я согласен отправить показанный текст внешнему сервису OpenRouter.",send:"Подтвердить и отправить",back:"Назад"},
-  en:{title:"Review text before external AI",description:"This is the redacted copy. Automated detection can miss private information. Go back if anything sensitive remains.",consent:"I agree to send the displayed content to the external OpenRouter AI service.",send:"Confirm and send",back:"Go back"}
+  uz:{title:"AI'ga yuboriladigan matnni tekshiring",description:"Quyida yashirilgan nusxa ko'rsatilgan. Shaxsiy ma'lumotlar to'liq aniqlanishi kafolatlanmaydi. To'g'ri bo'lmasa, orqaga qayting.",consent:"Ko'rsatilgan matn tashqi Google Gemini AI xizmatiga yuborilishiga roziman.",send:"Tasdiqlash va AI'ga yuborish",back:"Orqaga qaytish"},
+  ru:{title:"Проверьте текст для ИИ",description:"Показана скрытая копия. Автоматическая очистка может пропустить данные. При сомнениях вернитесь назад.",consent:"Я согласен отправить показанный текст внешнему сервису Google Gemini.",send:"Подтвердить и отправить",back:"Назад"},
+  en:{title:"Review text before external AI",description:"This is the redacted copy. Automated detection can miss private information. Go back if anything sensitive remains.",consent:"I agree to send the displayed content to the external Google Gemini AI service.",send:"Confirm and send",back:"Go back"}
  }[lang]||null;
  const tt=t||{
   title:"AI'ga yuboriladigan matnni tekshiring",

@@ -1,6 +1,6 @@
 "use strict";
 
-// Defense-in-depth redaction for ALL outbound OpenRouter text content.
+// Defense-in-depth redaction for ALL outbound Gemini (AI) text content.
 // Heuristic PII redaction does not replace consent, DLP, legal review or source inspection.
 const MASK = Object.freeze({
  JSHSHIR:"[JSHSHIR_YASHIRILDI]", PASPORT:"[PASPORT_YASHIRILDI]",

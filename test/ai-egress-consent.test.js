@@ -23,7 +23,7 @@ test("external egress rejects unverified media and high-risk secrets",()=>{
 });
 test("AI and document review require signed consent before any external AI call", {timeout:20000},async()=>{
  const port=39000+Math.floor(crypto.randomInt(1,2000));
- const child=spawn(process.execPath,["server.js"],{cwd:process.cwd(),env:{...process.env,PORT:String(port),NODE_ENV:"test",OPENROUTER_API_KEY:"",ACCOUNT_DATA_FILE:"/tmp/qomus-consent-qa-nonexistent-"+port+".json"},stdio:"ignore"});
+ const child=spawn(process.execPath,["server.js"],{cwd:process.cwd(),env:{...process.env,PORT:String(port),NODE_ENV:"test",GEMINI_API_KEY:"",ACCOUNT_DATA_FILE:"/tmp/qomus-consent-qa-nonexistent-"+port+".json"},stdio:"ignore"});
  const host="http://127.0.0.1:"+port;
  const formHeaders={"content-type":"application/x-www-form-urlencoded","origin":host};
  async function post(route,body){return fetch(host+route,{method:"POST",redirect:"manual",headers:formHeaders,body:new URLSearchParams(body)});}

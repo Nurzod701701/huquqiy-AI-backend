@@ -13,8 +13,14 @@ const querystring = require("querystring");
 
 const PORT = process.env.PORT || 3000;
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
-const AI_MODEL = process.env.AI_MODEL || "openrouter/free";
+// AI provayder: Google Gemini (Google AI Studio API kaliti).
+// Render Environment: GEMINI_API_KEY (majburiy), GEMINI_MODEL va
+// GEMINI_FALLBACK_MODEL (ixtiyoriy).
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
+const AI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+const AI_FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || "gemini-3.5-flash-lite";
+const GEMINI_API_BASE = (process.env.GEMINI_API_BASE || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\/+$/, "");
+const GEMINI_MAX_TOKENS = Number(process.env.GEMINI_MAX_TOKENS) || 2048;
 
 
 // ======================================================
@@ -409,9 +415,9 @@ async function getLexuzEvidence(question) {
 }
 
 async function callAI(question, lang = "uz", context = "") {
-  if (!OPENROUTER_API_KEY) {
+  if (!GEMINI_API_KEY) {
     throw new Error(
-      "OPENROUTER_API_KEY topilmadi."
+      "GEMINI_API_KEY topilmadi."
     );
   }
 
@@ -513,7 +519,7 @@ Only cite documents genuinely relevant to the user's question. Live LexUZ excerp
   **Nima qilish kerak:** 2–3 concrete next steps or essential evidence.
 - If evidence is insufficient, name the missing facts without guessing.
 - Avoid duplicating a long disclaimer; a short limitation is enough.
-- Keep the main body roughly 160–220 words when possible because the provider's temporary output budget is 450 tokens. Never sacrifice correctness or source integrity merely to meet length targets.
+- Keep the main body roughly 160–220 words when possible. Never sacrifice correctness or source integrity merely to meet length targets.
 `;
 
   // HUQUQIY ANIQLIK: modelga huquqiy asoslar bo'yicha qo'shimcha qoida.
@@ -536,10 +542,10 @@ ${lexEvidence.notes}
 Use only provisions actually visible in these excerpts for precise article-number claims. Other claims must be marked unverified. Do not claim the entire code or current amendment status has been fully checked.`
     : `LIVE LEXUZ CHECK FAILED. Do not state that any article number, deadline or provision was checked against LexUZ. Clearly say official text could not be fetched and provide relevant document link for manual verification. Prefer not to give precise article numbers or deadlines without evidence.`;
 
-  // Try the configured model first. On a credit-only HTTP 402 response,
-  // retry once through OpenRouter's documented zero-priced free-model router.
-  // Free models are rate limited, may be unavailable and must not be trusted
-  // to invent judicial reasoning or legal citations.
+  // Google Gemini (OpenAI-compatible endpoint). The configured model is tried
+  // first; if it is overloaded, rate limited or unavailable (404/429/500/503),
+  // the lighter fallback Gemini model is tried once. Auth/config errors are
+  // surfaced rather than silently changing models.
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 55000);
   const messages = [
@@ -550,55 +556,61 @@ Use only provisions actually visible in these excerpts for precise article-numbe
     ...(context ? [{ role: "system", content: "Collected case information:\n" + context }] : []),
     { role: "user", content: question }
   ];
+  // Gemini takes one system instruction: merge the privacy-audited system
+  // messages into a single one, keeping their original order.
+  const audited = auditOutbound(messages);
+  const geminiMessages = [
+    { role: "system", content: audited.filter(m => m.role === "system").map(m => m.content).join("\n\n") },
+    ...audited.filter(m => m.role !== "system")
+  ];
   let response, data;
-  let usedFreeFallback = false;
+  let usedFallbackModel = false;
+  const models = [...new Set([AI_MODEL, AI_FALLBACK_MODEL].filter(Boolean))];
   try {
-    for (const model of [...new Set([AI_MODEL, "openrouter/free"])]) {
-      response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    for (const model of models) {
+      response = await fetch(GEMINI_API_BASE + "/chat/completions", {
         method: "POST",
         signal: controller.signal,
         headers: {
-          Authorization: "Bearer " + OPENROUTER_API_KEY,
-          "Content-Type": "application/json",
-          "HTTP-Referer": process.env.SITE_URL || "https://huquqiy-ai-backend.onrender.com",
-          "X-Title": "VERIUS"
+          Authorization: "Bearer " + GEMINI_API_KEY,
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ model, messages: auditOutbound(messages), temperature: 0.2, max_tokens: 450 })
+        // Gemini 3+ models always think; "low" keeps latency and cost down.
+        // Temperature is left at the model default as Google recommends for Gemini 3+.
+        body: JSON.stringify({ model, messages: geminiMessages, max_tokens: GEMINI_MAX_TOKENS, reasoning_effort: "low" })
       });
       try { data = await response.json(); }
-      catch (_) { throw new Error("OpenRouter noto‘g‘ri formatda javob qaytardi."); }
+      catch (_) { throw new Error("Gemini noto‘g‘ri formatda javob qaytardi."); }
       if (response.ok) {
-        usedFreeFallback = model === "openrouter/free" && AI_MODEL !== model;
+        usedFallbackModel = model !== AI_MODEL;
         break;
       }
-      const metadata = data?.error?.metadata || {};
-      console.error("OpenRouter request failed:", response.status,
-        metadata.limit_source || "unspecified", model === "openrouter/free" ? "free_fallback" : "primary");
-      // Retry only if primary failed because of credit/budget restriction.
-      // Other errors are surfaced rather than silently changing models.
-      if (response.status === 402 && model !== "openrouter/free" && AI_MODEL !== "openrouter/free") continue;
-      if (response.status === 402) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
-      if (response.status === 401) throw new Error("OPENROUTER_AUTH_FAILED");
-      if (response.status === 429) throw new Error("OPENROUTER_RATE_LIMIT");
-      throw new Error("OPENROUTER_HTTP_" + response.status);
+      const errorBody = Array.isArray(data) ? data[0] : data;
+      const errorText = String(errorBody?.error?.message || errorBody?.error?.status || "").slice(0, 300);
+      console.error("Gemini request failed:", response.status, model === AI_MODEL ? "primary" : "fallback", model, errorText);
+      if ([404, 429, 500, 503].includes(response.status) && model !== models[models.length - 1]) continue;
+      if (response.status === 401 || response.status === 403 ||
+          (response.status === 400 && /api[ _-]?key/i.test(errorText))) throw new Error("AI_AUTH_FAILED");
+      if (response.status === 429) throw new Error("AI_RATE_LIMIT");
+      throw new Error("AI_HTTP_" + response.status);
     }
   } catch (error) {
-    if (error?.name === "AbortError") throw new Error("OpenRouter javobi 55 soniyada kelmadi (timeout).");
+    if (error?.name === "AbortError") throw new Error("Gemini javobi 55 soniyada kelmadi (timeout).");
     throw error;
   } finally {
     clearTimeout(timeout);
   }
-  if (!response?.ok) throw new Error("OPENROUTER_CREDITS_EXHAUSTED");
+  if (!response?.ok) throw new Error("AI_HTTP_" + (response?.status || 0));
   let content = data?.choices?.[0]?.message?.content;
-  if (!content) throw new Error("OpenRouter bo‘sh javob qaytardi.");
+  if (!content) throw new Error("Gemini bo‘sh javob qaytardi.");
   // A fetched excerpt is evidence, NOT full article-by-article verification.
   // Always disclose whether live source material was actually available.
   const evidenceStatus = lexEvidence.verified
     ? {uz:'\n\n📚 LexUZ: rasmiy sahifadan qonun matnining ayrim parchalari olindi. Barcha moddalar va amaldagi tahrir to‘liq tekshirilmagan.', ru:'\n\n📚 LexUZ: получены фрагменты текста с официального сайта. Не все статьи и редакции проверены.', en:'\n\n📚 LexUZ: excerpts were retrieved from the official website. Not all articles or amendments were verified.'}
     : {uz:'\n\n⚠️ LexUZ bilan jonli tekshiruv amalga oshmadi. Modda va muddatlarni rasmiy saytda tekshiring.',ru:'\n\n⚠️ Не удалось проверить данные на LexUZ в реальном времени. Проверьте статьи и сроки на официальном сайте.',en:'\n\n⚠️ Live LexUZ verification was unavailable. Check article numbers and deadlines on the official website.'};
   content += (evidenceStatus[lang] || evidenceStatus.uz);
-  if (usedFreeFallback) {
-    content += {uz:"\n\nℹ️ Asosiy AI modelining kredit limiti yetmagani sababli vaqtincha bepul zaxira model ishlatildi. Muhim huquqiy xulosalarni rasmiy manbadan tekshiring.",ru:"\n\nℹ️ Из-за лимита основного сервиса использована бесплатная резервная модель. Проверьте важные выводы по официальным источникам.",en:"\n\nℹ️ A free backup model was used because the primary model had insufficient credits. Verify material legal conclusions against official sources."}[lang];
+  if (usedFallbackModel) {
+    content += {uz:"\n\nℹ️ Asosiy Gemini modeli vaqtincha band bo‘lgani sababli zaxira Gemini modeli ishlatildi. Muhim huquqiy xulosalarni rasmiy manbadan tekshiring.",ru:"\n\nℹ️ Основная модель Gemini была временно недоступна, поэтому использована резервная модель Gemini. Проверьте важные выводы по официальным источникам.",en:"\n\nℹ️ The primary Gemini model was temporarily unavailable, so a backup Gemini model was used. Verify material legal conclusions against official sources."}[lang];
   }
   if (!courtEvidence.found) {
     const courtNotice={uz:"\n\n⚖️ Sud amaliyoti: ushbu savolga mos, matni tekshirilgan sud qarori bazada hozircha mavjud emas. Sudlar qanday qaror chiqarganiga doir xulosa berilmadi.",ru:"\n\n⚖️ Судебная практика: проверенные тексты аналогичных решений пока недоступны. Выводы о прежних судебных решениях не делались.",en:"\n\n⚖️ Court practice: no reviewed comparable judgment texts are available. No claims about prior rulings are made."};
@@ -7284,15 +7296,13 @@ async function aiResultPage(
     );
 
 
-    answer = error?.message === "OPENROUTER_RATE_LIMIT" ? (lang === "uz" ? "OpenRouter bepul modelining so‘rov limiti tugagan (HTTP 429). Keyinroq urinib ko‘ring yoki hisobingizdagi limitni tekshiring." : lang === "ru" ? "Превышен лимит бесплатной модели OpenRouter (HTTP 429)." : "OpenRouter free model rate limit exceeded (HTTP 429).")
-      : error?.message === "OPENROUTER_AUTH_FAILED" ? (lang === "uz" ? "OpenRouter API kaliti noto‘g‘ri yoki bekor qilingan (HTTP 401)." : lang === "ru" ? "Ключ OpenRouter недействителен (HTTP 401)." : "OpenRouter API key invalid (HTTP 401).")
-      : error?.message === "OPENROUTER_CREDITS_EXHAUSTED"
-      ? (lang === "uz" ? "OpenRouter kredit yoki API kalit xarajat limiti yetarli emas (HTTP 402). Render Environment sozlamalarini emas, OpenRouter hisobidagi kredit va kalit limitini tekshiring. Javob token limiti vaqtincha 450 ga tushirildi, lekin bu kredit tugagan bo‘lsa yordam bermaydi." : lang === "ru" ? "Недостаточно кредитов OpenRouter или достигнут лимит ключа (HTTP 402). Проверьте баланс и лимиты ключа." : "OpenRouter credits or key spending limit exceeded (HTTP 402). Check balance and key limits.")
+    answer = error?.message === "AI_RATE_LIMIT" ? (lang === "uz" ? "Gemini so‘rovlar limiti vaqtincha tugadi (HTTP 429). Birozdan keyin qayta urinib ko‘ring." : lang === "ru" ? "Временно превышен лимит запросов Gemini (HTTP 429). Попробуйте немного позже." : "The Gemini request limit was temporarily reached (HTTP 429). Please try again shortly.")
+      : error?.message === "AI_AUTH_FAILED" ? (lang === "uz" ? "Gemini API kaliti noto‘g‘ri yoki unga ruxsat berilmagan." : lang === "ru" ? "Ключ Gemini API недействителен или не имеет доступа." : "The Gemini API key is invalid or not authorized.")
       : lang === "uz"
-        ? "AI xizmatiga ulanishda xatolik yuz berdi. OPENROUTER_API_KEY va server sozlamalarini tekshiring."
+        ? "AI xizmatiga ulanishda xatolik yuz berdi. GEMINI_API_KEY va server sozlamalarini tekshiring."
         : lang === "ru"
-        ? "Произошла ошибка подключения к AI. Проверьте OPENROUTER_API_KEY и настройки сервера."
-        : "An error occurred while connecting to the AI service. Check OPENROUTER_API_KEY and the server configuration.";
+        ? "Произошла ошибка подключения к AI. Проверьте GEMINI_API_KEY и настройки сервера."
+        : "An error occurred while connecting to the AI service. Check GEMINI_API_KEY and the server configuration.";
 
   }
 
@@ -7750,10 +7760,10 @@ Do not guarantee a court outcome and do not invent legislation.`
 
     answer =
       lang === "uz"
-        ? "AI tahlilini olishda xatolik yuz berdi. Serverdagi OPENROUTER_API_KEY sozlamasini tekshiring."
+        ? "AI tahlilini olishda xatolik yuz berdi. Serverdagi GEMINI_API_KEY sozlamasini tekshiring."
         : lang === "ru"
-        ? "Не удалось получить AI-анализ. Проверьте OPENROUTER_API_KEY на сервере."
-        : "The AI analysis could not be generated. Check OPENROUTER_API_KEY on the server.";
+        ? "Не удалось получить AI-анализ. Проверьте GEMINI_API_KEY на сервере."
+        : "The AI analysis could not be generated. Check GEMINI_API_KEY on the server.";
 
   }
 
@@ -9733,10 +9743,10 @@ REQUESTED OUTPUT: ${wantsContract ? "EMPLOYMENT CONTRACT DRAFT" : (wantsClaim ? 
     console.error("EMPLOYMENT AI ERROR:", error);
     answer =
       lang === "uz"
-        ? "Mehnat huquqi bo‘yicha natijani yaratishda xatolik yuz berdi. OPENROUTER_API_KEY sozlamasini tekshiring."
+        ? "Mehnat huquqi bo‘yicha natijani yaratishda xatolik yuz berdi. GEMINI_API_KEY sozlamasini tekshiring."
         : lang === "ru"
-        ? "Не удалось сформировать результат. Проверьте OPENROUTER_API_KEY."
-        : "The result could not be generated. Check OPENROUTER_API_KEY.";
+        ? "Не удалось сформировать результат. Проверьте GEMINI_API_KEY."
+        : "The result could not be generated. Check GEMINI_API_KEY.";
   }
 
   return appLayout(

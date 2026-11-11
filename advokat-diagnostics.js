@@ -24,7 +24,7 @@ function capabilities(){
  return [
  {name:"Brauzer qoidalari",status:"active",details:"6 ta matn belgisi bo‘yicha dastlabki qidiruv; huquqiy tasdiq emas"},
  {name:"PDF/DOCX matn ajratish",status:"implemented",details:"Mavjud /legal-review yo‘nalishida; skanerlangan PDF matni OCRsiz o‘qilmaydi"},
- {name:"OpenRouter AI hujjat tahlili",status:process.env.OPENROUTER_API_KEY?"configured":"not_configured",details:"/legal-review natija sahifasi callAI funksiyasidan foydalanadi. Kalit borligi chaqiruv muvaffaqiyatini tasdiqlamaydi"},
+ {name:"Gemini AI hujjat tahlili",status:process.env.GEMINI_API_KEY?"configured":"not_configured",details:"/legal-review natija sahifasi callAI funksiyasidan foydalanadi. Kalit borligi chaqiruv muvaffaqiyatini tasdiqlamaydi"},
  {name:"LexUZ",status:"link_only",details:"Rasmiy manba havolasi; norma/tahrirni avtomatik qiyoslash yo‘q"},
  {name:"Advice.uz",status:"link_only",details:"Huquqiy tushuntirishlarga havola; API tekshiruvi yo‘q"},
  {name:"Oliy sud",status:"link_only",details:"Sud tizimi rasmiy saytiga havola; sud ma’lumotlarini avtomatik tekshirish yo‘q"},
