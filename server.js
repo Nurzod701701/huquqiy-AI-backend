@@ -624,6 +624,9 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   if (!response?.ok) throw new Error("AI_HTTP_" + (response?.status || 0));
   let content = data?.choices?.[0]?.message?.content;
   if (!content) throw new Error("Gemini bo‘sh javob qaytardi.");
+  // Gemini sometimes echoes the language instruction as its first line; drop it.
+  content = String(content).replace(/^\s*(?:\*\*)?\s*(?:faqat\s+o[‘'’`ʻ]?zbek\s+tilida\s+javob\s+ber(?:aman|yapman|ilad[ia])?|отвечаю\s+только\s+на\s+русском\s+языке|(?:i\s+will\s+)?answer(?:ing)?\s+only\s+in\s+english)[.!:]?\s*(?:\*\*)?\s*\n+/i, "");
+  if (!content.trim()) throw new Error("Gemini bo‘sh javob qaytardi.");
   // A fetched excerpt is evidence, NOT full article-by-article verification.
   // Always disclose whether live source material was actually available.
   const evidenceStatus = lexEvidence.verified
