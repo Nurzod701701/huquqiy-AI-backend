@@ -21,6 +21,10 @@ const AI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 const AI_FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || "gemini-3.5-flash-lite";
 const GEMINI_API_BASE = (process.env.GEMINI_API_BASE || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\/+$/, "");
 const GEMINI_MAX_TOKENS = Number(process.env.GEMINI_MAX_TOKENS) || 2048;
+const GEMINI_LONG_MAX_TOKENS = Number(process.env.GEMINI_LONG_MAX_TOKENS) || 8192;
+// Per-attempt limits: LexUZ (≤9 s) + primary + fallback stays under ~90 s.
+const GEMINI_PRIMARY_TIMEOUT_MS = Number(process.env.GEMINI_PRIMARY_TIMEOUT_MS) || 48000;
+const GEMINI_FALLBACK_TIMEOUT_MS = Number(process.env.GEMINI_FALLBACK_TIMEOUT_MS) || 30000;
 
 
 // ======================================================
@@ -141,7 +145,9 @@ function sendHtml(res, html, status = 200) {
     "Cache-Control": "no-store"
   });
 
-  const pageHtml = String(html || '');
+  let pageHtml = String(html || '');
+  // Gemini AI panel on Advokat PRO / criminal advisor tool pages (successful GET only).
+  if (status === 200 && res.__aiAssist) pageHtml = require("./ai-assist").inject(pageHtml, res.__aiAssist.pathname, res.__aiAssist.lang);
   let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : appendBeforeFinalBody(pageHtml, GLOBAL_LEXUZ_SCRIPT);
   if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = appendBeforeFinalBody(resultHtml, LANGUAGE_PRESERVE_SCRIPT);
   // Design-only layer: Academy-inspired QOMUS theme, isolated on the QA branch.
@@ -388,16 +394,17 @@ async function getLexuzEvidence(question) {
   const matched = LEXUZ_DOCS.filter(d => d.test.test(question)).slice(0, 2);
   if (!matched.length) return { verified: false, notes: 'No matching legal document was selected.' };
   const pieces = [];
-  for (const doc of matched) {
+  // Fetch the matched documents in parallel so LexUZ adds at most ~9 s before the AI call.
+  await Promise.all(matched.map(async doc => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 9000);
     try {
       const r = await fetch(doc.url, { signal: controller.signal, headers: { 'Accept': 'text/html', 'User-Agent': 'VERIUS-LegalResearch/1.0' }, redirect: 'follow' });
-      if (!r.ok || !/text\/html/i.test(r.headers.get('content-type') || '')) continue;
+      if (!r.ok || !/text\/html/i.test(r.headers.get('content-type') || '')) return;
       const html = (await r.text()).slice(0, 1800000);
       const txt = lexPlainText(html);
       // Reject SPA shells, error pages, and pages without actual legal article text.
-      if (txt.length < 4000 || !/(?:\d{1,4}\s*[-–.]?\s*(?:modda|модда|статья)|(?:modda|статья)\s*\d{1,4})/i.test(txt)) continue;
+      if (txt.length < 4000 || !/(?:\d{1,4}\s*[-–.]?\s*(?:modda|модда|статья)|(?:modda|статья)\s*\d{1,4})/i.test(txt)) return;
       const terms = question.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(x => x.length >= 5).slice(0, 12);
       const sections = [];
       for (const term of terms) {
@@ -409,12 +416,16 @@ async function getLexuzEvidence(question) {
       pieces.push({ doc, excerpts: sections.map(x => x.text).join('\n---\n').slice(0, 5500) });
     } catch (e) { console.warn('LexUZ retrieval unavailable:', doc.name, e.message); }
     finally { clearTimeout(timer); }
-  }
+  }));
+  pieces.sort((a, b) => matched.indexOf(a.doc) - matched.indexOf(b.doc));
   return pieces.length ? { verified: true, notes: pieces.map(p => `${p.doc.name}: ${p.doc.url}\n${p.excerpts}`).join('\n\n') } :
     { verified: false, notes: 'LexUZ document text could not be retrieved or validated.' };
 }
 
-async function callAI(question, lang = "uz", context = "") {
+// opts.long: document drafting/review tasks that need a full structured answer
+// (no 160–220 word target, larger output budget).
+async function callAI(question, lang = "uz", context = "", opts = {}) {
+  const longTask = Boolean(opts && opts.long);
   if (!GEMINI_API_KEY) {
     throw new Error(
       "GEMINI_API_KEY topilmadi."
@@ -509,7 +520,11 @@ Only cite documents genuinely relevant to the user's question. Live LexUZ excerp
 
 13. Never claim that a predicted court outcome is guaranteed.
 
-14. ANSWER STRUCTURE AND READABILITY (CRITICAL):
+${longTask ? `14. ANSWER STRUCTURE (DOCUMENT TASK):
+- This is a document review, drafting or professional analysis task. Follow exactly the sections and format requested in the user message instead of the short Q&A format.
+- Be complete but concise: cover every requested section, avoid repetition, and keep the whole answer under about 900 words unless a full document text is requested.
+- Never sacrifice correctness or source integrity; mark anything that needs verification.
+` : `14. ANSWER STRUCTURE AND READABILITY (CRITICAL):
 - The user expects a practical, direct answer to their actual legal situation, not a list of retrieved court decisions.
 - Write in plain language, friendly and professional. No unnecessary technical jargon or generic introductions.
 - Prefer this compact structure in the selected language:
@@ -520,7 +535,7 @@ Only cite documents genuinely relevant to the user's question. Live LexUZ excerp
 - If evidence is insufficient, name the missing facts without guessing.
 - Avoid duplicating a long disclaimer; a short limitation is enough.
 - Keep the main body roughly 160–220 words when possible. Never sacrifice correctness or source integrity merely to meet length targets.
-`;
+`}`;
 
   // HUQUQIY ANIQLIK: modelga huquqiy asoslar bo'yicha qo'shimcha qoida.
   // Bu jonli LexUZ tekshiruvi EMAS. Tasdiqlanmagan moddalarni aytmaslikni talab qiladi.
@@ -544,10 +559,10 @@ Use only provisions actually visible in these excerpts for precise article-numbe
 
   // Google Gemini (OpenAI-compatible endpoint). The configured model is tried
   // first; if it is overloaded, rate limited or unavailable (404/429/500/503),
-  // the lighter fallback Gemini model is tried once. Auth/config errors are
-  // surfaced rather than silently changing models.
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 55000);
+  // the lighter fallback Gemini model is tried once. A primary attempt that
+  // times out also falls back. Auth/config errors are surfaced rather than
+  // silently changing models. Each attempt has its own time limit so the whole
+  // request stays below the ~100 s proxy limit in front of Render.
   const messages = [
     { role: "system", content: systemPrompt },
     { role: "system", content: accuracyInstruction },
@@ -566,8 +581,12 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   let response, data;
   let usedFallbackModel = false;
   const models = [...new Set([AI_MODEL, AI_FALLBACK_MODEL].filter(Boolean))];
-  try {
-    for (const model of models) {
+  const maxTokens = longTask ? Math.max(GEMINI_MAX_TOKENS, GEMINI_LONG_MAX_TOKENS) : GEMINI_MAX_TOKENS;
+  for (const [index, model] of models.entries()) {
+    const isLast = index === models.length - 1;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), index === 0 ? GEMINI_PRIMARY_TIMEOUT_MS : GEMINI_FALLBACK_TIMEOUT_MS);
+    try {
       response = await fetch(GEMINI_API_BASE + "/chat/completions", {
         method: "POST",
         signal: controller.signal,
@@ -577,28 +596,30 @@ Use only provisions actually visible in these excerpts for precise article-numbe
         },
         // Gemini 3+ models always think; "low" keeps latency and cost down.
         // Temperature is left at the model default as Google recommends for Gemini 3+.
-        body: JSON.stringify({ model, messages: geminiMessages, max_tokens: GEMINI_MAX_TOKENS, reasoning_effort: "low" })
+        body: JSON.stringify({ model, messages: geminiMessages, max_tokens: maxTokens, reasoning_effort: "low" })
       });
       try { data = await response.json(); }
       catch (_) { throw new Error("Gemini noto‘g‘ri formatda javob qaytardi."); }
-      if (response.ok) {
-        usedFallbackModel = model !== AI_MODEL;
-        break;
-      }
-      const errorBody = Array.isArray(data) ? data[0] : data;
-      const errorText = String(errorBody?.error?.message || errorBody?.error?.status || "").slice(0, 300);
-      console.error("Gemini request failed:", response.status, model === AI_MODEL ? "primary" : "fallback", model, errorText);
-      if ([404, 429, 500, 503].includes(response.status) && model !== models[models.length - 1]) continue;
-      if (response.status === 401 || response.status === 403 ||
-          (response.status === 400 && /api[ _-]?key/i.test(errorText))) throw new Error("AI_AUTH_FAILED");
-      if (response.status === 429) throw new Error("AI_RATE_LIMIT");
-      throw new Error("AI_HTTP_" + response.status);
+    } catch (error) {
+      if (error?.name !== "AbortError") throw error;
+      console.error("Gemini request timed out:", index === 0 ? "primary" : "fallback", model);
+      if (!isLast) continue;
+      throw new Error("AI_TIMEOUT");
+    } finally {
+      clearTimeout(timeout);
     }
-  } catch (error) {
-    if (error?.name === "AbortError") throw new Error("Gemini javobi 55 soniyada kelmadi (timeout).");
-    throw error;
-  } finally {
-    clearTimeout(timeout);
+    if (response.ok) {
+      usedFallbackModel = model !== AI_MODEL;
+      break;
+    }
+    const errorBody = Array.isArray(data) ? data[0] : data;
+    const errorText = String(errorBody?.error?.message || errorBody?.error?.status || "").slice(0, 300);
+    console.error("Gemini request failed:", response.status, index === 0 ? "primary" : "fallback", model, errorText);
+    if ([404, 429, 500, 503].includes(response.status) && !isLast) continue;
+    if (response.status === 401 || response.status === 403 ||
+        (response.status === 400 && /api[ _-]?key/i.test(errorText))) throw new Error("AI_AUTH_FAILED");
+    if (response.status === 429) throw new Error("AI_RATE_LIMIT");
+    throw new Error("AI_HTTP_" + response.status);
   }
   if (!response?.ok) throw new Error("AI_HTTP_" + (response?.status || 0));
   let content = data?.choices?.[0]?.message?.content;
@@ -7298,6 +7319,7 @@ async function aiResultPage(
 
     answer = error?.message === "AI_RATE_LIMIT" ? (lang === "uz" ? "Gemini so‘rovlar limiti vaqtincha tugadi (HTTP 429). Birozdan keyin qayta urinib ko‘ring." : lang === "ru" ? "Временно превышен лимит запросов Gemini (HTTP 429). Попробуйте немного позже." : "The Gemini request limit was temporarily reached (HTTP 429). Please try again shortly.")
       : error?.message === "AI_AUTH_FAILED" ? (lang === "uz" ? "Gemini API kaliti noto‘g‘ri yoki unga ruxsat berilmagan." : lang === "ru" ? "Ключ Gemini API недействителен или не имеет доступа." : "The Gemini API key is invalid or not authorized.")
+      : error?.message === "AI_TIMEOUT" ? (lang === "uz" ? "Gemini hozir juda band, javob kechikdi. Bir daqiqadan keyin qayta urinib ko‘ring." : lang === "ru" ? "Gemini сейчас перегружен, ответ задержался. Повторите попытку через минуту." : "Gemini is busy and the answer timed out. Please try again in a minute.")
       : lang === "uz"
         ? "AI xizmatiga ulanishda xatolik yuz berdi. GEMINI_API_KEY va server sozlamalarini tekshiring."
         : lang === "ru"
@@ -7747,7 +7769,8 @@ Do not guarantee a court outcome and do not invent legislation.`
       await callAI(
         t.prompt,
         lang,
-        context
+        context,
+        {long:true}
       );
 
   } catch (error) {
@@ -8055,7 +8078,7 @@ async function legalReviewResultPage(lang,form){
   if(documentText.length<80) return appLayout(lang,"legal-review",`<section class="panel"><h1>Hujjat matni yetarli emas</h1><a class="btn btnGold" href="/legal-review?lang=${lang}">Orqaga</a></section>`,`Huquqiy tekshiruv`,``);
   const prompt=`Siz O‘zbekiston huquqi bo‘yicha professional hujjat tekshiruvchisisiz. Foydalanuvchi bergan hujjatni tahlil qiling.\n\nQAT’IY QOIDALAR:\n1) Hech qachon mavjud bo‘lmagan qonun, modda, sud qarori yoki faktni o‘ylab topmang.\n2) Modda raqamiga ishonchingiz komil bo‘lmasa, raqam bermang; aynan qaysi qonun/kodeks va qaysi masala LexUZda tekshirilishi kerakligini yozing.\n3) Foydalanuvchi aytmagan faktni fakt sifatida qo‘shmang.\n4) Hujjat turiga mos majburiy rekvizitlar, taraflar, yurisdiksiya/sudlovlilik, faktlar, dalillar, hisob-kitoblar, talablar va ilovalarni tekshiring.\n5) Da’vo bo‘lsa, talab bilan fakt va dalil o‘rtasidagi bog‘liqlikni tekshiring. Shartnoma bo‘lsa, muhim shartlar, taraflar majburiyatlari, javobgarlik, muddat, hisob-kitob va nizolarni hal etish bandlarini tekshiring.\n6) Natijani quyidagi bo‘limlarda bering:\nHUJJAT TURI VA QISQA XULOSA\n1. ANIQLANGAN KAMCHILIKLAR\n2. YETISHMAYOTGAN MA’LUMOTLAR\n3. DALILLAR VA ILOVALAR\n4. HUQUQIY ASOSLAR\n5. HISOB-KITOB TEKSHIRUVI (tegishli bo‘lsa)\n6. TALABLAR TEKSHIRUVI\n7. TUZATISH BO‘YICHA ANIQ TAVSIYALAR\n8. LEXUZDA TEKSHIRILADIGAN MANBALAR — kodeks/qonun nomi, mavzu va qidiruv iborasini yozing.\n9. TEKSHIRUV HOLATI — qaysi xulosalar hujjat matniga asoslangan, qaysilari rasmiy manbada qo‘shimcha tekshiruv talab qiladi.\n\nHuquq sohasi: ${legalArea}\nHujjat turi: ${documentType}\nQo‘shimcha holatlar: ${extraContext||"berilmagan"}\n\nTEKSHIRILADIGAN HUJJAT:\n${documentText}`;
   let answer="";
-  try{answer=cleanLegalReviewText(await callAI(prompt,lang));}catch(e){console.error("LEGAL REVIEW ERROR",e);answer=lang==="ru"?"Не удалось выполнить проверку. Проверьте настройку AI на сервере.":lang==="en"?"The review could not be completed. Check the server AI configuration.":"Tekshiruvni bajarib bo‘lmadi. Serverdagi AI sozlamasini tekshiring.";}
+  try{answer=cleanLegalReviewText(await callAI(prompt,lang,"",{long:true}));}catch(e){console.error("LEGAL REVIEW ERROR",e);const code=require("./ai-assist").errorCode(e);const m={uz:{rate:"Gemini so‘rovlar limiti vaqtincha tugadi. Birozdan keyin qayta urinib ko‘ring.",timeout:"Gemini hozir juda band, javob kechikdi. Bir daqiqadan keyin qayta urinib ko‘ring.",auth:"AI xizmati sozlamasida muammo bor. Sayt administratoriga xabar bering.",failed:"Tekshiruvni bajarib bo‘lmadi. Qayta urinib ko‘ring."},ru:{rate:"Временно исчерпан лимит запросов Gemini. Повторите немного позже.",timeout:"Gemini сейчас перегружен, ответ задержался. Повторите через минуту.",auth:"Проблема с настройкой AI. Сообщите администратору сайта.",failed:"Не удалось выполнить проверку. Повторите попытку."},en:{rate:"The Gemini request limit was temporarily reached. Please try again shortly.",timeout:"Gemini is busy and the answer timed out. Please try again in a minute.",auth:"The AI service is misconfigured. Please notify the site administrator.",failed:"The review could not be completed. Please try again."}};answer=(m[lang]||m.uz)[code];}
   return appLayout(lang,"legal-review",`
     <section class="hero"><div class="eyebrow">✓ LEGAL REVIEW</div><h1>${lang==="ru"?"Результат правовой проверки":lang==="en"?"Legal review result":"Huquqiy tekshiruv natijasi"}</h1><p>${lang==="uz"?"Natijadagi huquqiy norma va tahrirlarni LexUZdagi amaldagi matn bilan yakuniy tekshiring.":lang==="ru"?"Окончательно сверяйте нормы и редакции с действующим текстом LexUZ.":"Finally verify legal provisions and versions against the current LexUZ text."}</p></section>
     <section class="panel" style="max-width:1050px;margin:0 auto 24px"><div class="claimDocument" style="white-space:pre-wrap">${renderLegalAnswer(answer)}</div><button class="btn btnGold" type="button" onclick="window.print()" style="margin-top:20px">${lang==="uz"?"Natijani PDF qilib saqlash":lang==="ru"?"Сохранить PDF":"Save as PDF"}</button></section>
@@ -8615,7 +8638,7 @@ QAT’IY QOIDALAR:
   );
   const context=`DOCUMENT TYPE:\n${localized(documentType.title,lang)}\n\nREFERENCE LEGAL BASIS (not live-verified; verify current LexUZ text):\n${legal}\n\nUSER-SUPPLIED INFORMATION:\n${supplied}`;
   let answer="";
-  try{ answer=await callAI(instruction,lang,context); }
+  try{ answer=await callAI(instruction,lang,context,{long:true}); }
   catch(e){ console.error("DOCUMENT AI ERROR:",e); answer=L("Hujjatni yaratishda texnik xatolik yuz berdi.","Произошла техническая ошибка.","A technical error occurred."); }
   answer=cleanClaimText(answer);
   const generationFailed=!answer.trim()||/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer);
@@ -9307,7 +9330,7 @@ Goal/request: ${goal}
 
   let result;
   try{
-    result = await callAI(prompt, lang);
+    result = await callAI(prompt, lang, "", {long:true});
   }catch(err){
     result = lang==="ru"
       ? "AI-сервис временно недоступен. Проверьте API-настройки и повторите попытку."
@@ -9737,7 +9760,8 @@ REQUESTED OUTPUT: ${wantsContract ? "EMPLOYMENT CONTRACT DRAFT" : (wantsClaim ? 
     answer = await callAI(
       wantsContract ? contractInstruction : (wantsClaim ? labels.instructionClaim : labels.instructionConclusion),
       lang,
-      context
+      context,
+      {long:true}
     );
   } catch (error) {
     console.error("EMPLOYMENT AI ERROR:", error);
@@ -13969,6 +13993,10 @@ const server =
             )
           );
 
+
+        // Gemini AI panel on tool pages: redacted preview + signed consent (see ai-assist.js).
+        if(await require("./ai-assist").handle(req,res,pathname,lang,{readForm,sendJson,callAI,renderLegalAnswer})) return;
+        if(req.method==="GET") res.__aiAssist={pathname,lang};
 
         // Gate every additional AI-generating form through a redacted, signed
         // preview. The request body is replayed only after consent is validated.
