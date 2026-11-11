@@ -8615,7 +8615,10 @@ async function claimResultPage(lang,form,onGenerated=null){
       "Da’vo tekshiruvi",message);
   }
   const supplied=Object.entries(form||{}).filter(([k,v])=>k!=="lang"&&String(v||"").trim()).map(([k,v])=>`${k}: ${String(v).trim()}`).join("\n");
-  const legal=claimLegalBasis(documentType.id,lang);
+  const claimHelpers=require("./claim-helpers");
+  const legal=[claimLegalBasis(documentType.id,lang),claimHelpers.legalBasisFor(documentType.id,lang)].filter(Boolean).join("\n\n");
+  const feeInfo=claimHelpers.stateFee(documentType.id,form);
+  const signature=claimHelpers.signatureName(form.claimant);
   const instruction=L(
 `Siz O‘zbekiston sud amaliyotiga mo‘ljallangan professional da’vo arizasi tuzuvchisiz.
 
@@ -8623,7 +8626,7 @@ FAQAT YAKUNIY DA’VO ARIZASI MATNINI BERING. Ichki ko‘rsatma, izoh, tahlil, "
 
 QAT’IY QOIDALAR:
 1. Foydalanuvchi so‘ramagan talabni qo‘shmang. Nikohdan ajratish da’vosida bola yashash joyi, aliment yoki mol-mulk faqat tegishli ask_* maydoni "yes" bo‘lsa va requestda talab qilingan bo‘lsa kiritiladi.
-2. Hech qanday fakt, sana, summa, bola, mol-mulk, daromad, dalil yoki talabni uydirmang.
+2. Hech qanday fakt, sana, summa, bola, mol-mulk, daromad, dalil yoki talabni uydirmang. Faktlarni bezamang: foydalanuvchi aytmagan sabab, maqsad, motiv, iltimos, suhbat, his-tuyg‘u yoki "murojaat qilib so‘radi" kabi tafsilotlarni qo‘shmang. ISHNING HOLATLARI qismida faqat foydalanuvchi bergan faktlarni rasmiy uslubda, xronologik tartibda qayta bayon qiling.
 3. Quyidagi huquqiy asoslar oldindan yozilgan ma’lumotnoma, jonli tasdiqlangan emas. Moddalarni rasmiy manbada tekshirmasdan qat’iy xulosa qilmang. Unda yo‘q modda raqamini o‘ylab topmang.
 4. FOYDALANUVCHI NAMUNASI BO‘YICHA QAT’IY TUZILISH: sudning to‘liq nomi; da’vogar F.I.Sh. va manzili; javobgar F.I.Sh. va manzili; tegishli bo‘lsa da’vo bahosi; alohida satrda DA’VO ARIZASI; keyingi satrda da’vo predmeti; I. ISHNING HOLATLARI; zarur bo‘lsa II. MULK TARKIBI VA HISOB-KITOB (boshqa da’voda mos nom); III. HUQUQIY ASOS VA DALILLAR; IV. SUDDAN SO‘RALADI (raqamlangan, foydalanuvchi so‘ragan talablar); V. ILOVALAR (faqat haqiqatda mavjudligi bildirilgan hujjatlar); Sana va Imzo. Bo‘lim raqamlari mavjud bo‘limlarga mos ketma-ket bo‘lsin. Namuna shakli saqlansin, mazmun faqat foydalanuvchi faktlaridan tuzilsin.
 5. HUQUQIY ASOSLAR qismida modda raqamini shunchaki sanamang — normaning aynan ushbu faktlarga qanday tatbiq etilishini rasmiy yuridik tilda tushuntiring.
@@ -8636,14 +8639,15 @@ QAT’IY QOIDALAR:
 12. Har bir mustaqil talabni alohida raqamlang; summa va asoslovchi faktni boshqa talablar bilan aralashtirmang.
 13. Ilovalarga foydalanuvchi tasdiqlagan mavjud hujjatlarnigina kiriting.
 14. Sudga tegishlilik, sudgacha tartib, muddat va davlat bojini tekshirilmagan holda qat’iy fakt deb yozmang.`,
-`Составьте только окончательный текст профессионального искового заявления. Не выводите внутренние инструкции, Markdown или незаявленные требования. Используйте только предоставленные факты и подтверждённую правовую базу ниже. Структура: суд и стороны; название иска; обстоятельства; ПРАВОВЫЕ ОСНОВАНИЯ; при необходимости расчёт; ПРОШУ СУД; приложения; дата; подпись.`,
-`Produce only the final professional statement of claim. No internal instructions, Markdown, invented facts or unrequested relief. Use only supplied facts and the verified legal basis below. Structure: court/parties; claim title; facts; LEGAL BASIS; calculation if needed; RELIEF SOUGHT; attachments; date; signature.`
+`Составьте только окончательный текст профессионального искового заявления. Не приукрашивайте факты: не добавляйте причины, мотивы, просьбы или детали, которых нет во вводе пользователя. Не выводите внутренние инструкции, Markdown или незаявленные требования. Используйте только предоставленные факты и подтверждённую правовую базу ниже. Структура: суд и стороны; название иска; обстоятельства; ПРАВОВЫЕ ОСНОВАНИЯ; при необходимости расчёт; ПРОШУ СУД; приложения; дата; подпись.`,
+`Produce only the final professional statement of claim. Do not embellish facts: add no motives, reasons, requests or details the user did not provide. No internal instructions, Markdown, invented facts or unrequested relief. Use only supplied facts and the verified legal basis below. Structure: court/parties; claim title; facts; LEGAL BASIS; calculation if needed; RELIEF SOUGHT; attachments; date; signature.`
   );
-  const context=`DOCUMENT TYPE:\n${localized(documentType.title,lang)}\n\nREFERENCE LEGAL BASIS (not live-verified; verify current LexUZ text):\n${legal}\n\nUSER-SUPPLIED INFORMATION:\n${supplied}`;
+  const context=`DOCUMENT TYPE:\n${localized(documentType.title,lang)}\n\nREFERENCE LEGAL BASIS (not live-verified; verify current LexUZ text):\n${legal}${feeInfo?`\n\n${claimHelpers.stateFeeInstruction(feeInfo,lang)}`:""}${signature?`\n\nSIGNATURE LINE (use exactly): Imzo: ____________ ${signature}`:""}\n\nUSER-SUPPLIED INFORMATION:\n${supplied}`;
   let answer="";
   try{ answer=await callAI(instruction,lang,context,{long:true}); }
   catch(e){ console.error("DOCUMENT AI ERROR:",e); answer=L("Hujjatni yaratishda texnik xatolik yuz berdi.","Произошла техническая ошибка.","A technical error occurred."); }
   answer=cleanClaimText(answer);
+  if(answer.trim()&&!/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer)) answer=claimHelpers.fixSignature(answer,form.claimant);
   const generationFailed=!answer.trim()||/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer);
   if(generationFailed){
     return appLayout(lang,"documents",
