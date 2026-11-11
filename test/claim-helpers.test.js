@@ -34,3 +34,12 @@ test("legal bases cite only LexUZ-checked Civil Code articles with official link
   assert.match(text, /735-modda — Qarz oluvchining qarz summasini qaytarish majburiyati/);
   assert.equal(h.legalBasisFor("unknown_type", "uz"), "");
 });
+
+test("service notices are split off so they never reach the court document", () => {
+  const ai = "DA’VO ARIZASI\nMatn ⚠️ ichida qoladi\nImzo: x\n\n📚 LexUZ: parchalar olindi.\n\nℹ️ Zaxira model ishlatildi.\n\n⚖️ Sud amaliyoti: topilmadi.";
+  const { body, notices } = h.splitNotices(ai);
+  assert.equal(body, "DA’VO ARIZASI\nMatn ⚠️ ichida qoladi\nImzo: x");
+  assert.equal(notices.length, 3);
+  assert.match(notices[0], /^📚 LexUZ/);
+  assert.deepEqual(h.splitNotices("Faqat matn").notices, []);
+});

@@ -8647,7 +8647,12 @@ QAT’IY QOIDALAR:
   try{ answer=await callAI(instruction,lang,context,{long:true}); }
   catch(e){ console.error("DOCUMENT AI ERROR:",e); answer=L("Hujjatni yaratishda texnik xatolik yuz berdi.","Произошла техническая ошибка.","A technical error occurred."); }
   answer=cleanClaimText(answer);
-  if(answer.trim()&&!/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer)) answer=claimHelpers.fixSignature(answer,form.claimant);
+  let aiNotices=[];
+  if(answer.trim()&&!/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer)){
+    const split=claimHelpers.splitNotices(answer);
+    aiNotices=split.notices;
+    answer=claimHelpers.fixSignature(split.body,form.claimant);
+  }
   const generationFailed=!answer.trim()||/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer);
   if(generationFailed){
     return appLayout(lang,"documents",
@@ -8662,6 +8667,7 @@ QAT’IY QOIDALAR:
       <div class="resultLabel">${esc(L("DA’VO ARIZASI LOYIHASI — SUDGA TOPSHIRISHDAN OLDIN TEKSHIRING","ПРОЕКТ ИСКА — ПРОВЕРЬТЕ ПЕРЕД ПОДАЧЕЙ","DRAFT CLAIM — REVIEW BEFORE FILING"))}</div>
       <div class="notice noticeGold"><span class="noticeIcon">!</span><span>${esc(L("Tekshiring: sudga tegishlilik, taraflar manzili, protsessual muddatlar, da’vo bahosi, davlat boji, dalillar va ilovalar, qonun moddalarining amaldagi tahriri. Hujjat avtomatik huquqiy tasdiqdan o‘tmagan.","Проверьте подсудность, стороны, сроки, пошлину, доказательства и действующее законодательство.","Verify jurisdiction, parties, deadlines, court fees, evidence and current law. This draft is not legally certified."))}</span></div>
       <div id="claimPrintable" class="claimDocument">${esc(answer)}</div>
+      ${aiNotices.length?`<div class="notice" style="margin-top:16px;white-space:pre-wrap"><span class="noticeIcon">i</span><span>${esc(aiNotices.join("\n\n"))}</span></div>`:""}
     </div>
     <div class="formActions" style="margin-top:18px">
       <form method="POST" action="/claim-download${q(lang)}" style="display:inline"><textarea name="claim_text" hidden>${esc(answer)}</textarea><button class="btn btnGold" type="submit">⬇ ${esc(L("Word (.docx) yuklash","Скачать Word (.docx)","Download Word (.docx)"))}</button></form>

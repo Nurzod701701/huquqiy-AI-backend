@@ -113,4 +113,19 @@ function fixSignature(answer, claimant) {
     : text.replace(/\s*$/, "\n" + line);
 }
 
-module.exports = { BASES, legalBasisFor, extractAmount, stateFee, stateFeeInstruction, signatureName, fixSignature, formatSum };
+// callAI appends service notices (LexUZ status, backup model, court practice,
+// accuracy warning). They belong on the page, not inside the court document.
+const NOTICE_START = /\n\s*(?=(?:📚|⚠️|ℹ️|⚖️)\s)/u;
+function splitNotices(answer) {
+  const text = String(answer || "");
+  const parts = text.split(NOTICE_START);
+  const body = [], notices = [];
+  for (const part of parts) {
+    const p = part.trim();
+    if (!p) continue;
+    if (/^(?:📚|⚠️|ℹ️|⚖️)\s/u.test(p) && body.length) notices.push(p); else body.push(part);
+  }
+  return { body: body.join("\n").replace(/\s+$/, ""), notices };
+}
+
+module.exports = { splitNotices, BASES, legalBasisFor, extractAmount, stateFee, stateFeeInstruction, signatureName, fixSignature, formatSum };
