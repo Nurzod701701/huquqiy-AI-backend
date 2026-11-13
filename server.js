@@ -1754,6 +1754,23 @@ const DOCUMENT_TYPES = [
 // ======================================================
 
 const CSS = `
+/* Mobile interaction and viewport containment; desktop rules remain unchanged. */
+@media(max-width:760px){
+  html,body{max-width:100%;overflow-x:clip}
+  main,.container,.appMain,.accountMain,.accountPanel,.accountWrap{min-width:0;max-width:100%}
+  main img,main video,main svg,main canvas{max-width:100%;height:auto}
+  main :is(input,select,textarea){max-width:100%;font-size:16px}
+  main :is(button,.btn,[role="button"]){touch-action:manipulation}
+  main table{max-width:100%}
+  main :is(.tableWrap,.accountTableWrap){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  main :is(pre,code){overflow-wrap:anywhere}
+  .mobileNavPanel.show{max-height:calc(100dvh - 110px);overflow-y:auto;overscroll-behavior:contain}
+}
+@media(max-width:380px){
+  .brandText small{display:none}
+  .mobileNavPanel a{min-height:44px;display:flex;align-items:center}
+}
+
 .homeLongCard.courtcost{background:linear-gradient(135deg,#092943,#16466a)!important;color:#fff!important;border:2px solid #cba45c!important}.homeLongCard.courtcost h3,.homeLongCard.courtcost p,.homeLongCard.courtcost .homeLongEnter{color:#fff!important}.homeLongCard.courtcost .homeLongIcon{background:#d4ac64!important;color:#102a42!important}
 
 
@@ -5339,7 +5356,9 @@ function navigation(lang) {
             type="button"
             aria-label="${menuText}"
             title="${menuText}"
-            onclick="document.getElementById('mobileNav').classList.toggle('show')"
+            aria-controls="mobileNav"
+            aria-expanded="false"
+            onclick="(function(btn){const panel=document.getElementById('mobileNav');if(!panel)return;const open=panel.classList.toggle('show');btn.setAttribute('aria-expanded',String(open));btn.setAttribute('aria-label',open?'${lang === "uz" ? "Menyuni yopish" : lang === "ru" ? "Закрыть меню" : "Close menu"}':'${menuText}');})(this)"
           >
             ☰
           </button>
