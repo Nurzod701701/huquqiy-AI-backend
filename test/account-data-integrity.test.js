@@ -9,7 +9,7 @@ const end = source.indexOf("async function accountSaveDb", start);
 test("account load fails closed on unreadable or corrupt data", () => {
   assert.ok(start >= 0 && end > start, "account load function is present");
   const block = source.slice(start, end);
-  assert.match(block, /if\(!fs\.existsSync\(ACCOUNT_DATA_FILE\)\) return accountEmptyDb\(\)/);
+  assert.match(block, /fs\.existsSync\(ACCOUNT_DATA_FILE\)\s*\n?\s*\?[\s\S]*?:\s*accountEmptyDb\(\)/);
   assert.match(block, /catch\(err\)\{ console\.error\("ACCOUNT DB LOAD ERROR",err\); throw err; \}/);
   assert.doesNotMatch(block, /catch\(err\)[^}]+return accountEmptyDb/);
 });

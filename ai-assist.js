@@ -280,7 +280,7 @@ function clientMain(C) {
         '<div class="vai-pre"></div>' +
         '<label class="vai-consent"><input type="checkbox" class="vai-agree"> <span>' + esc(T.consent) + "</span></label>" +
         '<div class="vai-actions"><button type="button" class="vai-btn vai-send">' + esc(T.send) + '</button><button type="button" class="vai-btn vai-light vai-cancel">' + esc(T.cancel) + "</button></div>");
-      $(".vai-pre").textContent = res.redacted;
+      $(".vai-pre").textContent = (res.warning ? res.warning + "\n\n" : "") + res.redacted;
       run.style.display = "none";
       $(".vai-cancel").onclick = function () { show(step); show(msg); run.style.display = ""; };
       $(".vai-send").onclick = function () {
@@ -332,12 +332,22 @@ function inject(html, pathname, lang) {
 }
 
 // Simple in-memory limiter to protect the shared Gemini quota.
-const WINDOW_MS = 10 * 60 * 1000, PER_CLIENT = 8, GLOBAL = 80;
+// Shared by every Gemini-calling route (see server.js), not only this panel.
+const posInt = (v, d) => { const n = Number(v); return Number.isInteger(n) && n > 0 ? n : d; };
+const WINDOW_MS = 10 * 60 * 1000;
+const PER_CLIENT = posInt(process.env.AI_RATE_PER_CLIENT, 8);
+const GLOBAL = posInt(process.env.AI_RATE_GLOBAL, 80);
 const hits = new Map();
 let globalHits = [];
+// Client-supplied headers are spoofable. CF-Connecting-IP is honoured only when
+// the deployment is really behind Cloudflare (TRUST_CF_CONNECTING_IP=yes).
+// Otherwise use the right-most X-Forwarded-For entry: it is appended by the
+// nearest (platform) proxy, so the client cannot choose it.
 function clientKey(req) {
-  const cf = String(req.headers["cf-connecting-ip"] || "").trim();
-  if (cf) return cf;
+  if (process.env.TRUST_CF_CONNECTING_IP === "yes") {
+    const cf = String(req.headers["cf-connecting-ip"] || "").trim();
+    if (cf) return cf;
+  }
   const xff = String(req.headers["x-forwarded-for"] || "").split(",").map(s => s.trim()).filter(Boolean);
   return xff.length ? xff[xff.length - 1] : String(req.socket && req.socket.remoteAddress || "unknown");
 }
@@ -379,7 +389,8 @@ async function handle(req, res, pathname, lang, deps) {
   if (pathname === "/ai-assist-preview") {
     try { auditOutbound([{ role: "user", content: text }]); }
     catch (_) { sendJson(res, { ok: false, error: "privacy" }, 422); return true; }
-    sendJson(res, { ok: true, redacted: text, token: tokenFor(payload) });
+    const guard = require("./prompt-guard");
+    sendJson(res, { ok: true, redacted: text, token: tokenFor(payload), warning: guard.injectionWarning(lang, guard.detectInjection(text)) });
     return true;
   }
 
@@ -388,8 +399,9 @@ async function handle(req, res, pathname, lang, deps) {
   }
   if (limited(req)) { sendJson(res, { ok: false, error: "busy" }, 429); return true; }
   try {
-    const prompt = `${tool.task}\n\n${RULES}\n\nFOYDALANUVCHI KIRITGAN MA’LUMOTLAR:\n${text}`;
-    const answer = cleanAnswer(await callAI(prompt, lang, "", { long: true }));
+    // Developer task stays in the system role; the user's text is delimited data.
+    const task = `${tool.task}\n\n${RULES}\n\nFoydalanuvchi kiritgan ma’lumotlar <user_data> tegida beriladi.`;
+    const answer = cleanAnswer(await callAI(text, lang, "", { long: true, task }));
     sendJson(res, { ok: true, html: renderLegalAnswer(answer) });
   } catch (error) {
     console.error("AI ASSIST ERROR:", toolKey, error && error.message);

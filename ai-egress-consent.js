@@ -49,8 +49,11 @@ function consentPanel(lang,route,payload,description) {
  };
  const hidden=Object.entries(payload).map(([name,value])=>'<input type="hidden" name="'+esc(name)+'" value="'+esc(value)+'">').join("");
  const preview=description||Object.values(payload).filter(x=>typeof x==="string").join("\n\n");
+ const guard=require("./prompt-guard");
+ const injectionNote=guard.injectionWarning(lang,guard.detectInjection(Object.values(payload).join("\n")));
  return '<section class="panel" style="max-width:900px;margin:20px auto;padding:24px">'+
   '<h2>'+esc(tt.title)+'</h2><p>'+esc(tt.description)+'</p>'+
+  (injectionNote?'<p role="alert" style="padding:12px 14px;border:1px solid #c0392b;border-radius:10px;background:#fdecea;color:#7b1d12">'+esc(injectionNote)+'</p>':'')+
   '<pre style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:420px;overflow:auto;padding:16px;background:#f6f7f8;color:#142536;border-radius:12px">'+esc(preview)+'</pre>'+
   '<form method="POST" action="'+esc(route)+'?lang='+esc(lang)+'">'+hidden+
   '<input type="hidden" name="aiConsentToken" value="'+esc(tokenFor(payload))+'">'+
