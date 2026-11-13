@@ -8014,8 +8014,8 @@ function sourcesPage(lang) {
 // ======================================================
 // Uploaded legal documents: parse in memory; never persist the original file.
 async function readLegalUpload(req) {
-  let Busboy, mammoth, pdfParse;
-  try { Busboy=require('busboy'); mammoth=require('mammoth'); pdfParse=require('pdf-parse'); }
+  let Busboy;
+  try { Busboy=require('busboy'); }
   catch (_) { throw new Error('UPLOAD_DEPENDENCIES_MISSING'); }
   return new Promise((resolve,reject)=>{
     const fields={}; let upload=null; let fileError=null;
@@ -8036,9 +8036,8 @@ async function readLegalUpload(req) {
       if(fileError)return reject(fileError);
       try{
         if(upload){
-          let result;
-          if(upload.ext==='pdf')result=(await pdfParse(upload.buffer)).text;
-          else result=(await mammoth.extractRawText({buffer:upload.buffer})).value;
+          // Isolated worker with size/page/time limits (safe-doc-parse.js).
+          const result=await require('./safe-doc-parse').extractText(upload.ext,upload.buffer);
           fields.documentText=String(result||'').slice(0,45000);
           if(fields.documentText.trim().length<80)throw new Error('NO_EXTRACTABLE_TEXT');
         }
@@ -8164,6 +8163,7 @@ function documentsPage(lang) {
 
   const cards =
     DOCUMENT_TYPES
+      .filter(document => claimTypeSupported(document.id))
       .map(
         document => `
 
@@ -8388,15 +8388,14 @@ async function claimEvidenceUpload(req){
       const task=new Promise(done=>stream.on('end',async()=>{
         if(truncated||error||!allowed[ext]){files.push({name,error:!allowed[ext]?'Faqat PDF, DOCX va TXT qabul qilinadi.':error});return done();}
         try{
-          const buf=Buffer.concat(chunks);let content='';
-          if(ext==='.txt')content=buf.toString('utf8');
-          else if(ext==='.docx')content=(await require('mammoth').extractRawText({buffer:buf})).value;
-          else {const mod=require('pdf-parse');const parse=typeof mod==='function'?mod:mod.default;if(typeof parse!=='function')throw Error('pdf-parse versiyasi mos emas');content=(await parse(buf)).text||'';}
+          const buf=Buffer.concat(chunks);
+          // Isolated worker with size/page/time limits (safe-doc-parse.js).
+          let content=await require('./safe-doc-parse').extractText(ext,buf);
           content=String(content).replace(/\u0000/g,'').trim().slice(0,12000);
           const guard=require('./prompt-guard');
           const injection=guard.injectionWarning('uz',guard.detectInjection(content));
           files.push({name,text:content,warning:(injection?injection+' ':'')+(content?'Matn avtomatik ajratildi. To‘g‘riligini tasdiqlang.':'Matn aniqlanmadi. Skan hujjat uchun qo‘lda yozing.')});
-        }catch(e){console.error('CLAIM EVIDENCE PARSE ERROR',e&&e.message);files.push({name,error:'Hujjatni o‘qib bo‘lmadi. Fayl buzilgan yoki qo‘llab-quvvatlanmaydi.'});}done();
+        }catch(e){console.error('CLAIM EVIDENCE PARSE ERROR',e&&e.message);files.push({name,error:require('./safe-doc-parse').userMessage(e&&e.message)});}done();
       }));tasks.push(task);
     });
     bb.on('error',reject);
@@ -8405,8 +8404,23 @@ async function claimEvidenceUpload(req){
   });
 }
 
+// Economic and administrative courts have no verified territorial catalog yet,
+// so their claims cannot pass the server-side court check. Offer only types
+// that can actually be generated; say so up front for the others.
+function claimTypeSupported(type){
+  const t=DOCUMENT_TYPES.find(x=>x.id===String(type||""));
+  return !!t && !/^(economic_|administrative_)/.test(t.id);
+}
+function claimUnsupportedPage(lang,type){
+  lang=getLang(lang);
+  const L=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
+  return appLayout(lang,"documents",'<section class="surface surfacePad"><h2>'+esc(L("Bu hujjat turi hozircha avtomatik tayyorlanmaydi","Этот тип документа пока не формируется автоматически","This document type is not generated automatically yet"))+'</h2><p>'+esc(L("Iqtisodiy va ma’muriy sudlar uchun sudga tegishlilik katalogi hali tasdiqlanmagan. Biznes bo‘limidan foydalaning yoki hujjatni advokat bilan tayyorlang.","Каталог подсудности экономических и административных судов ещё не проверен. Воспользуйтесь разделом «Бизнес» или подготовьте документ с юристом.","The jurisdiction catalog for economic and administrative courts is not verified yet. Use the Business section or prepare the document with a lawyer."))+'</p><a class="btn btnGold" href="/documents'+q(lang)+'">'+esc(L("Boshqa hujjat turini tanlash","Выбрать другой документ","Choose another document"))+'</a> <a class="btn btnOutline" href="/business'+q(lang)+'">'+esc(L("Biznes bo‘limi","Раздел «Бизнес»","Business section"))+'</a></section>',
+    L("Hujjat turi mavjud emas","Тип недоступен","Type unavailable"),"");
+}
+
 function claimPage(lang,type="divorce_claim"){
   lang=getLang(lang);
+  if(type && DOCUMENT_TYPES.some(x=>x.id===type) && !claimTypeSupported(type)) return claimUnsupportedPage(lang,type);
   const selectedType=DOCUMENT_TYPES.find(x=>x.id===type)||DOCUMENT_TYPES[0];
   const courtRouteType=selectedType.id.startsWith("economic_")?"economic":selectedType.id.startsWith("administrative_")?"administrative":"civil";
   const civilCourtMappings=require("./data/court-jurisdiction.json").routes;
@@ -8447,6 +8461,8 @@ region.addEventListener('change',renderDistricts);district.addEventListener('cha
           ${claimSpecificFields(selectedType.id,lang)}
           <div class="formGroup full"><label>${esc(L("Ish holatlari — faqat aniq faktlar *","Обстоятельства дела — только точные факты *","Case facts — exact facts only *"))}</label><textarea name="facts" required placeholder="${esc(L("Voqealarni sana va ketma-ketlik bilan yozing.","Изложите события по датам и последовательно.","Describe events chronologically with dates."))}"></textarea></div>
           <div class="formGroup full"><label>${esc(L("Suddan aynan nima so‘raysiz? *","Что именно вы просите у суда? *","Exactly what relief do you request? *"))}</label><textarea name="request"></textarea></div>
+          ${require("./claim-helpers").isMonetary(selectedType.id)?`<div class="formGroup"><label>${esc(L("Da’vo bahosi (so‘m)","Цена иска (сум)","Claim value (UZS)"))}</label><input name="claim_amount" inputmode="numeric" pattern="[0-9 ]{1,18}" placeholder="${esc(L("Masalan: 150000000","Например: 150000000","e.g. 150000000"))}"></div>
+          <div class="formGroup"><label>${esc(L("Davlat bojidan ozodmisiz?","Освобождены ли вы от госпошлины?","Are you exempt from the court fee?"))}</label><select name="fee_exemption"><option value="unknown">${esc(L("Bilmayman","Не знаю","Not sure"))}</option><option value="no">${esc(L("Yo‘q, boj to‘layman","Нет, оплачиваю","No, I pay the fee"))}</option><option value="yes">${esc(L("Ha, qonun bo‘yicha ozodman","Да, освобождён по закону","Yes, exempt by law"))}</option></select></div>`:""}
           <div class="formGroup full"><label>${esc(L("Dalillar va ilovalar (mavjud bo‘lsa)","Доказательства и приложения (при наличии)","Evidence and attachments (if available)"))}</label><textarea id="claimEvidence" name="evidence" placeholder="Hujjat bo‘lmasa, dalillarni qo‘lda tasvirlang."></textarea></div>
           <div class="formGroup full" style="padding:18px;border:1px dashed #aab7c5;border-radius:12px">
             <label>${esc(L("Dalil hujjatlarini yuklash (ixtiyoriy)","Загрузить доказательства (необязательно)","Upload evidence (optional)"))}</label>
@@ -8609,8 +8625,12 @@ async function claimDocxBuffer(rawText){
   return Packer.toBuffer(doc);
 }
 
-async function claimResultPage(lang,form,onGenerated=null){
+async function claimResultPage(lang,form,onGenerated=null,restoreMap=null){
   lang=getLang(lang);
+  const privacy=require("./ai-privacy");
+  // `form` holds placeholders ([MANZIL_1] ...) as sent to Gemini; `original`
+  // has the real values for the fee, the signature and the final document.
+  const original=Object.fromEntries(Object.entries(form||{}).map(([k,v])=>[k,privacy.restoreText(v,restoreMap)]));
   const documentType=DOCUMENT_TYPES.find(x=>x.id===String(form.document_type||form.type||""))||DOCUMENT_TYPES[0];
   const L=(uz,ru,en)=>lang==="ru"?ru:lang==="en"?en:uz;
   // CLAIM V3: validate on server, not only browser.
@@ -8638,8 +8658,8 @@ async function claimResultPage(lang,form,onGenerated=null){
     .map(([k,v])=>`${k}: ${String(v).trim()}`).join("\n");
   const claimHelpers=require("./claim-helpers");
   const legal=[claimLegalBasis(documentType.id,lang),claimHelpers.legalBasisFor(documentType.id,lang)].filter(Boolean).join("\n\n");
-  const feeInfo=claimHelpers.stateFee(documentType.id,form);
-  const signature=claimHelpers.signatureName(form.claimant);
+  const feeInfo=claimHelpers.stateFee(documentType.id,original);
+  const signature=claimHelpers.signatureName(original.claimant);
   const instruction=L(
 `Siz O‘zbekiston sud amaliyotiga mo‘ljallangan professional da’vo arizasi tuzuvchisiz.
 
@@ -8665,17 +8685,25 @@ QAT’IY QOIDALAR:
   );
   // Trusted (developer-authored) reference goes to the system role; everything
   // the user typed or uploaded goes to <case_data> in the user role.
-  const reference=`DOCUMENT TYPE:\n${localized(documentType.title,lang)}\n\nREFERENCE LEGAL BASIS (not live-verified; verify current LexUZ text):\n${legal}${feeInfo?`\n\n${claimHelpers.stateFeeInstruction(feeInfo,lang)}`:""}${signature?`\n\nSIGNATURE LINE: use exactly "Imzo: ____________ " followed by the claimant name given as signature_name in the case data.`:""}`;
+  const reference=`DOCUMENT TYPE:\n${localized(documentType.title,lang)}\n\nREFERENCE LEGAL BASIS (not live-verified; verify current LexUZ text):\n${legal}${feeInfo&&feeInfo.confirmed?`\n\n${claimHelpers.stateFeeInstruction(feeInfo,lang)}`:"\n\nSTATE FEE: do not write any state fee amount in the document; VERIUS shows the fee separately to the user."}${signature?`\n\nSIGNATURE LINE: use exactly "Imzo: ____________ " followed by the claimant name given as signature_name in the case data.`:""}\n\nPLACEHOLDERS: values such as [MANZIL_1], [TELEFON_2], [PASPORT_1] stand for real personal data that VERIUS inserts after you finish. Copy each placeholder exactly, unchanged, wherever that data belongs (for example the parties' addresses in the header). Never invent, translate, merge or drop them.`;
   const context=`${signature?`signature_name: ${signature}\n`:""}${supplied}`;
   let answer="";
   try{ answer=await callAI("",lang,context,{long:true,task:instruction,reference}); }
   catch(e){ console.error("DOCUMENT AI ERROR:",e); answer=L("Hujjatni yaratishda texnik xatolik yuz berdi.","Произошла техническая ошибка.","A technical error occurred."); }
   answer=cleanClaimText(answer);
   let aiNotices=[];
+  if(claimHelpers.isMonetary(documentType.id)){
+    if(String(original.fee_exemption||"")==="yes") aiNotices.push(L("Davlat boji hujjatga yozilmadi: siz bojdan ozod ekanligingizni ko‘rsatdingiz. Ozodlik asosini (qonun moddasi yoki hujjat) arizaga ilova qiling.","Госпошлина не указана: вы отметили освобождение. Приложите основание освобождения.","No court fee was written: you indicated an exemption. Attach the legal ground for it."));
+    else if(!feeInfo) aiNotices.push(L("Davlat boji hisoblanmadi: “Da’vo bahosi” maydonida yagona aniq summani kiriting.","Госпошлина не рассчитана: укажите одну точную сумму в поле «Цена иска».","Court fee not calculated: enter one exact sum in the “Claim value” field."));
+    else if(!feeInfo.confirmed) aiNotices.push(L("Taxminiy davlat boji: "+claimHelpers.formatSum(feeInfo.fee)+" (da’vo bahosi "+claimHelpers.formatSum(feeInfo.amount)+", "+feeInfo.formula+"). Bojdan ozodligingiz aniqlanmagani uchun u hujjatga yozilmadi — tekshirib, qo‘lda qo‘shing.","Ориентировочная госпошлина: "+claimHelpers.formatSum(feeInfo.fee)+". Не внесена в документ, так как освобождение не уточнено.","Estimated court fee: "+claimHelpers.formatSum(feeInfo.fee)+". Not written into the document because exemption status is unknown."));
+  }
   if(answer.trim()&&!/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer)){
     const split=claimHelpers.splitNotices(answer);
     aiNotices=split.notices;
-    answer=claimHelpers.fixSignature(split.body,form.claimant);
+    answer=claimHelpers.fixSignature(split.body,original.claimant);
+    answer=privacy.restoreText(answer,restoreMap);
+    const leftover=privacy.remainingPlaceholders(answer);
+    if(leftover.length) aiNotices.push(L("Diqqat: hujjatda yashirilgan ma’lumot belgisi qoldi ("+leftover.join(", ")+"). Ushbu joylarni sudga topshirishdan oldin qo‘lda to‘ldiring.","Внимание: в документе остались метки скрытых данных ("+leftover.join(", ")+"). Заполните их вручную перед подачей.","Warning: placeholders for hidden data remain ("+leftover.join(", ")+"). Fill them in manually before filing."));
   }
   const generationFailed=!answer.trim()||/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer);
   if(generationFailed){
@@ -14094,17 +14122,38 @@ const server =
 
         // Gate every additional AI-generating form through a redacted, signed
         // preview. The request body is replayed only after consent is validated.
+        // Expensive public endpoints: document parsing and DOCX export.
+        if(req.method==="POST"){
+          const isUpload=pathname==="/claim-evidence-extract" ||
+            ((pathname==="/legal-review-preview"||pathname==="/legal-review-result") && /multipart\/form-data/i.test(String(req.headers["content-type"]||"")));
+          const bucket=isUpload?"upload":(pathname==="/claim-download"?"export":null);
+          if(bucket && require("./request-limits").limited(req,bucket)){
+            res.setHeader("Retry-After","600");
+            if(pathname==="/claim-evidence-extract") return sendJson(res,{error:"Juda ko‘p fayl yuklandi. 10 daqiqadan so‘ng qayta urinib ko‘ring."},429);
+            return sendHtml(res,appLayout(lang,"documents",'<section class="panel"><h2>So‘rovlar limiti tugadi. 10 daqiqadan so‘ng qayta urinib ko‘ring.</h2></section>',"Limit",""),429);
+          }
+        }
+
         const previewedAiRoutes=new Set([
           "/questionnaire-result","/claim-result","/business-result","/employment-result"
         ]);
         if(req.method==="POST" && previewedAiRoutes.has(pathname)) {
           const provided=await readForm(req);
+          // Court documents keep the real data: values are masked with numbered
+          // placeholders for Gemini and restored into the draft afterwards.
+          const reversible=pathname==="/claim-result";
+          const privacy=require("./ai-privacy");
+          const restoreState=reversible?privacy.newRestoreState():null;
+          const requestedClaimType=String(provided.document_type||provided.type||"");
+          if(reversible && requestedClaimType && DOCUMENT_TYPES.some(x=>x.id===requestedClaimType) && !claimTypeSupported(requestedClaimType))
+            return sendHtml(res,claimUnsupportedPage(lang,provided.document_type||provided.type),400);
           const payload={};
           let total=0;
           for(const [key,value] of Object.entries(provided)){
-            if(key==="aiConsent"||key==="aiConsentToken")continue;
+            if(key==="aiConsent"||key==="aiConsentToken"||key==="aiRestore")continue;
             if(!/^[a-zA-Z_][a-zA-Z0-9_-]{0,80}$/.test(key))continue;
-            const clean=sanitizeText(String(value||"").slice(0,45000));
+            const raw=String(value||"").slice(0,45000);
+            const clean=reversible?privacy.redactReversible(raw,restoreState).text:sanitizeText(raw);
             total+=clean.length;
             if(total>65000 || Object.keys(payload).length>=100)
               return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>AI uchun matn juda katta.</h2></section>',"Maxfiylik",""),413);
@@ -14118,7 +14167,11 @@ const server =
              Object.keys(payload).some(key=>String(provided[key]||"")!==payload[key])){
             if(provided.aiConsent||provided.aiConsentToken)
               return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>Rozilik noto‘g‘ri yoki matn o‘zgargan. Yuborish rad etildi.</h2></section>',"AI himoyasi",""),403);
-            return sendHtml(res,appLayout(lang,"ai",consentPanel(lang,pathname,payload,preview),"AI yuborishni tasdiqlash",""),200);
+            return sendHtml(res,appLayout(lang,"ai",consentPanel(lang,pathname,payload,preview,{restoreMap:restoreState&&restoreState.map}),"AI yuborishni tasdiqlash",""),200);
+          }
+          if(reversible){
+            // Missing or tampered seal: generate anyway, placeholders stay visible and are flagged.
+            req._aiRestoreMap=provided.aiRestore?(require("./ai-egress-consent").openRestore(provided.aiRestore,provided.aiConsentToken)||{}):{};
           }
           if(require("./ai-assist").limited(req))
             return sendHtml(res,appLayout(lang,"ai",'<section class="panel"><h2>AI so‘rovlari limiti tugadi. Birozdan so‘ng qayta urinib ko‘ring.</h2></section>',"AI limiti",""),429);
@@ -14285,7 +14338,7 @@ const server =
         if(req.method==="POST" && pathname==="/legal-review-preview"){
           let fields;
           try {fields=String(req.headers["content-type"]||"").includes("multipart/form-data")?await readLegalUpload(req):await readForm(req);}
-          catch(_) {return sendHtml(res,appLayout(lang,"legal-review",'<section class="panel"><h2>Hujjatni o‘qib bo‘lmadi. PDF yoki DOCX tarkibini tekshiring.</h2></section>',"Hujjat xatosi",""),400);}
+          catch(e) {return sendHtml(res,appLayout(lang,"legal-review",'<section class="panel"><h2>'+esc(require('./safe-doc-parse').userMessage(e&&e.message))+'</h2></section>',"Hujjat xatosi",""),400);}
           const payload={
             documentText:sanitizeText(String(fields.documentText||"").slice(0,45000)),
             documentType:String(fields.documentType||"other").slice(0,60),
@@ -14300,7 +14353,7 @@ const server =
         if(req.method === "POST" && pathname === "/legal-review-result") {
           let form;
           try {form=String(req.headers['content-type']||'').includes('multipart/form-data')?await readLegalUpload(req):await readForm(req);}
-          catch(e){const messages={UPLOAD_DEPENDENCIES_MISSING:'Fayl yuklash kutubxonalari o‘rnatilmagan. npm install bajaring.',UNSUPPORTED_FORMAT:'Faqat PDF yoki DOCX yuklang.',FILE_TOO_LARGE:'Fayl 8 MB dan oshmasligi kerak.',NO_EXTRACTABLE_TEXT:'Hujjatdan matn ajratilmadi. Skanerlangan PDF bo‘lsa, matnni qo‘lda kiriting.'};return sendHtml(res,appLayout(lang,'legal-review',`<section class="panel"><h2>${esc(messages[e.message]||'Faylni o‘qishda xatolik yuz berdi.')}</h2><a href="/legal-review${q(lang)}" class="btn btnGold">Orqaga</a></section>`,'Hujjat yuklash xatosi',''),400);}
+          catch(e){const messages={UPLOAD_DEPENDENCIES_MISSING:'Fayl yuklash kutubxonalari o‘rnatilmagan. npm install bajaring.',UNSUPPORTED_FORMAT:'Faqat PDF yoki DOCX yuklang.',FILE_TOO_LARGE:'Fayl 8 MB dan oshmasligi kerak.',NO_EXTRACTABLE_TEXT:'Hujjatdan matn ajratilmadi. Skanerlangan PDF bo‘lsa, matnni qo‘lda kiriting.'};return sendHtml(res,appLayout(lang,'legal-review',`<section class="panel"><h2>${esc(messages[e.message]||require('./safe-doc-parse').userMessage(e&&e.message))}</h2><a href="/legal-review${q(lang)}" class="btn btnGold">Orqaga</a></section>`,'Hujjat yuklash xatosi',''),400);}
           const approved={
             documentText:sanitizeText(String(form.documentText||"").slice(0,45000)),
             documentType:String(form.documentType||"other").slice(0,60),
@@ -14472,7 +14525,8 @@ const server =
             await claimResultPage(
               lang,
               form,
-              docAuth ? (title,answer)=>accountStoreHistory(docAuth.user.id,"document",title,answer,url.searchParams.get("case")||form.case) : null
+              docAuth ? (title,answer)=>accountStoreHistory(docAuth.user.id,"document",title,answer,url.searchParams.get("case")||form.case) : null,
+              req._aiRestoreMap||null
             );
 
 

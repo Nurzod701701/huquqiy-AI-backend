@@ -59,7 +59,13 @@ test("AI and document review require signed consent before any external AI call"
     const signed=firstHtml.match(/name="aiConsentToken" value="([^"]+)"/)?.[1];
     const reject=await post(route,{issue:draft.issue,facts:sanitizeText(draft.facts),mode:draft.mode,aiConsent:"yes",aiConsentToken:"invalid"});
     assert.equal(reject.status,403,"tampered consent rejected "+route);
-    const approved=await post(route,{issue:draft.issue,facts:sanitizeText(draft.facts),mode:draft.mode,aiConsent:"yes",aiConsentToken:signed});
+    // Submit exactly what the consent form carries (claims use numbered,
+    // restorable placeholders instead of the generic *_YASHIRILDI mask).
+    const hiddenFields={};
+    for(const m of firstHtml.matchAll(/<input type="hidden" name="([^"]+)" value="([^"]*)">/g))
+      hiddenFields[m[1]]=m[2].replace(/&quot;/g,'"').replace(/&#039;/g,"'").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&");
+    assert.equal(hiddenFields.facts.includes("AA1234567"),false,"masked in form "+route);
+    const approved=await post(route,{...hiddenFields,aiConsent:"yes",aiConsentToken:signed});
     assert.equal(approved.status,200,"approved request forwarded "+route);
   }
   const reviewDirect=await post("/legal-review-result",{documentText:"A".repeat(100)});

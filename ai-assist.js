@@ -339,18 +339,8 @@ const PER_CLIENT = posInt(process.env.AI_RATE_PER_CLIENT, 8);
 const GLOBAL = posInt(process.env.AI_RATE_GLOBAL, 80);
 const hits = new Map();
 let globalHits = [];
-// Client-supplied headers are spoofable. CF-Connecting-IP is honoured only when
-// the deployment is really behind Cloudflare (TRUST_CF_CONNECTING_IP=yes).
-// Otherwise use the right-most X-Forwarded-For entry: it is appended by the
-// nearest (platform) proxy, so the client cannot choose it.
-function clientKey(req) {
-  if (process.env.TRUST_CF_CONNECTING_IP === "yes") {
-    const cf = String(req.headers["cf-connecting-ip"] || "").trim();
-    if (cf) return cf;
-  }
-  const xff = String(req.headers["x-forwarded-for"] || "").split(",").map(s => s.trim()).filter(Boolean);
-  return xff.length ? xff[xff.length - 1] : String(req.socket && req.socket.remoteAddress || "unknown");
-}
+// Trusted client identity (see request-limits.js for the proxy rules).
+const { clientKey } = require("./request-limits");
 function limited(req, now = Date.now()) {
   globalHits = globalHits.filter(t => now - t < WINDOW_MS);
   const key = clientKey(req);

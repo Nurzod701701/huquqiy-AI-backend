@@ -74,13 +74,29 @@ function extractAmount(text) {
 const MONETARY = new Set(["debt_recovery_claim", "contract_breach_claim", "damages_claim"]);
 function formatSum(n) { return Math.round(n).toLocaleString("ru-RU").replace(/ /g, " ") + " so‘m"; }
 
+function isMonetary(type) { return MONETARY.has(type); }
+
+// Explicit "Da'vo bahosi" field wins; otherwise one unambiguous sum in the
+// request itself. Sums in the facts (salary, earlier payments...) are NOT the
+// claim value and are never used.
+function claimAmount(form) {
+  const raw = String((form && form.claim_amount) || "").replace(/[\s  .,]/g, "");
+  if (/^\d{1,15}$/.test(raw) && Number(raw) > 0) return Number(raw);
+  return extractAmount(form && form.request);
+}
+
+// confirmed=true only when the claimant said they are not exempt: only then
+// may the fee be written into the court document. Otherwise it is shown on
+// the page as an estimate to check.
 function stateFee(type, form) {
   if (!MONETARY.has(type)) return null;
-  const amount = extractAmount(form.request) ?? extractAmount(form.facts);
+  const exemption = String((form && form.fee_exemption) || "unknown");
+  if (exemption === "yes") return null;
+  const amount = claimAmount(form || {});
   if (!amount) return null;
   const r = calculateCourtFee({ claim: "property", amount, exemption: "no" });
   if (r.fee === null) return null;
-  return { amount, fee: r.fee, formula: r.formula, bhm: BHM.amount, source: BHM.source };
+  return { amount, fee: r.fee, formula: r.formula, bhm: BHM.amount, source: BHM.source, confirmed: exemption === "no" };
 }
 
 function stateFeeInstruction(fee, lang) {
@@ -95,7 +111,9 @@ Hujjat boshida "Da’vo bahosi" qatoridan keyin "Davlat boji: ${formatSum(fee.fe
 // "Aliyev Sardor Baxtiyorovich, Toshkent..." -> "S.B. Aliyev"
 function signatureName(claimant) {
   const name = String(claimant || "").split(/[,\n;]/)[0].trim();
-  const words = name.split(/\s+/).filter(Boolean);
+  // "ALIYEV SARDOR" -> "Aliyev Sardor" (keeps Oʻ/Gʻ apostrophes).
+  const titleCase = w => w === w.toUpperCase() && /\p{Lu}{2}/u.test(w) ? w.charAt(0) + w.slice(1).toLowerCase() : w;
+  const words = name.split(/\s+/).filter(Boolean).map(titleCase);
   const parts = words.filter(p => /^\p{Lu}[\p{L}ʻ‘’'-]+$/u.test(p));
   if (parts.length < 2 || parts.length > 4 || parts.length !== words.length) return null;
   const [surname, first, patronymic] = parts;
@@ -116,16 +134,18 @@ function fixSignature(answer, claimant) {
 // callAI appends service notices (LexUZ status, backup model, court practice,
 // accuracy warning). They belong on the page, not inside the court document.
 const NOTICE_START = /\n\s*(?=(?:📚|⚠️|ℹ️|⚖️)\s)/u;
+// Notices are only ever appended at the END of the answer, so only the
+// trailing run of emoji-prefixed paragraphs is split off; an emoji paragraph
+// the model wrote inside the claim body stays in the document.
 function splitNotices(answer) {
   const text = String(answer || "");
-  const parts = text.split(NOTICE_START);
-  const body = [], notices = [];
-  for (const part of parts) {
-    const p = part.trim();
-    if (!p) continue;
-    if (/^(?:📚|⚠️|ℹ️|⚖️)\s/u.test(p) && body.length) notices.push(p); else body.push(part);
-  }
-  return { body: body.join("\n").replace(/\s+$/, ""), notices };
+  const parts = text.split(NOTICE_START).filter(p => p.trim());
+  const notices = [];
+  // A service notice is one paragraph; a part that continues with more
+  // paragraphs (e.g. "⚠️ ..." followed by "IV. SUDDAN SO‘RAYMAN") is claim text.
+  const isNotice = p => /^(?:📚|⚠️|ℹ️|⚖️)\s/u.test(p.trim()) && !/\n\s*\n/.test(p.trim());
+  while (parts.length > 1 && isNotice(parts[parts.length - 1])) notices.unshift(parts.pop().trim());
+  return { body: parts.join("\n\n").replace(/\s+$/, ""), notices };
 }
 
-module.exports = { splitNotices, BASES, legalBasisFor, extractAmount, stateFee, stateFeeInstruction, signatureName, fixSignature, formatSum };
+module.exports = { splitNotices, BASES, legalBasisFor, extractAmount, claimAmount, isMonetary, stateFee, stateFeeInstruction, signatureName, fixSignature, formatSum };
