@@ -8611,7 +8611,7 @@ async function claimResultPage(lang,form,onGenerated=null){
   if(missing.length||oversized){
     const message=missing.length?"Majburiy maydonlar yetishmayapti: "+missing.join(", "):"Kiritilgan ma’lumot haddan tashqari uzun.";
     return appLayout(lang,"documents",
-      '<section class="surface surfacePad"><h2>Da’vo arizasida kamchilik</h2><p>'+esc(message)+'</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta to‘ldirish</a></section>',
+      '<section class="surface surfacePad"><h2>QORALAMA — majburiy ma’lumotlarni to‘ldirish zarur</h2><p>'+esc(message)+'</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta to‘ldirish</a></section>',
       "Da’vo tekshiruvi",message);
   }
   const supplied=Object.entries(form||{}).filter(([k,v])=>k!=="lang"&&String(v||"").trim()).map(([k,v])=>`${k}: ${String(v).trim()}`).join("\n");
@@ -8677,7 +8677,7 @@ QAT’IY QOIDALAR:
     <div class="formActions" style="margin-top:18px">
       <form method="POST" action="/claim-download${q(lang)}" style="display:inline"><textarea name="claim_text" hidden>${esc(answer)}</textarea><button class="btn btnGold" type="submit">⬇ ${esc(L("Word (.docx) yuklash","Скачать Word (.docx)","Download Word (.docx)"))}</button></form>
       <button type="button" class="btn btnPrimary" onclick="saveClaimPdf()">📄 ${esc(L("PDF qilib saqlash","Сохранить PDF","Save PDF"))}</button>
-      <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${esc(L("Sudga elektron topshirish","Подать в суд","File electronically"))}</a>
+      ${qualityGate.problems.length ? `<span class="notice noticeGold" style="display:inline-block;padding:10px">Sudga yuborishdan oldin ko‘rsatilgan kamchiliklarni bartaraf eting.</span>` : `<a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${esc(L("Sudga elektron topshirish","Подать в суд","File electronically"))}</a>`}
       <a class="btn btnOutline" href="/claim${q(lang)}&type=${encodeURIComponent(documentType.id)}">← ${esc(L("Ma’lumotlarni tuzatish","Исправить данные","Edit details"))}</a>
     </div>
     <script>
