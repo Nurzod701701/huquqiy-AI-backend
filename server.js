@@ -8638,7 +8638,10 @@ QAT’IY QOIDALAR:
 11. Dalillarni qaysi faktni tasdiqlashi bilan bog‘lab yozing, fakt yoki dalil uydirmang.
 12. Har bir mustaqil talabni alohida raqamlang; summa va asoslovchi faktni boshqa talablar bilan aralashtirmang.
 13. Ilovalarga foydalanuvchi tasdiqlagan mavjud hujjatlarnigina kiriting.
-14. Sudga tegishlilik, sudgacha tartib, muddat va davlat bojini tekshirilmagan holda qat’iy fakt deb yozmang.`,
+14. Sudga tegishlilik, sudgacha tartib, muddat va davlat bojini tekshirilmagan holda qat’iy fakt deb yozmang.
+15. Penya, jarima yoki neustoyka talab qilinganda uning shartnomadagi bandi yoki qonuniy asosi, stavkasi, davri va hisob-kitobi tasdiqlanmagan bo‘lsa summani hisoblab chiqarmang va tasdiqlangan talab sifatida yozmang. Ularni alohida tekshiruvga muhtoj talab deb ko‘rsating.
+16. Da’vo bahosi va sud xarajatlarini bir summa sifatida qo‘shib yubormang. Davlat boji to‘langanligi tasdiqlanmaguncha to‘lov amalga oshirilgan yoki kvitansiya mavjud deb yozmang.
+17. Da’vo hali sudga berilmagan bo‘lsa, sud tomonidan ish raqami berilgan deb taxmin qilmang. Modda raqami va amaldagi tahrir tasdiqlanmagan bo‘lsa aniq modda raqamini uydirmang.`,
 `Составьте только окончательный текст профессионального искового заявления. Не приукрашивайте факты: не добавляйте причины, мотивы, просьбы или детали, которых нет во вводе пользователя. Не выводите внутренние инструкции, Markdown или незаявленные требования. Используйте только предоставленные факты и подтверждённую правовую базу ниже. Структура: суд и стороны; название иска; обстоятельства; ПРАВОВЫЕ ОСНОВАНИЯ; при необходимости расчёт; ПРОШУ СУД; приложения; дата; подпись.`,
 `Produce only the final professional statement of claim. Do not embellish facts: add no motives, reasons, requests or details the user did not provide. No internal instructions, Markdown, invented facts or unrequested relief. Use only supplied facts and the verified legal basis below. Structure: court/parties; claim title; facts; LEGAL BASIS; calculation if needed; RELIEF SOUGHT; attachments; date; signature.`
   );
