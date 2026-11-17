@@ -1,0 +1,32 @@
+name: VERIUS Header Cabinet and Visibility QA
+on:
+  push:
+    branches:
+      - fix/verius-single-cabinet-and-visibility-20261117
+  pull_request:
+    paths:
+      - 'portal-choice.js'
+      - 'secret-visibility.js'
+      - 'server.js'
+      - 'test/secret-visibility-entry.test.js'
+      - '.github/workflows/verius-visibility-qa.yml'
+jobs:
+  visual-and-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-audit --no-fund
+      - name: Syntax
+        run: node --check portal-choice.js && node --check secret-visibility.js && node --check server.js
+      - name: Header and visibility smoke
+        run: node --test test/secret-visibility-entry.test.js
+      - name: Existing account parity
+        run: node --test test/account-platform-hub.test.js test/portal-personal-account-entry.test.js
+      - name: Security regression
+        run: npm run test:security
+      - name: Citizens regression
+        run: npm run test:core
