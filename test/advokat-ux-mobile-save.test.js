@@ -25,6 +25,7 @@ test("cases and calendar display pending save status and avoid blind navigation 
    const html=wrap(lang,"/advokat-pro/"+kind,calendar(lang,kind));
    const code=html.match(/<script>([\s\S]*?)<\/script>/)[1];
    new vm.Script(code);
+   assert.match(html,/\.entry button\{min-height:44px/);
    assert.match(code,/pendingSaves\+\+/);
    assert.match(code,/pendingSaves=Math\.max\(0,pendingSaves-1\)/);
    assert.match(code,/beforeunload/);
