@@ -2,11 +2,11 @@
 const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path"),vm=require("node:vm");
 const citizen=require("../citizen-home");
 const server=fs.readFileSync(path.join(__dirname,"..","server.js"),"utf8");
-const routes=["/ai","/calculators","/pension","/documents","/legal-review","/questionnaire","/family","/employment","/business","/sources","/court","/account"];
-test("Citizens hub preserves all 12 services, real account route, mobile navigation",()=>{
+const routes=["/ai","/calculators","/pension","/documents","/legal-review","/questionnaire","/family","/employment","/business","/sources","/court"];
+test("Citizens hub preserves all 11 services, real account route, mobile navigation",()=>{
  for(const lang of ["uz","ru","en"]){
   const html=citizen(lang);
-  assert.equal((html.match(/<article class="card">/g)||[]).length,12);
+  assert.equal((html.match(/<article class="card">/g)||[]).length,11);
   for(const path of routes)assert.ok(html.includes('href="'+path+'?lang='+lang+'"'),path+" missing in "+lang);
   assert.ok(html.includes('class="pill" href="/account?lang='+lang+'"'));
   assert.ok(html.includes('href="/advokat-pro?lang='+lang+'"'));
