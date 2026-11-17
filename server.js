@@ -14355,7 +14355,7 @@ const server =
           if(req.method==="GET"){
             const db=await accountLoadDb();
             const mine=db.settings?.advokatWorkspaces?.[auth.user.id]||{v:1,cases:[],tasks:[]};
-            return sendJson(res,{ok:true,workspace:mine});
+            return sendJson(res,{ok:true,workspace:mine,version:Number(db.settings?.advokatWorkspaceVersions?.[auth.user.id])||0});
           }
           if(req.method==="POST"){
             const input=await readForm(req);
@@ -14364,15 +14364,19 @@ const server =
             catch(_){return sendJson(res,{ok:false,error:"INVALID_WORKSPACE"},400);}
             const db=await accountLoadDb();
             if(!db.settings||typeof db.settings!=="object")db.settings={};
+            const previousVersion=Number(db.settings.advokatWorkspaceVersions?.[auth.user.id])||0;
+            if(input.version!==undefined && (!/^\d{1,9}$/.test(String(input.version)) || Number(input.version)!==previousVersion))return sendJson(res,{ok:false,error:"WRITE_CONFLICT"},409);
             if(!db.settings.advokatWorkspaces)db.settings.advokatWorkspaces={};
+            if(!db.settings.advokatWorkspaceVersions)db.settings.advokatWorkspaceVersions={};
             db.settings.advokatWorkspaces[auth.user.id]=workspace;
+            db.settings.advokatWorkspaceVersions[auth.user.id]=previousVersion+1;
             accountAudit(db,auth.user.id,"advokat_workspace_saved",{cases:workspace.cases.length,tasks:workspace.tasks.length});
             try{await accountSaveDb(db);}
             catch(err){
               if(err.message==="QOMUS_PG_WRITE_CONFLICT")return sendJson(res,{ok:false,error:"WRITE_CONFLICT"},409);
               throw err;
             }
-            return sendJson(res,{ok:true,cases:workspace.cases.length,tasks:workspace.tasks.length});
+            return sendJson(res,{ok:true,cases:workspace.cases.length,tasks:workspace.tasks.length,version:previousVersion+1});
           }
           return sendJson(res,{ok:false,error:"METHOD_NOT_ALLOWED"},405);
         }
