@@ -1,0 +1,24 @@
+name: VERIUS Visible Personal Account QA
+on:
+  push:
+    branches:
+      - fix/verius-account-visible-on-entry-20261117
+  pull_request:
+    paths:
+      - 'portal-choice.js'
+      - 'test/portal-personal-account-entry.test.js'
+      - '.github/workflows/verius-portal-account-entry-qa.yml'
+jobs:
+  portal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-audit --no-fund
+      - run: node --check portal-choice.js
+      - run: node --test test/portal-personal-account-entry.test.js
+      - run: npm run test:core
+      - run: npm run test:security
