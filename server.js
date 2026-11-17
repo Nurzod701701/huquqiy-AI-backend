@@ -13759,7 +13759,7 @@ function accountCasePage(lang,user,db,id){
   const moduleLink=c.area==="Oila huquqi"?"/family":c.area==="Mehnat huquqi"?"/employment":c.area==="Biznes huquqi"?"/business":"/ai";
   return accountAppPage(lang,user,"cases",c.caseNo,`<section class="accountHero"><div class="accountBadge good">${esc(c.status)}</div><h1>${esc(c.title)}</h1><p>${esc(c.area)} · ${esc(c.caseNo)}</p></section><section class="accountGrid"><div><section class="accountPanel"><h2>${accountLocale(lang,'Ish tafsilotlari')}</h2><p>${esc(c.description||"Tavsif kiritilmagan.")}</p><div class="accountProgress"><i style="width:${Number(c.progress||0)}%"></i></div><p class="accountMuted">Progress: ${Number(c.progress||0)}%</p><div class="accountActions"><a class="accountButton gold" href="${moduleLink}?lang=${lang}&case=${encodeURIComponent(c.id)}">${accountLocale(lang,'Huquqiy modulni ochish')}</a><a class="accountButton" href="/ai?lang=${lang}&case=${encodeURIComponent(c.id)}">${accountLocale(lang,'AI maslahat')}</a><a class="accountButton light" href="/documents?lang=${lang}&case=${encodeURIComponent(c.id)}">${accountLocale(lang,'Hujjat yaratish')}</a></div></section><section class="accountPanel"><h2>${accountLocale(lang,'Case hujjatlari')}</h2>${docs.map(d=>`<div class="accountCard"><b>${esc(d.title)}</b><div class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</div></div>`).join("")||`<p class="accountMuted">${accountLocale(lang,'Hali hujjat biriktirilmagan.')}</p>`}</section></div><div><section class="accountPanel"><h2>${accountLocale(lang,'Statusni yangilash')}</h2><form class="accountForm" method="post" action="/account/case/update?lang=${lang}"><input type="hidden" name="id" value="${esc(c.id)}"><label>Status<select name="status"><option ${c.status==="started"?"selected":""} value="started">started</option><option ${c.status==="collecting"?"selected":""} value="collecting">collecting</option><option ${c.status==="analysis"?"selected":""} value="analysis">analysis</option><option ${c.status==="document_ready"?"selected":""} value="document_ready">document_ready</option><option ${c.status==="completed"?"selected":""} value="completed">completed</option></select></label><label>Progress %<input name="progress" type="number" min="0" max="100" value="${Number(c.progress||0)}"></label><button class="accountButton">${accountLocale(lang,'Saqlash')}</button></form></section><section class="accountPanel"><h2>${accountLocale(lang,'AI faoliyati')}</h2><strong>${chats.length}</strong><div class="accountMuted">${accountLocale(lang,'shu ishga bog‘langan suhbat')}</div></section></div></section>`);
 }
-function accountSimpleListPage(lang,user,active,title,items,render,empty){ return accountAppPage(lang,user,active,title,`<section class="accountPanel"><h1>${esc(title)}</h1><p class="accountMuted">${accountLocale(lang,'Shaxsiy profilingizga bog‘langan ma’lumotlar.')}</p>${items.length?items.map(render).join(""):`<p class="accountMuted">${esc(empty)}</p>`}</section>`); }
+function accountSimpleListPage(lang,user,active,title,items,render,empty,extra=""){ return accountAppPage(lang,user,active,title,`<section class="accountPanel"><h1>${esc(title)}</h1><p class="accountMuted">${accountLocale(lang,'Shaxsiy profilingizga bog‘langan ma’lumotlar.')}</p>${items.length?items.map(render).join(""):`<p class="accountMuted">${esc(empty)}</p>`}</section>${extra}`); }
 function accountProfilePage(lang,user,msg="",isError=false){
   return accountAppPage(lang,user,"profile",at(lang,"profile"),`<section class="accountPanel"><h1>${at(lang,"profile")} ma’lumotlari</h1>${msg?accountMessage(msg,isError?"error":"success"):""}<form class="accountForm" method="post" action="/account/profile?lang=${lang}"><label>${accountLocale(lang,'Ism')}<input name="firstName" value="${esc(user.firstName)}" maxlength="60" required></label><label>${accountLocale(lang,'Familiya')}<input name="lastName" value="${esc(user.lastName)}" maxlength="60" required></label><label>Email<input value="${esc(user.email)}" disabled></label><label>${accountLocale(lang,'Rol')}<input value="${esc(user.role)}" disabled></label><label>${accountLocale(lang,'Email holati')}<input value="${user.emailVerified?"Tasdiqlangan":"Tasdiqlanmagan"}" disabled></label><button class="accountButton gold">${at(lang,"profile")}ni saqlash</button></form></section>`);
 }
@@ -13974,7 +13974,40 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
         if(!["started","collecting","analysis","document_ready","completed"].includes(status)||!Number.isFinite(progress)||progress<0||progress>100){sendHtml(res,accountAppPage(lang,user,"cases","Xato",accountMessage("Status yoki progress noto‘g‘ri.","error")),400);return true;}
         c.status=status;c.progress=progress;c.updatedAt=accountNow();accountAudit(db,user.id,"case_updated",{caseId:c.id,status:c.status,progress:c.progress});await accountSaveDb(db);} accountRedirect(res,`/account/case?lang=${lang}&id=${encodeURIComponent(f.id||"")}`); return true;
     }
-    if(req.method==="GET" && pathname==="/account/documents"){const db=await accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/documents"){const db=await accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));const csrf=crypto.createHash("sha256").update("verius-draft-import-v1:"+auth.session.token).digest("hex");const panel=require("./unified-draft-import-page").render(lang,csrf);sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q.",panel));return true;}
+
+    if(req.method==="POST" && pathname==="/account/documents/import"){
+      const form=await readForm(req);
+      const expected=crypto.createHash("sha256").update("verius-draft-import-v1:"+auth.session.token).digest("hex");
+      const csrf=String(form.csrf||"");
+      if(form.consent!=="yes"||!/^[a-f0-9]{64}$/.test(csrf)||
+         !crypto.timingSafeEqual(Buffer.from(csrf,"hex"),Buffer.from(expected,"hex"))){
+        sendHtml(res,accountAppPage(lang,user,"documents","Ruxsat yo‘q",accountMessage("Hujjatni import qilish uchun sessiya va rozilikni tasdiqlang.","error")),403);return true;
+      }
+      const imported=require("./unified-draft-import");
+      let db,plan;
+      try{db=await accountLoadDb();plan=imported.planImport(db,user.id,String(form.payload||""));}
+      catch(err){
+        sendHtml(res,accountAppPage(lang,user,"documents","Import rad etildi",accountMessage("JSON hujjati noto‘g‘ri, juda katta yoki import chegarasiga yetilgan.","error")),400);return true;
+      }
+      if(plan.duplicate){accountRedirect(res,"/account/document?lang="+lang+"&id="+encodeURIComponent(plan.document.id));return true;}
+      const createdAt=accountNow();
+      const document={
+        id:accountId("DOC"),userId:user.id,caseId:null,source:"advokat-pro-json",importDigest:plan.digest,
+        type:"Advokat PRO — import qilingan loyiha",title:imported.titleOf(plan.draft),text:imported.bodyOf(plan.draft),
+        sourcePayload:plan.draft,createdAt,updatedAt:createdAt
+      };
+      db.documents.push(document);
+      accountAudit(db,user.id,"advokat_document_imported",{documentId:document.id,source:"advokat-pro-json"});
+      try{await accountSaveDb(db);}catch(err){
+        if(err.message==="QOMUS_PG_WRITE_CONFLICT"){
+          sendHtml(res,accountAppPage(lang,user,"documents","Saqlash nizosi",accountMessage("Boshqa o‘zgarish saqlandi. Hujjatni qayta import qiling.","error")),409);return true;
+        }
+        throw err;
+      }
+      accountRedirect(res,"/account/document?lang="+lang+"&id="+encodeURIComponent(document.id));return true;
+    }
+
     if(req.method==="GET" && pathname==="/account/chats"){const db=await accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"chats",at(lang,"chats"),items,c=>`<div class="accountCard"><h3><a href="/account/chat?id=${encodeURIComponent(c.id)}&lang=${lang}">${esc(c.title||"AI suhbat")}</a></h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
     if(req.method==="GET" && pathname==="/account/document"){
       const db=await accountLoadDb();
