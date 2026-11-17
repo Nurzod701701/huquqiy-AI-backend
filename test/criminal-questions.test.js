@@ -36,7 +36,7 @@ for(const lang of ["uz","ru","en"]){
    assert.ok(c.includes('href="/criminal?lang='+lang+'"'));
    assert.ok(a.includes('href="/advokat-pro/criminal/workbench?lang='+lang+'"'));
    assert.equal((c.match(/<article class="card">/g)||[]).length,12,"existing citizen modules retained");
-   for(const old of ["/ai","/calculators","/pension","/documents","/login"]){
+   for(const old of ["/ai","/calculators","/pension","/documents","/account"]){
      assert.ok(c.includes('href="'+old+'?lang='+lang+'"'));
    }
    assert.ok(a.includes('href="/advokat-pro/documents?lang='+lang+'"'));
