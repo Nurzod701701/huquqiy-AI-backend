@@ -6,8 +6,10 @@ const PAGES=[
  ["/advokat-pro/calendar",["Kalendar","Календарь","Calendar"]],
  ["/advokat-pro/check",["Ekspertiza","Экспертиза","Review"]],
  ["/advokat-pro/grounded",["Manbali tahlil","Анализ норм","Source review"]],
- ["/advokat-pro/court-practice",["Sud amaliyoti","Судебная практика","Court practice"]]
+ ["/advokat-pro/court-practice",["Sud amaliyoti","Судебная практика","Court practice"]],
+ ["/advokat-pro/criminal/workbench",["Jinoyat ishlari","Уголовные дела","Criminal work"]]
 ];
+const EXTRA_ROUTES=new Set(["/advokat-pro/criminal/evidence-review","/advokat-pro/criminal/draft","/advokat-pro/criminal/advisor","/advokat-pro/criminal"]);
 const labels={
  uz:{nav:"Advokat PRO bo‘limlari",lang:"Til",account:"Shaxsiy kabinet"},
  ru:{nav:"Разделы Адвокат PRO",lang:"Язык",account:"Личный кабинет"},
@@ -18,14 +20,14 @@ function clean(lang){return ["uz","ru","en"].includes(lang)?lang:"uz"}
 function nav(lang,pathname,{includeLanguages=true,includeAccount=true}={}){
  lang=clean(lang);
  const t=labels[lang],index=["uz","ru","en"].indexOf(lang);
- const links=PAGES.map(([url,names])=>'<a class="apNavLink" href="'+url+'?lang='+lang+'"'+(pathname===url?' aria-current="page"':'')+'>'+names[index]+'</a>').join("");
+ const links=PAGES.map(([url,names])=>'<a class="apNavLink" href="'+url+'?lang='+lang+'"'+((pathname===url||(url==="/advokat-pro/criminal/workbench"&&pathname.startsWith("/advokat-pro/criminal/")))?' aria-current="page"':'')+'>'+names[index]+'</a>').join("");
  const languages=["uz","ru","en"].map(l=>'<a href="'+pathname+'?lang='+l+'" lang="'+l+'"'+(lang===l?' aria-current="page"':'')+'>'+l.toUpperCase()+'</a>').join("");
  return '<nav class="apUnifiedNav" aria-label="'+t.nav+'"><div class="apUnifiedNavInner"><div class="apNavScroll" role="group" aria-label="'+t.nav+'">'+links+'</div><div class="apNavTools">'+
  (includeLanguages?'<div class="apNavLanguages" role="group" aria-label="'+t.lang+'">'+languages+'</div>':'')+
  (includeAccount?'<a class="apNavAccount" href="/account?lang='+lang+'">'+t.account+'</a>':"")+'</div></div></nav>';
 }
 function enhance(lang,pathname,html,options={}){
- if(!PAGES.some(x=>x[0]===pathname))return String(html);
+ if(!PAGES.some(x=>x[0]===pathname)&&!EXTRA_ROUTES.has(pathname))return String(html);
  let out=String(html);
  if(out.includes('class="apUnifiedNav"'))return out;
  const style='<style id="advokat-unified-shell-style">'+css+'</style>';
@@ -38,4 +40,4 @@ function enhance(lang,pathname,html,options={}){
  if(body>=0){const p=out.indexOf(">",body);return out.slice(0,p+1)+toolbar+out.slice(p+1)}
  return toolbar+out;
 }
-module.exports={PAGES,labels,nav,css,enhance};
+module.exports={PAGES,EXTRA_ROUTES,labels,nav,css,enhance};
