@@ -1,0 +1,29 @@
+name: VERIUS Cross-Module Smoke QA
+on:
+  push:
+    branches:
+      - qa/verius-all-sections-smoke-20261117
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'test/verius-all-sections-http-smoke.test.js'
+      - '.github/workflows/verius-all-sections-http-smoke.yml'
+jobs:
+  cross-module:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-audit --no-fund
+      - run: node --check server.js
+      - name: Real HTTP route and auth smoke
+        run: node --test test/verius-all-sections-http-smoke.test.js
+      - name: Account and security regressions
+        run: npm run test:security
+      - name: Citizens and AI privacy regressions
+        run: npm run test:core
+      - name: Advocates and criminal case regressions
+        run: npm run test:advokat-criminal
