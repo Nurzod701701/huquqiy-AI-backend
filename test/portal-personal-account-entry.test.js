@@ -4,10 +4,10 @@ const portal=require("../portal-choice");
 test("VERIUS homepage shows personal cabinet immediately in UZ RU EN",()=>{
  for(const lang of ["uz","ru","en"]){
   const html=portal(lang);
-  assert.match(html,/portalAccountHero/);
+  assert.doesNotMatch(html,/class="portalAccountHero"/);
   assert.match(html,/portalAccountLink/);
-  assert.equal((html.match(new RegExp('href="/account\\?lang='+lang+'"','g'))||[]).length,2);
-  assert.ok(html.indexOf('class="portalAccountHero"')<html.indexOf('class="intro"'));
+  assert.equal((html.match(new RegExp('href="/account\\?lang='+lang+'"','g'))||[]).length,1);
+  assert.ok(html.indexOf('class="portalAccountLink"')<html.indexOf('class="intro"'));
   assert.ok(html.includes('href="/fuqarolar?lang='+lang+'"'));
   assert.ok(html.includes('href="/advokat-pro?lang='+lang+'"'));
  }

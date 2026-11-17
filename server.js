@@ -150,6 +150,7 @@ function sendHtml(res, html, status = 200) {
   if (status === 200 && res.__aiAssist) pageHtml = require("./ai-assist").inject(pageHtml, res.__aiAssist.pathname, res.__aiAssist.lang);
   let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : appendBeforeFinalBody(pageHtml, GLOBAL_LEXUZ_SCRIPT);
   if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = appendBeforeFinalBody(resultHtml, LANGUAGE_PRESERVE_SCRIPT);
+  if (!resultHtml.includes('id="verius-secret-visibility-script"')) resultHtml = appendBeforeFinalBody(resultHtml, require("./secret-visibility"));
   // Design-only layer: Academy-inspired QOMUS theme, isolated on the QA branch.
   // Keep existing pages, navigation, handlers, and data transformations untouched.
   if (!resultHtml.includes('id="qomus-academy-liquid-glass"')) {
