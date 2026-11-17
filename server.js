@@ -5215,21 +5215,21 @@ function appLanguageMenu(lang, path = "/") {
     <div class="appLang">
 
       <a
-        href="${path}?lang=uz"
+        href="${path}${path.includes("?")?"&":"?"}lang=uz"
         class="${lang === "uz" ? "active" : ""}"
       >
         UZ
       </a>
 
       <a
-        href="${path}?lang=ru"
+        href="${path}${path.includes("?")?"&":"?"}lang=ru"
         class="${lang === "ru" ? "active" : ""}"
       >
         RU
       </a>
 
       <a
-        href="${path}?lang=en"
+        href="${path}${path.includes("?")?"&":"?"}lang=en"
         class="${lang === "en" ? "active" : ""}"
       >
         EN
@@ -5709,7 +5709,7 @@ function navigation(lang) {
 // ======================================================
 // APP LAYOUT — RESTORED
 // ======================================================
-function appLayout(lang = "uz", active = "", content = "", title = "VERIUS", description = "") {
+function appLayout(lang = "uz", active = "", content = "", title = "VERIUS", description = "", languagePath = "") {
   lang = getLang(lang);
 
   const items = [
@@ -5775,7 +5775,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "VERIUS", des
               <strong>${esc(title || "VERIUS")}</strong>
             </div>
             <div class="appTopRight">
-              ${appLanguageMenu(lang, active ? "/" + active : "/")}
+              ${appLanguageMenu(lang, languagePath || (active === "citizens" ? "/fuqarolar" : active ? "/" + active : "/fuqarolar"))}
               <a class="appHomeButton" href="/fuqarolar${q(lang)}" title="${esc(tr(lang, "home"))}">⌂</a>
             </div>
           </div>
@@ -7649,7 +7649,9 @@ function questionnairePage(lang) {
 
     t.title,
 
-    t.description
+    t.description,
+
+    "/questionnaire"
 
   );
 
@@ -9471,7 +9473,7 @@ function contractLibraryPage(lang, selected=0){
  })();
  </script></div>`:'';
  const inner=`<div class="surface surfacePad"><h2>${heading}</h2><p>${contractCopy(lang,'15 ta to‘qima, to‘ldirilgan o‘quv namunasi. Shartnomalar shu sahifada ochiladi.','15 заполненных вымышленных учебных примеров.','15 fictional filled-in educational examples.')}</p><div style="display:flex;flex-wrap:wrap">${menu}</div><p><a class="btn btnOutline" href="/employment?lang=${lang}">← ${contractCopy(lang,'Mehnat huquqi','Трудовое право','Employment law')}</a></p></div>`+tools;
- return appLayout(lang,'employment',inner,heading,heading);
+ return appLayout(lang,'employment',inner,heading,heading,"/employment-contracts"+(item?"?id="+item.id:""));
 }
 function contractDownload(res,item){const body=contractBody(item,'uz');const html='<!doctype html><html><head><meta charset="utf-8"></head><body>'+body+'</body></html>';res.writeHead(200,{'Content-Type':'application/msword; charset=utf-8','Content-Disposition':`attachment; filename="mehnat-shartnomasi-${item.id}.doc"`,'Cache-Control':'no-store'});res.end('\ufeff'+html);}
 
@@ -10096,7 +10098,7 @@ function pensionPage(lang) {
         }
       });
     })();${'</'+'script>'}
-  `,t.title,t.sub);
+  `,t.title,t.sub,"/pension");
 }
 
 function calculatorsPage(lang) {
