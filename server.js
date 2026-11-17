@@ -9450,7 +9450,24 @@ function contractLibraryPage(lang, selected=0){
  window.resetContract=function(){if(confirm('O‘zgartirishlar bekor qilinsinmi?'))editor.innerHTML=initial;};
  function htmlDocument(){return '<!doctype html><html><head><meta charset="utf-8"><title>Mehnat shartnomasi</title><style>body{font-family:Arial,sans-serif;color:#172536;line-height:1.6;margin:35px}article{border:0!important;padding:0!important;max-width:none!important}h3{page-break-after:avoid}</style></head><body>'+editor.innerHTML+'</body></html>';}
  window.saveContractWord=function(){const blob=new Blob(['\ufeff',htmlDocument()],{type:'application/msword;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='mehnat-shartnomasi-${item.id}.doc';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
- window.printContractPdf=function(){const w=window.open('','_blank');if(!w){alert('Brauzer yangi oynani blokladi. Pop-upga ruxsat bering.');return;}w.document.open();w.document.write(htmlDocument());w.document.close();w.onload=function(){w.focus();w.print();};};
+ window.printContractPdf=function(){
+ const w=window.open('','_blank');
+ if(w){
+  w.document.open();w.document.write(htmlDocument());w.document.close();
+  w.onload=function(){w.focus();w.print();};
+  return;
+ }
+ // iOS and in-app browsers may block popups. Print only the current editable contract.
+ const previous=document.getElementById('contractMobilePrintFallback');
+ if(previous)previous.remove();
+ const style=document.createElement('style');style.id='contractMobilePrintFallback';
+ style.textContent='@media print{body *{visibility:hidden!important}#contractEditor,#contractEditor *{visibility:visible!important}#contractEditor{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;background:#fff!important;color:#111!important;box-shadow:none!important}#contractEditor article{border:0!important;padding:0!important;max-width:none!important;margin:0!important}#contractEditor h3{break-after:avoid}}';
+ document.head.appendChild(style);
+ const clean=function(){style.remove();window.removeEventListener('afterprint',clean);};
+ window.addEventListener('afterprint',clean,{once:true});
+ try{window.print();}catch(_){clean();alert('PDF oynasi bloklandi. Brauzer menyusidan Chop etish / PDF sifatida saqlashni tanlang yoki Word nusxasini oling.');}
+ setTimeout(clean,30000);
+};
  })();
  </script></div>`:'';
  const inner=`<div class="surface surfacePad"><h2>${heading}</h2><p>${contractCopy(lang,'15 ta to‘qima, to‘ldirilgan o‘quv namunasi. Shartnomalar shu sahifada ochiladi.','15 заполненных вымышленных учебных примеров.','15 fictional filled-in educational examples.')}</p><div style="display:flex;flex-wrap:wrap">${menu}</div><p><a class="btn btnOutline" href="/employment?lang=${lang}">← ${contractCopy(lang,'Mehnat huquqi','Трудовое право','Employment law')}</a></p></div>`+tools;
