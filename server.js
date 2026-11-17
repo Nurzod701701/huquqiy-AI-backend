@@ -13481,6 +13481,14 @@ function accountAudit(db,userId,action,meta={}){
 function accountCaseNo(db){ return `CASE-${new Date().getFullYear()}-${String(db.cases.length+1).padStart(5,"0")}`; }
 function accountSafeUser(u){ return {id:u.id,firstName:u.firstName,lastName:u.lastName,email:u.email,role:u.role,status:u.status,emailVerified:!!u.emailVerified,createdAt:u.createdAt,lastLoginAt:u.lastLoginAt||null}; }
 function accountRedirect(res,to){ res.writeHead(302,{Location:to}); return res.end(); }
+function accountSameOriginPost(req){
+ const origin=String(req.headers.origin||"");
+ if(!origin)return true; // Older or non-browser clients may not send Origin.
+ try{
+  const value=new URL(origin);
+  return (value.protocol==="https:"||value.protocol==="http:")&&value.host.toLowerCase()===String(req.headers.host||"").toLowerCase();
+ }catch(_){return false;}
+}
 function accountMessage(text,type="info"){ return `<div class="accountAlert ${type}">${esc(text)}</div>`; }
 
 async function accountSendEmail(to,subject,text){
@@ -13985,6 +13993,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     if(req.method==="GET" && pathname==="/account/documents"){const db=await accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q.",require("./advokat-draft-store").importPanel(lang,db.cases.filter(c=>c.userId===user.id))));return true;}
     // Explicit, account-owned import only. No automatic transfer from the browser, no overwrite.
     if(req.method==="POST" && pathname==="/account/documents/import"){
+      if(!accountSameOriginPost(req)){sendHtml(res,accountAppPage(lang,user,"documents","Ruxsat yo‘q",accountMessage("Begona saytdan hujjat saqlash bloklandi.","error")),403);return true;}
       const f=await readForm(req);
       if(f.consent!=="yes"){
         sendHtml(res,accountAppPage(lang,user,"documents","Import rad etildi",accountMessage("Shaxsiy kabinetga saqlash uchun rozilik talab qilinadi.","error")),403);return true;
@@ -14358,6 +14367,7 @@ const server =
             return sendJson(res,{ok:true,workspace:mine,version:Number(db.settings?.advokatWorkspaceVersions?.[auth.user.id])||0});
           }
           if(req.method==="POST"){
+            if(!accountSameOriginPost(req))return sendJson(res,{ok:false,error:"CROSS_ORIGIN_WRITE_BLOCKED"},403);
             const input=await readForm(req);
             let workspace;
             try{workspace=require("./advokat-workspace-store").parseAdvokatWorkspaceJson(input.data);}
