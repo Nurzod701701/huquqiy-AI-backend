@@ -1,0 +1,30 @@
+name: VERIUS Mobile Five Modules QA
+on:
+  push:
+    branches:
+      - fix/verius-mobile-final-five-qa-20261117
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'test/mobile-five-modules-regression.test.js'
+      - '.github/workflows/verius-mobile-final-five-qa.yml'
+jobs:
+  mobile-modules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-audit --no-fund
+      - name: Syntax
+        run: node --check server.js
+      - name: Five module smoke regression
+        run: node --test test/mobile-five-modules-regression.test.js
+      - name: Claims quality
+        run: node --test test/claim-quality-gate.test.js
+      - name: Citizen and AI privacy regressions
+        run: npm run test:core
+      - name: Security regression
+        run: npm run test:security
