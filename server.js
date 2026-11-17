@@ -14394,26 +14394,26 @@ const server =
         // Source-linked browser-local case guidance; no AI call or data storage.
         if(req.method === "GET" && (pathname === "/criminal/advisor" || pathname === "/advokat-pro/criminal/advisor")){
           const role=pathname === "/criminal/advisor" ? "citizen" : "advocate";
-          return sendHtml(res, require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role));
+          return sendHtml(res, role==="advocate" ? require("./advokat-language")(lang,pathname,require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role)) : require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role));
         }
 
         // Deterministic evidence document review and browser-local motion drafting.
         if(req.method === "GET" && pathname === "/advokat-pro/criminal/evidence-review"){
-          return sendHtml(res, require("./advokat-evidence-review").evidenceReviewPage(lang));
+          return sendHtml(res, require("./advokat-language")(lang,pathname,require("./advokat-evidence-review").evidenceReviewPage(lang)));
         }
         if(req.method === "GET" && pathname === "/advokat-pro/criminal/draft"){
-          return sendHtml(res, require("./advokat-criminal-draft-page").criminalDraftPage(lang));
+          return sendHtml(res, require("./advokat-language")(lang,pathname,require("./advokat-criminal-draft-page").criminalDraftPage(lang)));
         }
 
         // Professional criminal-case checklist workspace; no client data stored.
         if(req.method === "GET" && pathname === "/advokat-pro/criminal/workbench"){
-          return sendHtml(res, require("./advokat-criminal-workbench").advocateCriminalWorkbench(lang));
+          return sendHtml(res, require("./advokat-language")(lang,pathname,require("./advokat-criminal-workbench").advocateCriminalWorkbench(lang)));
         }
 
         // VERIUS criminal-law question hubs: informative, source-linked, no case data stored.
         if(req.method === "GET" && (pathname === "/criminal" || pathname === "/advokat-pro/criminal")){
           const role=pathname === "/criminal" ? "citizen" : "advocate";
-          return sendHtml(res, require("./criminal-questions").criminalQuestionsPage(lang,role));
+          return sendHtml(res, role==="advocate" ? require("./advokat-language")(lang,pathname,require("./criminal-questions").criminalQuestionsPage(lang,role)) : require("./criminal-questions").criminalQuestionsPage(lang,role));
         }
 
         // Advokat PRO: separate landing page and preserved document constructor.
