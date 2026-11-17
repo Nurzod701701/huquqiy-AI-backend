@@ -27,6 +27,8 @@ jobs:
         run: node --check server.js && node --check advokat-pro.js && node --check advokat-cases-calendar.js && node --check advokat-draft-store.js && node --check advokat-document-quality.js
       - name: Unit and UI regression
         run: node --test test/advokat-persistence-quality.test.js
+      - name: Real HTTP document import and account ownership
+        run: node --test test/advokat-import-http.test.js
       - name: Real HTTP and access control
         run: node --test test/verius-all-sections-http-smoke.test.js
       - name: Existing account and security
