@@ -13904,7 +13904,10 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="GET" && pathname==="/verify-email"){ sendHtml(res,accountVerifyPage(lang,accountEmail(url.searchParams.get("email")))); return true; }
   if(req.method==="POST" && pathname==="/verify-email"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
-    if(!user||!user.verificationCodeHash||new Date(user.verificationExpiresAt)<new Date()||!accountVerifyPassword(f.code,user.verificationCodeHash)){ sendHtml(res,accountVerifyPage(lang,email,"Kod noto‘g‘ri yoki muddati tugagan."),400); return true; }
+    const retry=await getEffectiveLoginBlockSeconds("verify",email);
+    if(retry){res.setHeader("Retry-After",String(retry));sendHtml(res,accountVerifyPage(lang,email,"Ko‘p urinish. 15 daqiqadan keyin urinib ko‘ring."),429);return true;}
+    if(!user||!user.verificationCodeHash||new Date(user.verificationExpiresAt)<new Date()||!accountVerifyPassword(f.code,user.verificationCodeHash)){ await recordEffectiveLoginFailure("verify",email);sendHtml(res,accountVerifyPage(lang,email,"Kod noto‘g‘ri yoki muddati tugagan."),400); return true; }
+    await clearEffectiveLoginFailures("verify",email);
     user.emailVerified=true; delete user.verificationCodeHash; delete user.verificationExpiresAt; user.updatedAt=accountNow(); accountAudit(db,user.id,"email_verified",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/forgot-password"){
@@ -13945,7 +13948,12 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   }
   if(req.method==="POST" && pathname==="/reset-password"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
-    if(!user||!user.resetCodeHash||new Date(user.resetExpiresAt)<new Date()||!accountVerifyPassword(f.code,user.resetCodeHash)||String(f.password||"").length<8||f.password!==f.password2){ sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Kod yoki yangi parol ma’lumotlari noto‘g‘ri.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),400); return true; }
+    const retry=await getEffectiveLoginBlockSeconds("reset",email);
+    if(retry){res.setHeader("Retry-After",String(retry));sendHtml(res,accountPublicPage(lang,"Ko‘p urinish",accountMessage("Ko‘p noto‘g‘ri kod kiritildi. 15 daqiqadan keyin qayta urinib ko‘ring.","error")),429);return true;}
+    const codeValid=!!(user&&user.role==="user"&&user.status==="active"&&user.resetCodeHash&&new Date(user.resetExpiresAt)>new Date()&&accountVerifyPassword(f.code,user.resetCodeHash));
+    if(!codeValid){await recordEffectiveLoginFailure("reset",email);sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Kod yoki yangi parol ma’lumotlari noto‘g‘ri.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),400);return true;}
+    if(String(f.password||"").length<8||f.password!==f.password2){sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Yangi parollar mos emas yoki juda qisqa.","error")}<a href="/reset-password?lang=${lang}&email=${encodeURIComponent(email)}">Qayta urinish</a></section>`),400);return true;}
+    await clearEffectiveLoginFailures("reset",email);
     user.passwordHash=accountHashPassword(f.password); delete user.resetCodeHash; delete user.resetExpiresAt; delete user.resetSentAt; db.sessions=db.sessions.filter(s=>s.userId!==user.id); accountAudit(db,user.id,"password_reset_completed",{}); await accountSaveDb(db); accountRedirect(res,`/login?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/logout"){ await accountClearSession(req,res); accountRedirect(res,`/login?lang=${lang}`); return true; }
