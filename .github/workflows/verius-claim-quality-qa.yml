@@ -1,0 +1,34 @@
+name: VERIUS Claim Quality Gate QA
+on:
+  pull_request:
+    paths:
+      - 'claim-quality-gate.js'
+      - 'claim-helpers.js'
+      - 'server.js'
+      - 'test/claim-quality-gate.test.js'
+      - '.github/workflows/verius-claim-quality-qa.yml'
+  push:
+    branches:
+      - fix/verius-document-quality-gate-20261116
+    paths:
+      - 'claim-quality-gate.js'
+      - 'claim-helpers.js'
+      - 'server.js'
+      - 'test/claim-quality-gate.test.js'
+      - '.github/workflows/verius-claim-quality-qa.yml'
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-audit --no-fund
+      - name: Syntax check
+        run: node --check server.js && node --check claim-quality-gate.js
+      - name: Claim quality gate tests
+        run: node --test test/claim-quality-gate.test.js
+      - name: Core regression
+        run: npm run test:core

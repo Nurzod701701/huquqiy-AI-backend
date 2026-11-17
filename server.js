@@ -8630,7 +8630,7 @@ async function claimResultPage(lang,form,onGenerated=null){
   if(missing.length||oversized){
     const message=missing.length?"Majburiy maydonlar yetishmayapti: "+missing.join(", "):"Kiritilgan ma’lumot haddan tashqari uzun.";
     return appLayout(lang,"documents",
-      '<section class="surface surfacePad"><h2>Da’vo arizasida kamchilik</h2><p>'+esc(message)+'</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta to‘ldirish</a></section>',
+      '<section class="surface surfacePad"><h2>QORALAMA — majburiy ma’lumotlarni to‘ldirish zarur</h2><p>'+esc(message)+'</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta to‘ldirish</a></section>',
       "Da’vo tekshiruvi",message);
   }
   const supplied=Object.entries(form||{}).filter(([k,v])=>k!=="lang"&&String(v||"").trim()).map(([k,v])=>`${k}: ${String(v).trim()}`).join("\n");
@@ -8657,7 +8657,10 @@ QAT’IY QOIDALAR:
 11. Dalillarni qaysi faktni tasdiqlashi bilan bog‘lab yozing, fakt yoki dalil uydirmang.
 12. Har bir mustaqil talabni alohida raqamlang; summa va asoslovchi faktni boshqa talablar bilan aralashtirmang.
 13. Ilovalarga foydalanuvchi tasdiqlagan mavjud hujjatlarnigina kiriting.
-14. Sudga tegishlilik, sudgacha tartib, muddat va davlat bojini tekshirilmagan holda qat’iy fakt deb yozmang.`,
+14. Sudga tegishlilik, sudgacha tartib, muddat va davlat bojini tekshirilmagan holda qat’iy fakt deb yozmang.
+15. Penya, jarima yoki neustoyka talab qilinganda uning shartnomadagi bandi yoki qonuniy asosi, stavkasi, davri va hisob-kitobi tasdiqlanmagan bo‘lsa summani hisoblab chiqarmang va tasdiqlangan talab sifatida yozmang. Ularni alohida tekshiruvga muhtoj talab deb ko‘rsating.
+16. Da’vo bahosi va sud xarajatlarini bir summa sifatida qo‘shib yubormang. Davlat boji to‘langanligi tasdiqlanmaguncha to‘lov amalga oshirilgan yoki kvitansiya mavjud deb yozmang.
+17. Da’vo hali sudga berilmagan bo‘lsa, sud tomonidan ish raqami berilgan deb taxmin qilmang. Modda raqami va amaldagi tahrir tasdiqlanmagan bo‘lsa aniq modda raqamini uydirmang.`,
 `Составьте только окончательный текст профессионального искового заявления. Не приукрашивайте факты: не добавляйте причины, мотивы, просьбы или детали, которых нет во вводе пользователя. Не выводите внутренние инструкции, Markdown или незаявленные требования. Используйте только предоставленные факты и подтверждённую правовую базу ниже. Структура: суд и стороны; название иска; обстоятельства; ПРАВОВЫЕ ОСНОВАНИЯ; при необходимости расчёт; ПРОШУ СУД; приложения; дата; подпись.`,
 `Produce only the final professional statement of claim. Do not embellish facts: add no motives, reasons, requests or details the user did not provide. No internal instructions, Markdown, invented facts or unrequested relief. Use only supplied facts and the verified legal basis below. Structure: court/parties; claim title; facts; LEGAL BASIS; calculation if needed; RELIEF SOUGHT; attachments; date; signature.`
   );
@@ -8672,6 +8675,7 @@ QAT’IY QOIDALAR:
     aiNotices=split.notices;
     answer=claimHelpers.fixSignature(split.body,form.claimant);
   }
+  const qualityGate=require("./claim-quality-gate").reviewClaim(form,answer);
   const generationFailed=!answer.trim()||/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer);
   if(generationFailed){
     return appLayout(lang,"documents",
@@ -8687,11 +8691,12 @@ QAT’IY QOIDALAR:
       <div class="notice noticeGold"><span class="noticeIcon">!</span><span>${esc(L("Tekshiring: sudga tegishlilik, taraflar manzili, protsessual muddatlar, da’vo bahosi, davlat boji, dalillar va ilovalar, qonun moddalarining amaldagi tahriri. Hujjat avtomatik huquqiy tasdiqdan o‘tmagan.","Проверьте подсудность, стороны, сроки, пошлину, доказательства и действующее законодательство.","Verify jurisdiction, parties, deadlines, court fees, evidence and current law. This draft is not legally certified."))}</span></div>
       <div id="claimPrintable" class="claimDocument">${esc(answer)}</div>
       ${aiNotices.length?`<div class="notice" style="margin-top:16px;white-space:pre-wrap"><span class="noticeIcon">i</span><span>${esc(aiNotices.join("\n\n"))}</span></div>`:""}
+      ${require("./claim-quality-gate").renderReviewHtml(qualityGate,esc)}
     </div>
     <div class="formActions" style="margin-top:18px">
       <form method="POST" action="/claim-download${q(lang)}" style="display:inline"><textarea name="claim_text" hidden>${esc(answer)}</textarea><button class="btn btnGold" type="submit">⬇ ${esc(L("Word (.docx) yuklash","Скачать Word (.docx)","Download Word (.docx)"))}</button></form>
       <button type="button" class="btn btnPrimary" onclick="saveClaimPdf()">📄 ${esc(L("PDF qilib saqlash","Сохранить PDF","Save PDF"))}</button>
-      <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${esc(L("Sudga elektron topshirish","Подать в суд","File electronically"))}</a>
+      ${qualityGate.problems.length ? `<span class="notice noticeGold" style="display:inline-block;padding:10px">Sudga yuborishdan oldin ko‘rsatilgan kamchiliklarni bartaraf eting.</span>` : `<a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${esc(L("Sudga elektron topshirish","Подать в суд","File electronically"))}</a>`}
       <a class="btn btnOutline" href="/claim${q(lang)}&type=${encodeURIComponent(documentType.id)}">← ${esc(L("Ma’lumotlarni tuzatish","Исправить данные","Edit details"))}</a>
     </div>
     <script>
