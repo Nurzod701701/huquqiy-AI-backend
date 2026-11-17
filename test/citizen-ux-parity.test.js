@@ -41,6 +41,13 @@ test("Citizens contract inline script is valid JavaScript",()=>{
  // Embedded server-side interpolation is inside ordinary string literals and is valid JS.
  new vm.Script(inline[1]);
 });
+test("citizen app switches language without losing the current pension, questionnaire or selected contract route",()=>{
+ assert.match(server,/languagePath \|\| \(active === "citizens" \? "\/fuqarolar"/);
+ assert.match(server,/appLayout\(lang,'employment',inner,heading,heading,"\/employment-contracts"/);
+ assert.match(server,/t\.title,t\.sub,"\/pension"\)/);
+ assert.match(server,/"\/questionnaire"/);
+ assert.match(server,/path\.includes\("\?"\)\?"&":"\?"/);
+});
 test("citizen home does not modify or expose Advocate PRO, admin or account internals",()=>{
  const content=fs.readFileSync(path.join(__dirname,"..","citizen-home.js"),"utf8");
  assert.doesNotMatch(content,/require\("\.\/advokat/);
