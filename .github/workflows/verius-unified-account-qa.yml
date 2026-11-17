@@ -1,0 +1,33 @@
+name: VERIUS Unified Personal Account QA
+on:
+  push:
+    branches:
+      - feat/verius-unified-personal-account-20261117
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'account-platform-hub.js'
+      - 'advokat-home.js'
+      - 'advokat-cases-calendar.js'
+      - 'test/account-platform-hub.test.js'
+      - '.github/workflows/verius-unified-account-qa.yml'
+jobs:
+  unified-account:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-audit --no-fund
+      - name: Syntax checks
+        run: node --check server.js && node --check account-platform-hub.js && node --check advokat-home.js && node --check advokat-cases-calendar.js
+      - name: Unified account and role-scoping regression
+        run: node --test test/account-platform-hub.test.js
+      - name: Citizen parity and AI privacy regression
+        run: npm run test:core
+      - name: Account security regression
+        run: npm run test:security
+      - name: Account PostgreSQL persistence regression
+        run: node --test test/account-pg-store.test.js test/account-pg-integration.test.js
