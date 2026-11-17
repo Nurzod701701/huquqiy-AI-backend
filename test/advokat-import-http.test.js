@@ -39,6 +39,8 @@ test("real HTTP: explicit document import, ownership, dedup, export and workspac
   assert.match(html,/CASE-U1/);
   assert.doesNotMatch(html,/CASE-U2/);
   const payload=JSON.stringify(snapshot());
+  const csrf=await fetch(base+"/account/documents/import?lang=uz",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded",Origin:"https://evil.example.invalid",Cookie:"hq_session="+TOKEN1},body:new URLSearchParams({payload,consent:"yes"})});
+  assert.equal(csrf.status,403,"cross-origin writes must be rejected");
   let r=await post("/account/documents/import?lang=uz",{payload,caseId:"CASE-U1"});
   assert.equal(r.status,403,"explicit consent required");
   r=await post("/account/documents/import?lang=uz",{payload,consent:"yes",caseId:"CASE-U1"});
