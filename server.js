@@ -8704,7 +8704,17 @@ QAT’IY QOIDALAR:
         const source=document.getElementById("claimPrintable");
         if(!source || !source.innerText.trim()){ alert("Da’vo arizasi matni topilmadi."); return; }
         const w=window.open("","_blank","width=900,height=1000");
-        if(!w){ alert("PDF oynasini ochish bloklandi. Brauzerda pop-upga ruxsat bering."); return; }
+        if(!w){
+          // iOS Safari and in-app browsers may block new windows. Print the draft on this page instead.
+          const style=document.createElement("style");
+          style.id="claimMobilePrintFallback";
+          style.textContent='@media print{body *{visibility:hidden!important}#claimPrintable,#claimPrintable *{visibility:visible!important}#claimPrintable{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;white-space:pre-wrap!important;font:14pt/1.45 "Times New Roman",serif!important;color:#000!important;background:#fff!important}}';
+          document.head.appendChild(style);
+          const cleanup=()=>{style.remove();window.removeEventListener("afterprint",cleanup);};
+          window.addEventListener("afterprint",cleanup,{once:true});
+          try{window.print();}catch(error){cleanup();alert("PDF oynasi bloklandi. Brauzer menyusidan Chop etish / PDF sifatida saqlashni tanlang.");}
+          return;
+        }
         const safe=source.innerHTML;
         w.document.open();
         var printHtml='<!doctype html><html><head><meta charset="utf-8"><title>Davo_arizasi</title>'+
