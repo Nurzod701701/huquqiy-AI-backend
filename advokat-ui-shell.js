@@ -33,7 +33,8 @@ function enhance(lang,pathname,html,options={}){
  const style='<style id="advokat-unified-shell-style">'+css+'</style>';
  const head=out.toLowerCase().indexOf("</head>");
  if(head!==-1)out=out.slice(0,head)+style+out.slice(head);
- const toolbar=nav(lang,pathname,options);
+ const existingAccountLink=out.includes('href="/account?lang='+clean(lang)+'"');
+ const toolbar=nav(lang,pathname,{...options,includeAccount:options.includeAccount===undefined?!existingAccountLink:options.includeAccount});
  const endHeader=out.toLowerCase().indexOf("</header>");
  if(endHeader>=0)return out.slice(0,endHeader+9)+toolbar+out.slice(endHeader+9);
  const body=out.toLowerCase().indexOf("<body");
