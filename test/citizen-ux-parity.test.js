@@ -47,5 +47,5 @@ test("citizen home does not modify or expose Advocate PRO, admin or account inte
  assert.doesNotMatch(content,/DATABASE_URL|process\.env|localStorage|sessionStorage/);
  assert.match(server,/pathname === "\/fuqarolar"/);
  assert.match(server,/pathname === "\/advokat-pro"/);
- assert.match(server,/pathname === "\/admin"/);
+ assert.match(server,/\/admin\/security/);
 });
