@@ -1,0 +1,35 @@
+name: VERIUS Advocate PRO Phase 3 UI Regression
+on:
+  push:
+    branches:
+      - feat/verius-advokat-pro-ui-phase3-20261117
+  pull_request:
+    paths:
+      - 'advokat-ui-shell.js'
+      - 'advokat-language.js'
+      - 'advokat-home.js'
+      - 'server.js'
+      - 'test/advokat-phase3-ui.test.js'
+      - '.github/workflows/verius-advokat-phase3-ui.yml'
+jobs:
+  advocate-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Source syntax
+        run: node --check server.js && node --check advokat-home.js && node --check advokat-language.js && node --check advokat-ui-shell.js
+      - name: Twelve Advocate PRO views in three languages
+        run: node --test test/advokat-phase3-ui.test.js
+      - name: Legacy Advocate PRO page regression
+        run: node advokat-ui.test.js && node advokat-quality.test.js
+      - name: Real HTTP routes and access
+        run: node --test test/verius-all-sections-http-smoke.test.js
+      - name: Account data and storage
+        run: npm run test:security
+      - name: Citizens and criminal parity
+        run: npm run test:citizens
