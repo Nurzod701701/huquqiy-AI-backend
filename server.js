@@ -13498,6 +13498,7 @@ if(!QOMUS_PG_ENABLED) try {
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 const VERIFY_TTL_MS = 1000 * 60 * 15;
 const RESET_TTL_MS = 1000 * 60 * 20;
+const RESET_TOKEN_TTL_MS = 1000 * 60 * 10; // step 3 (new password) must follow the verified code within 10 minutes
 const OWNER_EMAIL = String(process.env.OWNER_EMAIL || "").trim().toLowerCase();
 const OWNER_PASSWORD = String(process.env.OWNER_PASSWORD || "").trim();
 
@@ -14080,12 +14081,20 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     await clearEffectiveLoginFailures("verify",email);
     user.emailVerified=true; delete user.verificationCodeHash; delete user.verificationExpiresAt; user.verificationAttempts=0; user.updatedAt=accountNow(); accountAudit(db,user.id,"email_verified",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/?lang=${lang}`); return true;
   }
+  // ---------------- Password recovery: 1 email → 2 code → 3 new password → 4 done ----------------
+  // UI in reset-flow-ui.js. A verified code is exchanged for a single-use reset token
+  // (256-bit, stored as SHA-256, 10 minutes) so step 3 cannot be reached without step 2.
   if(req.method==="GET" && pathname==="/forgot-password"){
-    sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
+    const rfui=require("./reset-flow-ui");
+    sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepEmail(lang))); return true;
   }
   if(req.method==="POST" && pathname==="/forgot-password"){
+    const rfui=require("./reset-flow-ui"), t=rfui.messages(lang);
     const f=await readForm(req);
     const email=accountEmail(f.email);
+    if(!email||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepEmail(lang,{email,error:t.errEmail})),400); return true;
+    }
     const db=await accountLoadDb();
     const user=db.users.find(u=>u.email===email);
     // OWNER_EMAIL uses separate admin credentials: never imply an admin reset email was sent.
@@ -14096,15 +14105,18 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
       if(!recentlySent && accountCodeSendAllowed(user,"reset")){
         const code=accountSixDigitCode();
         try{
-          const sent=await accountSendEmail(email,"VERIUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi yuborilmadi. Email xizmati sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}
+          const sent=await accountSendEmail(email,"VERIUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}. Kod 20 daqiqa amal qiladi. Agar siz so‘ramagan bo‘lsangiz, bu xatni e’tiborsiz qoldiring.`);
+          if(!sent){sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepEmail(lang,{email,error:t.errSend})),503);return true;}
         }catch(error){
-          console.error("RESET EMAIL SEND ERROR",error);
-          sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodini yuborib bo‘lmadi. Birozdan keyin qayta urinib ko‘ring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);
+          console.error("RESET EMAIL SEND ERROR",error&&error.message);
+          sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepEmail(lang,{email,error:t.errSend})),502);
           return true;
         }
         user.resetCodeHash=await accountHashPassword(code);
         user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();
         user.resetSentAt=accountNow();
+        // A new code invalidates any reset token from an earlier, unfinished attempt.
+        delete user.resetTokenHash; delete user.resetTokenExpiresAt;
         accountCodeSent(user,"reset");
         accountAudit(db,user.id,"password_reset_requested",{});
         await accountSaveDb(db);
@@ -14114,27 +14126,59 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     return true;
   }
   if(req.method==="GET" && pathname==="/reset-password"){
+    const rfui=require("./reset-flow-ui");
     const email=accountEmail(url.searchParams.get("email"));
-    sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><p class="accountMuted">Agar ushbu emailga bog‘langan faol foydalanuvchi akkaunti mavjud bo‘lsa, tiklash kodi yuboriladi. Kod kelmasa, Spam papkasini tekshiring yoki 60 soniyadan keyin qayta yuboring.</p><p class="accountMuted">Admin hisobining paroli bu sahifa orqali tiklanmaydi. <a href="/admin/login?lang=${lang}">Admin kirish</a>.</p><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label><label>Yangi parol<input name="password" type="password" minlength="8" autocomplete="new-password" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" autocomplete="new-password" required></label><button class="accountButton">Parolni yangilash</button></form><form method="post" action="/forgot-password?lang=${lang}" style="margin-top:14px"><input type="hidden" name="email" value="${esc(email)}"><button class="accountButton" type="submit">Kodni qayta yuborish (60 soniyadan keyin)</button></form><p class="accountMuted"><a href="/forgot-password?lang=${lang}">Boshqa emailni kiritish</a></p></section>`));
+    if(!email){ accountRedirect(res,`/forgot-password?lang=${lang}`); return true; }
+    sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepCode(lang,{email})));
     return true;
   }
   if(req.method==="POST" && pathname==="/reset-password"){
+    const rfui=require("./reset-flow-ui"), t=rfui.messages(lang);
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
+    const codeStep=(error,status)=>sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepCode(lang,{email,error})),status);
     // Two layers: durable per-email throttle (main) + per-code lockout after CODE_MAX_ATTEMPTS wrong guesses.
     const retry=await getEffectiveLoginBlockSeconds("reset",email);
-    if(retry){res.setHeader("Retry-After",String(retry));sendHtml(res,accountPublicPage(lang,"Ko‘p urinish",accountMessage("Ko‘p noto‘g‘ri kod kiritildi. 15 daqiqadan keyin qayta urinib ko‘ring.","error")),429);return true;}
-    const resetFail=()=>sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Kod yoki yangi parol ma’lumotlari noto‘g‘ri.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),400);
+    if(retry){res.setHeader("Retry-After",String(retry));codeStep(t.errLimit,429);return true;}
     const eligible=!!(user&&user.role==="user"&&user.status==="active"&&user.resetCodeHash&&new Date(user.resetExpiresAt)>new Date());
-    if(!eligible){ await recordEffectiveLoginFailure("reset",email); resetFail(); return true; }
-    if(!await accountVerifyPassword(f.code,user.resetCodeHash)){
+    if(!eligible){ await recordEffectiveLoginFailure("reset",email); codeStep(t.errCode,400); return true; }
+    if(!await accountVerifyPassword(String(f.code||"").replace(/\D/g,""),user.resetCodeHash)){
       await recordEffectiveLoginFailure("reset",email);
       user.resetAttempts=(Number(user.resetAttempts)||0)+1;
       if(user.resetAttempts>=CODE_MAX_ATTEMPTS){ delete user.resetCodeHash; delete user.resetExpiresAt; accountAudit(db,user.id,"reset_code_locked",{}); alertEvent("CODE_BRUTE_FORCE",req.socket.remoteAddress,"/reset-password"); }
-      await accountSaveDb(db); resetFail(); return true;
+      await accountSaveDb(db); codeStep(user.resetCodeHash?t.errCode:t.errLocked,400); return true;
     }
-    if(String(f.password||"").length<8||f.password!==f.password2){sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Yangi parollar mos emas yoki juda qisqa.","error")}<a href="/reset-password?lang=${lang}&email=${encodeURIComponent(email)}">Qayta urinish</a></section>`),400);return true;}
     await clearEffectiveLoginFailures("reset",email);
-    user.passwordHash=await accountHashPassword(f.password); delete user.resetCodeHash; delete user.resetExpiresAt; delete user.resetSentAt; user.resetAttempts=0; db.sessions=db.sessions.filter(s=>s.userId!==user.id); accountAudit(db,user.id,"password_reset_completed",{}); await accountSaveDb(db); accountRedirect(res,`/login?lang=${lang}`); return true;
+    // The code is single-use: exchange it for a short-lived reset token.
+    const resetToken=crypto.randomBytes(32).toString("hex");
+    delete user.resetCodeHash; delete user.resetExpiresAt; user.resetAttempts=0;
+    user.resetTokenHash=accountSessionHash(resetToken);
+    user.resetTokenExpiresAt=new Date(Date.now()+RESET_TOKEN_TTL_MS).toISOString();
+    accountAudit(db,user.id,"password_reset_code_verified",{});
+    await accountSaveDb(db);
+    sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepPassword(lang,{token:resetToken})));
+    return true;
+  }
+  if(req.method==="POST" && pathname==="/reset-password/new"){
+    const rfui=require("./reset-flow-ui"), t=rfui.messages(lang);
+    const f=await readForm(req), token=String(f.token||"");
+    const db=await accountLoadDb();
+    const tokenHash=/^[a-f0-9]{64}$/.test(token)?accountSessionHash(token):"";
+    const user=tokenHash?db.users.find(u=>u.resetTokenHash===tokenHash):null;
+    if(!user||!(new Date(user.resetTokenExpiresAt)>new Date())||user.role!=="user"||user.status!=="active"){
+      if(user){ delete user.resetTokenHash; delete user.resetTokenExpiresAt; await accountSaveDb(db); }
+      sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepRestart(lang,t.errToken)),400); return true;
+    }
+    const password=String(f.password||"");
+    const again=(error)=>sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepPassword(lang,{token,error})),400);
+    if(password.length<8||password.length>200||password!==String(f.password2||"")){ again(t.errPass); return true; }
+    if(password.trim().toLowerCase()===String(user.email||"").toLowerCase()){ again(t.errSameEmail); return true; }
+    user.passwordHash=await accountHashPassword(password);
+    delete user.resetTokenHash; delete user.resetTokenExpiresAt; delete user.resetSentAt; user.resetAttempts=0; user.updatedAt=accountNow();
+    db.sessions=db.sessions.filter(s=>s.userId!==user.id);
+    accountAudit(db,user.id,"password_reset_completed",{});
+    await accountSaveDb(db);
+    sendHtml(res,accountPublicPage(lang,rfui.title(lang),rfui.stepDone(lang)));
+    return true;
   }
   if(req.method==="POST" && pathname==="/logout"){ await accountClearSession(req,res); accountRedirect(res,`/login?lang=${lang}`); return true; }
   if(req.method==="GET" && pathname==="/logout"){ sendHtml(res,accountPublicPage(lang,"Chiqish",`<section class="accountAuth"><h1>Chiqish</h1><form class="accountForm" method="post" action="/logout?lang=${lang}"><button class="accountButton">Hisobdan chiqish</button></form></section>`)); return true; }
