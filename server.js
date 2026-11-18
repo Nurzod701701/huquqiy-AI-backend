@@ -429,6 +429,10 @@ async function getLexuzEvidence(question) {
 // (no 160–220 word target, larger output budget).
 async function callAI(question, lang = "uz", context = "", opts = {}) {
   const longTask = Boolean(opts && opts.long);
+  const chatMode = Boolean(opts && opts.chat);
+  // Earlier chat turns (already redacted by the caller): [{role:"user"|"assistant",content}]
+  const history = Array.isArray(opts && opts.history) ? opts.history.filter(m => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim()) : [];
+  const retrievalHint = String((opts && opts.retrievalHint) || "");
   if (!GEMINI_API_KEYS.length) {
     throw new Error(
       "GEMINI_API_KEY topilmadi."
@@ -437,7 +441,7 @@ async function callAI(question, lang = "uz", context = "", opts = {}) {
 
   lang = getLang(lang);
 
-  const lexEvidence = await getLexuzEvidence(question + " " + context.slice(0, 400));
+  const lexEvidence = await getLexuzEvidence(question + " " + context.slice(0, 400) + " " + retrievalHint.slice(0, 600));
   const courtEvidence = require("./court-practice-reasoning").evidence(question + " " + context.slice(0, 1200));
 
   const languageInstruction = {
@@ -523,7 +527,13 @@ Only cite documents genuinely relevant to the user's question. Live LexUZ excerp
 
 13. Never claim that a predicted court outcome is guaranteed.
 
-${longTask ? `14. ANSWER STRUCTURE (DOCUMENT TASK):
+${chatMode ? `14. CHAT CONVERSATION STYLE (CRITICAL):
+- You are chatting with the user like an experienced, friendly lawyer in a messenger. Answer the latest message directly and naturally, using the earlier conversation as context.
+- If facts that change the legal answer are missing, give the most useful answer possible and then ask at most 2–3 short clarifying questions.
+- Use short paragraphs and simple bullet lists ("- item"). Mark only the most important points with **bold**. No headings in capital letters, no tables, no long disclaimers.
+- When citing a law, write the law name before the article and add the full LexUZ URL. Never invent articles, deadlines, amounts or court decisions.
+- Usually 80–220 words; a short greeting or thanks gets a short reply.
+` : longTask ? `14. ANSWER STRUCTURE (DOCUMENT TASK):
 - This is a document review, drafting or professional analysis task. Follow exactly the sections and format requested in the user message instead of the short Q&A format.
 - Be complete but concise: cover every requested section, avoid repetition, and keep the whole answer under about 900 words unless a full document text is requested.
 - Never sacrifice correctness or source integrity; mark anything that needs verification.
@@ -572,6 +582,7 @@ Use only provisions actually visible in these excerpts for precise article-numbe
     { role: "system", content: lexInstruction },
     { role: "system", content: courtEvidence.instruction },
     ...(context ? [{ role: "system", content: "Collected case information:\n" + context }] : []),
+    ...history.map(m => ({ role: m.role, content: m.content })),
     { role: "user", content: question }
   ];
   // Gemini takes one system instruction: merge the privacy-audited system
@@ -14147,6 +14158,7 @@ const server =
 
         // Gemini AI panel on tool pages: redacted preview + signed consent (see ai-assist.js).
         if(await require("./ai-assist").handle(req,res,pathname,lang,{readForm,sendJson,callAI,renderLegalAnswer})) return;
+        if(await require("./ai-chat").handle(req,res,pathname,lang,{readForm,sendJson,callAI,renderLegalAnswer})) return;
         if(req.method==="GET") res.__aiAssist={pathname,lang};
 
         // Gate every additional AI-generating form through a redacted, signed
@@ -14222,9 +14234,10 @@ const server =
           pathname === "/ai"
         ){
 
+          // Messenger-style Gemini chat (ai-chat.js); the old one-shot form remains in aiPage().
           return sendHtml(
             res,
-            aiPage(lang)
+            require("./ai-chat").page(lang, appLayout)
           );
 
         }
