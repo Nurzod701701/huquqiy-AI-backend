@@ -48,7 +48,7 @@ test("F-3: public pages never reveal the owner email", () => {
 });
 
 test("F-4: one workflow runs the whole test suite on every pull request", () => {
-  const wf = fs.readFileSync(path.join(root, ".github", "workflows", "verius-full-test-suite.yml"), "utf8");
+  const wf = fs.readFileSync(path.join(root, ".github", "workflows", "verius-full-test-suite.yml"), "utf8").replace(/\r\n/g, "\n");
   assert.match(wf, /^on:\n  pull_request:\n/m);
   assert.match(wf, /run: npm test/);
   assert.equal(require("../package.json").scripts.test, "node --test test/*.test.js *.test.js");

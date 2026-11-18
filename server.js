@@ -17,13 +17,15 @@ const PORT = process.env.PORT || 3000;
 // Render Environment: GEMINI_API_KEY (majburiy), GEMINI_MODEL va
 // GEMINI_FALLBACK_MODEL (ixtiyoriy).
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const AI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+// Optional backup key from another Google project (separate quota): GEMINI_API_KEY_2.
+const GEMINI_API_KEYS = [...new Set([GEMINI_API_KEY, process.env.GEMINI_API_KEY_2 || ""].map(k => k.trim()).filter(Boolean))];
+const AI_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
 const AI_FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || "gemini-3.5-flash-lite";
 const GEMINI_API_BASE = (process.env.GEMINI_API_BASE || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\/+$/, "");
 const GEMINI_MAX_TOKENS = Number(process.env.GEMINI_MAX_TOKENS) || 2048;
 const GEMINI_LONG_MAX_TOKENS = Number(process.env.GEMINI_LONG_MAX_TOKENS) || 8192;
 // Per-attempt limits: LexUZ (≤9 s) + primary + fallback stays under ~90 s.
-const GEMINI_PRIMARY_TIMEOUT_MS = Number(process.env.GEMINI_PRIMARY_TIMEOUT_MS) || 48000;
+const GEMINI_PRIMARY_TIMEOUT_MS = Number(process.env.GEMINI_PRIMARY_TIMEOUT_MS) || 40000;
 const GEMINI_FALLBACK_TIMEOUT_MS = Number(process.env.GEMINI_FALLBACK_TIMEOUT_MS) || 30000;
 
 
@@ -437,7 +439,11 @@ async function getLexuzEvidence(question) {
 // (no 160–220 word target, larger output budget).
 async function callAI(question, lang = "uz", context = "", opts = {}) {
   const longTask = Boolean(opts && opts.long);
-  if (!GEMINI_API_KEY) {
+  const chatMode = Boolean(opts && opts.chat);
+  // Earlier chat turns (already redacted by the caller): [{role:"user"|"assistant",content}]
+  const history = Array.isArray(opts && opts.history) ? opts.history.filter(m => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string" && m.content.trim()) : [];
+  const retrievalHint = String((opts && opts.retrievalHint) || "");
+  if (!GEMINI_API_KEYS.length) {
     throw new Error(
       "GEMINI_API_KEY topilmadi."
     );
@@ -446,7 +452,7 @@ async function callAI(question, lang = "uz", context = "", opts = {}) {
   lang = getLang(lang);
 
   const lookupText = [opts && opts.task, question].filter(Boolean).join(" ");
-  const lexEvidence = await getLexuzEvidence(lookupText + " " + context.slice(0, 400));
+  const lexEvidence = await getLexuzEvidence(lookupText + " " + context.slice(0, 400) + " " + retrievalHint.slice(0, 600));
   const courtEvidence = require("./court-practice-reasoning").evidence(lookupText + " " + context.slice(0, 1200));
 
   const languageInstruction = {
@@ -532,7 +538,13 @@ Only cite documents genuinely relevant to the user's question. Live LexUZ excerp
 
 13. Never claim that a predicted court outcome is guaranteed.
 
-${longTask ? `14. ANSWER STRUCTURE (DOCUMENT TASK):
+${chatMode ? `14. CHAT CONVERSATION STYLE (CRITICAL):
+- You are chatting with the user like an experienced, friendly lawyer in a messenger. Answer the latest message directly and naturally, using the earlier conversation as context.
+- If facts that change the legal answer are missing, give the most useful answer possible and then ask at most 2–3 short clarifying questions.
+- Use short paragraphs and simple bullet lists ("- item"). Mark only the most important points with **bold**. No headings in capital letters, no tables, no long disclaimers.
+- When citing a law, write the law name before the article and add the full LexUZ URL. Never invent articles, deadlines, amounts or court decisions.
+- Usually 80–220 words; a short greeting or thanks gets a short reply.
+` : longTask ? `14. ANSWER STRUCTURE (DOCUMENT TASK):
 - This is a document review, drafting or professional analysis task. Follow exactly the sections and format requested in the user message instead of the short Q&A format.
 - Be complete but concise: cover every requested section, avoid repetition, and keep the whole answer under about 900 words unless a full document text is requested.
 - Never sacrifice correctness or source integrity; mark anything that needs verification.
@@ -594,6 +606,8 @@ Use only provisions actually visible in these excerpts for precise article-numbe
     { role: "system", content: courtEvidence.instruction },
     ...(trustedTask ? [{ role: "system", content: "TASK INSTRUCTIONS (from VERIUS, trusted):\n" + trustedTask }] : []),
     ...(trustedReference ? [{ role: "system", content: "REFERENCE MATERIAL (from VERIUS, trusted):\n" + trustedReference }] : []),
+    // Earlier chat turns: the user's own words stay delimited data; assistant turns are the model's replies.
+    ...history.map(m => ({ role: m.role, content: m.role === "user" ? guard.wrapUntrusted("user_data", m.content) : m.content })),
     { role: "user", content: userParts.join("\n\n") || "-" }
   ];
   // Gemini takes one system instruction: merge the privacy-audited system
@@ -607,46 +621,57 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   let usedFallbackModel = false;
   const models = [...new Set([AI_MODEL, AI_FALLBACK_MODEL].filter(Boolean))];
   const maxTokens = longTask ? Math.max(GEMINI_MAX_TOKENS, GEMINI_LONG_MAX_TOKENS) : GEMINI_MAX_TOKENS;
+  // Several Gemini keys (separate Google projects = separate quotas): a quota/auth
+  // problem on one key (429/401/403) moves to the next key on the same model;
+  // overload/timeout (503/500/404/abort) is model-level and moves to the next model.
+  const keys = GEMINI_API_KEYS;
+  let lastError = null;
+  modelLoop:
   for (const [index, model] of models.entries()) {
-    const isLast = index === models.length - 1;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), index === 0 ? GEMINI_PRIMARY_TIMEOUT_MS : GEMINI_FALLBACK_TIMEOUT_MS);
-    try {
-      response = await fetch(GEMINI_API_BASE + "/chat/completions", {
-        method: "POST",
-        signal: controller.signal,
-        headers: {
-          Authorization: "Bearer " + GEMINI_API_KEY,
-          "Content-Type": "application/json"
-        },
-        // Gemini 3+ models always think; "low" keeps latency and cost down.
-        // Temperature is left at the model default as Google recommends for Gemini 3+.
-        body: JSON.stringify({ model, messages: geminiMessages, max_tokens: maxTokens, reasoning_effort: "low" })
-      });
-      try { data = await response.json(); }
-      catch (_) { throw new Error("Gemini noto‘g‘ri formatda javob qaytardi."); }
-    } catch (error) {
-      if (error?.name !== "AbortError") throw error;
-      console.error("Gemini request timed out:", index === 0 ? "primary" : "fallback", model);
-      if (!isLast) continue;
-      throw new Error("AI_TIMEOUT");
-    } finally {
-      clearTimeout(timeout);
+    const isLastModel = index === models.length - 1;
+    for (const [keyIndex, apiKey] of keys.entries()) {
+      const isLastKey = keyIndex === keys.length - 1;
+      const label = (index === 0 ? "primary" : "fallback") + (keys.length > 1 ? " key" + (keyIndex + 1) : "");
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), index === 0 ? GEMINI_PRIMARY_TIMEOUT_MS : GEMINI_FALLBACK_TIMEOUT_MS);
+      try {
+        response = await fetch(GEMINI_API_BASE + "/chat/completions", {
+          method: "POST",
+          signal: controller.signal,
+          headers: {
+            Authorization: "Bearer " + apiKey,
+            "Content-Type": "application/json"
+          },
+          // Gemini 3+ models always think; "low" keeps latency and cost down.
+          // Temperature is left at the model default as Google recommends for Gemini 3+.
+          body: JSON.stringify({ model, messages: geminiMessages, max_tokens: maxTokens, reasoning_effort: "low" })
+        });
+        try { data = await response.json(); }
+        catch (_) { throw new Error("Gemini noto‘g‘ri formatda javob qaytardi."); }
+      } catch (error) {
+        if (error?.name !== "AbortError") throw error;
+        console.error("Gemini request timed out:", label, model);
+        lastError = new Error("AI_TIMEOUT");
+        continue modelLoop;
+      } finally {
+        clearTimeout(timeout);
+      }
+      if (response.ok) {
+        usedFallbackModel = model !== AI_MODEL;
+        break modelLoop;
+      }
+      const errorBody = Array.isArray(data) ? data[0] : data;
+      const errorText = String(errorBody?.error?.message || errorBody?.error?.status || "").slice(0, 300);
+      console.error("Gemini request failed:", response.status, label, model, errorText);
+      const authProblem = response.status === 401 || response.status === 403 ||
+        (response.status === 400 && /api[ _-]?key/i.test(errorText));
+      if (authProblem) { lastError = new Error("AI_AUTH_FAILED"); if (!isLastKey) continue; continue modelLoop; }
+      if (response.status === 429) { lastError = new Error("AI_RATE_LIMIT"); if (!isLastKey) continue; continue modelLoop; }
+      if ([404, 500, 503].includes(response.status)) { lastError = new Error("AI_HTTP_" + response.status); continue modelLoop; }
+      throw new Error("AI_HTTP_" + response.status);
     }
-    if (response.ok) {
-      usedFallbackModel = model !== AI_MODEL;
-      break;
-    }
-    const errorBody = Array.isArray(data) ? data[0] : data;
-    const errorText = String(errorBody?.error?.message || errorBody?.error?.status || "").slice(0, 300);
-    console.error("Gemini request failed:", response.status, index === 0 ? "primary" : "fallback", model, errorText);
-    if ([404, 429, 500, 503].includes(response.status) && !isLast) continue;
-    if (response.status === 401 || response.status === 403 ||
-        (response.status === 400 && /api[ _-]?key/i.test(errorText))) throw new Error("AI_AUTH_FAILED");
-    if (response.status === 429) throw new Error("AI_RATE_LIMIT");
-    throw new Error("AI_HTTP_" + response.status);
   }
-  if (!response?.ok) throw new Error("AI_HTTP_" + (response?.status || 0));
+  if (!response?.ok) throw lastError || new Error("AI_HTTP_" + (response?.status || 0));
   let content = data?.choices?.[0]?.message?.content;
   if (!content) throw new Error("Gemini bo‘sh javob qaytardi.");
   // Gemini sometimes echoes the language instruction as its first line; drop it.
@@ -14263,6 +14288,7 @@ const server =
 
         // Gemini AI panel on tool pages: redacted preview + signed consent (see ai-assist.js).
         if(await require("./ai-assist").handle(req,res,pathname,lang,{readForm,sendJson,callAI,renderLegalAnswer})) return;
+        if(await require("./ai-chat").handle(req,res,pathname,lang,{readForm,sendJson,callAI,renderLegalAnswer})) return;
         if(req.method==="GET") res.__aiAssist={pathname,lang};
 
         // Gate every additional AI-generating form through a redacted, signed
@@ -14380,9 +14406,10 @@ const server =
           pathname === "/ai"
         ){
 
+          // Messenger-style Gemini chat (ai-chat.js); the old one-shot form remains in aiPage().
           return sendHtml(
             res,
-            aiPage(lang)
+            require("./ai-chat").page(lang, appLayout)
           );
 
         }
