@@ -135,15 +135,29 @@ function appendBeforeFinalBody(html, injected) {
   return at < 0 ? source + injected : source.slice(0, at) + injected + source.slice(at);
 }
 
-const QOMUS_ACADEMY_THEME = '<style id="qomus-academy-liquid-glass">' +
-  require("fs").readFileSync(require("path").join(__dirname, "qomus-academy-theme.css"), "utf8") +
-  '</style>';
+const QOMUS_ACADEMY_THEME_CSS = require("fs").readFileSync(require("path").join(__dirname, "qomus-academy-theme.css"), "utf8");
+const QOMUS_ACADEMY_THEME_PATH = "/assets/qomus-academy-theme." + require("crypto").createHash("sha256").update(QOMUS_ACADEMY_THEME_CSS).digest("hex").slice(0, 12) + ".css";
+const QOMUS_ACADEMY_THEME = '<link id="qomus-academy-liquid-glass" rel="stylesheet" href="' + QOMUS_ACADEMY_THEME_PATH + '">';
+
+// gzip/brotli for text responses (pages are 30-180 KB, mostly repeated CSS/HTML).
+function sendCompressed(res, status, headers, body) {
+  const zlib = require("zlib");
+  let buf = Buffer.isBuffer(body) ? body : Buffer.from(String(body), "utf8");
+  const accept = String((res.req && res.req.headers["accept-encoding"]) || "");
+  const out = { ...headers, Vary: "Accept-Encoding" };
+  if (buf.length >= 1024 && /\bbr\b/.test(accept)) {
+    buf = zlib.brotliCompressSync(buf, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 5, [zlib.constants.BROTLI_PARAM_SIZE_HINT]: buf.length } });
+    out["Content-Encoding"] = "br";
+  } else if (buf.length >= 1024 && /\bgzip\b/.test(accept)) {
+    buf = zlib.gzipSync(buf, { level: 6 });
+    out["Content-Encoding"] = "gzip";
+  }
+  out["Content-Length"] = buf.length;
+  res.writeHead(status, out);
+  res.end(res.req && res.req.method === "HEAD" ? undefined : buf);
+}
 
 function sendHtml(res, html, status = 200) {
-  res.writeHead(status, {
-    "Content-Type": "text/html; charset=utf-8",
-    "Cache-Control": "no-store"
-  });
 
   let pageHtml = String(html || '');
   // Gemini AI panel on Advokat PRO / criminal advisor tool pages (successful GET only).
@@ -159,16 +173,12 @@ function sendHtml(res, html, status = 200) {
       ? resultHtml.slice(0, headEnd) + QOMUS_ACADEMY_THEME + resultHtml.slice(headEnd)
       : appendBeforeFinalBody(resultHtml, QOMUS_ACADEMY_THEME);
   }
-  res.end(resultHtml);
+  // Pages can be personalised (signed-in user), so they are never cached.
+  sendCompressed(res, status, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }, resultHtml);
 }
 
 function sendJson(res, data, status = 200) {
-  res.writeHead(status, {
-    "Content-Type": "application/json; charset=utf-8",
-    "Cache-Control": "no-store"
-  });
-
-  res.end(JSON.stringify(data));
+  sendCompressed(res, status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }, JSON.stringify(data));
 }
 
 function redirect(res, location) {
@@ -651,7 +661,9 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   if (usedFallbackModel) {
     content += {uz:"\n\nℹ️ Asosiy Gemini modeli vaqtincha band bo‘lgani sababli zaxira Gemini modeli ishlatildi. Muhim huquqiy xulosalarni rasmiy manbadan tekshiring.",ru:"\n\nℹ️ Основная модель Gemini была временно недоступна, поэтому использована резервная модель Gemini. Проверьте важные выводы по официальным источникам.",en:"\n\nℹ️ The primary Gemini model was temporarily unavailable, so a backup Gemini model was used. Verify material legal conclusions against official sources."}[lang];
   }
-  if (!courtEvidence.found) {
+  // Notice only when a reviewed corpus exists but nothing matched; with an empty
+  // corpus it would be noise on every answer (the model is still told not to invent).
+  if (!courtEvidence.found && courtEvidence.corpusSize > 0) {
     const courtNotice={uz:"\n\n⚖️ Sud amaliyoti: ushbu savolga mos, matni tekshirilgan sud qarori bazada hozircha mavjud emas. Sudlar qanday qaror chiqarganiga doir xulosa berilmadi.",ru:"\n\n⚖️ Судебная практика: проверенные тексты аналогичных решений пока недоступны. Выводы о прежних судебных решениях не делались.",en:"\n\n⚖️ Court practice: no reviewed comparable judgment texts are available. No claims about prior rulings are made."};
     content+=(courtNotice[lang]||courtNotice.uz);
   }
@@ -5839,6 +5851,8 @@ function footer(lang = "uz") {
           <a href="/sources${q(lang)}">${esc(tr(lang,"sources"))}</a>
           <a href="/court${q(lang)}">${esc(tr(lang,"court"))}</a>
           <a href="/login${q(lang)}">${lang === "ru" ? "Войти" : lang === "en" ? "Sign in" : "Kirish"}</a>
+          <a href="/privacy${q(lang)}">${esc(require("./legal-pages").links(lang).privacy.label)}</a>
+          <a href="/terms${q(lang)}">${esc(require("./legal-pages").links(lang).terms.label)}</a>
         </div>
         <div class="footerBottom" style="margin-top:18px">© ${new Date().getFullYear()} VERIUS</div>
       </div>
@@ -8517,7 +8531,7 @@ region.addEventListener('change',renderDistricts);district.addEventListener('cha
                   const ta=document.createElement('textarea');ta.rows=5;ta.style.width='100%';ta.value=f.text||'';wrap.appendChild(ta);
                   const apply=document.createElement('button');apply.type='button';apply.className='btn btnGold';apply.textContent='Tekshirdim — dalillarga qo‘shish';
                   apply.onclick=function(){const val=ta.value.trim();if(!val){status.textContent='Bo‘sh matn qo‘shilmaydi.';return;}
-                    evidence.value+=(evidence.value.trim()?'\n\n':'')+'Hujjat: '+f.name+'\n'+val;
+                    evidence.value+=(evidence.value.trim()?'\\n\\n':'')+'Hujjat: '+f.name+'\\n'+val;
                     confirmed.value='yes';apply.disabled=true;apply.textContent='Dalillarga qo‘shildi';};
                   wrap.appendChild(apply);review.appendChild(wrap);
                 });
@@ -13855,7 +13869,7 @@ function accountLoginPage(lang,msg=""){
   return accountPublicPage(lang,at(lang,"login"),`<section class="accountAuth"><h1>${at(lang,"account")}ga kirish</h1><p class="accountMuted">Email va parolingiz orqali VERIUS profilingizga kiring.</p>${msg?accountMessage(msg,msg.includes("xato")||msg.includes("noto")?"error":"info"):""}<form class="accountForm" method="post" action="/login?lang=${lang}"><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">${at(lang,"login")}</button></form><nav class="accountEntryActions" aria-label="${at(lang,"account")}"><a class="accountEntryLink primary" href="/register?lang=${lang}">＋ ${at(lang,"createAccount")}</a><a class="accountEntryLink secondary" href="/forgot-password?lang=${lang}">↻ ${at(lang,"forgotPassword")}</a></nav></section>`);
 }
 function accountRegisterPage(lang,msg=""){
-  return accountPublicPage(lang,at(lang,"register"),`<section class="accountAuth"><h1>Akkaunt yaratish</h1><p class="accountMuted">Huquqiy ishlaringiz, AI suhbatlari va hujjatlaringizni bitta profilga bog‘lang.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/register?lang=${lang}"><label>${accountLocale(lang,'Ism')}<input name="firstName" required maxlength="60"></label><label>${accountLocale(lang,'Familiya')}<input name="lastName" required maxlength="60"></label><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label>Parolni takrorlang<input name="password2" type="password" minlength="8" required></label><label style="display:flex;gap:10px;align-items:flex-start"><input style="width:auto;margin-top:4px" name="terms" value="yes" type="checkbox" required><span>Foydalanish shartlari va maxfiylik siyosatini o‘qidim.</span></label><button class="accountButton gold">Akkaunt yaratish</button></form><p class="accountMuted">Akkauntingiz bormi? <a href="/login?lang=${lang}">${at(lang,"login")}</a></p></section>`);
+  return accountPublicPage(lang,at(lang,"register"),`<section class="accountAuth"><h1>Akkaunt yaratish</h1><p class="accountMuted">Huquqiy ishlaringiz, AI suhbatlari va hujjatlaringizni bitta profilga bog‘lang.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/register?lang=${lang}"><label>${accountLocale(lang,'Ism')}<input name="firstName" required maxlength="60"></label><label>${accountLocale(lang,'Familiya')}<input name="lastName" required maxlength="60"></label><label>Email<input name="email" type="email" required autocomplete="email"></label><label>Parol<input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label>Parolni takrorlang<input name="password2" type="password" minlength="8" required></label><label style="display:flex;gap:10px;align-items:flex-start"><input style="width:auto;margin-top:4px" name="terms" value="yes" type="checkbox" required><span><a href="/terms?lang=${lang}" target="_blank" rel="noopener">Foydalanish shartlari</a> va <a href="/privacy?lang=${lang}" target="_blank" rel="noopener">maxfiylik siyosati</a>ni o‘qidim va roziman.</span></label><button class="accountButton gold">Akkaunt yaratish</button></form><p class="accountMuted">Akkauntingiz bormi? <a href="/login?lang=${lang}">${at(lang,"login")}</a></p></section>`);
 }
 function accountVerifyPage(lang,email,msg=""){
   return accountPublicPage(lang,"Emailni tasdiqlash",`<section class="accountAuth"><h1>Emailni tasdiqlash</h1><p class="accountMuted"><b>${esc(email)}</b> manziliga yuborilgan 6 xonali kodni kiriting.</p>${msg?accountMessage(msg,msg.includes("yuborildi")||msg.includes("sent")?"success":"error"):""}<form class="accountForm" method="post" action="/verify-email?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Tasdiqlash kodi<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><button class="accountButton gold">Tasdiqlash</button></form><form method="post" action="/resend-verification?lang=${lang}" style="margin-top:14px"><input type="hidden" name="email" value="${esc(email)}"><button type="submit" class="accountButton light">Kodni qayta yuborish</button></form></section>`);
@@ -13941,7 +13955,7 @@ function ownerSetupPage(lang,msg=""){
   return accountPublicPage(lang,"Admin sozlash",`<section class="accountAuth"><h1>VERIUS — Admin kirish</h1><p class="accountMuted">Alohida setup kerak emas. Render Environment ichida OWNER_EMAIL va OWNER_PASSWORD o‘rnatilgach, to‘g‘ridan-to‘g‘ri admin login orqali kirasiz.</p>${msg?accountMessage(msg,"error"):""}<a class="accountButton gold" href="/admin/login?lang=${lang}">ADMIN LOGIN →</a></section>`);
 }
 function ownerLoginPage(lang,msg=""){
-  return accountPublicPage(lang,"Admin kirish",`<section class="accountAuth"><h1>Owner / Admin kirish</h1><p class="accountMuted">Owner email oldindan belgilangan. Render’dagi OWNER_PASSWORD bilan kiring.</p><p class="accountMuted">Admin parolini unutdingizmi? Xavfsizlik uchun u oddiy email kodi bilan tiklanmaydi. Render Dashboard → huquqiy-AI-backend → Environment → OWNER_PASSWORD qiymatini yangilang va deploy yakunlangach yangi parol bilan kiring. <a href="https://dashboard.render.com/web/srv-danam8jtqb8s73b8c5mg">Render sozlamalarini ochish</a>.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/admin/login?lang=${lang}"><label>Owner email<input name="email" type="email" value="${esc(OWNER_EMAIL)}" readonly></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">ADMIN PANELGA KIRISH</button></form></section>`);
+  return accountPublicPage(lang,"Admin kirish",`<section class="accountAuth"><h1>Owner / Admin kirish</h1><p class="accountMuted">Owner email va OWNER_PASSWORD bilan kiring.</p><p class="accountMuted">Admin parolini unutdingizmi? Xavfsizlik uchun u oddiy email kodi bilan tiklanmaydi. Hosting Environment sozlamalarida OWNER_PASSWORD qiymatini yangilang va deploy yakunlangach yangi parol bilan kiring.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/admin/login?lang=${lang}"><label>Owner email<input name="email" type="email" required autocomplete="username"></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">ADMIN PANELGA KIRISH</button></form></section>`);
 }
 
 async function accountHandleRoutes(req,res,url,pathname,lang){
@@ -13974,7 +13988,8 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="GET" && pathname==="/login"){ sendHtml(res,accountLoginPage(lang)); return true; }
   if(req.method==="POST" && pathname==="/login"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
-    if(email===OWNER_EMAIL){ accountRedirect(res,`/admin/login?lang=${lang}`); return true; }
+    // The owner email gets the same generic failure as any wrong login (role check below),
+    // so /login cannot be used to confirm which address is the administrator's.
     const loginRetry=await getEffectiveLoginBlockSeconds("user",email);
     if(loginRetry){res.setHeader("Retry-After",String(loginRetry));sendHtml(res,accountLoginPage(lang,"Ko‘p urinish. Birozdan so‘ng qayta urinib ko‘ring."),429);return true;}
     if(!user || user.role!=="user" || !await accountVerifyPassword(f.password,user.passwordHash) || user.status!=="active"){ await recordEffectiveLoginFailure("user",email); alertEvent("FAILED_LOGIN",req.socket.remoteAddress,"/login"); sendHtml(res,accountLoginPage(lang,"Email yoki parol noto‘g‘ri, yoki account faol emas."),401); return true; }
@@ -13987,7 +14002,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     const f=await readForm(req), email=accountEmail(f.email); const db=await accountLoadDb();
     const firstName=String(f.firstName||"").trim(), lastName=String(f.lastName||"").trim();
     if(!firstName||!lastName||firstName.length>60||lastName.length>60||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||String(f.password||"").length<8||f.password!==f.password2||f.terms!=="yes"){ sendHtml(res,accountRegisterPage(lang,"Ism va familiya 1–60 belgi, email to‘g‘ri formatda, parol esa kamida 8 belgi bo‘lishi kerak."),400); return true; }
-    if(email===OWNER_EMAIL){ sendHtml(res,accountRegisterPage(lang,"Bu email platforma OWNER akkaunti uchun ajratilgan. /admin/login orqali kiring."),403); return true; }
+    if(email===OWNER_EMAIL){ sendHtml(res,accountRegisterPage(lang,"Bu email ro‘yxatdan o‘tgan. Kirish yoki parolni tiklashdan foydalaning."),409); return true; }
     const existing=db.users.find(u=>u.email===email);
     if(existing){
       if(existing.emailVerified){sendHtml(res,accountRegisterPage(lang,"Bu email ro‘yxatdan o‘tgan. Kirish yoki parolni tiklashdan foydalaning."),409);return true;}
@@ -14002,7 +14017,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     // Email jo‘natilishi tasdiqlangandan keyingina akkauntni bazaga kiritamiz.
     accountCodeSent(user,"verification");
     db.users.push(user);
-    db.consents.push({id:accountId("CNS"),userId:user.id,type:"terms_privacy",version:"2026-09-25-v1",acceptedAt:accountNow()});
+    db.consents.push({id:accountId("CNS"),userId:user.id,type:"terms_privacy",version:require("./legal-pages").CONSENT_VERSION,acceptedAt:accountNow()});
     accountAudit(db,user.id,"register",{email});await accountSaveDb(db);
     accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`);return true;
   }
@@ -14338,6 +14353,17 @@ const server =
             return sendHtml(res, require("./citizen-home")(lang,homeUser));
           }
           return sendHtml(res, require("./portal-choice")(lang,homeUser));
+        }
+        if((req.method === "GET" || req.method === "HEAD") && pathname === QOMUS_ACADEMY_THEME_PATH){
+          return sendCompressed(res, 200, { "Content-Type": "text/css; charset=utf-8", "Cache-Control": "public, max-age=31536000, immutable" }, QOMUS_ACADEMY_THEME_CSS);
+        }
+        if((req.method === "GET" || req.method === "HEAD") && pathname === "/robots.txt"){
+          return sendCompressed(res, 200, { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "public, max-age=86400" }, "User-agent: *\nDisallow: /account\nDisallow: /admin\nAllow: /\n");
+        }
+        // Privacy policy and terms of use (linked from registration consent and footers).
+        if(req.method === "GET" && (pathname === "/privacy" || pathname === "/terms")){
+          const legal=require("./legal-pages").page(pathname.slice(1),lang);
+          return sendHtml(res, accountPublicPage(lang, legal.title, legal.body));
         }
         if(req.method === "GET" && pathname === "/fuqarolar"){
           const homeAuth=url.searchParams.get("classic")==="1"?null:await accountSession(req);

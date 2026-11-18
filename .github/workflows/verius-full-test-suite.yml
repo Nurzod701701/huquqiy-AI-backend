@@ -1,0 +1,30 @@
+name: VERIUS Full Test Suite
+# Runs EVERY test file on every pull request and on pushes to main, so a new
+# test is enforced as soon as it is added (the other workflows each run only a
+# few selected files and only when particular paths change).
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+concurrency:
+  group: full-suite-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  all-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - name: Dependency vulnerabilities (high and above)
+        run: npm audit --audit-level=high
+      - name: All tests
+        env:
+          NODE_ENV: test
+        run: npm test

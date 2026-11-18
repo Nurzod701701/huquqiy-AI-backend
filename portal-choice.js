@@ -21,5 +21,5 @@ module.exports=function portalChoicePage(lang,user=null){
     '<header class="top"><div class="logo"><i>§</i>VERIUS</div><div class="portalTopActions"><nav class="languages" aria-label="Language">'+langs+'</nav>'+(user?account.accountChip(user,lang):'<a class="portalAccountLink" href="/account'+q+'" aria-label="'+esc(accountText)+'">◉ '+esc(accountText)+'</a>')+'</div></header>'+
     '<main><div class="intro"><div class="tag">'+esc(user?account.greeting(user,lang)||t[0]:t[0])+'</div><h1>'+esc(t[1])+'</h1><p>'+esc(t[2])+'</p></div><section class="choices" aria-label="'+esc(t[2])+'">'+
     card("citizen",t[3],t[4],"/fuqarolar"+q,"⚖")+card("adv",t[5],t[6],"/advokat-pro"+q,"§")+
-    '</section></main><footer class="foot">© VERIUS</footer></body></html>';
+    '</section></main><footer class="foot">© VERIUS · <a href="/privacy'+q+'">'+esc(require("./legal-pages").links(lang).privacy.label)+'</a> · <a href="/terms'+q+'">'+esc(require("./legal-pages").links(lang).terms.label)+'</a></footer></body></html>';
 };
