@@ -141,6 +141,20 @@ const QOMUS_ACADEMY_THEME = '<style id="qomus-academy-liquid-glass">' +
   require("fs").readFileSync(require("path").join(__dirname, "qomus-academy-theme.css"), "utf8") +
   '</style>';
 
+const COMPACT_SECTIONS_CSS = `<style id="verius-compact-sections">
+@media(max-width:980px){
+.appLayout{grid-template-columns:minmax(0,1fr)!important}
+.appLayout>*{min-width:0!important;max-width:100%!important}
+.appLayout>aside.sidebar{position:static!important;top:auto!important;height:auto!important;min-height:0!important;max-height:none!important;padding:6px 0 0!important;margin:0 0 10px!important;background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important}
+.appLayout>aside.sidebar .sidebarBrand,.appLayout>aside.sidebar .sidebarBottom,.appLayout>aside.sidebar .sidebarLabel{display:none!important}
+.appLayout>aside.sidebar .sidebarMenu{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:8px!important;padding:2px 2px 10px!important;margin:0!important;grid-template-columns:none!important;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.appLayout>aside.sidebar .sidebarMenu::-webkit-scrollbar{display:none}
+.appLayout>aside.sidebar .sideLink{flex:none!important;display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:auto!important;min-width:0!important;min-height:0!important;height:auto!important;padding:9px 14px!important;margin:0!important;border-radius:99px!important;font-size:13px!important;line-height:1.2!important;white-space:nowrap!important;text-align:left!important;background:#0d3150!important;color:#e3ebf2!important;border:1px solid rgba(230,201,142,.28)!important;box-shadow:none!important}
+.appLayout>aside.sidebar .sideLink.active{background:linear-gradient(135deg,#c9a86a,#e6c98e)!important;color:#06111f!important;border-color:transparent!important}
+.appLayout>aside.sidebar .sideLink .sideIcon{width:auto!important;height:auto!important;min-width:0!important;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;font-size:12px!important;color:inherit!important}
+}
+</style><script>(function(){var a=document.querySelector(".appLayout>aside.sidebar .sideLink.active");if(a&&window.innerWidth<=980&&a.parentNode){var m=a.parentNode;m.scrollLeft=a.offsetLeft-16;}})();</script>`;
+
 function sendHtml(res, html, status = 200) {
   res.writeHead(status, {
     "Content-Type": "text/html; charset=utf-8",
@@ -150,6 +164,10 @@ function sendHtml(res, html, status = 200) {
   let pageHtml = String(html || '');
   // Gemini AI panel on Advokat PRO / criminal advisor tool pages (successful GET only).
   if (status === 200 && res.__aiAssist) pageHtml = require("./ai-assist").inject(pageHtml, res.__aiAssist.pathname, res.__aiAssist.lang);
+  // Practical legal guides (verified against LexUZ) on Family and Labour pages.
+  if (status === 200 && res.__aiAssist) pageHtml = require("./legal-guides").inject(pageHtml, res.__aiAssist.pathname, res.__aiAssist.lang);
+  // Phones: turn the tall section grid into one swipeable row so content starts on the first screen.
+  if (pageHtml.includes('class="sidebar"') && !pageHtml.includes('id="verius-compact-sections"')) pageHtml = appendBeforeFinalBody(pageHtml, COMPACT_SECTIONS_CSS);
   let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : appendBeforeFinalBody(pageHtml, GLOBAL_LEXUZ_SCRIPT);
   if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = appendBeforeFinalBody(resultHtml, LANGUAGE_PRESERVE_SCRIPT);
   if (!resultHtml.includes('id="verius-secret-visibility-script"')) resultHtml = appendBeforeFinalBody(resultHtml, require("./secret-visibility"));
