@@ -63,7 +63,7 @@ const MAX_TRACKED_ADDRESSES = 20000;
 const attempts = new Map();
 const AUTH_POST_ROUTES = new Set([
   "/login", "/admin/login", "/register", "/verify-email",
-  "/resend-verification", "/forgot-password", "/reset-password"
+  "/resend-verification", "/forgot-password", "/reset-password", "/reset-password/new"
 ]);
 
 function applySecurityHeaders(req, res) {
@@ -71,7 +71,24 @@ function applySecurityHeaders(req, res) {
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
-  // CSP is not enabled here: existing QOMUS pages contain inline JS/CSS.
+  // Baseline CSP. Pages still use inline <script>/<style>/onclick, so
+  // 'unsafe-inline' remains for now, but every external origin, plugin,
+  // <base> hijack, foreign form target and framing is blocked. The only
+  // embedded third party is the Google Maps court map.
+  res.setHeader("Content-Security-Policy", [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "frame-src https://www.google.com https://maps.google.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'"
+  ].join("; "));
+  // Next step: move inline JS/CSS to files or nonces and drop 'unsafe-inline'.
   // Add a nonce-based CSP only after migrating and testing those assets.
   if (req.headers["x-forwarded-proto"] === "https" || req.socket.encrypted) {
     res.setHeader("Strict-Transport-Security", "max-age=31536000");

@@ -76,7 +76,9 @@ test("chat end to end against a mock Gemini", { timeout: 60000 }, async () => {
     assert.equal(r.status, 200);
     sent = seen.at(-1);
     assert.deepEqual(sent.messages.map(m => m.role), ["system", "user", "assistant", "user"]);
-    assert.equal(sent.messages.at(-1).content, "Necha kun oldin?");
+    // User text (latest and earlier turns) is delimited data, never instructions (prompt-guard.js).
+    assert.equal(sent.messages.at(-1).content, "<user_data>\nNecha kun oldin?\n</user_data>");
+    assert.equal(sent.messages[1].content, "<user_data>\nIshdan ketmoqchiman\n</user_data>");
     assert.equal(sent.max_tokens, 2048);
 
     const before = seen.length;

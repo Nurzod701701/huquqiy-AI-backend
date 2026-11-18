@@ -19,7 +19,7 @@ for(const lang of ["uz","ru","en"]){
 }
 test("citizen entry renders premium hub and preserves classic fallback",()=>{
  assert.match(server,/pathname === "\/fuqarolar"/);
- assert.match(server,/url\.searchParams\.get\("classic"\)==="1" \? homePage\(lang\) : require\("\.\/citizen-home"\)\(lang\)/);
+ assert.match(server,/url\.searchParams\.get\("classic"\)==="1" \? homePage\(lang\) : require\("\.\/citizen-home"\)\(lang,homeAuth\?homeAuth\.user:null\)/);
  assert.match(server,/url\.searchParams\.get\("portal"\) === "fuqarolar"/);
 });
 test("citizen modules keep shared sidebar and global navigation",()=>{

@@ -19,6 +19,27 @@ function checkToken(payload,token,now=Date.now()) {
  return crypto.timingSafeEqual(Buffer.from(expected,"hex"),Buffer.from(parts[1],"hex"));
 }
 function sanitizeText(value) {return redactForAI(String(value||"")).text;}
+// Originals of reversibly masked values travel back to VERIUS sealed with
+// AES-256-GCM (key never leaves this process), bound to the consent token.
+// Gemini never receives them; the court document gets them back.
+const restoreKey=crypto.createHmac("sha256",processSecret).update("verius-restore-v1").digest();
+function sealRestore(map,token) {
+ const iv=crypto.randomBytes(12);
+ const c=crypto.createCipheriv("aes-256-gcm",restoreKey,iv);c.setAAD(Buffer.from(String(token)));
+ const body=Buffer.concat([c.update(JSON.stringify(map||{}),"utf8"),c.final()]);
+ return [iv,c.getAuthTag(),body].map(b=>b.toString("base64url")).join(".");
+}
+function openRestore(sealed,token) {
+ try {
+  const [iv,tag,body]=String(sealed||"").split(".").map(x=>Buffer.from(x||"","base64url"));
+  if(!iv||iv.length!==12||!tag||tag.length!==16||!body||body.length>200000)return null;
+  const d=crypto.createDecipheriv("aes-256-gcm",restoreKey,iv);d.setAAD(Buffer.from(String(token)));d.setAuthTag(tag);
+  const map=JSON.parse(Buffer.concat([d.update(body),d.final()]).toString("utf8"));
+  if(!map||typeof map!=="object"||Array.isArray(map))return null;
+  const out={};for(const [k,v] of Object.entries(map))if(/^\[[A-Z_]+_\d{1,4}\]$/.test(k)&&typeof v==="string")out[k]=v.slice(0,500);
+  return out;
+ } catch(_) {return null;}
+}
 function auditOutbound(messages) {
  const sanitized=minimizeMessages(messages);
  // Refuse any unknown/opaque binary and references instead of sending raw data.
@@ -36,7 +57,7 @@ function auditOutbound(messages) {
  }
  return sanitized.map(message=>({role:["system","user","assistant"].includes(message.role)?message.role:"user",content:message.content}));
 }
-function consentPanel(lang,route,payload,description) {
+function consentPanel(lang,route,payload,description,opts={}) {
  const t={
   uz:{title:"AI'ga yuboriladigan matnni tekshiring",description:"Quyida yashirilgan nusxa ko'rsatilgan. Shaxsiy ma'lumotlar to'liq aniqlanishi kafolatlanmaydi. To'g'ri bo'lmasa, orqaga qayting.",consent:"Ko'rsatilgan matn tashqi Google Gemini AI xizmatiga yuborilishiga roziman.",send:"Tasdiqlash va AI'ga yuborish",back:"Orqaga qaytish"},
   ru:{title:"Проверьте текст для ИИ",description:"Показана скрытая копия. Автоматическая очистка может пропустить данные. При сомнениях вернитесь назад.",consent:"Я согласен отправить показанный текст внешнему сервису Google Gemini.",send:"Подтвердить и отправить",back:"Назад"},
@@ -49,13 +70,21 @@ function consentPanel(lang,route,payload,description) {
  };
  const hidden=Object.entries(payload).map(([name,value])=>'<input type="hidden" name="'+esc(name)+'" value="'+esc(value)+'">').join("");
  const preview=description||Object.values(payload).filter(x=>typeof x==="string").join("\n\n");
+ const guard=require("./prompt-guard");
+ const injectionNote=guard.injectionWarning(lang,guard.detectInjection(Object.values(payload).join("\n")));
+ const token=tokenFor(payload);
+ const restore=opts&&opts.restoreMap&&Object.keys(opts.restoreMap).length?opts.restoreMap:null;
+ const restoreNote=restore?({uz:"Shaxsiy ma’lumotlar AI'ga [MANZIL_1], [TELEFON_1] kabi belgilar bilan yuboriladi. Asl qiymatlar AI'ga berilmaydi va tayyor hujjatga avtomatik qaytarib qo‘yiladi.",ru:"Личные данные отправляются ИИ в виде меток [MANZIL_1], [TELEFON_1]. Исходные значения ИИ не получает; они автоматически возвращаются в готовый документ.",en:"Personal data is sent to the AI as placeholders like [MANZIL_1], [TELEFON_1]. The AI never receives the originals; they are put back into the final document automatically."}[lang]||""):"";
  return '<section class="panel" style="max-width:900px;margin:20px auto;padding:24px">'+
   '<h2>'+esc(tt.title)+'</h2><p>'+esc(tt.description)+'</p>'+
+  (restoreNote?'<p style="padding:12px 14px;border:1px solid #c9a86a;border-radius:10px;background:#fbf6ea">'+esc(restoreNote)+'</p>':'')+
+  (injectionNote?'<p role="alert" style="padding:12px 14px;border:1px solid #c0392b;border-radius:10px;background:#fdecea;color:#7b1d12">'+esc(injectionNote)+'</p>':'')+
   '<pre style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:420px;overflow:auto;padding:16px;background:#f6f7f8;color:#142536;border-radius:12px">'+esc(preview)+'</pre>'+
   '<form method="POST" action="'+esc(route)+'?lang='+esc(lang)+'">'+hidden+
-  '<input type="hidden" name="aiConsentToken" value="'+esc(tokenFor(payload))+'">'+
+  '<input type="hidden" name="aiConsentToken" value="'+esc(token)+'">'+
+  (restore?'<input type="hidden" name="aiRestore" value="'+esc(sealRestore(restore,token))+'">':'')+
   '<label style="display:block;margin:18px 0"><input type="checkbox" required name="aiConsent" value="yes"> '+esc(tt.consent)+'</label>'+
   '<button class="btn btnGold" type="submit">'+esc(tt.send)+'</button> '+
   '<button type="button" class="btn" onclick="history.back()">'+esc(tt.back)+'</button></form></section>';
 }
-module.exports={sanitizeText,auditOutbound,tokenFor,checkToken,consentPanel};
+module.exports={sanitizeText,auditOutbound,tokenFor,checkToken,consentPanel,sealRestore,openRestore};

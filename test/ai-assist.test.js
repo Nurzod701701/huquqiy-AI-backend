@@ -99,7 +99,12 @@ test("Gemini panel end to end: pages, consent, privacy, long mode, fallback, lim
     const sent = seen.at(-1);
     assert.equal(sent.max_tokens, 8192, "tool panels use the long output budget");
     assert.match(sent.messages[0].content, /DOCUMENT TASK/);
-    assert.match(sent.messages.at(-1).content, /JIDDIY KAMCHILIKLAR/);
+    // The developer task lives in the system instruction; the user's text is
+    // delimited data in the user message (prompt-injection boundary).
+    assert.match(sent.messages[0].content, /JIDDIY KAMCHILIKLAR/);
+    assert.doesNotMatch(sent.messages.at(-1).content, /JIDDIY KAMCHILIKLAR/);
+    assert.match(sent.messages.at(-1).content, /^<user_data>\n[\s\S]*\n<\/user_data>$/);
+    assert.doesNotMatch(sent.messages[0].content, /Javobgar \[PASPORT_YASHIRILDI\]/, "user text never in system role");
     assert.doesNotMatch(JSON.stringify(sent), /AA1234567/);
 
     // Primary model times out -> fallback model answers.
@@ -119,12 +124,13 @@ test("Gemini panel end to end: pages, consent, privacy, long mode, fallback, lim
     assert.equal(seen.at(-1).max_tokens, 2048);
     assert.doesNotMatch(seen.at(-1).messages[0].content, /DOCUMENT TASK/);
 
-    // Per-client limit: 8 AI panel calls per 10 minutes (2 used above).
+    // Per-client limit: 8 Gemini calls per 10 minutes, shared by every AI route
+    // (2 panel calls + 1 /ai-result used above).
     let last;
     for (let i = 0; i < 7; i++) {
       const p = await (await post("/ai-assist-preview", { tool: "criminal-advisor", text: "Vaziyat: meni guvoh sifatida chaqirishdi, nima qilaman? " + i })).json();
       last = await post("/ai-assist-result", { tool: "criminal-advisor", text: p.redacted, aiConsentToken: p.token, aiConsent: "yes" });
-      if (i < 6) assert.equal(last.status, 200, "call " + i);
+      if (i < 5) assert.equal(last.status, 200, "call " + i);
     }
     assert.equal(last.status, 429);
     assert.equal((await last.json()).error, "busy");

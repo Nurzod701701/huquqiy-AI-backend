@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Secrets / environment
+.env
+.env.*
+!.env.example
+
+# Local account data (password hashes, sessions) — never commit
+qomus-data.json
+qomus-data.json.tmp
+*.tmp
+qomus-login-failures.json
+
+# Logs / OS
+*.log
+.DS_Store
+Thumbs.db
