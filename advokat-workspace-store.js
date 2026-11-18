@@ -25,4 +25,30 @@ function parseAdvokatWorkspaceJson(raw){
  if(typeof raw!=="string"||raw.length>65000)throw Error("WORKSPACE_TOO_LARGE");
  return normalizedAdvokatWorkspace(JSON.parse(raw));
 }
-module.exports={normalizedAdvokatWorkspace,parseAdvokatWorkspaceJson};
+
+function mergeAdvokatWorkspaces(existing,incoming,nextId){
+ // Pure function: preserve the current register; never overwrite an existing case or task.
+ const cases=existing.cases.map(x=>({...x})),tasks=existing.tasks.map(x=>({...x}));
+ const used=new Set([...cases,...tasks].map(x=>x.id)),caseMap=new Map();
+ function unique(original){let candidate;do{candidate=String(nextId());}while(!/^[a-z0-9]{8,40}$/i.test(candidate)||used.has(candidate));used.add(candidate);return candidate;}
+ for(const c of incoming.cases){
+  const same=cases.find(x=>x.id===c.id);
+  let mapped=c.id;
+  if(same&&same.title!==c.title)mapped=unique(c.id);
+  else if(!same&&used.has(c.id))mapped=unique(c.id);
+  if(!same||mapped!==c.id){cases.push({id:mapped,title:c.title});used.add(mapped);}
+  caseMap.set(c.id,mapped);
+ }
+ for(const t of incoming.tasks){
+  const mappedCase=t.caseId?(caseMap.get(t.caseId)||""):"";
+  const old=tasks.find(x=>x.id===t.id);
+  if(old&&old.title===t.title&&old.date===t.date&&old.caseId===mappedCase&&old.done===t.done)continue;
+  const mappedId=used.has(t.id)?unique(t.id):t.id;
+  tasks.push({id:mappedId,title:t.title,date:t.date,caseId:mappedCase,done:t.done});
+  used.add(mappedId);
+ }
+ if(cases.length>60||tasks.length>120)throw Error("IMPORT_CAPACITY");
+ return {v:1,cases,tasks};
+}
+
+module.exports={normalizedAdvokatWorkspace,parseAdvokatWorkspaceJson,mergeAdvokatWorkspaces};

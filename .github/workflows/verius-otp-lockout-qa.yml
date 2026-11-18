@@ -1,0 +1,25 @@
+name: VERIUS OTP Brute Force QA
+on:
+  push:
+    branches:
+      - fix/verius-code-otp-attempt-lockout-20261117
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'test/verius-otp-lockout.test.js'
+      - '.github/workflows/verius-otp-lockout-qa.yml'
+jobs:
+  otp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-audit --no-fund
+      - run: node --check server.js
+      - run: node --test test/verius-otp-lockout.test.js
+      - run: node --test test/password-reset-delivery.test.js test/security-durable-audit-throttle.test.js
+      - run: npm run test:security
+      - run: node --test test/verius-all-sections-http-smoke.test.js

@@ -150,6 +150,7 @@ function sendHtml(res, html, status = 200) {
   if (status === 200 && res.__aiAssist) pageHtml = require("./ai-assist").inject(pageHtml, res.__aiAssist.pathname, res.__aiAssist.lang);
   let resultHtml = pageHtml.includes('id="global-lexuz-links"') ? pageHtml : appendBeforeFinalBody(pageHtml, GLOBAL_LEXUZ_SCRIPT);
   if (!resultHtml.includes('id="huquqiy-language-preserve"')) resultHtml = appendBeforeFinalBody(resultHtml, LANGUAGE_PRESERVE_SCRIPT);
+  if (!resultHtml.includes('id="verius-secret-visibility-script"')) resultHtml = appendBeforeFinalBody(resultHtml, require("./secret-visibility"));
   // Design-only layer: Academy-inspired QOMUS theme, isolated on the QA branch.
   // Keep existing pages, navigation, handlers, and data transformations untouched.
   if (!resultHtml.includes('id="qomus-academy-liquid-glass"')) {
@@ -1768,6 +1769,23 @@ const DOCUMENT_TYPES = [
 // ======================================================
 
 const CSS = `
+/* Mobile interaction and viewport containment; desktop rules remain unchanged. */
+@media(max-width:760px){
+  html,body{max-width:100%;overflow-x:clip}
+  main,.container,.appMain,.accountMain,.accountPanel,.accountWrap{min-width:0;max-width:100%}
+  main img,main video,main svg,main canvas{max-width:100%;height:auto}
+  main :is(input,select,textarea){max-width:100%;font-size:16px}
+  main :is(button,.btn,[role="button"]){touch-action:manipulation}
+  main table{max-width:100%}
+  main :is(.tableWrap,.accountTableWrap){max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  main :is(pre,code){overflow-wrap:anywhere}
+  .mobileNavPanel.show{max-height:calc(100dvh - 110px);overflow-y:auto;overscroll-behavior:contain}
+}
+@media(max-width:380px){
+  .brandText small{display:none}
+  .mobileNavPanel a{min-height:44px;display:flex;align-items:center}
+}
+
 .homeLongCard.courtcost{background:linear-gradient(135deg,#092943,#16466a)!important;color:#fff!important;border:2px solid #cba45c!important}.homeLongCard.courtcost h3,.homeLongCard.courtcost p,.homeLongCard.courtcost .homeLongEnter{color:#fff!important}.homeLongCard.courtcost .homeLongIcon{background:#d4ac64!important;color:#102a42!important}
 
 
@@ -5211,21 +5229,21 @@ function appLanguageMenu(lang, path = "/") {
     <div class="appLang">
 
       <a
-        href="${path}?lang=uz"
+        href="${path}${path.includes("?")?"&":"?"}lang=uz"
         class="${lang === "uz" ? "active" : ""}"
       >
         UZ
       </a>
 
       <a
-        href="${path}?lang=ru"
+        href="${path}${path.includes("?")?"&":"?"}lang=ru"
         class="${lang === "ru" ? "active" : ""}"
       >
         RU
       </a>
 
       <a
-        href="${path}?lang=en"
+        href="${path}${path.includes("?")?"&":"?"}lang=en"
         class="${lang === "en" ? "active" : ""}"
       >
         EN
@@ -5320,7 +5338,7 @@ function navigation(lang) {
 
           <a
             class="desktopAccountLink"
-            href="/login${q(lang)}"
+            href="/account${q(lang)}"
           >
             <span>◉</span>
             ${accountText}
@@ -5340,7 +5358,7 @@ function navigation(lang) {
                SHAXSIY KABINET DOIM HEADERDA -->
           <a
             class="mobileAccountDirect"
-            href="/login${q(lang)}"
+            href="/account${q(lang)}"
             title="${accountText}"
             aria-label="${accountText}"
           >
@@ -5353,7 +5371,9 @@ function navigation(lang) {
             type="button"
             aria-label="${menuText}"
             title="${menuText}"
-            onclick="document.getElementById('mobileNav').classList.toggle('show')"
+            aria-controls="mobileNav"
+            aria-expanded="false"
+            onclick="(function(btn){const panel=document.getElementById('mobileNav');if(!panel)return;const open=panel.classList.toggle('show');btn.setAttribute('aria-expanded',String(open));btn.setAttribute('aria-label',open?'${lang === "uz" ? "Menyuni yopish" : lang === "ru" ? "Закрыть меню" : "Close menu"}':'${menuText}');})(this)"
           >
             ☰
           </button>
@@ -5703,7 +5723,7 @@ function navigation(lang) {
 // ======================================================
 // APP LAYOUT — RESTORED
 // ======================================================
-function appLayout(lang = "uz", active = "", content = "", title = "VERIUS", description = "") {
+function appLayout(lang = "uz", active = "", content = "", title = "VERIUS", description = "", languagePath = "") {
   lang = getLang(lang);
 
   const items = [
@@ -5769,7 +5789,7 @@ function appLayout(lang = "uz", active = "", content = "", title = "VERIUS", des
               <strong>${esc(title || "VERIUS")}</strong>
             </div>
             <div class="appTopRight">
-              ${appLanguageMenu(lang, active ? "/" + active : "/")}
+              ${appLanguageMenu(lang, languagePath || (active === "citizens" ? "/fuqarolar" : active ? "/" + active : "/fuqarolar"))}
               <a class="appHomeButton" href="/fuqarolar${q(lang)}" title="${esc(tr(lang, "home"))}">⌂</a>
             </div>
           </div>
@@ -7643,7 +7663,9 @@ function questionnairePage(lang) {
 
     t.title,
 
-    t.description
+    t.description,
+
+    "/questionnaire"
 
   );
 
@@ -8648,7 +8670,7 @@ async function claimResultPage(lang,form,onGenerated=null,restoreMap=null){
   if(missing.length||oversized){
     const message=missing.length?"Majburiy maydonlar yetishmayapti: "+missing.join(", "):"Kiritilgan ma’lumot haddan tashqari uzun.";
     return appLayout(lang,"documents",
-      '<section class="surface surfacePad"><h2>Da’vo arizasida kamchilik</h2><p>'+esc(message)+'</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta to‘ldirish</a></section>',
+      '<section class="surface surfacePad"><h2>QORALAMA — majburiy ma’lumotlarni to‘ldirish zarur</h2><p>'+esc(message)+'</p><a class="btn btnGold" href="/claim?lang='+encodeURIComponent(lang)+'&type='+encodeURIComponent(documentType.id)+'">Qayta to‘ldirish</a></section>',
       "Da’vo tekshiruvi",message);
   }
   const CLAIM_INTERNAL_KEYS=new Set(["lang","case","aiConsent","aiConsentToken","signature_name"]);
@@ -8679,7 +8701,10 @@ QAT’IY QOIDALAR:
 11. Dalillarni qaysi faktni tasdiqlashi bilan bog‘lab yozing, fakt yoki dalil uydirmang.
 12. Har bir mustaqil talabni alohida raqamlang; summa va asoslovchi faktni boshqa talablar bilan aralashtirmang.
 13. Ilovalarga foydalanuvchi tasdiqlagan mavjud hujjatlarnigina kiriting.
-14. Sudga tegishlilik, sudgacha tartib, muddat va davlat bojini tekshirilmagan holda qat’iy fakt deb yozmang.`,
+14. Sudga tegishlilik, sudgacha tartib, muddat va davlat bojini tekshirilmagan holda qat’iy fakt deb yozmang.
+15. Penya, jarima yoki neustoyka talab qilinganda uning shartnomadagi bandi yoki qonuniy asosi, stavkasi, davri va hisob-kitobi tasdiqlanmagan bo‘lsa summani hisoblab chiqarmang va tasdiqlangan talab sifatida yozmang. Ularni alohida tekshiruvga muhtoj talab deb ko‘rsating.
+16. Da’vo bahosi va sud xarajatlarini bir summa sifatida qo‘shib yubormang. Davlat boji to‘langanligi tasdiqlanmaguncha to‘lov amalga oshirilgan yoki kvitansiya mavjud deb yozmang.
+17. Da’vo hali sudga berilmagan bo‘lsa, sud tomonidan ish raqami berilgan deb taxmin qilmang. Modda raqami va amaldagi tahrir tasdiqlanmagan bo‘lsa aniq modda raqamini uydirmang.`,
 `Составьте только окончательный текст профессионального искового заявления. Не приукрашивайте факты: не добавляйте причины, мотивы, просьбы или детали, которых нет во вводе пользователя. Не выводите внутренние инструкции, Markdown или незаявленные требования. Используйте только предоставленные факты и подтверждённую правовую базу ниже. Структура: суд и стороны; название иска; обстоятельства; ПРАВОВЫЕ ОСНОВАНИЯ; при необходимости расчёт; ПРОШУ СУД; приложения; дата; подпись.`,
 `Produce only the final professional statement of claim. Do not embellish facts: add no motives, reasons, requests or details the user did not provide. No internal instructions, Markdown, invented facts or unrequested relief. Use only supplied facts and the verified legal basis below. Structure: court/parties; claim title; facts; LEGAL BASIS; calculation if needed; RELIEF SOUGHT; attachments; date; signature.`
   );
@@ -8705,6 +8730,7 @@ QAT’IY QOIDALAR:
     const leftover=privacy.remainingPlaceholders(answer);
     if(leftover.length) aiNotices.push(L("Diqqat: hujjatda yashirilgan ma’lumot belgisi qoldi ("+leftover.join(", ")+"). Ushbu joylarni sudga topshirishdan oldin qo‘lda to‘ldiring.","Внимание: в документе остались метки скрытых данных ("+leftover.join(", ")+"). Заполните их вручную перед подачей.","Warning: placeholders for hidden data remain ("+leftover.join(", ")+"). Fill them in manually before filing."));
   }
+  const qualityGate=require("./claim-quality-gate").reviewClaim(form,answer);
   const generationFailed=!answer.trim()||/^(Hujjatni yaratishda texnik xatolik|Произошла техническая ошибка|A technical error occurred)/i.test(answer);
   if(generationFailed){
     return appLayout(lang,"documents",
@@ -8720,11 +8746,12 @@ QAT’IY QOIDALAR:
       <div class="notice noticeGold"><span class="noticeIcon">!</span><span>${esc(L("Tekshiring: sudga tegishlilik, taraflar manzili, protsessual muddatlar, da’vo bahosi, davlat boji, dalillar va ilovalar, qonun moddalarining amaldagi tahriri. Hujjat avtomatik huquqiy tasdiqdan o‘tmagan.","Проверьте подсудность, стороны, сроки, пошлину, доказательства и действующее законодательство.","Verify jurisdiction, parties, deadlines, court fees, evidence and current law. This draft is not legally certified."))}</span></div>
       <div id="claimPrintable" class="claimDocument">${esc(answer)}</div>
       ${aiNotices.length?`<div class="notice" style="margin-top:16px;white-space:pre-wrap"><span class="noticeIcon">i</span><span>${esc(aiNotices.join("\n\n"))}</span></div>`:""}
+      ${require("./claim-quality-gate").renderReviewHtml(qualityGate,esc)}
     </div>
     <div class="formActions" style="margin-top:18px">
       <form method="POST" action="/claim-download${q(lang)}" style="display:inline"><textarea name="claim_text" hidden>${esc(answer)}</textarea><button class="btn btnGold" type="submit">⬇ ${esc(L("Word (.docx) yuklash","Скачать Word (.docx)","Download Word (.docx)"))}</button></form>
       <button type="button" class="btn btnPrimary" onclick="saveClaimPdf()">📄 ${esc(L("PDF qilib saqlash","Сохранить PDF","Save PDF"))}</button>
-      <a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${esc(L("Sudga elektron topshirish","Подать в суд","File electronically"))}</a>
+      ${qualityGate.problems.length ? `<span class="notice noticeGold" style="display:inline-block;padding:10px">Sudga yuborishdan oldin ko‘rsatilgan kamchiliklarni bartaraf eting.</span>` : `<a class="btn btnGold" href="https://cabinet.sud.uz/" target="_blank" rel="noopener noreferrer">⚖ ${esc(L("Sudga elektron topshirish","Подать в суд","File electronically"))}</a>`}
       <a class="btn btnOutline" href="/claim${q(lang)}&type=${encodeURIComponent(documentType.id)}">← ${esc(L("Ma’lumotlarni tuzatish","Исправить данные","Edit details"))}</a>
     </div>
     <script>
@@ -8732,7 +8759,17 @@ QAT’IY QOIDALAR:
         const source=document.getElementById("claimPrintable");
         if(!source || !source.innerText.trim()){ alert("Da’vo arizasi matni topilmadi."); return; }
         const w=window.open("","_blank","width=900,height=1000");
-        if(!w){ alert("PDF oynasini ochish bloklandi. Brauzerda pop-upga ruxsat bering."); return; }
+        if(!w){
+          // iOS Safari and in-app browsers may block new windows. Print the draft on this page instead.
+          const style=document.createElement("style");
+          style.id="claimMobilePrintFallback";
+          style.textContent='@media print{body *{visibility:hidden!important}#claimPrintable,#claimPrintable *{visibility:visible!important}#claimPrintable{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;white-space:pre-wrap!important;font:14pt/1.45 "Times New Roman",serif!important;color:#000!important;background:#fff!important}}';
+          document.head.appendChild(style);
+          const cleanup=()=>{style.remove();window.removeEventListener("afterprint",cleanup);};
+          window.addEventListener("afterprint",cleanup,{once:true});
+          try{window.print();}catch(error){cleanup();alert("PDF oynasi bloklandi. Brauzer menyusidan Chop etish / PDF sifatida saqlashni tanlang.");}
+          return;
+        }
         const safe=source.innerHTML;
         w.document.open();
         var printHtml='<!doctype html><html><head><meta charset="utf-8"><title>Davo_arizasi</title>'+
@@ -9466,11 +9503,28 @@ function contractLibraryPage(lang, selected=0){
  window.resetContract=function(){if(confirm('O‘zgartirishlar bekor qilinsinmi?'))editor.innerHTML=initial;};
  function htmlDocument(){return '<!doctype html><html><head><meta charset="utf-8"><title>Mehnat shartnomasi</title><style>body{font-family:Arial,sans-serif;color:#172536;line-height:1.6;margin:35px}article{border:0!important;padding:0!important;max-width:none!important}h3{page-break-after:avoid}</style></head><body>'+editor.innerHTML+'</body></html>';}
  window.saveContractWord=function(){const blob=new Blob(['\ufeff',htmlDocument()],{type:'application/msword;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='mehnat-shartnomasi-${item.id}.doc';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);};
- window.printContractPdf=function(){const w=window.open('','_blank');if(!w){alert('Brauzer yangi oynani blokladi. Pop-upga ruxsat bering.');return;}w.document.open();w.document.write(htmlDocument());w.document.close();w.onload=function(){w.focus();w.print();};};
+ window.printContractPdf=function(){
+ const w=window.open('','_blank');
+ if(w){
+  w.document.open();w.document.write(htmlDocument());w.document.close();
+  w.onload=function(){w.focus();w.print();};
+  return;
+ }
+ // iOS and in-app browsers may block popups. Print only the current editable contract.
+ const previous=document.getElementById('contractMobilePrintFallback');
+ if(previous)previous.remove();
+ const style=document.createElement('style');style.id='contractMobilePrintFallback';
+ style.textContent='@media print{body *{visibility:hidden!important}#contractEditor,#contractEditor *{visibility:visible!important}#contractEditor{position:absolute!important;left:0!important;top:0!important;width:100%!important;max-width:none!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;background:#fff!important;color:#111!important;box-shadow:none!important}#contractEditor article{border:0!important;padding:0!important;max-width:none!important;margin:0!important}#contractEditor h3{break-after:avoid}}';
+ document.head.appendChild(style);
+ const clean=function(){style.remove();window.removeEventListener('afterprint',clean);};
+ window.addEventListener('afterprint',clean,{once:true});
+ try{window.print();}catch(_){clean();alert('PDF oynasi bloklandi. Brauzer menyusidan Chop etish / PDF sifatida saqlashni tanlang yoki Word nusxasini oling.');}
+ setTimeout(clean,30000);
+};
  })();
  </script></div>`:'';
  const inner=`<div class="surface surfacePad"><h2>${heading}</h2><p>${contractCopy(lang,'15 ta to‘qima, to‘ldirilgan o‘quv namunasi. Shartnomalar shu sahifada ochiladi.','15 заполненных вымышленных учебных примеров.','15 fictional filled-in educational examples.')}</p><div style="display:flex;flex-wrap:wrap">${menu}</div><p><a class="btn btnOutline" href="/employment?lang=${lang}">← ${contractCopy(lang,'Mehnat huquqi','Трудовое право','Employment law')}</a></p></div>`+tools;
- return appLayout(lang,'employment',inner,heading,heading);
+ return appLayout(lang,'employment',inner,heading,heading,"/employment-contracts"+(item?"?id="+item.id:""));
 }
 function contractDownload(res,item){const body=contractBody(item,'uz');const html='<!doctype html><html><head><meta charset="utf-8"></head><body>'+body+'</body></html>';res.writeHead(200,{'Content-Type':'application/msword; charset=utf-8','Content-Disposition':`attachment; filename="mehnat-shartnomasi-${item.id}.doc"`,'Cache-Control':'no-store'});res.end('\ufeff'+html);}
 
@@ -10095,7 +10149,7 @@ function pensionPage(lang) {
         }
       });
     })();${'</'+'script>'}
-  `,t.title,t.sub);
+  `,t.title,t.sub,"/pension");
 }
 
 function calculatorsPage(lang) {
@@ -13538,6 +13592,14 @@ function accountAudit(db,userId,action,meta={}){
 function accountCaseNo(db){ return `CASE-${new Date().getFullYear()}-${String(db.cases.length+1).padStart(5,"0")}`; }
 function accountSafeUser(u){ return {id:u.id,firstName:u.firstName,lastName:u.lastName,email:u.email,role:u.role,status:u.status,emailVerified:!!u.emailVerified,createdAt:u.createdAt,lastLoginAt:u.lastLoginAt||null}; }
 function accountRedirect(res,to){ res.writeHead(302,{Location:to}); return res.end(); }
+function accountSameOriginPost(req){
+ const origin=String(req.headers.origin||"");
+ if(!origin)return true; // Older or non-browser clients may not send Origin.
+ try{
+  const value=new URL(origin);
+  return (value.protocol==="https:"||value.protocol==="http:")&&value.host.toLowerCase()===String(req.headers.host||"").toLowerCase();
+ }catch(_){return false;}
+}
 function accountMessage(text,type="info"){ return `<div class="accountAlert ${type}">${esc(text)}</div>`; }
 
 async function accountSendEmail(to,subject,text){
@@ -13775,7 +13837,7 @@ function accountSidebar(lang,user,active){
   const admin=user.role==="owner"||user.role==="admin";
   const item=(key,icon,label,href)=>`<a class="${active===key?"active":""}" href="${href}${href.includes("?")?"&":"?"}lang=${lang}"><span>${icon}</span>${label}</a>`;
   return `<aside class="accountSide"><div class="accountSideBrand"><span>§</span><span>VERIUS</span></div>
-  ${item("dashboard","▦",at(lang,"dashboard"),"/account")}${item("cases","⚖",at(lang,"cases"),"/account/cases")}${item("new","＋",at(lang,"newCase"),"/account/cases/new")}${item("chats","💬",at(lang,"chats"),"/account/chats")}${item("documents","▤",at(lang,"documents"),"/account/documents")}${item("notifications","●",at(lang,"notifications"),"/account/notifications")}${item("profile","◉",at(lang,"profile"),"/account/profile")}${item("security","⌾",at(lang,"security"),"/account/security")}${item("settings","⚙",at(lang,"settings"),"/account/settings")}${admin?item("admin","◆",accountLocale(lang,"ADMIN PANEL"),"/admin")+item("admin-security","🛡","Admin xavfsizlik","/admin/security"):""}
+  ${item("dashboard","▦",at(lang,"dashboard"),"/account")}${item("modules","◇",lang==="ru"?"Все модули":lang==="en"?"All modules":"Barcha bo‘limlar","/account/modules")}${item("advokat","⚖",lang==="ru"?"Адвокат PRO":lang==="en"?"Advocate PRO":"Advokat PRO","/account/advokat")}${item("cases","⚖",at(lang,"cases"),"/account/cases")}${item("new","＋",at(lang,"newCase"),"/account/cases/new")}${item("chats","💬",at(lang,"chats"),"/account/chats")}${item("documents","▤",at(lang,"documents"),"/account/documents")}${item("notifications","●",at(lang,"notifications"),"/account/notifications")}${item("profile","◉",at(lang,"profile"),"/account/profile")}${item("security","⌾",at(lang,"security"),"/account/security")}${item("settings","⚙",at(lang,"settings"),"/account/settings")}${admin?item("admin","◆",accountLocale(lang,"ADMIN PANEL"),"/admin")+item("admin-security","🛡","Admin xavfsizlik","/admin/security"):""}
   <div class="accountSideBottom"><form method="post" action="/logout?lang=${lang}" style="margin:0"><button type="submit" style="all:unset;cursor:pointer">↪ ${at(lang,"logout")}</button></form></div></aside>`;
 }
 function accountAppPage(lang,user,active,title,body){
@@ -13801,11 +13863,11 @@ function accountVerifyPage(lang,email,msg=""){
 function accountDashboard(lang,user,db){
   const cases=db.cases.filter(x=>x.userId===user.id), docs=db.documents.filter(x=>x.userId===user.id), chats=db.conversations.filter(x=>x.userId===user.id), done=cases.filter(x=>x.status==="completed").length;
   const recent=[...cases].sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,6);
-  return accountAppPage(lang,user,"dashboard",at(lang,"account"),`<section class="accountHero"><h1>${accountLocale(lang,"Xush kelibsiz, ")}${esc(user.firstName)}!</h1><p>${accountLocale(lang,'Huquqiy ishlaringiz, hujjatlaringiz va AI maslahatlaringiz shu yerda boshqariladi.')}</p></section><section class="accountStats"><div class="accountStat"><strong>${cases.filter(x=>x.status!=="completed").length}</strong><span>${accountLocale(lang,'Faol ishlar')}</span></div><div class="accountStat"><strong>${docs.length}</strong><span>${accountLocale(lang,'Hujjatlar')}</span></div><div class="accountStat"><strong>${chats.length}</strong><span>${accountLocale(lang,'AI suhbatlar')}</span></div><div class="accountStat"><strong>${done}</strong><span>${accountLocale(lang,'Yakunlangan')}</span></div></section><section class="accountPanel"><div class="accountTop"><div><h2>${accountLocale(lang,'Oxirgi huquqiy ishlar')}</h2><div class="accountMuted">${accountLocale(lang,'Davom ettirish uchun ishni tanlang.')}</div></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">${accountLocale(lang,'＋ Yangi ish')}</a></div>${recent.length?`<div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>${accountLocale(lang,'Yo‘nalish')}</th><th>${accountLocale(lang,'Masala')}</th><th>Status</th><th>Progress</th><th></th></tr></thead><tbody>${recent.map(c=>`<tr><td><b>${esc(c.caseNo)}</b></td><td>${esc(c.area)}</td><td>${esc(c.title)}</td><td><span class="accountBadge">${esc(c.status)}</span></td><td><div class="accountProgress"><i style="width:${Number(c.progress||0)}%"></i></div> ${Number(c.progress||0)}%</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">${accountLocale(lang,'Ochish')}</a></td></tr>`).join("")}</tbody></table></div>`:`<p class="accountMuted">${accountLocale(lang,'Hali huquqiy ish ochilmagan.')}</p>`}</section>`);
+  return accountAppPage(lang,user,"dashboard",at(lang,"account"),`<section class="accountHero"><h1>${accountLocale(lang,"Xush kelibsiz, ")}${esc(user.firstName)}!</h1><p>${accountLocale(lang,'Huquqiy ishlaringiz, hujjatlaringiz va AI maslahatlaringiz shu yerda boshqariladi.')}</p></section><section class="accountStats"><div class="accountStat"><strong>${cases.filter(x=>x.status!=="completed").length}</strong><span>${accountLocale(lang,'Faol ishlar')}</span></div><div class="accountStat"><strong>${docs.length}</strong><span>${accountLocale(lang,'Hujjatlar')}</span></div><div class="accountStat"><strong>${chats.length}</strong><span>${accountLocale(lang,'AI suhbatlar')}</span></div><div class="accountStat"><strong>${done}</strong><span>${accountLocale(lang,'Yakunlangan')}</span></div></section>${require("./account-platform-hub").home(lang,db.settings?.advokatWorkspaces?.[user.id])}<section class="accountPanel"><div class="accountTop"><div><h2>${accountLocale(lang,'Oxirgi huquqiy ishlar')}</h2><div class="accountMuted">${accountLocale(lang,'Davom ettirish uchun ishni tanlang.')}</div></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">${accountLocale(lang,'＋ Yangi ish')}</a></div>${recent.length?`<div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>${accountLocale(lang,'Yo‘nalish')}</th><th>${accountLocale(lang,'Masala')}</th><th>Status</th><th>Progress</th><th></th></tr></thead><tbody>${recent.map(c=>`<tr><td><b>${esc(c.caseNo)}</b></td><td>${esc(c.area)}</td><td>${esc(c.title)}</td><td><span class="accountBadge">${esc(c.status)}</span></td><td><div class="accountProgress"><i style="width:${Number(c.progress||0)}%"></i></div> ${Number(c.progress||0)}%</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">${accountLocale(lang,'Ochish')}</a></td></tr>`).join("")}</tbody></table></div>`:`<p class="accountMuted">${accountLocale(lang,'Hali huquqiy ish ochilmagan.')}</p>`}</section>`);
 }
 function accountCasesPage(lang,user,db){
   const cases=db.cases.filter(x=>x.userId===user.id);
-  return accountAppPage(lang,user,"cases",at(lang,"cases"),`<section class="accountPanel"><div class="accountTop"><div><h1>${accountLocale(lang,'Mening huquqiy ishlarim')}</h1><p class="accountMuted">${accountLocale(lang,'Har bir masala alohida Case ID bilan saqlanadi.')}</p></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">${accountLocale(lang,'＋ Yangi ish')}</a></div><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>${accountLocale(lang,'Yo‘nalish')}</th><th>${accountLocale(lang,'Nomi')}</th><th>Status</th><th>Progress</th><th>${accountLocale(lang,'Sana')}</th><th></th></tr></thead><tbody>${cases.map(c=>`<tr><td>${esc(c.caseNo)}</td><td>${esc(c.area)}</td><td><b>${esc(c.title)}</b></td><td><span class="accountBadge">${esc(c.status)}</span></td><td>${Number(c.progress||0)}%</td><td>${esc(String(c.createdAt).slice(0,10))}</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">${accountLocale(lang,'Ochish')}</a></td></tr>`).join("")||`<tr><td colspan="7">${accountLocale(lang,'Hali ish yo‘q.')}</td></tr>`}</tbody></table></div></section>`);
+  return accountAppPage(lang,user,"cases",at(lang,"cases"),`<section class="accountPanel"><div class="accountTop"><div><h1>${accountLocale(lang,'Mening huquqiy ishlarim')}</h1><p class="accountMuted">${accountLocale(lang,'Har bir masala alohida Case ID bilan saqlanadi.')}</p></div><a class="accountButton gold" href="/account/cases/new?lang=${lang}">${accountLocale(lang,'＋ Yangi ish')}</a></div><div class="accountTableWrap"><table class="accountTable"><thead><tr><th>Case ID</th><th>${accountLocale(lang,'Yo‘nalish')}</th><th>${accountLocale(lang,'Nomi')}</th><th>Status</th><th>Progress</th><th>${accountLocale(lang,'Sana')}</th><th></th></tr></thead><tbody>${cases.map(c=>`<tr><td>${esc(c.caseNo)}</td><td>${esc(c.area)}</td><td><b>${esc(c.title)}</b></td><td><span class="accountBadge">${esc(c.status)}</span></td><td>${Number(c.progress||0)}%</td><td>${esc(String(c.createdAt).slice(0,10))}</td><td><a href="/account/case?id=${encodeURIComponent(c.id)}&lang=${lang}">${accountLocale(lang,'Ochish')}</a></td></tr>`).join("")||`<tr><td colspan="7">${accountLocale(lang,'Hali ish yo‘q.')}</td></tr>`}</tbody></table></div></section>${require("./account-platform-hub").advocate(lang,db.settings?.advokatWorkspaces?.[user.id])}`);
 }
 function accountNewCasePage(lang,user,msg=""){
   return accountAppPage(lang,user,"new",at(lang,"newCase"),`<section class="accountPanel"><h1>${accountLocale(lang,'Yangi ish ochish')}</h1><p class="accountMuted">${accountLocale(lang,'Muammoni tanlang. Keyin mavjud VERIUS modullaridan davom etishingiz mumkin.')}</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/account/cases/new?lang=${lang}"><label>${accountLocale(lang,'Huquq sohasi')}<select name="area" required><option value="Oila huquqi">${accountLocale(lang,'Oila huquqi')}</option><option value="Mehnat huquqi">${accountLocale(lang,'Mehnat huquqi')}</option><option value="Biznes huquqi">${accountLocale(lang,'Biznes huquqi')}</option><option value="Fuqarolik huquqi">${accountLocale(lang,'Fuqarolik huquqi')}</option><option value="Boshqa">${accountLocale(lang,'Boshqa')}</option></select></label><label>${accountLocale(lang,'Masala nomi')}<input name="title" placeholder="Masalan: Nikohdan ajratish" required maxlength="140"></label><label>${accountLocale(lang,'Qisqa tavsif')}<textarea name="description" rows="5" maxlength="1500" placeholder="Vaziyatni qisqacha yozing"></textarea></label><button class="accountButton gold">${accountLocale(lang,'Ishni yaratish')}</button></form></section>`);
@@ -13816,7 +13878,7 @@ function accountCasePage(lang,user,db,id){
   const moduleLink=c.area==="Oila huquqi"?"/family":c.area==="Mehnat huquqi"?"/employment":c.area==="Biznes huquqi"?"/business":"/ai";
   return accountAppPage(lang,user,"cases",c.caseNo,`<section class="accountHero"><div class="accountBadge good">${esc(c.status)}</div><h1>${esc(c.title)}</h1><p>${esc(c.area)} · ${esc(c.caseNo)}</p></section><section class="accountGrid"><div><section class="accountPanel"><h2>${accountLocale(lang,'Ish tafsilotlari')}</h2><p>${esc(c.description||"Tavsif kiritilmagan.")}</p><div class="accountProgress"><i style="width:${Number(c.progress||0)}%"></i></div><p class="accountMuted">Progress: ${Number(c.progress||0)}%</p><div class="accountActions"><a class="accountButton gold" href="${moduleLink}?lang=${lang}&case=${encodeURIComponent(c.id)}">${accountLocale(lang,'Huquqiy modulni ochish')}</a><a class="accountButton" href="/ai?lang=${lang}&case=${encodeURIComponent(c.id)}">${accountLocale(lang,'AI maslahat')}</a><a class="accountButton light" href="/documents?lang=${lang}&case=${encodeURIComponent(c.id)}">${accountLocale(lang,'Hujjat yaratish')}</a></div></section><section class="accountPanel"><h2>${accountLocale(lang,'Case hujjatlari')}</h2>${docs.map(d=>`<div class="accountCard"><b>${esc(d.title)}</b><div class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</div></div>`).join("")||`<p class="accountMuted">${accountLocale(lang,'Hali hujjat biriktirilmagan.')}</p>`}</section></div><div><section class="accountPanel"><h2>${accountLocale(lang,'Statusni yangilash')}</h2><form class="accountForm" method="post" action="/account/case/update?lang=${lang}"><input type="hidden" name="id" value="${esc(c.id)}"><label>Status<select name="status"><option ${c.status==="started"?"selected":""} value="started">started</option><option ${c.status==="collecting"?"selected":""} value="collecting">collecting</option><option ${c.status==="analysis"?"selected":""} value="analysis">analysis</option><option ${c.status==="document_ready"?"selected":""} value="document_ready">document_ready</option><option ${c.status==="completed"?"selected":""} value="completed">completed</option></select></label><label>Progress %<input name="progress" type="number" min="0" max="100" value="${Number(c.progress||0)}"></label><button class="accountButton">${accountLocale(lang,'Saqlash')}</button></form></section><section class="accountPanel"><h2>${accountLocale(lang,'AI faoliyati')}</h2><strong>${chats.length}</strong><div class="accountMuted">${accountLocale(lang,'shu ishga bog‘langan suhbat')}</div></section></div></section>`);
 }
-function accountSimpleListPage(lang,user,active,title,items,render,empty){ return accountAppPage(lang,user,active,title,`<section class="accountPanel"><h1>${esc(title)}</h1><p class="accountMuted">${accountLocale(lang,'Shaxsiy profilingizga bog‘langan ma’lumotlar.')}</p>${items.length?items.map(render).join(""):`<p class="accountMuted">${esc(empty)}</p>`}</section>`); }
+function accountSimpleListPage(lang,user,active,title,items,render,empty,extra=""){ return accountAppPage(lang,user,active,title,`<section class="accountPanel"><h1>${esc(title)}</h1><p class="accountMuted">${accountLocale(lang,'Shaxsiy profilingizga bog‘langan ma’lumotlar.')}</p>${items.length?items.map(render).join(""):`<p class="accountMuted">${esc(empty)}</p>`}</section>${extra}`); }
 function accountProfilePage(lang,user,msg="",isError=false){
   return accountAppPage(lang,user,"profile",at(lang,"profile"),`<section class="accountPanel"><h1>${at(lang,"profile")} ma’lumotlari</h1>${msg?accountMessage(msg,isError?"error":"success"):""}<form class="accountForm" method="post" action="/account/profile?lang=${lang}"><label>${accountLocale(lang,'Ism')}<input name="firstName" value="${esc(user.firstName)}" maxlength="60" required></label><label>${accountLocale(lang,'Familiya')}<input name="lastName" value="${esc(user.lastName)}" maxlength="60" required></label><label>Email<input value="${esc(user.email)}" disabled></label><label>${accountLocale(lang,'Rol')}<input value="${esc(user.role)}" disabled></label><label>${accountLocale(lang,'Email holati')}<input value="${user.emailVerified?"Tasdiqlangan":"Tasdiqlanmagan"}" disabled></label><button class="accountButton gold">${at(lang,"profile")}ni saqlash</button></form></section>`);
 }
@@ -13879,7 +13941,7 @@ function ownerSetupPage(lang,msg=""){
   return accountPublicPage(lang,"Admin sozlash",`<section class="accountAuth"><h1>VERIUS — Admin kirish</h1><p class="accountMuted">Alohida setup kerak emas. Render Environment ichida OWNER_EMAIL va OWNER_PASSWORD o‘rnatilgach, to‘g‘ridan-to‘g‘ri admin login orqali kirasiz.</p>${msg?accountMessage(msg,"error"):""}<a class="accountButton gold" href="/admin/login?lang=${lang}">ADMIN LOGIN →</a></section>`);
 }
 function ownerLoginPage(lang,msg=""){
-  return accountPublicPage(lang,"Admin kirish",`<section class="accountAuth"><h1>Owner / Admin kirish</h1><p class="accountMuted">Owner email oldindan belgilangan. Render’dagi OWNER_PASSWORD bilan kiring.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/admin/login?lang=${lang}"><label>Owner email<input name="email" type="email" value="${esc(OWNER_EMAIL)}" readonly></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">ADMIN PANELGA KIRISH</button></form></section>`);
+  return accountPublicPage(lang,"Admin kirish",`<section class="accountAuth"><h1>Owner / Admin kirish</h1><p class="accountMuted">Owner email oldindan belgilangan. Render’dagi OWNER_PASSWORD bilan kiring.</p><p class="accountMuted">Admin parolini unutdingizmi? Xavfsizlik uchun u oddiy email kodi bilan tiklanmaydi. Render Dashboard → huquqiy-AI-backend → Environment → OWNER_PASSWORD qiymatini yangilang va deploy yakunlangach yangi parol bilan kiring. <a href="https://dashboard.render.com/web/srv-danam8jtqb8s73b8c5mg">Render sozlamalarini ochish</a>.</p>${msg?accountMessage(msg,"error"):""}<form class="accountForm" method="post" action="/admin/login?lang=${lang}"><label>Owner email<input name="email" type="email" value="${esc(OWNER_EMAIL)}" readonly></label><label>Parol<input name="password" type="password" required autocomplete="current-password"></label><button class="accountButton gold">ADMIN PANELGA KIRISH</button></form></section>`);
 }
 
 async function accountHandleRoutes(req,res,url,pathname,lang){
@@ -13964,34 +14026,74 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(req.method==="GET" && pathname==="/verify-email"){ sendHtml(res,accountVerifyPage(lang,accountEmail(url.searchParams.get("email")))); return true; }
   if(req.method==="POST" && pathname==="/verify-email"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
-    if(!user||!user.verificationCodeHash||new Date(user.verificationExpiresAt)<new Date()){ sendHtml(res,accountVerifyPage(lang,email,"Kod noto‘g‘ri yoki muddati tugagan."),400); return true; }
+    // Two layers: durable per-email throttle (main) + per-code lockout after CODE_MAX_ATTEMPTS wrong guesses.
+    const retry=await getEffectiveLoginBlockSeconds("verify",email);
+    if(retry){res.setHeader("Retry-After",String(retry));sendHtml(res,accountVerifyPage(lang,email,"Ko‘p urinish. 15 daqiqadan keyin urinib ko‘ring."),429);return true;}
+    if(!user||!user.verificationCodeHash||new Date(user.verificationExpiresAt)<new Date()){ await recordEffectiveLoginFailure("verify",email); sendHtml(res,accountVerifyPage(lang,email,"Kod noto‘g‘ri yoki muddati tugagan."),400); return true; }
     if(!await accountVerifyPassword(f.code,user.verificationCodeHash)){
+      await recordEffectiveLoginFailure("verify",email);
       user.verificationAttempts=(Number(user.verificationAttempts)||0)+1;
       if(user.verificationAttempts>=CODE_MAX_ATTEMPTS){ delete user.verificationCodeHash; delete user.verificationExpiresAt; accountAudit(db,user.id,"verification_code_locked",{}); alertEvent("CODE_BRUTE_FORCE",req.socket.remoteAddress,"/verify-email"); }
       await accountSaveDb(db);
       sendHtml(res,accountVerifyPage(lang,email,user.verificationCodeHash?"Kod noto‘g‘ri yoki muddati tugagan.":"Juda ko‘p noto‘g‘ri urinish. Yangi kod so‘rang."),400); return true;
     }
+    await clearEffectiveLoginFailures("verify",email);
     user.emailVerified=true; delete user.verificationCodeHash; delete user.verificationExpiresAt; user.verificationAttempts=0; user.updatedAt=accountNow(); accountAudit(db,user.id,"email_verified",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/forgot-password"){
     sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
   }
   if(req.method==="POST" && pathname==="/forgot-password"){
-    const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email); if(user && user.role==="user" && user.status==="active"){if((user.resetSentAt && Date.now()-Date.parse(user.resetSentAt)<60000)||!accountCodeSendAllowed(user,"reset")){accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`);return true;}const code=accountSixDigitCode();try{const sent=await accountSendEmail(email,"VERIUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Email yuborish xizmati sozlanmagan. RESEND_API_KEY va EMAIL_FROM ni tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}}catch(error){console.error("RESET EMAIL SEND ERROR",error);sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi emailga yuborilmadi. Resend sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);return true; }user.resetCodeHash=await accountHashPassword(code);user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();user.resetSentAt=accountNow();accountCodeSent(user,"reset");accountAudit(db,user.id,"password_reset_requested",{});await accountSaveDb(db);} accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`); return true;
+    const f=await readForm(req);
+    const email=accountEmail(f.email);
+    const db=await accountLoadDb();
+    const user=db.users.find(u=>u.email===email);
+    // OWNER_EMAIL uses separate admin credentials: never imply an admin reset email was sent.
+    // Keep identical responses for unknown/ineligible addresses to avoid account enumeration.
+    if(user && user.role==="user" && user.status==="active"){
+      const recentlySent=user.resetSentAt && Date.now()-Date.parse(user.resetSentAt)<60000;
+      // At most CODE_MAX_SENDS reset codes per 24 h per account (same redirect, no enumeration).
+      if(!recentlySent && accountCodeSendAllowed(user,"reset")){
+        const code=accountSixDigitCode();
+        try{
+          const sent=await accountSendEmail(email,"VERIUS — parolni tiklash",`Parolni tiklash kodingiz: ${code}. Kod 15 daqiqa amal qiladi.`);if(!sent){sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodi yuborilmadi. Email xizmati sozlamalarini tekshiring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),503);return true;}
+        }catch(error){
+          console.error("RESET EMAIL SEND ERROR",error);
+          sendHtml(res,accountPublicPage(lang,"Email xatosi",`<section class="accountAuth">${accountMessage("Tiklash kodini yuborib bo‘lmadi. Birozdan keyin qayta urinib ko‘ring.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),502);
+          return true;
+        }
+        user.resetCodeHash=await accountHashPassword(code);
+        user.resetExpiresAt=new Date(Date.now()+RESET_TTL_MS).toISOString();
+        user.resetSentAt=accountNow();
+        accountCodeSent(user,"reset");
+        accountAudit(db,user.id,"password_reset_requested",{});
+        await accountSaveDb(db);
+      }
+    }
+    accountRedirect(res,`/reset-password?lang=${lang}&email=${encodeURIComponent(email)}`);
+    return true;
   }
   if(req.method==="GET" && pathname==="/reset-password"){
-    const email=accountEmail(url.searchParams.get("email")); sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" required maxlength="6"></label><label>Yangi parol<input name="password" type="password" minlength="8" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" required></label><button class="accountButton">Parolni yangilash</button></form></section>`)); return true;
+    const email=accountEmail(url.searchParams.get("email"));
+    sendHtml(res,accountPublicPage(lang,"Yangi parol",`<section class="accountAuth"><h1>Yangi parol</h1><p class="accountMuted">Agar ushbu emailga bog‘langan faol foydalanuvchi akkaunti mavjud bo‘lsa, tiklash kodi yuboriladi. Kod kelmasa, Spam papkasini tekshiring yoki 60 soniyadan keyin qayta yuboring.</p><p class="accountMuted">Admin hisobining paroli bu sahifa orqali tiklanmaydi. <a href="/admin/login?lang=${lang}">Admin kirish</a>.</p><form class="accountForm" method="post" action="/reset-password?lang=${lang}"><input type="hidden" name="email" value="${esc(email)}"><label>Kod<input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required></label><label>Yangi parol<input name="password" type="password" minlength="8" autocomplete="new-password" required></label><label>Takrorlang<input name="password2" type="password" minlength="8" autocomplete="new-password" required></label><button class="accountButton">Parolni yangilash</button></form><form method="post" action="/forgot-password?lang=${lang}" style="margin-top:14px"><input type="hidden" name="email" value="${esc(email)}"><button class="accountButton" type="submit">Kodni qayta yuborish (60 soniyadan keyin)</button></form><p class="accountMuted"><a href="/forgot-password?lang=${lang}">Boshqa emailni kiritish</a></p></section>`));
+    return true;
   }
   if(req.method==="POST" && pathname==="/reset-password"){
     const f=await readForm(req), email=accountEmail(f.email), db=await accountLoadDb(), user=db.users.find(u=>u.email===email);
+    // Two layers: durable per-email throttle (main) + per-code lockout after CODE_MAX_ATTEMPTS wrong guesses.
+    const retry=await getEffectiveLoginBlockSeconds("reset",email);
+    if(retry){res.setHeader("Retry-After",String(retry));sendHtml(res,accountPublicPage(lang,"Ko‘p urinish",accountMessage("Ko‘p noto‘g‘ri kod kiritildi. 15 daqiqadan keyin qayta urinib ko‘ring.","error")),429);return true;}
     const resetFail=()=>sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Kod yoki yangi parol ma’lumotlari noto‘g‘ri.","error")}<a href="/forgot-password?lang=${lang}">Qayta urinish</a></section>`),400);
-    if(!user||!user.resetCodeHash||new Date(user.resetExpiresAt)<new Date()){ resetFail(); return true; }
+    const eligible=!!(user&&user.role==="user"&&user.status==="active"&&user.resetCodeHash&&new Date(user.resetExpiresAt)>new Date());
+    if(!eligible){ await recordEffectiveLoginFailure("reset",email); resetFail(); return true; }
     if(!await accountVerifyPassword(f.code,user.resetCodeHash)){
+      await recordEffectiveLoginFailure("reset",email);
       user.resetAttempts=(Number(user.resetAttempts)||0)+1;
       if(user.resetAttempts>=CODE_MAX_ATTEMPTS){ delete user.resetCodeHash; delete user.resetExpiresAt; accountAudit(db,user.id,"reset_code_locked",{}); alertEvent("CODE_BRUTE_FORCE",req.socket.remoteAddress,"/reset-password"); }
       await accountSaveDb(db); resetFail(); return true;
     }
-    if(String(f.password||"").length<8||f.password!==f.password2){ resetFail(); return true; }
+    if(String(f.password||"").length<8||f.password!==f.password2){sendHtml(res,accountPublicPage(lang,"Xato",`<section class="accountAuth">${accountMessage("Yangi parollar mos emas yoki juda qisqa.","error")}<a href="/reset-password?lang=${lang}&email=${encodeURIComponent(email)}">Qayta urinish</a></section>`),400);return true;}
+    await clearEffectiveLoginFailures("reset",email);
     user.passwordHash=await accountHashPassword(f.password); delete user.resetCodeHash; delete user.resetExpiresAt; delete user.resetSentAt; user.resetAttempts=0; db.sessions=db.sessions.filter(s=>s.userId!==user.id); accountAudit(db,user.id,"password_reset_completed",{}); await accountSaveDb(db); accountRedirect(res,`/login?lang=${lang}`); return true;
   }
   if(req.method==="POST" && pathname==="/logout"){ await accountClearSession(req,res); accountRedirect(res,`/login?lang=${lang}`); return true; }
@@ -14000,6 +14102,8 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
   if(pathname.startsWith("/account")){
     const auth=await accountRequire(req,res,lang); if(!auth) return true; const {user}=auth;
     if(req.method==="GET" && pathname==="/account"){ sendHtml(res,accountDashboard(lang,user,await accountLoadDb())); return true; }
+    if(req.method==="GET" && pathname==="/account/modules"){sendHtml(res,accountAppPage(lang,user,"modules",lang==="ru"?"Все модули":lang==="en"?"All modules":"Barcha bo‘limlar",require("./account-platform-hub").directory(lang)));return true;}
+    if(req.method==="GET" && pathname==="/account/advokat"){const db=await accountLoadDb();sendHtml(res,accountAppPage(lang,user,"advokat","Advokat PRO",require("./account-platform-hub").advocate(lang,db.settings?.advokatWorkspaces?.[user.id])));return true;}
     if(req.method==="GET" && pathname==="/account/cases"){ sendHtml(res,accountCasesPage(lang,user,await accountLoadDb())); return true; }
     if(req.method==="GET" && pathname==="/account/cases/new"){ sendHtml(res,accountNewCasePage(lang,user)); return true; }
     if(req.method==="POST" && pathname==="/account/cases/new"){
@@ -14019,13 +14123,39 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
         if(!["started","collecting","analysis","document_ready","completed"].includes(status)||!Number.isFinite(progress)||progress<0||progress>100){sendHtml(res,accountAppPage(lang,user,"cases","Xato",accountMessage("Status yoki progress noto‘g‘ri.","error")),400);return true;}
         c.status=status;c.progress=progress;c.updatedAt=accountNow();accountAudit(db,user.id,"case_updated",{caseId:c.id,status:c.status,progress:c.progress});await accountSaveDb(db);} accountRedirect(res,`/account/case?lang=${lang}&id=${encodeURIComponent(f.id||"")}`); return true;
     }
-    if(req.method==="GET" && pathname==="/account/documents"){const db=await accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q."));return true;}
+    if(req.method==="GET" && pathname==="/account/documents"){const db=await accountLoadDb(),items=db.documents.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"documents",at(lang,"documents"),items,d=>`<div class="accountCard"><h3><a href="/account/document?id=${encodeURIComponent(d.id)}&lang=${lang}">${esc(d.title)}</a></h3><p class="accountMuted">${esc(d.type)} · ${esc(String(d.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan hujjat yo‘q.",require("./advokat-draft-store").importPanel(lang,db.cases.filter(c=>c.userId===user.id))));return true;}
+    // Explicit, account-owned import only. No automatic transfer from the browser, no overwrite.
+    if(req.method==="POST" && pathname==="/account/documents/import"){
+      if(!accountSameOriginPost(req)){sendHtml(res,accountAppPage(lang,user,"documents","Ruxsat yo‘q",accountMessage("Begona saytdan hujjat saqlash bloklandi.","error")),403);return true;}
+      const f=await readForm(req);
+      if(f.consent!=="yes"){
+        sendHtml(res,accountAppPage(lang,user,"documents","Import rad etildi",accountMessage("Shaxsiy kabinetga saqlash uchun rozilik talab qilinadi.","error")),403);return true;
+      }
+      let db,plan;
+      try{db=await accountLoadDb();plan=require("./advokat-draft-store").importPlan(db,user.id,String(f.payload||""),String(f.caseId||""));}
+      catch(_){sendHtml(res,accountAppPage(lang,user,"documents","Import rad etildi",accountMessage("Hujjat JSON fayli yaroqsiz yoki hajmi katta.","error")),400);return true;}
+      if(plan.existing){accountRedirect(res,"/account/document?id="+encodeURIComponent(plan.existing.id)+"&lang="+lang);return true;}
+      const time=accountNow(),d={id:accountId("DOC"),...plan.record,createdAt:time,updatedAt:time};
+      db.documents.push(d);accountAudit(db,user.id,"advokat_draft_imported",{documentId:d.id,caseId:d.caseId});
+      try{await accountSaveDb(db);}
+      catch(error){if(error.message==="QOMUS_PG_WRITE_CONFLICT"){sendHtml(res,accountAppPage(lang,user,"documents","Saqlash nizosi",accountMessage("Boshqa o‘zgarish saqlandi. Importni takrorlang.","error")),409);return true;}throw error;}
+      accountRedirect(res,"/account/document?id="+encodeURIComponent(d.id)+"&lang="+lang);return true;
+    }
+    if(req.method==="GET" && pathname==="/account/document/export"){
+      const db=await accountLoadDb();
+      const d=db.documents.find(x=>x.id===url.searchParams.get("id")&&x.userId===user.id);
+      if(!d||d.source!=="advokat-pro-json"||!d.sourcePayload){sendHtml(res,accountAppPage(lang,user,"documents","Hujjat topilmadi",accountMessage("JSON hujjat topilmadi.","error")),404);return true;}
+      const body=JSON.stringify(d.sourcePayload,null,2);
+      res.writeHead(200,{"Content-Type":"application/json; charset=utf-8","Content-Disposition":'attachment; filename="verius-advokat-draft.json"',"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"});
+      res.end(body);return true;
+    }
+
     if(req.method==="GET" && pathname==="/account/chats"){const db=await accountLoadDb(),items=db.conversations.filter(x=>x.userId===user.id).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));sendHtml(res,accountSimpleListPage(lang,user,"chats",at(lang,"chats"),items,c=>`<div class="accountCard"><h3><a href="/account/chat?id=${encodeURIComponent(c.id)}&lang=${lang}">${esc(c.title||"AI suhbat")}</a></h3><p class="accountMuted">${esc(String(c.updatedAt||c.createdAt).slice(0,10))}</p></div>`,"Hali saqlangan AI suhbat yo‘q."));return true;}
     if(req.method==="GET" && pathname==="/account/document"){
       const db=await accountLoadDb();
       const d=db.documents.find(x=>x.id===url.searchParams.get("id") && x.userId===user.id);
       if(!d){sendHtml(res,accountAppPage(lang,user,"documents","Hujjat topilmadi",accountMessage("Hujjat topilmadi.","error")),404);return true;}
-      sendHtml(res,accountAppPage(lang,user,"documents",d.title,`<section class="accountPanel"><h1>${esc(d.title)}</h1><p class="accountMuted">${esc(d.type||"Hujjat")} · ${esc(d.createdAt||"")}</p><div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7">${esc(d.text||"")}</div><a class="accountButton" href="/account/documents?lang=${lang}">← Hujjatlar</a></section>`));return true;
+      sendHtml(res,accountAppPage(lang,user,"documents",d.title,`<section class="accountPanel"><h1>${esc(d.title)}</h1><p class="accountMuted">${esc(d.type||"Hujjat")} · ${esc(d.createdAt||"")}</p><div style="white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7">${esc(d.text||"")}</div>${d.source==="advokat-pro-json" && d.sourcePayload?`<a class="accountButton gold" href="/account/document/export?id=${encodeURIComponent(d.id)}&lang=${lang}">JSON nusxasini olish</a>`:""}<a class="accountButton" href="/account/documents?lang=${lang}">← Hujjatlar</a></section>`));return true;
     }
     if(req.method==="GET" && pathname==="/account/chat"){
       const db=await accountLoadDb();
@@ -14402,24 +14532,29 @@ const server =
           if(req.method==="GET"){
             const db=await accountLoadDb();
             const mine=db.settings?.advokatWorkspaces?.[auth.user.id]||{v:1,cases:[],tasks:[]};
-            return sendJson(res,{ok:true,workspace:mine});
+            return sendJson(res,{ok:true,workspace:mine,version:Number(db.settings?.advokatWorkspaceVersions?.[auth.user.id])||0});
           }
           if(req.method==="POST"){
+            if(!accountSameOriginPost(req))return sendJson(res,{ok:false,error:"CROSS_ORIGIN_WRITE_BLOCKED"},403);
             const input=await readForm(req);
             let workspace;
             try{workspace=require("./advokat-workspace-store").parseAdvokatWorkspaceJson(input.data);}
             catch(_){return sendJson(res,{ok:false,error:"INVALID_WORKSPACE"},400);}
             const db=await accountLoadDb();
             if(!db.settings||typeof db.settings!=="object")db.settings={};
+            const previousVersion=Number(db.settings.advokatWorkspaceVersions?.[auth.user.id])||0;
+            if(input.version!==undefined && (!/^\d{1,9}$/.test(String(input.version)) || Number(input.version)!==previousVersion))return sendJson(res,{ok:false,error:"WRITE_CONFLICT"},409);
             if(!db.settings.advokatWorkspaces)db.settings.advokatWorkspaces={};
+            if(!db.settings.advokatWorkspaceVersions)db.settings.advokatWorkspaceVersions={};
             db.settings.advokatWorkspaces[auth.user.id]=workspace;
+            db.settings.advokatWorkspaceVersions[auth.user.id]=previousVersion+1;
             accountAudit(db,auth.user.id,"advokat_workspace_saved",{cases:workspace.cases.length,tasks:workspace.tasks.length});
             try{await accountSaveDb(db);}
             catch(err){
               if(err.message==="QOMUS_PG_WRITE_CONFLICT")return sendJson(res,{ok:false,error:"WRITE_CONFLICT"},409);
               throw err;
             }
-            return sendJson(res,{ok:true,cases:workspace.cases.length,tasks:workspace.tasks.length});
+            return sendJson(res,{ok:true,cases:workspace.cases.length,tasks:workspace.tasks.length,version:previousVersion+1});
           }
           return sendJson(res,{ok:false,error:"METHOD_NOT_ALLOWED"},405);
         }
@@ -14427,26 +14562,26 @@ const server =
         // Source-linked browser-local case guidance; no AI call or data storage.
         if(req.method === "GET" && (pathname === "/criminal/advisor" || pathname === "/advokat-pro/criminal/advisor")){
           const role=pathname === "/criminal/advisor" ? "citizen" : "advocate";
-          return sendHtml(res, require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role));
+          return sendHtml(res, role==="advocate" ? require("./advokat-language")(lang,pathname,require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role)) : require("./criminal-scenario-advisor").scenarioAdvisorPage(lang,role));
         }
 
         // Deterministic evidence document review and browser-local motion drafting.
         if(req.method === "GET" && pathname === "/advokat-pro/criminal/evidence-review"){
-          return sendHtml(res, require("./advokat-evidence-review").evidenceReviewPage(lang));
+          return sendHtml(res, require("./advokat-language")(lang,pathname,require("./advokat-evidence-review").evidenceReviewPage(lang)));
         }
         if(req.method === "GET" && pathname === "/advokat-pro/criminal/draft"){
-          return sendHtml(res, require("./advokat-criminal-draft-page").criminalDraftPage(lang));
+          return sendHtml(res, require("./advokat-language")(lang,pathname,require("./advokat-criminal-draft-page").criminalDraftPage(lang)));
         }
 
         // Professional criminal-case checklist workspace; no client data stored.
         if(req.method === "GET" && pathname === "/advokat-pro/criminal/workbench"){
-          return sendHtml(res, require("./advokat-criminal-workbench").advocateCriminalWorkbench(lang));
+          return sendHtml(res, require("./advokat-language")(lang,pathname,require("./advokat-criminal-workbench").advocateCriminalWorkbench(lang)));
         }
 
         // VERIUS criminal-law question hubs: informative, source-linked, no case data stored.
         if(req.method === "GET" && (pathname === "/criminal" || pathname === "/advokat-pro/criminal")){
           const role=pathname === "/criminal" ? "citizen" : "advocate";
-          return sendHtml(res, require("./criminal-questions").criminalQuestionsPage(lang,role));
+          return sendHtml(res, role==="advocate" ? require("./advokat-language")(lang,pathname,require("./criminal-questions").criminalQuestionsPage(lang,role)) : require("./criminal-questions").criminalQuestionsPage(lang,role));
         }
 
         // Advokat PRO: separate landing page and preserved document constructor.

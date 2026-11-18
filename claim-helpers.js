@@ -103,7 +103,7 @@ function stateFeeInstruction(fee, lang) {
   if (!fee) return "";
   const uz = `DAVLAT BOJI (VERIUS kalkulyatori, max(da’vo bahosi × 4%, 1 BHM = ${formatSum(fee.bhm)}); manba: ${fee.source}):
 Da’vo bahosi: ${formatSum(fee.amount)}. Davlat boji: ${formatSum(fee.fee)}.
-Hujjat boshida "Da’vo bahosi" qatoridan keyin "Davlat boji: ${formatSum(fee.fee)}" qatorini yozing va ilovalarda davlat boji to‘langanligini tasdiqlovchi hujjatni ko‘rsating. Boshqa boj summasini o‘ylab topmang.`;
+Hujjat boshida "Da’vo bahosi" qatoridan keyin "Davlat boji (dastlabki hisob): ${formatSum(fee.fee)}" deb yozing. To‘lov amalga oshirilgani foydalanuvchi dalillari bilan tasdiqlanmagan bo‘lsa, kvitansiya ilova qilingan deb yozmang. Bojni javobgardan undirishni alohida sud xarajati talabi sifatida faqat foydalanuvchi so‘ragan va to‘lov tasdiqlangan holatda keltiring. Boshqa boj summasini o‘ylab topmang.`;
   if (lang === "ru") return uz.replace("DAVLAT BOJI", "ГОСПОШЛИНА (DAVLAT BOJI)");
   return uz;
 }

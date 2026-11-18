@@ -1,0 +1,29 @@
+name: VERIUS Citizens Single Cabinet Entry QA
+on:
+  push:
+    branches:
+      - fix/citizens-remove-duplicate-account-card-20261117
+  pull_request:
+    paths:
+      - 'citizen-home.js'
+      - 'test/citizen-parity.test.js'
+      - 'test/citizen-ux-parity.test.js'
+      - 'test/criminal-questions.test.js'
+      - '.github/workflows/verius-citizens-single-cabinet.yml'
+jobs:
+  cabinet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - run: node --check citizen-home.js
+      - name: Citizen modules and header account parity
+        run: node --test test/citizen-parity.test.js test/citizen-ux-parity.test.js test/criminal-questions.test.js
+      - name: Security and core regressions
+        run: npm run test:security && npm run test:core
+      - name: Cross-module HTTP smoke
+        run: node --test test/verius-all-sections-http-smoke.test.js

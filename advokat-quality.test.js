@@ -40,7 +40,8 @@ for(const lang of ["uz","ru","en"]){
  new Function(js);
  assert.match(js,/function documentReady\(/);
  assert.match(js,/if\(!documentReady\(\)\)return;/);
- assert.match(js,/missing=fields\.filter/);
+ assert.match(js,/reviewAdvokatDraft\(current\(\)\[0\]/);
+ assert.match(js,/check\.blocking\.length/);
  assert.match(js,/stale=false/);
  count++;
 }

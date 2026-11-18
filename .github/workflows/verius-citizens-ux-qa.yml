@@ -1,0 +1,34 @@
+name: VERIUS Citizens UX and Mobile Contract QA
+on:
+  push:
+    branches:
+      - fix/verius-fuqarolar-ux-parity-20261117
+  pull_request:
+    paths:
+      - 'citizen-home.js'
+      - 'server.js'
+      - 'test/citizen-parity.test.js'
+      - 'test/citizen-ux-parity.test.js'
+      - '.github/workflows/verius-citizens-ux-qa.yml'
+jobs:
+  citizen-ux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Syntax
+        run: node --check server.js && node --check citizen-home.js
+      - name: Citizen interface and contract PDF
+        run: node --test test/citizen-ux-parity.test.js test/citizen-parity.test.js
+      - name: Real HTTP and auth
+        run: node --test test/verius-all-sections-http-smoke.test.js
+      - name: Citizens core
+        run: npm run test:citizens
+      - name: Security
+        run: npm run test:security
+      - name: Advocate regression
+        run: node --test test/advokat-ux-mobile-save.test.js

@@ -1,0 +1,30 @@
+name: VERIUS Criminal Clear Citizen & Advocate QA
+on:
+  push:
+    branches:
+      - feat/criminal-clear-citizens-advocates-20261117
+  pull_request:
+    paths:
+      - 'criminal-questions.js'
+      - 'criminal-scenario-advisor.js'
+      - 'advokat-criminal-workbench.js'
+      - 'test/criminal-clear-roles.test.js'
+      - '.github/workflows/verius-criminal-clear-qa.yml'
+jobs:
+  criminal-clarity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Syntax
+        run: node --check criminal-questions.js && node --check criminal-scenario-advisor.js && node --check advokat-criminal-workbench.js
+      - name: Both roles 3 languages and existing behavior
+        run: node --test test/criminal-clear-roles.test.js test/criminal-questions.test.js test/criminal-scenario-advisor.test.js test/advokat-criminal-workbench.test.js
+      - name: Citizens regression
+        run: npm run test:citizens
+      - name: Advocates and security
+        run: npm run test:advokat-criminal && npm run test:security

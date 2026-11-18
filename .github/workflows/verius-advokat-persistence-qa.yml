@@ -1,0 +1,39 @@
+name: VERIUS Advocate Persistence and Professional Preflight QA
+on:
+  push:
+    branches:
+      - feat/verius-advokat-persistence-quality-20261117
+  pull_request:
+    paths:
+      - 'server.js'
+      - 'advokat-pro.js'
+      - 'advokat-cases-calendar.js'
+      - 'advokat-workspace-store.js'
+      - 'advokat-draft-store.js'
+      - 'advokat-document-quality.js'
+      - 'test/advokat-persistence-quality.test.js'
+      - '.github/workflows/verius-advokat-persistence-qa.yml'
+jobs:
+  advocate-persistence-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-audit --no-fund
+      - name: Syntax and source integrity
+        run: node --check server.js && node --check advokat-pro.js && node --check advokat-cases-calendar.js && node --check advokat-draft-store.js && node --check advokat-document-quality.js
+      - name: Unit and UI regression
+        run: node --test test/advokat-persistence-quality.test.js
+      - name: Real HTTP document import and account ownership
+        run: node --test test/advokat-import-http.test.js
+      - name: Real HTTP and access control
+        run: node --test test/verius-all-sections-http-smoke.test.js
+      - name: Existing account and security
+        run: npm run test:security
+      - name: Citizens/AI parity
+        run: npm run test:core
+      - name: Advocate criminal parity
+        run: npm run test:advokat-criminal

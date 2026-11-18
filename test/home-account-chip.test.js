@@ -19,11 +19,17 @@ test("home page shows the signed-in user's name, cabinet link and sign-out", () 
   assert.doesNotMatch(html, /href="\/login\?lang=uz"/);
 });
 
-test("visitors see sign-in and register buttons on the home page", () => {
+test("visitors keep the single personal-cabinet entry on the home page", () => {
   const html = portal("en");
-  assert.match(html, /data-account="guest"/);
-  assert.match(html, /href="\/login\?lang=en">Sign in</);
-  assert.match(html, /href="\/register\?lang=en">Register</);
+  assert.doesNotMatch(html, /data-account="signed-in"/);
+  assert.match(html, /class="portalAccountLink" href="\/account\?lang=en"/);
+  assert.doesNotMatch(html, /href="\/login\?lang=en"/);
+});
+
+test("signed-in chip replaces the generic cabinet link (one /account link only)", () => {
+  const html = portal("uz", { firstName: "Sardor", lastName: "Aliyev", role: "user" });
+  assert.doesNotMatch(html, /class="portalAccountLink"/);
+  assert.equal((html.match(/href="\/account\?lang=uz"/g) || []).length, 1);
 });
 
 test("owner/admin link goes to the admin panel; names are escaped", () => {
@@ -35,7 +41,7 @@ test("owner/admin link goes to the admin panel; names are escaped", () => {
 
 test("citizen home replaces the generic account pill when signed in", () => {
   const guest = citizen("uz");
-  assert.match(guest, /<a class="pill" href="\/login\?lang=uz">Shaxsiy kabinet<\/a>/);
+  assert.match(guest, /<a class="pill" href="\/account\?lang=uz">Shaxsiy kabinet<\/a>/);
   const signed = citizen("uz", { firstName: "Dilnoza", lastName: "Karimova", role: "user" });
   assert.match(signed, /Dilnoza Karimova/);
   assert.doesNotMatch(signed, /<a class="pill" href="\/login/);

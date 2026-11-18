@@ -1,0 +1,33 @@
+name: VERIUS Advocate UX Safety and Mobile Print QA
+on:
+  push:
+    branches:
+      - fix/verius-advokat-ux-audit-20261117
+  pull_request:
+    paths:
+      - 'advokat-pro.js'
+      - 'advokat-cases-calendar.js'
+      - 'test/advokat-ux-mobile-save.test.js'
+      - '.github/workflows/verius-advokat-ux-audit.yml'
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Syntax
+        run: node --check advokat-pro.js && node --check advokat-cases-calendar.js && node --check server.js
+      - name: Visual integrity, mobile print, and pending storage safety
+        run: node --test test/advokat-ux-mobile-save.test.js
+      - name: Existing Advocate UI and document quality
+        run: node advokat-ui.test.js && node advokat-quality.test.js
+      - name: Real HTTP imports and account isolation
+        run: node --test test/advokat-import-http.test.js test/verius-all-sections-http-smoke.test.js
+      - name: Security regression
+        run: npm run test:security
+      - name: Citizens regression
+        run: npm run test:core
