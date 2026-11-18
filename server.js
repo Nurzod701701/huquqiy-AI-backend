@@ -95,7 +95,8 @@ const GLOBAL_LEXUZ_SCRIPT = String.raw`<script id="global-lexuz-links">
     while ((match=article.exec(source))) {
       fragment.appendChild(document.createTextNode(source.slice(cursor, match.index)));
       const number = (match[0].match(/^\d+/) || [])[0];
-      const exact = verifiedArticleUrls[law.id+':'+number];
+      // Server redirects /lexuz/<law>/<n> to the exact article anchor on LexUZ.
+      const exact = number ? '/lexuz/'+law.id+'/'+number : '';
       const a = document.createElement('a');
       a.href = exact || law.url;
       a.target='_blank'; a.rel='noopener noreferrer';
@@ -377,8 +378,9 @@ function renderLegalAnswer(text) {
       const law = ARTICLE_LAWS.filter(x => x.regex.test(nearby)).pop();
       if (law) {
         const number = (label.match(/^\d+/) || [])[0];
-        const url = VERIFIED_LEXUZ_ARTICLES[`${law.id}:${number}`] || law.url;
-        output += `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${VERIFIED_LEXUZ_ARTICLES[`${law.id}:${number}`] ? 'LexUZ: aynan modda' : 'LexUZ: kodeks sahifasi (ichki modda havolasi tasdiqlanmagan)'}" style="color:#1763aa;text-decoration:underline;font-weight:600">${esc(label)}</a>`;
+        const exactUrl = require("./lexuz-anchors").articleUrl(law.id, number);
+        const url = exactUrl || law.url;
+        output += `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${exactUrl ? 'LexUZ: aynan ' + number + '-modda' : 'LexUZ: kodeks sahifasi'}" style="color:#1763aa;text-decoration:underline;font-weight:600">${esc(label)}</a>`;
       } else output += esc(label);
     }
     last = token.lastIndex;
@@ -14175,6 +14177,7 @@ const server =
 
 
         // Gemini AI panel on tool pages: redacted preview + signed consent (see ai-assist.js).
+        if(require("./lexuz-anchors").handle(req,res,pathname)) return;
         if(await require("./ai-assist").handle(req,res,pathname,lang,{readForm,sendJson,callAI,renderLegalAnswer})) return;
         if(await require("./ai-chat").handle(req,res,pathname,lang,{readForm,sendJson,callAI,renderLegalAnswer})) return;
         if(req.method==="GET") res.__aiAssist={pathname,lang};

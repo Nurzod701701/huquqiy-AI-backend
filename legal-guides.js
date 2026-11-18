@@ -185,6 +185,14 @@ const CSS = `
 @media(max-width:520px){.lg-head{padding:22px}.lg-fact b{font-size:20px}.lg-item summary{padding:16px}.lg-ico{width:38px;height:38px}.lg-btn{width:100%;justify-content:center}}
 `;
 
+const { articleUrl } = require("./lexuz-anchors");
+// "38-modda — …" + code page -> exact article anchor on LexUZ when known.
+function lawHref(title, url) {
+  const n = (String(title).match(/^(\d{1,4})-modda/) || [])[1];
+  const law = url === OK ? "oila" : url === MK ? "mehnat" : null;
+  return (n && law && articleUrl(law, n)) || url;
+}
+
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 function render(pathname, lang) {
@@ -198,7 +206,7 @@ function render(pathname, lang) {
 <div class="lg-body">
 <div><h4>QADAMLAR</h4><ol class="lg-steps">${it.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol></div>
 <div class="lg-side"><div class="lg-box"><h4>KERAKLI HUJJATLAR</h4><ul>${it.docs.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>
-<div class="lg-box lg-law"><h4>QONUN ASOSI</h4>${it.law.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(t)} ↗</a>`).join("")}</div></div>
+<div class="lg-box lg-law"><h4>QONUN ASOSI</h4>${it.law.map(([t, u]) => `<a href="${esc(lawHref(t, u))}" target="_blank" rel="noopener noreferrer">${esc(t)} ↗</a>`).join("")}</div></div>
 <div class="lg-acts"><a class="lg-btn lg-ai" href="${esc("/ai?" + q + "&q=" + encodeURIComponent(it.ask))}">✦ VERIUS AI’dan so‘rash</a>${it.actions.map(([t, u]) => `<a class="lg-btn" href="${esc(href(u))}">${esc(t)} →</a>`).join("")}</div>
 </div></details>`).join("\n");
   return `<section class="lg" aria-label="${esc(g.title)}"><style>${CSS}</style>
