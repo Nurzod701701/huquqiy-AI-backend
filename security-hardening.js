@@ -63,7 +63,7 @@ const MAX_TRACKED_ADDRESSES = 20000;
 const attempts = new Map();
 const AUTH_POST_ROUTES = new Set([
   "/login", "/admin/login", "/register", "/verify-email",
-  "/resend-verification", "/forgot-password", "/reset-password"
+  "/resend-verification", "/forgot-password", "/reset-password", "/reset-password/new"
 ]);
 
 function applySecurityHeaders(req, res) {

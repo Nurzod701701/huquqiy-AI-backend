@@ -15,7 +15,7 @@ const PUBLIC = ["/", "/fuqarolar", "/fuqarolar?classic=1", "/ai", "/claim", "/cl
   "/criminal", "/criminal/advisor", "/advokat-pro", "/advokat-pro/check", "/advokat-pro/grounded", "/advokat-pro/court-practice",
   "/advokat-pro/documents", "/advokat-pro/cases", "/advokat-pro/calendar", "/advokat-pro/public-judgments", "/advokat-pro/criminal",
   "/advokat-pro/criminal/advisor", "/advokat-pro/criminal/draft", "/advokat-pro/criminal/evidence-review", "/advokat-pro/criminal/workbench",
-  "/login", "/register", "/forgot-password", "/reset-password", "/verify-email", "/admin/login", "/privacy", "/terms"];
+  "/login", "/register", "/forgot-password", "/reset-password?email=qa%40example.invalid", "/verify-email", "/admin/login", "/privacy", "/terms"];
 const SIGNED_IN = ["/account", "/account/modules", "/account/advokat", "/account/cases", "/account/cases/new", "/account/documents",
   "/account/chats", "/account/notifications", "/account/profile", "/account/security", "/account/settings"];
 
