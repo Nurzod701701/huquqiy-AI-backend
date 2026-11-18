@@ -43,7 +43,7 @@ test("Gemini panel end to end: pages, consent, privacy, long mode, fallback, lim
       const json = body ? JSON.parse(body) : {};
       seen.push(json);
       const send = (s, o) => { res.writeHead(s, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
-      if (mode === "slowPrimary" && json.model === "gemini-3.8-flash") await delay(2500);
+      if (mode === "slowPrimary" && json.model === "gemini-3.6-flash") await delay(2500);
       send(200, { choices: [{ message: { content: "**JIDDIY KAMCHILIKLAR**\nMOCK_GEMINI from " + json.model } }] });
     });
   });
@@ -94,7 +94,7 @@ test("Gemini panel end to end: pages, consent, privacy, long mode, fallback, lim
     assert.equal(r.status, 200);
     const result = await r.json();
     assert.ok(result.ok);
-    assert.match(result.html, /MOCK_GEMINI from gemini-3\.8-flash/);
+    assert.match(result.html, /MOCK_GEMINI from gemini-3\.6-flash/);
     assert.doesNotMatch(result.html, /\*\*/, "markdown bold is cleaned");
     const sent = seen.at(-1);
     assert.equal(sent.max_tokens, 8192, "tool panels use the long output budget");

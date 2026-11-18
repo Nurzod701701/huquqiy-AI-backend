@@ -21,7 +21,7 @@ test("backup Gemini key takes over when the first key is out of quota", { timeou
       const send = (s, o) => { res.writeHead(s, { "content-type": "application/json" }); res.end(JSON.stringify(o)); };
       if (mode === "quota" && key === "key-one") return send(429, { error: { message: "quota", status: "RESOURCE_EXHAUSTED" } });
       if (mode === "badkey" && key === "key-one") return send(400, [{ error: { message: "API key not valid.", status: "INVALID_ARGUMENT" } }]);
-      if (mode === "overload" && json.model === "gemini-3.8-flash") return send(503, { error: { message: "high demand", status: "UNAVAILABLE" } });
+      if (mode === "overload" && json.model === "gemini-3.6-flash") return send(503, { error: { message: "high demand", status: "UNAVAILABLE" } });
       if (mode === "allquota") return send(429, { error: { message: "quota", status: "RESOURCE_EXHAUSTED" } });
       send(200, { choices: [{ message: { content: "ANSWER " + key + " " + json.model } }] });
     });
@@ -48,18 +48,18 @@ test("backup Gemini key takes over when the first key is out of quota", { timeou
     assert.ok(up);
 
     let html = await ask("Ish haqi bo‘yicha savol bor, nima qilaman?");
-    assert.match(html, /ANSWER key-two gemini-3\.8-flash/);
-    assert.deepEqual(seen, ["key-one|gemini-3.8-flash", "key-two|gemini-3.8-flash"]);
+    assert.match(html, /ANSWER key-two gemini-3\.6-flash/);
+    assert.deepEqual(seen, ["key-one|gemini-3.6-flash", "key-two|gemini-3.6-flash"]);
     assert.doesNotMatch(html, /zaxira Gemini modeli/, "same model, only the key changed");
 
     mode = "badkey";
     html = await ask("Aliment bo‘yicha savol bor, nima qilaman?");
-    assert.match(html, /ANSWER key-two gemini-3\.8-flash/);
+    assert.match(html, /ANSWER key-two gemini-3\.6-flash/);
 
     mode = "overload";
     html = await ask("Meros bo‘yicha savol bor, nima qilaman?");
     assert.match(html, /ANSWER key-one gemini-3\.5-flash-lite/);
-    assert.deepEqual(seen, ["key-one|gemini-3.8-flash", "key-one|gemini-3.5-flash-lite"], "503 is model-level: no key retry");
+    assert.deepEqual(seen, ["key-one|gemini-3.6-flash", "key-one|gemini-3.5-flash-lite"], "503 is model-level: no key retry");
 
     mode = "allquota";
     html = await ask("Ijara bo‘yicha savol bor, nima qilaman?");

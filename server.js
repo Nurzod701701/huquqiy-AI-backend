@@ -19,13 +19,13 @@ const PORT = process.env.PORT || 3000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 // Optional backup key from another Google project (separate quota): GEMINI_API_KEY_2.
 const GEMINI_API_KEYS = [...new Set([GEMINI_API_KEY, process.env.GEMINI_API_KEY_2 || ""].map(k => k.trim()).filter(Boolean))];
-const AI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+const AI_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
 const AI_FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || "gemini-3.5-flash-lite";
 const GEMINI_API_BASE = (process.env.GEMINI_API_BASE || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\/+$/, "");
 const GEMINI_MAX_TOKENS = Number(process.env.GEMINI_MAX_TOKENS) || 2048;
 const GEMINI_LONG_MAX_TOKENS = Number(process.env.GEMINI_LONG_MAX_TOKENS) || 8192;
 // Per-attempt limits: LexUZ (≤9 s) + primary + fallback stays under ~90 s.
-const GEMINI_PRIMARY_TIMEOUT_MS = Number(process.env.GEMINI_PRIMARY_TIMEOUT_MS) || 48000;
+const GEMINI_PRIMARY_TIMEOUT_MS = Number(process.env.GEMINI_PRIMARY_TIMEOUT_MS) || 40000;
 const GEMINI_FALLBACK_TIMEOUT_MS = Number(process.env.GEMINI_FALLBACK_TIMEOUT_MS) || 30000;
 
 
