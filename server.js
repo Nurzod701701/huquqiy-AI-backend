@@ -13918,7 +13918,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
     if(!user || user.role!=="user" || !await accountVerifyPassword(f.password,user.passwordHash) || user.status!=="active"){ await recordEffectiveLoginFailure("user",email); alertEvent("FAILED_LOGIN",req.socket.remoteAddress,"/login"); sendHtml(res,accountLoginPage(lang,"Email yoki parol noto‘g‘ri, yoki account faol emas."),401); return true; }
     if(!user.emailVerified){ accountRedirect(res,`/verify-email?lang=${lang}&email=${encodeURIComponent(email)}`); return true; }
     await clearEffectiveLoginFailures("user",email);
-    user.lastLoginAt=accountNow(); accountAudit(db,user.id,"login",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
+    user.lastLoginAt=accountNow(); accountAudit(db,user.id,"login",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/register"){ sendHtml(res,accountRegisterPage(lang)); return true; }
   if(req.method==="POST" && pathname==="/register"){
@@ -13971,7 +13971,7 @@ async function accountHandleRoutes(req,res,url,pathname,lang){
       await accountSaveDb(db);
       sendHtml(res,accountVerifyPage(lang,email,user.verificationCodeHash?"Kod noto‘g‘ri yoki muddati tugagan.":"Juda ko‘p noto‘g‘ri urinish. Yangi kod so‘rang."),400); return true;
     }
-    user.emailVerified=true; delete user.verificationCodeHash; delete user.verificationExpiresAt; user.verificationAttempts=0; user.updatedAt=accountNow(); accountAudit(db,user.id,"email_verified",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/account?lang=${lang}`); return true;
+    user.emailVerified=true; delete user.verificationCodeHash; delete user.verificationExpiresAt; user.verificationAttempts=0; user.updatedAt=accountNow(); accountAudit(db,user.id,"email_verified",{}); await accountSaveDb(db); await accountSetSession(res,user.id); accountRedirect(res,`/?lang=${lang}`); return true;
   }
   if(req.method==="GET" && pathname==="/forgot-password"){
     sendHtml(res,accountPublicPage(lang,"Parolni tiklash",`<section class="accountAuth"><h1>Parolni tiklash</h1><p class="accountMuted">Emailingizni kiriting.</p><form class="accountForm" method="post" action="/forgot-password?lang=${lang}"><label>Email<input name="email" type="email" required></label><button class="accountButton">Tiklash kodini yuborish</button></form></section>`)); return true;
@@ -14201,13 +14201,17 @@ const server =
 
         // VERIUS entry selector; the original citizen homePage() remains unchanged.
         if(req.method === "GET" && pathname === "/"){
+          // Signed-in people see themselves (name, cabinet, sign-out) on the home page.
+          const homeAuth=await accountSession(req);
+          const homeUser=homeAuth?homeAuth.user:null;
           if(url.searchParams.get("portal") === "fuqarolar"){
-            return sendHtml(res, require("./citizen-home")(lang));
+            return sendHtml(res, require("./citizen-home")(lang,homeUser));
           }
-          return sendHtml(res, require("./portal-choice")(lang));
+          return sendHtml(res, require("./portal-choice")(lang,homeUser));
         }
         if(req.method === "GET" && pathname === "/fuqarolar"){
-          return sendHtml(res, url.searchParams.get("classic")==="1" ? homePage(lang) : require("./citizen-home")(lang));
+          const homeAuth=url.searchParams.get("classic")==="1"?null:await accountSession(req);
+          return sendHtml(res, url.searchParams.get("classic")==="1" ? homePage(lang) : require("./citizen-home")(lang,homeAuth?homeAuth.user:null));
         }
 
 
