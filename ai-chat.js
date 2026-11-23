@@ -19,7 +19,7 @@ const T = {
     privacy: "Xabarlar Google Gemini AI’ga yuboriladi. Pasport, telefon, karta kabi shaxsiy ma’lumotlar avtomatik yashiriladi. AI javobi dastlabki huquqiy yo‘naltirish — muhim qarordan oldin LexUZ va mutaxassis bilan tekshiring.",
     enterHint: "Enter — yuborish, Shift+Enter — yangi qator",
     chips: ["Nikohdan ajratish tartibi qanday?", "Aliment qancha undiriladi?", "Ish haqim kechiktirilyapti, nima qilay?", "Merosni qanday rasmiylashtiraman?", "Qarzni qanday undiraman?", "Ijara shartnomasini bekor qilsam bo‘ladimi?"],
-    errors: { privacy: "Xabaringizda parol, kalit yoki karta ma’lumoti kabi maxfiy ma’lumot bor. Uni olib tashlab, qayta yozing.", busy: "Juda ko‘p xabar yuborildi. Bir necha daqiqadan keyin davom eting.", rate: "Gemini hozir band (limit). Birozdan keyin qayta yuboring.", timeout: "Gemini hozir juda band, javob kechikdi. Qayta yuborib ko‘ring.", auth: "AI xizmati sozlamasida muammo bor. Administratorga xabar bering.", empty: "Xabar bo‘sh.", failed: "Javob olib bo‘lmadi. Qayta yuborib ko‘ring.", network: "Internet aloqasini tekshiring va qayta yuboring." }
+    errors: { privacy: "Xabaringizda parol, kalit yoki karta ma’lumoti kabi maxfiy ma’lumot bor. Uni olib tashlab, qayta yozing.", busy: "Juda ko‘p xabar yuborildi. Bir necha daqiqadan keyin davom eting.", rate: "Gemini hozir band (limit). Birozdan keyin qayta yuboring.", timeout: "Gemini hozir juda band, javob kechikdi. Qayta yuborib ko‘ring.", overload: "Gemini serverlari hozir band (503). Birozdan keyin qayta urinib ko‘ring.", auth: "AI xizmati sozlamasida muammo bor. Administratorga xabar bering.", empty: "Xabar bo‘sh.", failed: "Javob olib bo‘lmadi. Qayta yuborib ko‘ring.", network: "Internet aloqasini tekshiring va qayta yuboring." }
   },
   ru: {
     title: "Юридический AI-помощник", description: "Задайте правовой вопрос — VERIUS ответит в формате чата.",
@@ -30,7 +30,7 @@ const T = {
     privacy: "Сообщения отправляются в Google Gemini AI. Паспорт, телефон, данные карт и т.п. скрываются автоматически. Ответ AI — первичная правовая навигация: перед важным решением сверьтесь с LexUZ и специалистом.",
     enterHint: "Enter — отправить, Shift+Enter — новая строка",
     chips: ["Как расторгнуть брак?", "Сколько взыскивают алиментов?", "Задерживают зарплату, что делать?", "Как оформить наследство?", "Как взыскать долг?", "Можно ли расторгнуть договор аренды?"],
-    errors: { privacy: "В сообщении есть пароль, ключ или данные карты. Удалите их и напишите снова.", busy: "Слишком много сообщений. Продолжите через несколько минут.", rate: "Gemini сейчас занят (лимит). Повторите немного позже.", timeout: "Gemini перегружен, ответ задержался. Попробуйте снова.", auth: "Проблема с настройкой AI. Сообщите администратору.", empty: "Пустое сообщение.", failed: "Не удалось получить ответ. Попробуйте снова.", network: "Проверьте интернет и отправьте снова." }
+    errors: { privacy: "В сообщении есть пароль, ключ или данные карты. Удалите их и напишите снова.", busy: "Слишком много сообщений. Продолжите через несколько минут.", rate: "Gemini сейчас занят (лимит). Повторите немного позже.", timeout: "Gemini перегружен, ответ задержался. Попробуйте снова.", overload: "Серверы Gemini сейчас перегружены (503). Попробуйте позже.", auth: "Проблема с настройкой AI. Сообщите администратору.", empty: "Пустое сообщение.", failed: "Не удалось получить ответ. Попробуйте снова.", network: "Проверьте интернет и отправьте снова." }
   },
   en: {
     title: "Legal AI Assistant", description: "Ask a legal question — VERIUS answers like a chat.",
@@ -41,7 +41,7 @@ const T = {
     privacy: "Messages are sent to Google Gemini AI. Passport, phone and card details are redacted automatically. AI answers are initial legal guidance — check LexUZ and a professional before important decisions.",
     enterHint: "Enter to send, Shift+Enter for a new line",
     chips: ["How do I file for divorce?", "How much child support can be claimed?", "My salary is delayed — what can I do?", "How do I register an inheritance?", "How do I recover a debt?", "Can I terminate a lease early?"],
-    errors: { privacy: "Your message contains a password, key or card data. Remove it and try again.", busy: "Too many messages. Please continue in a few minutes.", rate: "Gemini is busy (limit). Please resend shortly.", timeout: "Gemini is overloaded and timed out. Please resend.", auth: "The AI service is misconfigured. Please notify the administrator.", empty: "The message is empty.", failed: "Could not get an answer. Please resend.", network: "Check your connection and resend." }
+    errors: { privacy: "Your message contains a password, key or card data. Remove it and try again.", busy: "Too many messages. Please continue in a few minutes.", rate: "Gemini is busy (limit). Please resend shortly.", timeout: "Gemini is overloaded and timed out. Please resend.", overload: "Gemini servers are overloaded (503). Please try again shortly.", auth: "The AI service is misconfigured. Please notify the administrator.", empty: "The message is empty.", failed: "Could not get an answer. Please resend.", network: "Check your connection and resend." }
   }
 };
 
@@ -254,6 +254,7 @@ function errorCode(error) {
   if (m === "AI_RATE_LIMIT") return "rate";
   if (m === "AI_AUTH_FAILED" || /GEMINI_API_KEY/.test(m)) return "auth";
   if (m === "AI_TIMEOUT") return "timeout";
+  if (/^AI_HTTP_50[0234]$/.test(m)) return "overload";
   return "failed";
 }
 
