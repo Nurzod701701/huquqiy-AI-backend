@@ -21,6 +21,10 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const GEMINI_API_KEYS = [...new Set([GEMINI_API_KEY, process.env.GEMINI_API_KEY_2 || ""].map(k => k.trim()).filter(Boolean))];
 const AI_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
 const AI_FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || "gemini-3.5-flash-lite";
+// Optional independent third model for provider overload; empty by default to preserve existing behavior.
+const AI_FALLBACK_MODEL_2 = process.env.GEMINI_FALLBACK_MODEL_2 || "";
+// Retry a whole model-fallback round only for transient 5xx/timeout errors.
+const GEMINI_OVERLOAD_RETRIES = Math.max(0, Math.min(2, Number(process.env.GEMINI_OVERLOAD_RETRIES ?? 2) || 0));
 const GEMINI_API_BASE = (process.env.GEMINI_API_BASE || "https://generativelanguage.googleapis.com/v1beta/openai").replace(/\/+$/, "");
 const GEMINI_MAX_TOKENS = Number(process.env.GEMINI_MAX_TOKENS) || 2048;
 const GEMINI_LONG_MAX_TOKENS = Number(process.env.GEMINI_LONG_MAX_TOKENS) || 8192;
@@ -639,57 +643,78 @@ Use only provisions actually visible in these excerpts for precise article-numbe
   ];
   let response, data;
   let usedFallbackModel = false;
-  const models = [...new Set([AI_MODEL, AI_FALLBACK_MODEL].filter(Boolean))];
+  const models = [...new Set([AI_MODEL, AI_FALLBACK_MODEL, AI_FALLBACK_MODEL_2].filter(Boolean))];
   const maxTokens = longTask ? Math.max(GEMINI_MAX_TOKENS, GEMINI_LONG_MAX_TOKENS) : GEMINI_MAX_TOKENS;
-  // Several Gemini keys (separate Google projects = separate quotas): a quota/auth
-  // problem on one key (429/401/403) moves to the next key on the same model;
-  // overload/timeout (503/500/404/abort) is model-level and moves to the next model.
   const keys = GEMINI_API_KEYS;
+  // Keep every retry + fallback under the browser's 115s timeout and Render proxy budget.
+  const deadline = Date.now() + 98000;
   let lastError = null;
-  modelLoop:
-  for (const [index, model] of models.entries()) {
-    const isLastModel = index === models.length - 1;
-    for (const [keyIndex, apiKey] of keys.entries()) {
-      const isLastKey = keyIndex === keys.length - 1;
-      const label = (index === 0 ? "primary" : "fallback") + (keys.length > 1 ? " key" + (keyIndex + 1) : "");
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), index === 0 ? GEMINI_PRIMARY_TIMEOUT_MS : GEMINI_FALLBACK_TIMEOUT_MS);
-      try {
-        response = await fetch(GEMINI_API_BASE + "/chat/completions", {
-          method: "POST",
-          signal: controller.signal,
-          headers: {
-            Authorization: "Bearer " + apiKey,
-            "Content-Type": "application/json"
-          },
-          // Gemini 3+ models always think; "low" keeps latency and cost down.
-          // Temperature is left at the model default as Google recommends for Gemini 3+.
-          body: JSON.stringify({ model, messages: geminiMessages, max_tokens: maxTokens, reasoning_effort: "low" })
-        });
-        try { data = await response.json(); }
-        catch (_) { throw new Error("Gemini noto‘g‘ri formatda javob qaytardi."); }
-      } catch (error) {
-        if (error?.name !== "AbortError") throw error;
-        console.error("Gemini request timed out:", label, model);
-        lastError = new Error("AI_TIMEOUT");
-        continue modelLoop;
-      } finally {
-        clearTimeout(timeout);
+  retryLoop:
+  for (let round = 0; round <= GEMINI_OVERLOAD_RETRIES; round++) {
+    let transientFailure = false;
+    modelLoop:
+    for (const [index, model] of models.entries()) {
+      for (const [keyIndex, apiKey] of keys.entries()) {
+        const isLastKey = keyIndex === keys.length - 1;
+        const label = (index === 0 ? "primary" : "fallback" + index) + (keys.length > 1 ? " key" + (keyIndex + 1) : "");
+        const remaining = deadline - Date.now();
+        if (remaining < 1600) { lastError = new Error("AI_TIMEOUT"); break retryLoop; }
+        const controller = new AbortController();
+        const attemptTimeout = Math.min(index === 0 ? GEMINI_PRIMARY_TIMEOUT_MS : GEMINI_FALLBACK_TIMEOUT_MS, remaining - 1000);
+        const timeout = setTimeout(() => controller.abort(), attemptTimeout);
+        try {
+          response = await fetch(GEMINI_API_BASE + "/chat/completions", {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+              Authorization: "Bearer " + apiKey,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ model, messages: geminiMessages, max_tokens: maxTokens, reasoning_effort: "low" })
+          });
+          try { data = await response.json(); }
+          catch (_) { throw new Error("Gemini noto‘g‘ri formatda javob qaytardi."); }
+        } catch (error) {
+          if (error?.name !== "AbortError") throw error;
+          console.error("Gemini request timed out:", label, model);
+          lastError = new Error("AI_TIMEOUT");
+          transientFailure = true;
+          continue modelLoop;
+        } finally {
+          clearTimeout(timeout);
+        }
+        if (response.ok) {
+          usedFallbackModel = model !== AI_MODEL;
+          break retryLoop;
+        }
+        const errorBody = Array.isArray(data) ? data[0] : data;
+        const errorText = String(errorBody?.error?.message || errorBody?.error?.status || "").slice(0, 300);
+        console.error("Gemini request failed:", response.status, label, model, errorText);
+        const authProblem = response.status === 401 || response.status === 403 ||
+          (response.status === 400 && /api[ _-]?key/i.test(errorText));
+        if (authProblem) {
+          lastError = new Error("AI_AUTH_FAILED");
+          if (!isLastKey) continue;
+          continue modelLoop;
+        }
+        if (response.status === 429) {
+          lastError = new Error("AI_RATE_LIMIT");
+          if (!isLastKey) continue;
+          continue modelLoop;
+        }
+        if ([404, 500, 502, 503, 504].includes(response.status)) {
+          lastError = new Error("AI_HTTP_" + response.status);
+          if (response.status !== 404) transientFailure = true;
+          continue modelLoop;
+        }
+        throw new Error("AI_HTTP_" + response.status);
       }
-      if (response.ok) {
-        usedFallbackModel = model !== AI_MODEL;
-        break modelLoop;
-      }
-      const errorBody = Array.isArray(data) ? data[0] : data;
-      const errorText = String(errorBody?.error?.message || errorBody?.error?.status || "").slice(0, 300);
-      console.error("Gemini request failed:", response.status, label, model, errorText);
-      const authProblem = response.status === 401 || response.status === 403 ||
-        (response.status === 400 && /api[ _-]?key/i.test(errorText));
-      if (authProblem) { lastError = new Error("AI_AUTH_FAILED"); if (!isLastKey) continue; continue modelLoop; }
-      if (response.status === 429) { lastError = new Error("AI_RATE_LIMIT"); if (!isLastKey) continue; continue modelLoop; }
-      if ([404, 500, 503].includes(response.status)) { lastError = new Error("AI_HTTP_" + response.status); continue modelLoop; }
-      throw new Error("AI_HTTP_" + response.status);
     }
+    // Backoff only after every model has failed. Never retry permanent key/quota errors alone.
+    if (!transientFailure || round === GEMINI_OVERLOAD_RETRIES) break;
+    const delay = Math.min(3500, 900 * (2 ** round)) + Math.floor(Math.random() * 300);
+    if (Date.now() + delay + 1600 >= deadline) break;
+    await new Promise(resolve => setTimeout(resolve, delay));
   }
   if (!response?.ok) throw lastError || new Error("AI_HTTP_" + (response?.status || 0));
   let content = data?.choices?.[0]?.message?.content;

@@ -22,6 +22,8 @@ test("backup Gemini key takes over when the first key is out of quota", { timeou
       if (mode === "quota" && key === "key-one") return send(429, { error: { message: "quota", status: "RESOURCE_EXHAUSTED" } });
       if (mode === "badkey" && key === "key-one") return send(400, [{ error: { message: "API key not valid.", status: "INVALID_ARGUMENT" } }]);
       if (mode === "overload" && json.model === "gemini-3.6-flash") return send(503, { error: { message: "high demand", status: "UNAVAILABLE" } });
+      if (mode === "recover" && seen.length <= 2) return send(503, { error: { message: "high demand", status: "UNAVAILABLE" } });
+      if (mode === "all503") return send(503, { error: { message: "high demand", status: "UNAVAILABLE" } });
       if (mode === "allquota") return send(429, { error: { message: "quota", status: "RESOURCE_EXHAUSTED" } });
       send(200, { choices: [{ message: { content: "ANSWER " + key + " " + json.model } }] });
     });
@@ -60,6 +62,17 @@ test("backup Gemini key takes over when the first key is out of quota", { timeou
     html = await ask("Meros bo‘yicha savol bor, nima qilaman?");
     assert.match(html, /ANSWER key-one gemini-3\.5-flash-lite/);
     assert.deepEqual(seen, ["key-one|gemini-3.6-flash", "key-one|gemini-3.5-flash-lite"], "503 is model-level: no key retry");
+
+    mode = "recover";
+    html = await ask("Vaqtincha yuklama xatosi haqida savol?");
+    assert.match(html, /ANSWER key-one gemini-3\.6-flash/);
+    assert.deepEqual(seen, ["key-one|gemini-3.6-flash", "key-one|gemini-3.5-flash-lite", "key-one|gemini-3.6-flash"], "transient 503 retries only after all models fail");
+    mode = "all503";
+    seen.length = 0;
+    const overloadResult = await post("/ai-chat?lang=uz", {message:"Meros haqida oddiy savol",history:"[]"});
+    assert.equal(overloadResult.status, 502);
+    assert.equal((await overloadResult.json()).error, "overload");
+    assert.equal(seen.length, 6, "three bounded rounds across two models, not two API keys");
 
     mode = "allquota";
     html = await ask("Ijara bo‘yicha savol bor, nima qilaman?");
