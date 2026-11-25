@@ -91,6 +91,9 @@ const CSS = `
 /* On phones the section grid pushes the chat below the fold; the header ☰ menu still navigates. */
 /* The chat has its own title bar; the generic page hero would push the input below the fold. */
 .appMain:has(.vc-wrap)>.appHeader{display:none}
+.appLayout:has(.vc-wrap),.appMain:has(.vc-wrap),.vc-wrap,.vc-head,.vc-log,.vc-compose,.vc-box{min-width:0;box-sizing:border-box;max-width:100%}
+.vc-wrap .vc-input{min-width:0}
+@media(max-width:640px){.appLayout:has(.vc-wrap){grid-template-columns:minmax(0,1fr)}.vc-wrap{width:100%}.vc-head{flex-wrap:wrap;gap:8px}.vc-brand{flex:1 1 150px}.vc-new{max-width:100%;white-space:normal}.vc-brand small{overflow-wrap:anywhere}.vc-bubble{box-sizing:border-box;min-width:0}.vc-foot{overflow-wrap:anywhere}}
 @media(max-width:980px){.appLayout:has(.vc-wrap)>.sidebar{display:none}}
 @media(max-width:640px){.vc-wrap{border-radius:0;border-left:0;border-right:0;height:calc(100vh - 130px);height:calc(100dvh - 130px);min-height:420px}.vc-log{padding:16px 12px 8px}.vc-bubble{max-width:86%;font-size:14.5px}.vc-head{padding:12px 14px}.vc-foot span:last-child{display:none}.vc-av{display:none}}
 `;
@@ -164,7 +167,7 @@ function clientMain(C) {
           history.push({ role: "assistant", text: res.text, html: res.html, notes: res.notes || [] }); save();
           addBot(res.html, res.notes);
         } else addBot(esc(T.errors[(res && res.error) || "failed"] || T.errors.failed), null, true, text);
-      }, function () { t.remove(); addBot(esc(T.errors.network), null, true, text); })
+      }, function (error) { t.remove(); addBot(esc(error && error.name === "AbortError" ? T.errors.timeout : T.errors.network), null, true, text); })
       .then(function () { if (timer) clearTimeout(timer); busy = false; grow(); input.focus(); });
   }
   input.addEventListener("input", grow);
